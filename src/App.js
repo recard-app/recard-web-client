@@ -1,22 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import './App.scss';
+
+import PromptWindow from './components/PromptWindow';
+import CreditCardSelector from './components/CreditCardSelector';
+import Modal from './components/Modal';
 
 function App() {
+
+  const [creditCards, setCreditCards] = useState([]);
+  const [modalShow, setModalShow] = useState(false);
+
+  const handleModalOpen = () => {
+    setModalShow(true);
+  };
+
+  const handleModalClose = () => {
+    setModalShow(false);
+  };
+
+  const getCreditCards = (returnCreditCards) => {
+    setCreditCards(returnCreditCards);
+  };
+
+  useEffect(() => {
+    //console.log(creditCards);
+  }, [creditCards]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <div className="app">
+      <header className="app-header">
+        <button onClick={handleModalOpen}>Select your Credit Cards</button>
+        <Modal show={modalShow} handleClose={handleModalClose}>
+          <CreditCardSelector returnCreditCards={getCreditCards} existingCreditCards={creditCards} />
+        </Modal>
+        <PromptWindow creditCards={creditCards} />
       </header>
     </div>
   );
