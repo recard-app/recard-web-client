@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.scss';
 
+import AppHeader from './components/AppHeader';
 import PromptWindow from './components/PromptWindow';
 import CreditCardSelector from './components/CreditCardSelector';
 import Modal from './components/Modal';
@@ -28,13 +29,13 @@ function App() {
 
   return (
     <div className="app">
-      <header className="app-header">
-        <button onClick={handleModalOpen}>Select your Credit Cards</button>
+        <AppHeader>
+          <button onClick={handleModalOpen}>Select your Credit Cards</button>
+        </AppHeader>
         <Modal show={modalShow} handleClose={handleModalClose}>
           <CreditCardSelector returnCreditCards={getCreditCards} existingCreditCards={creditCards} />
         </Modal>
         <PromptWindow creditCards={creditCards} />
-      </header>
     </div>
   );
 }

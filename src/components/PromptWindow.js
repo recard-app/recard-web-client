@@ -85,7 +85,6 @@ function PromptWindow({ creditCards }) {
 
     return (
         <div className='prompt-window'>
-            <h3>ReCard (Rewards Card)</h3>
             <PromptHistory chatHistory={chatHistory} />
             {isLoading && <div className="loading-indicator">...</div>}
             {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}
