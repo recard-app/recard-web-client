@@ -6,6 +6,7 @@ const apiurl = 'http://localhost:8000';
 function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
 
     const [creditCards, setCreditCards] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
         if (existingCreditCards.length === 0) {
@@ -32,10 +33,24 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
         setCreditCards(updatedCardList);
     };
 
+    const filteredCards = creditCards.filter(card => 
+        card.cardName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        card.cardType.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className='credit-card-selector'>
             <h3>Select your Credit Cards</h3>
-            {creditCards.map((card, index) => (
+            <div className="search-container">
+                <input
+                    type="text"
+                    placeholder="Search cards..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="search-input"
+                />
+            </div>
+            {filteredCards.map((card, index) => (
                 <div key={index} className='card'>
                     <label className='card-select' htmlFor={`card-${index}`}>
                         <input 

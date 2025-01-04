@@ -10,11 +10,12 @@ const apiurl = 'http://localhost:8000';
 const aiClient = 'assistant';
 const userClient = 'user';
 
-
 function PromptWindow({ creditCards }) {
     const [promptValue, setPromptValue] = useState('');
-    const [responseValue, setResponseValue] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
+    const [promptSolutions, setPromptSolutions] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingSolutions, setIsLoadingSolutions] = useState(false);
 
     const getPrompt = (returnPrompt) => {
         setPromptValue(returnPrompt);
@@ -43,11 +44,14 @@ function PromptWindow({ creditCards }) {
     }, [chatHistory]);
 
     const callServer = () => {
+        setIsLoading(true);
+        const currentDate = getCurrentDateString();
         const requestData = {
             name: 'Evan',
             prompt: promptValue,
             chatHistory: chatHistory, 
-            creditCards: creditCards
+            creditCards: creditCards, 
+            currentDate: currentDate
         };
         
         axios.post(`${apiurl}/ai-response`, requestData, {
@@ -56,27 +60,59 @@ function PromptWindow({ creditCards }) {
             }
         })
             .then(response => {
-                setResponseValue(response.data);
                 addChatHistory(aiClient, response.data);
+                setIsLoading(false);
+                // Start solutions loading
+                setIsLoadingSolutions(true);
+                return axios.post(`${apiurl}/ai-solutions`, {
+                    name: 'Evan',
+                    prompt: promptValue,
+                    chatHistory: chatHistory,
+                    creditCards: creditCards,
+                    currentDate: currentDate
+                });
+            })
+            .then(solutionsResponse => {
+                setPromptSolutions(solutionsResponse.data);
+                setIsLoadingSolutions(false);
             })
             .catch(error => {
                 console.log(error);
+                setIsLoading(false);
+                setIsLoadingSolutions(false);
             });
     };
-
-    const checkSolution = () => {
-
-    }
 
     return (
         <div className='prompt-window'>
             <h3>ReCard (Rewards Card)</h3>
             <PromptHistory chatHistory={chatHistory} />
-            <PromptSolution />
+            {isLoading && <div className="loading-indicator">...</div>}
+            {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}
+            <PromptSolution promptSolutions={promptSolutions} />
             <PromptField returnPrompt={getPrompt} />
         </div>
     );
-
 }
 
 export default PromptWindow;
+
+
+
+
+const getCurrentDateString = () => {
+    const now = new Date();
+  
+    // Format the date components
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(now.getDate()).padStart(2, '0');
+  
+    // Format the time components
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+  
+    // Combine into a single string
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };

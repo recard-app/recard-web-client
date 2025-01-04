@@ -25,8 +25,9 @@ function PromptField({ returnPrompt }) {
           value={promptValue}
           onChange={inputChange}
           onKeyDown={handleKeyDown}
+          placeholder='Enter your prompt here...'
       />
-      <button onClick={handleClick}>Make API Call</button>
+      <button onClick={handleClick}>Submit</button>
     </div>
   );
 
