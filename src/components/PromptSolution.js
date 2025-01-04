@@ -29,7 +29,6 @@ function PromptSolution({ promptSolutions }) {
                         <div className="card-details">
                             <p><strong>Category:</strong> {solution.rewardCategory}</p>
                             <p><strong>Reward Rate:</strong> {solution.rewardRate}</p>
-                            <p><strong>Estimated Value:</strong> {solution.estimatedValue}</p>
                         </div>
                     </div>
                 ))}
