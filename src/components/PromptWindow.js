@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import PromptHistory from './PromptHistory';
 import PromptField from './PromptField';
 import PromptSolution from './PromptSolution';
+import HelpModal from './HelpModal';
+import Modal from './Modal';
 
 import axios from 'axios';
 
@@ -16,6 +18,15 @@ function PromptWindow({ creditCards }) {
     const [promptSolutions, setPromptSolutions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSolutions, setIsLoadingSolutions] = useState(false);
+    const [helpModalShow, setHelpModalShow] = useState(false);
+
+    const handleHelpModalOpen = () => {
+        setHelpModalShow(true);
+      };
+    
+      const handleHelpModalClose = () => {
+        setHelpModalShow(false);
+      };
 
     const getPrompt = (returnPrompt) => {
         setPromptValue(returnPrompt);
@@ -85,6 +96,10 @@ function PromptWindow({ creditCards }) {
 
     return (
         <div className='prompt-window'>
+            <button onClick={handleHelpModalOpen}>Help</button>
+            <Modal show={helpModalShow} handleClose={handleHelpModalClose}>
+                <HelpModal />
+            </Modal>
             <PromptHistory chatHistory={chatHistory} />
             {isLoading && <div className="loading-indicator">...</div>}
             {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}

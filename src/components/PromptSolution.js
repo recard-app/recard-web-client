@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-
-const apiurl = 'http://localhost:8000';
 
 function PromptSolution({ promptSolutions }) {
     const [solutions, setSolutions] = useState([]);
