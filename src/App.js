@@ -53,7 +53,8 @@ function App() {
                     width: '32px', 
                     height: '32px', 
                     borderRadius: '50%',
-                    marginLeft: '10px'
+                    marginLeft: '10px',
+                    marginRight: '10px'
                   }} 
                 />
               )}
