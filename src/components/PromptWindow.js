@@ -8,11 +8,11 @@ import Modal from './Modal';
 
 import axios from 'axios';
 
-const apiurl = 'http://localhost:8000';
+const apiurl = process.env.REACT_APP_BASE_URL;
 const aiClient = 'assistant';
 const userClient = 'user';
 
-function PromptWindow({ creditCards }) {
+function PromptWindow({ creditCards, user }) {
     const [promptValue, setPromptValue] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
     const [promptSolutions, setPromptSolutions] = useState([]);
@@ -57,8 +57,10 @@ function PromptWindow({ creditCards }) {
     const callServer = () => {
         setIsLoading(true);
         const currentDate = getCurrentDateString();
+        const name = user?.name || 'Guest';
+
         const requestData = {
-            name: 'Evan',
+            name: name,
             prompt: promptValue,
             chatHistory: chatHistory, 
             creditCards: creditCards, 
@@ -76,7 +78,7 @@ function PromptWindow({ creditCards }) {
                 // Start solutions loading
                 setIsLoadingSolutions(true);
                 return axios.post(`${apiurl}/ai-solutions`, {
-                    name: 'Evan',
+                    name: name,
                     prompt: promptValue,
                     chatHistory: chatHistory,
                     creditCards: creditCards,

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google';
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 
 import './App.scss';
 import About from './pages/About';
@@ -12,8 +10,11 @@ import AppHeader from './components/AppHeader';
 import PromptWindow from './components/PromptWindow';
 import CreditCardSelector from './components/CreditCardSelector';
 import Modal from './components/Modal';
+import { useAuth } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
+  const { user, logout } = useAuth();
 
   const [creditCards, setCreditCards] = useState([]);
   const [modalShow, setModalShow] = useState(false);
@@ -38,11 +39,29 @@ function App() {
     <Router>
       <div className="app">
         <AppHeader>
-          <a href="/"><h1>ReCard</h1></a>
+          <Link to="/"><h1>ReCard</h1></Link>
           <button onClick={handleModalOpen}>Select your Credit Cards</button>
-          <a href="/about">About</a>
-          <a href="/account">Account</a>
-          <a href="/signin">Sign In</a>
+          <Link to="/about">About</Link>
+          {user ? (
+            <>
+              <Link to="/account">Account</Link>
+              {user.picture && (
+                <img 
+                  src={user.picture} 
+                  alt="Profile" 
+                  style={{ 
+                    width: '32px', 
+                    height: '32px', 
+                    borderRadius: '50%',
+                    marginLeft: '10px'
+                  }} 
+                />
+              )}
+              <button onClick={logout}>Sign Out</button>
+            </>
+          ) : (
+            <Link to="/signin">Sign In</Link>
+          )}
         </AppHeader>
         
         <Modal show={modalShow} handleClose={handleModalClose}>
@@ -50,15 +69,18 @@ function App() {
         </Modal>
         
         <Routes>
-          <Route path="/" element={<PromptWindow creditCards={creditCards} />} />
+          <Route path="/" element={<PromptWindow creditCards={creditCards} user={user} />} />
           <Route path="/about" element={<About />} />
-          <Route path="/account" element={<Account />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/account" element={
+            <ProtectedRoute>
+              <Account />
+            </ProtectedRoute>
+          } />
         </Routes>
       </div>
     </Router>
   );
-
 }
 
 export default App;
