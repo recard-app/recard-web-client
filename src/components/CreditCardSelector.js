@@ -10,7 +10,7 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
 
     useEffect(() => {
         if (existingCreditCards.length === 0) {
-            axios.get(`${apiurl}/credit-card-list`)
+            axios.get(`${apiurl}/cards/full-list`)
             .then(response => {
                 setCreditCards(response.data);
             })

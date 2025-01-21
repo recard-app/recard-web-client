@@ -74,7 +74,7 @@ function PromptWindow({ creditCards, user }) {
             currentDate: currentDate
         };
         
-        axios.post(`${apiurl}/ai-response`, requestData, {
+        axios.post(`${apiurl}/ai/response`, requestData, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -84,7 +84,7 @@ function PromptWindow({ creditCards, user }) {
                 setIsLoading(false);
                 // Start solutions loading
                 setIsLoadingSolutions(true);
-                return axios.post(`${apiurl}/ai-solutions`, {
+                return axios.post(`${apiurl}/ai/solutions`, {
                     name: name,
                     prompt: promptValue,
                     chatHistory: chatHistory,
@@ -108,7 +108,7 @@ function PromptWindow({ creditCards, user }) {
         if (user && chatHistory.length > 0) {
             const token = localStorage.getItem('token'); // Get the stored JWT token
             
-            axios.post(`${apiurl}/add_history`, {
+            axios.post(`${apiurl}/history/add`, {
                 chatHistory: chatHistory,
                 promptSolutions: promptSolutions,
                 timestamp: getCurrentDateString()
