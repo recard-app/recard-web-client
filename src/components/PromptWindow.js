@@ -19,6 +19,8 @@ function PromptWindow({ creditCards, user }) {
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSolutions, setIsLoadingSolutions] = useState(false);
     const [helpModalShow, setHelpModalShow] = useState(false);
+    const [errorModalShow, setErrorModalShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleHelpModalOpen = () => {
         setHelpModalShow(true);
@@ -27,6 +29,11 @@ function PromptWindow({ creditCards, user }) {
       const handleHelpModalClose = () => {
         setHelpModalShow(false);
       };
+
+    const handleErrorModalClose = () => {
+        setErrorModalShow(false);
+        setErrorMessage('');
+    };
 
     const getPrompt = (returnPrompt) => {
         setPromptValue(returnPrompt);
@@ -97,8 +104,29 @@ function PromptWindow({ creditCards, user }) {
     };
 
     const handleNewTransaction = () => {
-        setChatHistory([]);
-        setPromptSolutions([]);
+        // Only save chat history if user is logged in and there's history to save
+        if (user && chatHistory.length > 0) {
+            axios.post(`${apiurl}/add_history`, {
+                name: user.name,
+                chatHistory: chatHistory,
+                promptSolutions: promptSolutions,
+                timestamp: getCurrentDateString()
+            })
+            .then(() => {
+                // Only clear the states after successful API call
+                setChatHistory([]);
+                setPromptSolutions([]);
+            })
+            .catch(error => {
+                console.log('Error saving chat history:', error);
+                setErrorMessage('Error creating new chat, please try again.');
+                setErrorModalShow(true);
+            });
+        } else {
+            // If user is not logged in, just clear the states
+            setChatHistory([]);
+            setPromptSolutions([]);
+        }
     };
 
     return (
@@ -107,6 +135,9 @@ function PromptWindow({ creditCards, user }) {
             <button onClick={handleHelpModalOpen}>Help</button>
             <Modal show={helpModalShow} handleClose={handleHelpModalClose}>
                 <HelpModal />
+            </Modal>
+            <Modal show={errorModalShow} handleClose={handleErrorModalClose}>
+                <div>{errorMessage}</div>
             </Modal>
             <PromptHistory chatHistory={chatHistory} />
             {isLoading && <div className="loading-indicator">...</div>}
