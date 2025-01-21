@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './PromptSolution.scss';
 
 function PromptSolution({ promptSolutions }) {
     const [solutions, setSolutions] = useState([]);

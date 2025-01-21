@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import './PromptField.scss';
 function PromptField({ returnPrompt }) {
   const [promptValue, setPromptValue] = useState('');
 

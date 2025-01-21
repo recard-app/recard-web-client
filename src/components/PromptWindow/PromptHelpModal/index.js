@@ -1,6 +1,6 @@
 import React from 'react';
-
-function HelpModal() {
+import './PromptHelpModal.scss';
+function PromptHelpModal() {
     return (
         <div className="help-modal">
             <h2>Help</h2>
@@ -9,4 +9,4 @@ function HelpModal() {
     );
 };
 
-export default HelpModal;
+export default PromptHelpModal;

@@ -1,0 +1,13 @@
+.prompt-history {
+    margin: 12px 0;
+    padding: 4px;
+    .entry {
+      margin: 4px 0;
+    }
+    .entry-user {
+      color: black;
+    }
+    .entry-assistant {
+      color: blue;
+    }
+}

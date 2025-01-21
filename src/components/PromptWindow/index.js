@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import PromptHistory from './PromptHistory';
 import PromptField from './PromptField';
 import PromptSolution from './PromptSolution';
-import HelpModal from './HelpModal';
-import Modal from './Modal';
+import PromptHelpModal from './PromptHelpModal';
+import Modal from '../Modal';
+import './PromptWindow.scss';
 
 import axios from 'axios';
 
@@ -20,6 +21,7 @@ function PromptWindow({ creditCards, user }) {
     const [isLoadingSolutions, setIsLoadingSolutions] = useState(false);
     const [errorModalShow, setErrorModalShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [helpModalShow, setHelpModalShow] = useState(false);
 
     const handleErrorModalClose = () => {
         setErrorModalShow(false);
@@ -126,12 +128,29 @@ function PromptWindow({ creditCards, user }) {
         }
     };
 
+    const handleHelpModalOpen = () => {
+        setHelpModalShow(true);
+    };
+
+    const handleHelpModalClose = () => {
+        setHelpModalShow(false);
+    };
+
     return (
         <div className='prompt-window'>
-            <button onClick={handleNewTransaction}>New Transaction Chat</button>
+            <div className="prompt-window-header">
+                <button onClick={handleNewTransaction}>New Transaction Chat</button>
+                <button onClick={handleHelpModalOpen}>Help</button>
+            </div>
+            
             <Modal show={errorModalShow} handleClose={handleErrorModalClose}>
                 <div>{errorMessage}</div>
             </Modal>
+
+            <Modal show={helpModalShow} handleClose={handleHelpModalClose}>
+                <PromptHelpModal />
+            </Modal>
+
             <PromptHistory chatHistory={chatHistory} />
             {isLoading && <div className="loading-indicator">...</div>}
             {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}

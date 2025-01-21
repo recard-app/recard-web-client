@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import './PromptHistory.scss';
 function PromptHistory({ chatHistory }) {
     const chatEntries = chatHistory;
   

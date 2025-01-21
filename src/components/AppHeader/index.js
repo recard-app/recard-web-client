@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import './AppHeader.scss';
 
-const AppHeader = ({ user, onModalOpen, onHelpModalOpen, onLogout }) => {
+const AppHeader = ({ user, onModalOpen, onLogout }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -63,7 +64,6 @@ const AppHeader = ({ user, onModalOpen, onHelpModalOpen, onLogout }) => {
             <button>Sign In</button>
           </Link>
         )}
-        <button onClick={onHelpModalOpen}>Help</button>
       </nav>
     </header>
   );

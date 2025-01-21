@@ -1,0 +1,33 @@
+.credit-card-selector {
+    text-align: left;
+    h3 {
+  
+    }
+    .card {
+      .card-select {
+        display: flex;
+        align-items: center;
+        margin: 8px 0;
+        img {
+          height: 24px;
+          width: auto;
+          margin: 0;
+          margin-left: 6px;
+          margin-right: 8px;
+        }
+        .card-desc {
+          .card-name {
+            margin: 0;
+            font-size: 0.95em;
+            color: black;
+          }
+          .card-type {
+            margin: 0;
+            font-size: 0.8em;
+            color: gray;
+            font-style: italic;
+          }
+        }
+      }
+    }
+  }

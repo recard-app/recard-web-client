@@ -1,0 +1,14 @@
+.prompt-field {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    input {
+      height: 28px;
+      padding: 0 8px;
+      flex-grow: 1;
+    }
+    button {
+      width: 120px;
+      height: 32px;
+    }
+}
