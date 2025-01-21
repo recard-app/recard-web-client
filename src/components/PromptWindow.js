@@ -96,8 +96,14 @@ function PromptWindow({ creditCards, user }) {
             });
     };
 
+    const handleNewTransaction = () => {
+        setChatHistory([]);
+        setPromptSolutions([]);
+    };
+
     return (
         <div className='prompt-window'>
+            <button onClick={handleNewTransaction}>New Transaction Chat</button>
             <button onClick={handleHelpModalOpen}>Help</button>
             <Modal show={helpModalShow} handleClose={handleHelpModalClose}>
                 <HelpModal />

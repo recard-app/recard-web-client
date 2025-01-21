@@ -49,6 +49,8 @@ function App() {
                 <img 
                   src={user.picture} 
                   alt="Profile" 
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
                   style={{ 
                     width: '32px', 
                     height: '32px', 
