@@ -18,17 +18,8 @@ function PromptWindow({ creditCards, user }) {
     const [promptSolutions, setPromptSolutions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSolutions, setIsLoadingSolutions] = useState(false);
-    const [helpModalShow, setHelpModalShow] = useState(false);
     const [errorModalShow, setErrorModalShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-
-    const handleHelpModalOpen = () => {
-        setHelpModalShow(true);
-      };
-    
-      const handleHelpModalClose = () => {
-        setHelpModalShow(false);
-      };
 
     const handleErrorModalClose = () => {
         setErrorModalShow(false);
@@ -138,10 +129,6 @@ function PromptWindow({ creditCards, user }) {
     return (
         <div className='prompt-window'>
             <button onClick={handleNewTransaction}>New Transaction Chat</button>
-            <button onClick={handleHelpModalOpen}>Help</button>
-            <Modal show={helpModalShow} handleClose={handleHelpModalClose}>
-                <HelpModal />
-            </Modal>
             <Modal show={errorModalShow} handleClose={handleErrorModalClose}>
                 <div>{errorMessage}</div>
             </Modal>
