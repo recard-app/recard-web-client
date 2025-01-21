@@ -1,3 +1,25 @@
+// Global variables and mixins
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+$background-color: #f8f9fa;
+
+// Reset/Normalize CSS (if needed)
+// @import '~normalize.css';
+
+// Third-party imports (if any)
+// @import '~bootstrap/scss/bootstrap';
+
+// Component styles
+@import './components/AppHeader/AppHeader.scss';
+@import './components/PromptWindow/PromptWindow.scss';
+@import './components/PromptHistory/PromptHistory.scss';
+@import './components/PromptField/PromptField.scss';
+@import './components/PromptSolution/PromptSolution.scss';
+@import './components/Modal/Modal.scss';
+@import './components/HelpModal/HelpModal.scss';
+@import './components/CreditCardSelector/CreditCardSelector.scss';
+
+// Base app styles
 .app {
   display: block;
   justify-content: center;
