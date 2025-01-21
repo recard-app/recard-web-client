@@ -106,11 +106,17 @@ function PromptWindow({ creditCards, user }) {
     const handleNewTransaction = () => {
         // Only save chat history if user is logged in and there's history to save
         if (user && chatHistory.length > 0) {
+            const token = localStorage.getItem('token'); // Get the stored JWT token
+            
             axios.post(`${apiurl}/add_history`, {
-                name: user.name,
                 chatHistory: chatHistory,
                 promptSolutions: promptSolutions,
                 timestamp: getCurrentDateString()
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
             })
             .then(() => {
                 // Only clear the states after successful API call
