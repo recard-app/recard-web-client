@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 
 // Styles
 import './App.scss';
@@ -10,7 +10,7 @@ import Account from './pages/Account';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Welcome from './pages/Welcome';
-
+import Preferences from './pages/Preferences';
 // Components
 import AppHeader from './components/AppHeader';
 import PromptWindow from './components/PromptWindow';
@@ -22,8 +22,9 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 // Context
 import { useAuth } from './context/AuthContext';
 
-function App() {
+function AppContent() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const [creditCards, setCreditCards] = useState([]);
   const [modalShow, setModalShow] = useState(false);
@@ -40,48 +41,64 @@ function App() {
     setCreditCards(returnCreditCards);
   };
 
+  const handleLogout = async () => {
+    await logout();
+    navigate('/signin');
+  };
+
   useEffect(() => {
     //console.log(creditCards);
   }, [creditCards]);
 
   return (
+    <div className="app">
+      <AppHeader 
+        user={user}
+        onModalOpen={handleModalOpen}
+        onLogout={handleLogout}
+      />
+      
+      <Modal show={modalShow} handleClose={handleModalClose}>
+        <CreditCardSelector returnCreditCards={getCreditCards} existingCreditCards={creditCards} />
+      </Modal>
+      
+      <Routes>
+        <Route path="/" element={<PromptWindow creditCards={creditCards} user={user} />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/preferences" element={
+          <ProtectedRoute>
+            <Preferences />
+          </ProtectedRoute>
+        } />
+        <Route path="/signin" element={
+          <RedirectIfAuthenticated>
+            <SignIn />
+          </RedirectIfAuthenticated>
+        } />
+        <Route path="/signup" element={
+          <RedirectIfAuthenticated>
+            <SignUp />
+          </RedirectIfAuthenticated>
+        } />
+        <Route path="/welcome" element={
+          <ProtectedRoute>
+            <Welcome onModalOpen={handleModalOpen} />
+          </ProtectedRoute>
+        } />
+        <Route path="/account" element={
+          <ProtectedRoute>
+            <Account />
+          </ProtectedRoute>
+        } />
+      </Routes>
+    </div>
+  );
+}
+
+function App() {
+  return (
     <Router>
-      <div className="app">
-        <AppHeader 
-          user={user}
-          onModalOpen={handleModalOpen}
-          onLogout={logout}
-        />
-        
-        <Modal show={modalShow} handleClose={handleModalClose}>
-          <CreditCardSelector returnCreditCards={getCreditCards} existingCreditCards={creditCards} />
-        </Modal>
-        
-        <Routes>
-          <Route path="/" element={<PromptWindow creditCards={creditCards} user={user} />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/signin" element={
-            <RedirectIfAuthenticated>
-              <SignIn />
-            </RedirectIfAuthenticated>
-          } />
-          <Route path="/signup" element={
-            <RedirectIfAuthenticated>
-              <SignUp />
-            </RedirectIfAuthenticated>
-          } />
-          <Route path="/welcome" element={
-            <ProtectedRoute>
-              <Welcome onModalOpen={handleModalOpen} />
-            </ProtectedRoute>
-          } />
-          <Route path="/account" element={
-            <ProtectedRoute>
-              <Account />
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </div>
+      <AppContent />
     </Router>
   );
 }

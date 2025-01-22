@@ -47,6 +47,7 @@ const AppHeader = ({ user, onModalOpen, onLogout }) => {
             )}
             {dropdownOpen && (
               <div className="dropdown-menu">
+                <Link to="/preferences" onClick={() => setDropdownOpen(false)}>Preferences</Link>
                 <Link to="/account" onClick={() => setDropdownOpen(false)}>My Account</Link>
                 <button 
                   onClick={() => {

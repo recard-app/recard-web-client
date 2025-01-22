@@ -16,7 +16,7 @@ const Welcome = ({ onModalOpen }) => {
                             Select Your Credit Cards
                         </button>
                     </div>
-                    
+
                     <div className="step">
                         <h3>2. Ask Questions</h3>
                         <p>Ask about purchases and we'll help you maximize your rewards.</p>
