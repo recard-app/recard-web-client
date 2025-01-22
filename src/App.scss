@@ -12,11 +12,11 @@ $background-color: #f8f9fa;
 // Component styles
 @import './components/AppHeader/AppHeader.scss';
 @import './components/PromptWindow/PromptWindow.scss';
-@import './components/PromptHistory/PromptHistory.scss';
-@import './components/PromptField/PromptField.scss';
-@import './components/PromptSolution/PromptSolution.scss';
+@import './components/PromptWindow/PromptHistory/PromptHistory.scss';
+@import './components/PromptWindow/PromptField/PromptField.scss';
+@import './components/PromptWindow/PromptSolution/PromptSolution.scss';
+@import './components/PromptWindow/PromptHelpModal/PromptHelpModal.scss';
 @import './components/Modal/Modal.scss';
-@import './components/HelpModal/HelpModal.scss';
 @import './components/CreditCardSelector/CreditCardSelector.scss';
 
 // Base app styles

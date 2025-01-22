@@ -8,6 +8,7 @@ import Modal from '../Modal';
 import './PromptWindow.scss';
 
 import axios from 'axios';
+import { auth } from '../../config/firebase';
 
 const apiurl = process.env.REACT_APP_BASE_URL;
 const aiClient = 'assistant';
@@ -99,27 +100,28 @@ function PromptWindow({ creditCards, user }) {
     const handleNewTransaction = () => {
         // Only save chat history if user is logged in and there's history to save
         if (user && chatHistory.length > 0) {
-            const token = localStorage.getItem('token'); // Get the stored JWT token
-            
-            axios.post(`${apiurl}/history/add`, {
-                chatHistory: chatHistory,
-                promptSolutions: promptSolutions,
-                timestamp: getCurrentDateString()
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(() => {
-                // Only clear the states after successful API call
-                setChatHistory([]);
-                setPromptSolutions([]);
-            })
-            .catch(error => {
-                console.log('Error saving chat history:', error);
-                setErrorMessage('Error creating new chat, please try again.');
-                setErrorModalShow(true);
+            // Get fresh Firebase token from the current user
+            auth.currentUser.getIdToken().then(token => {
+                axios.post(`${apiurl}/history/add`, {
+                    chatHistory: chatHistory,
+                    promptSolutions: promptSolutions,
+                    timestamp: getCurrentDateString()
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(() => {
+                    // Only clear the states after successful API call
+                    setChatHistory([]);
+                    setPromptSolutions([]);
+                })
+                .catch(error => {
+                    console.error('Error saving chat history:', error);
+                    setErrorMessage('Error creating new chat, please try again.');
+                    setErrorModalShow(true);
+                });
             });
         } else {
             // If user is not logged in, just clear the states

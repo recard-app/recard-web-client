@@ -1,5 +1,4 @@
 import React from 'react';
-import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,37 +7,32 @@ const SignIn = () => {
     const navigate = useNavigate();
     const apiurl = process.env.REACT_APP_BASE_URL;
 
-    const handleGoogleSuccess = async (credentialResponse) => {
+    const handleSignIn = async () => {
         try {
-            const response = await fetch(`${apiurl}/auth/google`, {
+            const { user, token } = await login();
+            
+            // Send token to your backend
+            const response = await fetch(`${apiurl}/auth/verify`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ credential: credentialResponse.credential }),
+                    'Authorization': `Bearer ${token}`
+                }
             });
-            const data = await response.json();
-            //console.log('Google Auth Response:', data);
-            login(data.user, data.token);
-            console.log('Authentication successful');
-            navigate('/'); // Redirect after successful login
+            
+            if (response.ok) {
+                console.log('Authentication successful');
+                navigate('/');
+            }
         } catch (error) {
             console.error('Authentication failed:', error);
         }
     };
 
-    const handleGoogleError = (error) => {
-        console.error('Google sign-in error:', error);
-    };
-
     return (
         <div>
             <h1>Sign In</h1>
-            <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleError}
-                useOneTap
-            />
+            <button onClick={handleSignIn}>Sign in with Google</button>
         </div>
     );
 };

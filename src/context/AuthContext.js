@@ -1,52 +1,65 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import { auth } from '../config/firebase';
+import { 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  onAuthStateChanged,
+  signOut 
+} from 'firebase/auth';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load user data from token on startup
-    const storedToken = localStorage.getItem('token');
-    if (storedToken) {
-      try {
-        const decoded = jwtDecode(storedToken);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
         setUser({
-          email: decoded.email,
-          name: decoded.name,
-          picture: decoded.picture
+          email: user.email,
+          name: user.displayName,
+          picture: user.photoURL,
+          uid: user.uid
         });
-        setToken(storedToken);
-      } catch (error) {
-        console.error('Invalid token:', error);
-        logout();
+      } else {
+        setUser(null);
       }
-    }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem('token', token);
-    } else {
-      localStorage.removeItem('token');
+  const login = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      // Get ID token for backend authentication
+      const token = await user.getIdToken();
+      return { user, token };
+    } catch (error) {
+      console.error('Authentication failed:', error);
+      throw error;
     }
-  }, [token]);
-
-  const login = (userData, userToken) => {
-    setUser(userData);
-    setToken(userToken);
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
