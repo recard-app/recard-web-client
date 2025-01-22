@@ -4,10 +4,14 @@ import {
   GoogleAuthProvider, 
   signInWithPopup, 
   onAuthStateChanged,
-  signOut 
+  signOut,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword 
 } from 'firebase/auth';
 
 const AuthContext = createContext(null);
+
+const DEFAULT_PROFILE_PICTURE = 'https://ui-avatars.com/api/?name=User&background=random';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -18,8 +22,8 @@ export const AuthProvider = ({ children }) => {
       if (user) {
         setUser({
           email: user.email,
-          name: user.displayName,
-          picture: user.photoURL,
+          name: user.displayName || user.email.split('@')[0], // Use displayName if available (Google), otherwise use email username
+          picture: user.photoURL || DEFAULT_PROFILE_PICTURE, // Use default picture if no photo provided
           uid: user.uid
         });
       } else {
@@ -54,12 +58,40 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const registerWithEmail = async (email, password) => {
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const token = await result.user.getIdToken();
+      return { user: result.user, token };
+    } catch (error) {
+      console.error('Registration failed:', error);
+      throw error;
+    }
+  };
+
+  const loginWithEmail = async (email, password) => {
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const token = await result.user.getIdToken();
+      return { user: result.user, token };
+    } catch (error) {
+      console.error('Email login failed:', error);
+      throw error;
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      loginWithEmail, 
+      registerWithEmail, 
+      logout 
+    }}>
       {children}
     </AuthContext.Provider>
   );

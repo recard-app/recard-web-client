@@ -8,6 +8,7 @@ import './App.scss';
 import About from './pages/About';
 import Account from './pages/Account';
 import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
 
 // Components
 import AppHeader from './components/AppHeader';
@@ -58,6 +59,7 @@ function App() {
           <Route path="/" element={<PromptWindow creditCards={creditCards} user={user} />} />
           <Route path="/about" element={<About />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/account" element={
             <ProtectedRoute>
               <Account />

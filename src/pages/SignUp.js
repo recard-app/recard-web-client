@@ -2,20 +2,26 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
-const SignIn = () => {
-    const { login, loginWithEmail } = useAuth();
+const SignUp = () => {
+    const { registerWithEmail } = useAuth();
     const navigate = useNavigate();
     const apiurl = process.env.REACT_APP_BASE_URL;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleEmailSignIn = async (e) => {
+    const handleSignUp = async (e) => {
         e.preventDefault();
         setError('');
+
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
         
         try {
-            const { user, token } = await loginWithEmail(email, password);
+            const { user, token } = await registerWithEmail(email, password);
             
             const response = await fetch(`${apiurl}/auth/verify`, {
                 method: 'POST',
@@ -26,42 +32,20 @@ const SignIn = () => {
             });
             
             if (response.ok) {
-                console.log('Authentication successful');
+                console.log('Registration successful');
                 navigate('/');
             }
         } catch (error) {
             setError(error.message);
-            console.error('Authentication failed:', error);
-        }
-    };
-
-    const handleGoogleSignIn = async () => {
-        try {
-            const { user, token } = await login();
-            
-            const response = await fetch(`${apiurl}/auth/verify`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            
-            if (response.ok) {
-                console.log('Authentication successful');
-                navigate('/');
-            }
-        } catch (error) {
-            setError(error.message);
-            console.error('Authentication failed:', error);
+            console.error('Registration failed:', error);
         }
     };
 
     return (
         <div className="auth-page">
-            <h1>Sign In</h1>
+            <h1>Create Account</h1>
             
-            <form onSubmit={handleEmailSignIn}>
+            <form onSubmit={handleSignUp}>
                 <input
                     type="email"
                     placeholder="Email"
@@ -76,17 +60,18 @@ const SignIn = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <button type="submit">Sign In with Email</button>
+                <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                />
+                <button type="submit">Create Account</button>
             </form>
 
-            <div className="divider">or</div>
-
-            <button className="google-btn" onClick={handleGoogleSignIn}>
-                Continue with Google
-            </button>
-
             <p className="auth-redirect">
-                Need an account? <Link to="/signup">Sign Up</Link>
+                Already have an account? <Link to="/signin">Sign In</Link>
             </p>
 
             {error && <div className="error-message">{error}</div>}
@@ -94,4 +79,4 @@ const SignIn = () => {
     );
 };
 
-export default SignIn;
+export default SignUp; 
