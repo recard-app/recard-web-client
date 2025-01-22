@@ -67,7 +67,7 @@ function AppContent() {
         <Route path="/about" element={<About />} />
         <Route path="/preferences" element={
           <ProtectedRoute>
-            <Preferences />
+            <Preferences onModalOpen={handleModalOpen} />
           </ProtectedRoute>
         } />
         <Route path="/signin" element={

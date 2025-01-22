@@ -1,10 +1,14 @@
 import React from 'react';
-import PreferencesModule from '../components/PreferencesModule';
-const Preferences = () => {
+
+const Preferences = ({ onModalOpen }) => {
     return (
-        <div>
-            <h1>Preferences Page</h1>
-            <PreferencesModule />
+        <div className="preferences-page">
+            <div className="preferences-page-container">
+                <h1>Preferences</h1>
+                <button onClick={onModalOpen} className="credit-card-button">
+                    Manage Credit Cards
+                </button>
+            </div>
         </div>
     );
 };
