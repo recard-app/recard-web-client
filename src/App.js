@@ -17,6 +17,7 @@ import PromptWindow from './components/PromptWindow';
 import CreditCardSelector from './components/CreditCardSelector';
 import Modal from './components/Modal';
 import ProtectedRoute from './context/ProtectedRoute';
+import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 
 // Context
 import { useAuth } from './context/AuthContext';
@@ -59,9 +60,21 @@ function App() {
         <Routes>
           <Route path="/" element={<PromptWindow creditCards={creditCards} user={user} />} />
           <Route path="/about" element={<About />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/signin" element={
+            <RedirectIfAuthenticated>
+              <SignIn />
+            </RedirectIfAuthenticated>
+          } />
+          <Route path="/signup" element={
+            <RedirectIfAuthenticated>
+              <SignUp />
+            </RedirectIfAuthenticated>
+          } />
+          <Route path="/welcome" element={
+            <ProtectedRoute>
+              <Welcome onModalOpen={handleModalOpen} />
+            </ProtectedRoute>
+          } />
           <Route path="/account" element={
             <ProtectedRoute>
               <Account />

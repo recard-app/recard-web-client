@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Welcome = () => {
+const Welcome = ({ onModalOpen }) => {
     return (
         <div className="welcome-page">
             <h1>Welcome to ReCard! 👋</h1>
@@ -9,9 +9,12 @@ const Welcome = () => {
             <div className="welcome-content">
                 <h2>Let's get started:</h2>
                 <div className="steps">
-                    <div className="step">
+                    <div className="step active">
                         <h3>1. Add Your Credit Cards</h3>
                         <p>Select which credit cards you own to get personalized recommendations.</p>
+                        <button onClick={onModalOpen} className="action-btn">
+                            Select Your Credit Cards
+                        </button>
                     </div>
                     
                     <div className="step">
