@@ -33,7 +33,7 @@ const SignUp = () => {
             
             if (response.ok) {
                 console.log('Registration successful');
-                navigate('/');
+                navigate('/welcome');
             }
         } catch (error) {
             setError(error.message);

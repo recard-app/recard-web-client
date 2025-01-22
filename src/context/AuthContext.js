@@ -40,9 +40,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      // Check if this is a new user
+      const isNewUser = result._tokenResponse.isNewUser;
+      if (isNewUser) {
+        console.log('First time sign in with Google!');
+        // You can perform additional setup for new users here
+      }
       // Get ID token for backend authentication
       const token = await user.getIdToken();
-      return { user, token };
+      return { user, token, isNewUser };
     } catch (error) {
       console.error('Authentication failed:', error);
       throw error;

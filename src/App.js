@@ -9,6 +9,7 @@ import About from './pages/About';
 import Account from './pages/Account';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import Welcome from './pages/Welcome';
 
 // Components
 import AppHeader from './components/AppHeader';
@@ -60,6 +61,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/welcome" element={<Welcome />} />
           <Route path="/account" element={
             <ProtectedRoute>
               <Account />

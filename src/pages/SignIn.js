@@ -37,7 +37,7 @@ const SignIn = () => {
 
     const handleGoogleSignIn = async () => {
         try {
-            const { user, token } = await login();
+            const { user, token, isNewUser } = await login();
             
             const response = await fetch(`${apiurl}/auth/verify`, {
                 method: 'POST',
@@ -49,7 +49,11 @@ const SignIn = () => {
             
             if (response.ok) {
                 console.log('Authentication successful');
-                navigate('/');
+                if (isNewUser) {
+                    navigate('/welcome');
+                } else {
+                    navigate('/');
+                }
             }
         } catch (error) {
             setError(error.message);
