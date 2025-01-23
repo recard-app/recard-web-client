@@ -41,9 +41,9 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
 
     const addChatHistory = (source, message) => {
         const newEntry = {
-          id: Date.now(),
-          chatSource: source,
-          chatMessage: message,
+            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            chatSource: source,
+            chatMessage: message,
         };
     
         setChatHistory((prevChatHistory) => [...prevChatHistory, newEntry]);
@@ -70,29 +70,31 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
 
     useEffect(() => {
         const loadChatHistory = async () => {
-            if (urlChatId && user && urlChatId !== chatId) {
-                try {
-                    const token = await auth.currentUser.getIdToken();
-                    const response = await axios.get(`${apiurl}/history/get/${urlChatId}`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-                    
-                    setChatHistory(response.data.conversation);
-                    setPromptSolutions(response.data.solutions);
-                    setChatId(urlChatId);
-                    setIsNewChat(false);
-                    returnCurrentChatId(urlChatId);
-                } catch (error) {
-                    console.error('Error loading chat:', error);
-                    setErrorMessage('Error loading chat history');
-                    setErrorModalShow(true);
-                }
+            if (!user || !urlChatId || urlChatId === chatId) return;
+
+            try {
+                const token = await auth.currentUser.getIdToken();
+                const response = await axios.get(`${apiurl}/history/get/${urlChatId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                setChatHistory(response.data.conversation);
+                setPromptSolutions(response.data.solutions);
+                setChatId(urlChatId);
+                setIsNewChat(false);
+                returnCurrentChatId(urlChatId);
+            } catch (error) {
+                console.error('Error loading chat:', error);
+                setErrorMessage('Error loading chat history');
+                setErrorModalShow(true);
             }
         };
 
-        loadChatHistory();
+        if (user) {
+            loadChatHistory();
+        }
     }, [urlChatId, user]);
 
     const callServer = () => {
@@ -102,28 +104,26 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
 
         // First create the user message entry
         const userMessage = {
-            id: Date.now(),
+            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             chatSource: userClient,
             chatMessage: promptValue
         };
 
+        // Basic chat request data
         const requestData = {
             name: name,
             prompt: promptValue,
-            chatHistory: chatHistory, 
-            creditCards: creditCards, 
+            chatHistory: chatHistory,
+            creditCards: creditCards,
             currentDate: currentDate
         };
-        
-        axios.post(`${apiurl}/ai/response`, requestData, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
+
+        // Get AI response
+        axios.post(`${apiurl}/ai/response`, requestData)
             .then(response => {
                 const aiResponse = response.data;
                 const updatedHistory = [...chatHistory, userMessage, {
-                    id: Date.now(),
+                    id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                     chatSource: aiClient,
                     chatMessage: aiResponse
                 }];
@@ -131,13 +131,11 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
                 setIsLoading(false);
                 setIsLoadingSolutions(true);
                 setChatHistory(updatedHistory);
-                
+
+                // Get solutions
                 return axios.post(`${apiurl}/ai/solutions`, {
-                    name: name,
-                    prompt: promptValue,
-                    chatHistory: updatedHistory,
-                    creditCards: creditCards,
-                    currentDate: currentDate
+                    ...requestData,
+                    chatHistory: updatedHistory
                 }).then(solutionsResponse => ({
                     solutions: solutionsResponse.data,
                     updatedHistory
@@ -146,61 +144,41 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
             .then(({ solutions, updatedHistory }) => {
                 setPromptSolutions(solutions);
                 setIsLoadingSolutions(false);
-                onHistoryUpdate();
-                
-                // Return all the updated data we need
-                return new Promise(resolve => {
-                    // Use setTimeout to ensure state updates have completed
-                    setTimeout(() => {
-                        resolve({
-                            updatedHistory,
-                            solutions,
-                            currentChatId: chatId
+
+                // If user is not logged in, stop here
+                if (!user) return;
+
+                // Get token for history operations
+                return auth.currentUser.getIdToken()
+                    .then(token => {
+                        const endpoint = isNewChat ? 
+                            `${apiurl}/history/add` : 
+                            `${apiurl}/history/update/${chatId}`;
+
+                        // Save to history
+                        return axios({
+                            method: isNewChat ? 'post' : 'put',
+                            url: endpoint,
+                            data: {
+                                chatHistory: updatedHistory,
+                                promptSolutions: solutions,
+                            },
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
                         });
-                    }, 0);
-                });
-            })
-            .then(({ updatedHistory, solutions, currentChatId }) => {
-                if (user) {
-                    return auth.currentUser.getIdToken().then(token => ({
-                        token,
-                        updatedHistory,
-                        solutions,
-                        currentChatId
-                    }));
-                }
-            })
-            .then(({ token, updatedHistory, solutions, currentChatId }) => {
-                if (token) {
-                    const endpoint = isNewChat ? 
-                        `${apiurl}/history/add` : 
-                        `${apiurl}/history/update/${currentChatId}`;
-                    
-                    const method = isNewChat ? 'post' : 'put';
-                    
-                    return axios({
-                        method: method,
-                        url: endpoint,
-                        data: {
-                            chatHistory: updatedHistory,
-                            promptSolutions: solutions,
-                        },
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        }
-                    }).then(response => {
+                    })
+                    .then(response => {
                         if (isNewChat && response?.data?.chatId) {
                             setChatId(response.data.chatId);
                             returnCurrentChatId(response.data.chatId);
                         }
                         onHistoryUpdate();
-                        return response;
                     });
-                }
             })
             .catch(error => {
-                console.log(error);
+                console.error(error);
                 setIsLoading(false);
                 setIsLoadingSolutions(false);
                 setErrorMessage('Error processing request, please try again.');
