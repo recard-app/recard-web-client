@@ -1,10 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Welcome = ({ onModalOpen }) => {
+    const { user } = useAuth();
     return (
         <div className="welcome-page">
-            <h1>Welcome to ReCard! 👋</h1>
+            <h1>
+                {user.name ? `Hi ${user.name}! Welcome to ReCard! 👋` : 'Hi! Welcome to ReCard! 👋'}
+            </h1>
             
             <div className="welcome-content">
                 <h2>Let's get started:</h2>

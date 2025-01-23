@@ -6,12 +6,13 @@ import {
   onAuthStateChanged,
   signOut,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword 
+  signInWithEmailAndPassword,
+  updateProfile
 } from 'firebase/auth';
 
 const AuthContext = createContext(null);
 
-const DEFAULT_PROFILE_PICTURE = 'https://ui-avatars.com/api/?name=User&background=random';
+const DEFAULT_PROFILE_PICTURE = 'http://localhost:3000/account.png';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -22,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       if (user) {
         setUser({
           email: user.email,
-          name: user.displayName || user.email.split('@')[0], // Use displayName if available (Google), otherwise use email username
+          name: user.displayName,
           picture: user.photoURL || DEFAULT_PROFILE_PICTURE, // Use default picture if no photo provided
           uid: user.uid
         });
@@ -64,9 +65,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const registerWithEmail = async (email, password) => {
+  const registerWithEmail = async (email, password, firstName, lastName) => {
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
+      // Update the user's display name with first and last name
+      await updateProfile(result.user, {
+        displayName: `${firstName} ${lastName}`
+      });
       const token = await result.user.getIdToken();
       return { user: result.user, token };
     } catch (error) {

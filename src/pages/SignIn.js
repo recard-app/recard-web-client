@@ -17,7 +17,7 @@ const SignIn = () => {
         try {
             const { user, token } = await loginWithEmail(email, password);
             
-            const response = await fetch(`${apiurl}/auth/verify`, {
+            const response = await fetch(`${apiurl}/auth/signin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ const SignIn = () => {
         try {
             const { user, token, isNewUser } = await login();
             
-            const response = await fetch(`${apiurl}/auth/verify`, {
+            const response = await fetch(`${apiurl}/auth/signin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
