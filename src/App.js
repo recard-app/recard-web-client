@@ -11,6 +11,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Welcome from './pages/Welcome';
 import Preferences from './pages/Preferences';
+import History from './pages/History';
 // Components
 import AppHeader from './components/AppHeader';
 import HistoryPanel from './components/HistoryPanel';
@@ -57,7 +58,7 @@ function AppContent() {
   }, [creditCards]);
 
   useEffect(() => {
-    //console.log(chatHistory);
+    console.log(chatHistory);
   }, [chatHistory]);
 
   return (
@@ -75,7 +76,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={
           <div className="app-content">
-            <HistoryPanel returnHistoryList={getHistoryList} existingHistoryList={chatHistory} />
+            <HistoryPanel returnHistoryList={getHistoryList} existingHistoryList={chatHistory} fullListSize={false} listSize={2} />
             <PromptWindow creditCards={creditCards} user={user} />
           </div>
         } />
@@ -103,6 +104,11 @@ function AppContent() {
         <Route path="/account" element={
           <ProtectedRoute>
             <Account />
+          </ProtectedRoute>
+        } />
+        <Route path="/history" element={
+          <ProtectedRoute>
+            <History returnHistoryList={getHistoryList} existingHistoryList={chatHistory} />
           </ProtectedRoute>
         } />
       </Routes>

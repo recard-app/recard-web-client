@@ -4,14 +4,16 @@ import { auth } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
+import { useNavigate } from 'react-router-dom';
 
 const apiurl = process.env.REACT_APP_BASE_URL;
 
-function HistoryPanel({ returnHistoryList, existingHistoryList }) {
+function HistoryPanel({ returnHistoryList, existingHistoryList, listSize, fullListSize }) {
   const [historyList, setHistoryList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     returnHistoryList(historyList);
@@ -27,7 +29,9 @@ function HistoryPanel({ returnHistoryList, existingHistoryList }) {
 
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await axios.get(`${apiurl}/history/get_list`, {
+        const endpoint = `${apiurl}/history/get_list${listSize ? `?limit=${listSize}` : ''}`;
+        
+        const response = await axios.get(endpoint, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -43,7 +47,7 @@ function HistoryPanel({ returnHistoryList, existingHistoryList }) {
     };
 
     fetchHistoryList();
-  }, [user]); // Re-fetch when user changes
+  }, [user, listSize]); // Added listSize as dependency
 
   if (isLoading) {
     return <div className="history-panel">Loading...</div>;
@@ -55,16 +59,26 @@ function HistoryPanel({ returnHistoryList, existingHistoryList }) {
 
   return (
     <div className='history-panel'>
-      <h2>Chat History</h2>
+      {!fullListSize && <h2>Chat History</h2>}
       {historyList.length === 0 ? (
         <p>No chat history available</p>
       ) : (
-        historyList.map(entry => (
-          <HistoryEntry 
-            key={entry.chatId} 
-            chatEntry={entry}
-          />
-        ))
+        <>
+          {historyList.map(entry => (
+            <HistoryEntry 
+              key={entry.chatId} 
+              chatEntry={entry}
+            />
+          ))}
+          {!fullListSize && (
+            <button 
+              className="view-all-button"
+              onClick={() => navigate('/history')}
+            >
+              View All History
+            </button>
+          )}
+        </>
       )}
     </div>
   );
