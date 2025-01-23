@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignUp = () => {
-    const { registerWithEmail } = useAuth();
+    const { registerWithEmail, login } = useAuth();
     const navigate = useNavigate();
     const apiurl = process.env.REACT_APP_BASE_URL;
     const [firstName, setFirstName] = useState('');
@@ -74,6 +74,32 @@ const SignUp = () => {
         }
     };
 
+    const handleGoogleSignIn = async () => {
+        try {
+            const { user, token, isNewUser } = await login();
+            
+            const response = await fetch(`${apiurl}/auth/${isNewUser ? 'signup' : 'signin'}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (response.ok) {
+                console.log('Authentication successful');
+                if (isNewUser) {
+                    navigate('/welcome');
+                } else {
+                    navigate('/');
+                }
+            }
+        } catch (error) {
+            setError(error.message);
+            console.error('Authentication failed:', error);
+        }
+    };
+
     return (
         <div className="auth-page">
             <h1>Create Account</h1>
@@ -120,6 +146,10 @@ const SignUp = () => {
             <p className="auth-redirect">
                 Already have an account? <Link to="/signin">Sign In</Link>
             </p>
+            <p>You can also sign up with Google</p>
+            <button className="google-btn" onClick={handleGoogleSignIn}>
+                Sign Up with Google
+            </button>
 
             {error && <div className="error-message">{error}</div>}
         </div>
