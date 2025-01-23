@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 
 import PromptHistory from './PromptHistory';
 import PromptField from './PromptField';
@@ -14,7 +15,10 @@ const apiurl = process.env.REACT_APP_BASE_URL;
 const aiClient = 'assistant';
 const userClient = 'user';
 
-function PromptWindow({ creditCards, user, returnCurrentChat }) {
+function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate }) {
+    const { chatId: urlChatId } = useParams();
+    const navigate = useNavigate();
+    
     const [promptValue, setPromptValue] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
     const [promptSolutions, setPromptSolutions] = useState([]);
@@ -58,10 +62,38 @@ function PromptWindow({ creditCards, user, returnCurrentChat }) {
     }, [chatHistory]);
 
     useEffect(() => {
-        if (chatId) {
-            returnCurrentChat(chatId);
+        if (chatId && chatId !== urlChatId) {
+            returnCurrentChatId(chatId);
+            navigate(`/${chatId}`, { replace: true });
         }
     }, [chatId]);
+
+    useEffect(() => {
+        const loadChatHistory = async () => {
+            if (urlChatId && user && urlChatId !== chatId) {
+                try {
+                    const token = await auth.currentUser.getIdToken();
+                    const response = await axios.get(`${apiurl}/history/get/${urlChatId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    
+                    setChatHistory(response.data.conversation);
+                    setPromptSolutions(response.data.solutions);
+                    setChatId(urlChatId);
+                    setIsNewChat(false);
+                    returnCurrentChatId(urlChatId);
+                } catch (error) {
+                    console.error('Error loading chat:', error);
+                    setErrorMessage('Error loading chat history');
+                    setErrorModalShow(true);
+                }
+            }
+        };
+
+        loadChatHistory();
+    }, [urlChatId, user]);
 
     const callServer = () => {
         setIsLoading(true);
@@ -114,6 +146,7 @@ function PromptWindow({ creditCards, user, returnCurrentChat }) {
             .then(({ solutions, updatedHistory }) => {
                 setPromptSolutions(solutions);
                 setIsLoadingSolutions(false);
+                onHistoryUpdate();
                 
                 // Return all the updated data we need
                 return new Promise(resolve => {
@@ -156,13 +189,14 @@ function PromptWindow({ creditCards, user, returnCurrentChat }) {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         }
+                    }).then(response => {
+                        if (isNewChat && response?.data?.chatId) {
+                            setChatId(response.data.chatId);
+                            returnCurrentChatId(response.data.chatId);
+                        }
+                        onHistoryUpdate();
+                        return response;
                     });
-                }
-            })
-            .then(response => {
-                if (isNewChat && response?.data?.chatId) {
-                    setChatId(response.data.chatId);
-                    setIsNewChat(false);
                 }
             })
             .catch(error => {
@@ -179,6 +213,9 @@ function PromptWindow({ creditCards, user, returnCurrentChat }) {
         setPromptSolutions([]);
         setIsNewChat(true);
         setChatId('');
+        returnCurrentChatId('');
+        navigate('/');
+        onHistoryUpdate();
     };
 
     const handleHelpModalOpen = () => {

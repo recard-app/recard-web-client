@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 
 const apiurl = process.env.REACT_APP_BASE_URL;
 
-function HistoryPanel({ returnHistoryList, existingHistoryList, listSize, fullListSize }) {
+function HistoryPanel({ returnHistoryList, existingHistoryList, listSize, fullListSize, refreshTrigger, currentChatId }) {
   const [historyList, setHistoryList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -17,14 +17,14 @@ function HistoryPanel({ returnHistoryList, existingHistoryList, listSize, fullLi
 
   useEffect(() => {
     returnHistoryList(historyList);
-}, [historyList]);
+  }, [historyList]);
 
   useEffect(() => {
     const fetchHistoryList = async () => {
       // Only fetch if user is logged in
       if (!user) return;
 
-      setIsLoading(true);
+      if (fullListSize) setIsLoading(true);
       setError(null);
 
       try {
@@ -42,14 +42,17 @@ function HistoryPanel({ returnHistoryList, existingHistoryList, listSize, fullLi
         console.error('Error fetching history:', err);
         setError('Failed to load chat history');
       } finally {
-        setIsLoading(false);
+        if (fullListSize) setIsLoading(false);
       }
     };
 
     fetchHistoryList();
-  }, [user, listSize]); // Added listSize as dependency
+  }, [user, listSize, refreshTrigger]);
 
-  if (isLoading) {
+  // Return null if no user is logged in
+  if (!user) return null;
+
+  if (isLoading && fullListSize) {
     return <div className="history-panel">Loading...</div>;
   }
 
@@ -68,6 +71,7 @@ function HistoryPanel({ returnHistoryList, existingHistoryList, listSize, fullLi
             <HistoryEntry 
               key={entry.chatId} 
               chatEntry={entry}
+              currentChatId={currentChatId}
             />
           ))}
           {!fullListSize && (

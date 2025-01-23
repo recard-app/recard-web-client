@@ -1,7 +1,11 @@
 import React from 'react';
 import './HistoryEntry.scss';
+import { useNavigate } from 'react-router-dom';
 
-function HistoryEntry({ chatEntry }) {
+function HistoryEntry({ chatEntry, currentChatId }) {
+  const navigate = useNavigate();
+  const isCurrent = chatEntry.chatId === currentChatId;
+
   // Format the timestamp to a readable date
   const formatDate = (timestamp) => {
     const now = new Date();
@@ -42,12 +46,23 @@ function HistoryEntry({ chatEntry }) {
     return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`;
   };
 
+  const handleClick = (e) => {
+    e.preventDefault();
+    navigate(`/${chatEntry.chatId}`, { replace: true });
+  };
+
   return (
-    <div className='history-entry' id={chatEntry.chatId}>
-      <div className='history-entry-content'>
-        <p className='history-description'>{chatEntry.chatDescription}</p>
-        <span className='history-timestamp'>{formatDate(chatEntry.timestamp)}</span>
+    <div 
+      className={`history-entry ${isCurrent ? 'current' : ''}`}
+      id={chatEntry.chatId}
+      onClick={handleClick}
+      style={{ cursor: 'pointer' }}
+    >
+      <div className="entry-content">
+        <p>{chatEntry.chatDescription}</p>
+        <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
       </div>
+      {isCurrent && <span className="current-indicator">Current</span>}
     </div>
   );
 }

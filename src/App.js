@@ -24,6 +24,8 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 // Context
 import { useAuth } from './context/AuthContext';
 
+const quick_history_size = 3;
+
 function AppContent() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -31,7 +33,12 @@ function AppContent() {
   const [creditCards, setCreditCards] = useState([]);
   const [modalShow, setModalShow] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
-  const [currentChat, setCurrentChat] = useState(null);
+  const [currentChatId, setCurrentChatId] = useState(null);
+  const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    setCurrentChatId(null);
+  }, [user]);
 
   const handleModalOpen = () => {
     setModalShow(true);
@@ -49,13 +56,18 @@ function AppContent() {
     setChatHistory(returnHistoryList);
   };
 
-  const getCurrentChat = (returnCurrentChat) => {
-    setCurrentChat(returnCurrentChat);
+  const getCurrentChatId = (returnCurrentChatId) => {
+    setCurrentChatId(returnCurrentChatId || null);
   };
 
   const handleLogout = async () => {
+    setCurrentChatId(null);
     await logout();
     navigate('/signin');
+  };
+
+  const handleHistoryUpdate = () => {
+    setHistoryRefreshTrigger(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -81,8 +93,38 @@ function AppContent() {
       <Routes>
         <Route path="/" element={
           <div className="app-content">
-            <HistoryPanel returnHistoryList={getHistoryList} existingHistoryList={chatHistory} fullListSize={false} listSize={2} />
-            <PromptWindow creditCards={creditCards} user={user} returnCurrentChat={getCurrentChat} />
+            <HistoryPanel 
+              returnHistoryList={getHistoryList} 
+              existingHistoryList={chatHistory} 
+              fullListSize={false} 
+              listSize={quick_history_size}
+              refreshTrigger={historyRefreshTrigger} 
+              currentChatId={currentChatId}
+            />
+            <PromptWindow 
+              creditCards={creditCards} 
+              user={user} 
+              returnCurrentChatId={getCurrentChatId}
+              onHistoryUpdate={handleHistoryUpdate}
+            />
+          </div>
+        } />
+        <Route path="/:chatId" element={
+          <div className="app-content">
+            <HistoryPanel 
+              returnHistoryList={getHistoryList} 
+              existingHistoryList={chatHistory} 
+              fullListSize={false} 
+              listSize={quick_history_size}
+              refreshTrigger={historyRefreshTrigger}
+              currentChatId={currentChatId}
+            />
+            <PromptWindow 
+              creditCards={creditCards} 
+              user={user} 
+              returnCurrentChatId={getCurrentChatId}
+              onHistoryUpdate={handleHistoryUpdate}
+            />
           </div>
         } />
         <Route path="/about" element={<About />} />
@@ -112,9 +154,12 @@ function AppContent() {
           </ProtectedRoute>
         } />
         <Route path="/history" element={
-          <ProtectedRoute>
-            <History returnHistoryList={getHistoryList} existingHistoryList={chatHistory} />
-          </ProtectedRoute>
+          <History 
+            returnHistoryList={getHistoryList} 
+            existingHistoryList={chatHistory}
+            currentChatId={currentChatId}
+            refreshTrigger={historyRefreshTrigger}
+          />
         } />
       </Routes>
     </div>
