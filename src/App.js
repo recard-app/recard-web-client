@@ -31,6 +31,7 @@ function AppContent() {
   const [creditCards, setCreditCards] = useState([]);
   const [modalShow, setModalShow] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
+  const [currentChat, setCurrentChat] = useState(null);
 
   const handleModalOpen = () => {
     setModalShow(true);
@@ -46,6 +47,10 @@ function AppContent() {
 
   const getHistoryList = (returnHistoryList) => {
     setChatHistory(returnHistoryList);
+  };
+
+  const getCurrentChat = (returnCurrentChat) => {
+    setCurrentChat(returnCurrentChat);
   };
 
   const handleLogout = async () => {
@@ -77,7 +82,7 @@ function AppContent() {
         <Route path="/" element={
           <div className="app-content">
             <HistoryPanel returnHistoryList={getHistoryList} existingHistoryList={chatHistory} fullListSize={false} listSize={2} />
-            <PromptWindow creditCards={creditCards} user={user} />
+            <PromptWindow creditCards={creditCards} user={user} returnCurrentChat={getCurrentChat} />
           </div>
         } />
         <Route path="/about" element={<About />} />

@@ -14,11 +14,12 @@ const apiurl = process.env.REACT_APP_BASE_URL;
 const aiClient = 'assistant';
 const userClient = 'user';
 
-function PromptWindow({ creditCards, user }) {
+function PromptWindow({ creditCards, user, returnCurrentChat }) {
     const [promptValue, setPromptValue] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
     const [promptSolutions, setPromptSolutions] = useState([]);
     const [chatId, setChatId] = useState('');
+    const [isNewChat, setIsNewChat] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSolutions, setIsLoadingSolutions] = useState(false);
     const [errorModalShow, setErrorModalShow] = useState(false);
@@ -56,10 +57,23 @@ function PromptWindow({ creditCards, user }) {
         //console.log("Updated chatHistory:", chatHistory);
     }, [chatHistory]);
 
+    useEffect(() => {
+        if (chatId) {
+            returnCurrentChat(chatId);
+        }
+    }, [chatId]);
+
     const callServer = () => {
         setIsLoading(true);
         const currentDate = getCurrentDateString();
         const name = user?.name || 'Guest';
+
+        // First create the user message entry
+        const userMessage = {
+            id: Date.now(),
+            chatSource: userClient,
+            chatMessage: promptValue
+        };
 
         const requestData = {
             name: name,
@@ -75,59 +89,96 @@ function PromptWindow({ creditCards, user }) {
             }
         })
             .then(response => {
-                addChatHistory(aiClient, response.data);
+                const aiResponse = response.data;
+                const updatedHistory = [...chatHistory, userMessage, {
+                    id: Date.now(),
+                    chatSource: aiClient,
+                    chatMessage: aiResponse
+                }];
+                
                 setIsLoading(false);
-                // Start solutions loading
                 setIsLoadingSolutions(true);
+                setChatHistory(updatedHistory);
+                
                 return axios.post(`${apiurl}/ai/solutions`, {
                     name: name,
                     prompt: promptValue,
-                    chatHistory: chatHistory,
+                    chatHistory: updatedHistory,
                     creditCards: creditCards,
                     currentDate: currentDate
+                }).then(solutionsResponse => ({
+                    solutions: solutionsResponse.data,
+                    updatedHistory
+                }));
+            })
+            .then(({ solutions, updatedHistory }) => {
+                setPromptSolutions(solutions);
+                setIsLoadingSolutions(false);
+                
+                // Return all the updated data we need
+                return new Promise(resolve => {
+                    // Use setTimeout to ensure state updates have completed
+                    setTimeout(() => {
+                        resolve({
+                            updatedHistory,
+                            solutions,
+                            currentChatId: chatId
+                        });
+                    }, 0);
                 });
             })
-            .then(solutionsResponse => {
-                setPromptSolutions(solutionsResponse.data);
-                setIsLoadingSolutions(false);
+            .then(({ updatedHistory, solutions, currentChatId }) => {
+                if (user) {
+                    return auth.currentUser.getIdToken().then(token => ({
+                        token,
+                        updatedHistory,
+                        solutions,
+                        currentChatId
+                    }));
+                }
+            })
+            .then(({ token, updatedHistory, solutions, currentChatId }) => {
+                if (token) {
+                    const endpoint = isNewChat ? 
+                        `${apiurl}/history/add` : 
+                        `${apiurl}/history/update/${currentChatId}`;
+                    
+                    const method = isNewChat ? 'post' : 'put';
+                    
+                    return axios({
+                        method: method,
+                        url: endpoint,
+                        data: {
+                            chatHistory: updatedHistory,
+                            promptSolutions: solutions,
+                        },
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                }
+            })
+            .then(response => {
+                if (isNewChat && response?.data?.chatId) {
+                    setChatId(response.data.chatId);
+                    setIsNewChat(false);
+                }
             })
             .catch(error => {
                 console.log(error);
                 setIsLoading(false);
                 setIsLoadingSolutions(false);
+                setErrorMessage('Error processing request, please try again.');
+                setErrorModalShow(true);
             });
     };
 
     const handleNewTransaction = () => {
-        // Only save chat history if user is logged in and there's history to save
-        if (user && chatHistory.length > 0) {
-            // Get fresh Firebase token from the current user
-            auth.currentUser.getIdToken().then(token => {
-                axios.post(`${apiurl}/history/add`, {
-                    chatHistory: chatHistory,
-                    promptSolutions: promptSolutions,
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(() => {
-                    // Only clear the states after successful API call
-                    setChatHistory([]);
-                    setPromptSolutions([]);
-                })
-                .catch(error => {
-                    console.error('Error saving chat history:', error);
-                    setErrorMessage('Error creating new chat, please try again.');
-                    setErrorModalShow(true);
-                });
-            });
-        } else {
-            // If user is not logged in, just clear the states
-            setChatHistory([]);
-            setPromptSolutions([]);
-        }
+        setChatHistory([]);
+        setPromptSolutions([]);
+        setIsNewChat(true);
+        setChatId('');
     };
 
     const handleHelpModalOpen = () => {
