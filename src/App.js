@@ -13,6 +13,7 @@ import Welcome from './pages/Welcome';
 import Preferences from './pages/Preferences';
 // Components
 import AppHeader from './components/AppHeader';
+import HistoryPanel from './components/HistoryPanel';
 import PromptWindow from './components/PromptWindow';
 import CreditCardSelector from './components/CreditCardSelector';
 import Modal from './components/Modal';
@@ -28,6 +29,7 @@ function AppContent() {
 
   const [creditCards, setCreditCards] = useState([]);
   const [modalShow, setModalShow] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
 
   const handleModalOpen = () => {
     setModalShow(true);
@@ -41,6 +43,10 @@ function AppContent() {
     setCreditCards(returnCreditCards);
   };
 
+  const getHistoryList = (returnHistoryList) => {
+    setChatHistory(returnHistoryList);
+  };
+
   const handleLogout = async () => {
     await logout();
     navigate('/signin');
@@ -49,6 +55,10 @@ function AppContent() {
   useEffect(() => {
     //console.log(creditCards);
   }, [creditCards]);
+
+  useEffect(() => {
+    //console.log(chatHistory);
+  }, [chatHistory]);
 
   return (
     <div className="app">
@@ -63,7 +73,12 @@ function AppContent() {
       </Modal>
       
       <Routes>
-        <Route path="/" element={<PromptWindow creditCards={creditCards} user={user} />} />
+        <Route path="/" element={
+          <div className="app-content">
+            <HistoryPanel returnHistoryList={getHistoryList} existingHistoryList={chatHistory} />
+            <PromptWindow creditCards={creditCards} user={user} />
+          </div>
+        } />
         <Route path="/about" element={<About />} />
         <Route path="/preferences" element={
           <ProtectedRoute>

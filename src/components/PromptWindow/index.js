@@ -18,6 +18,7 @@ function PromptWindow({ creditCards, user }) {
     const [promptValue, setPromptValue] = useState('');
     const [chatHistory, setChatHistory] = useState([]);
     const [promptSolutions, setPromptSolutions] = useState([]);
+    const [chatId, setChatId] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSolutions, setIsLoadingSolutions] = useState(false);
     const [errorModalShow, setErrorModalShow] = useState(false);
