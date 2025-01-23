@@ -105,7 +105,6 @@ function PromptWindow({ creditCards, user }) {
                 axios.post(`${apiurl}/history/add`, {
                     chatHistory: chatHistory,
                     promptSolutions: promptSolutions,
-                    timestamp: getCurrentDateString()
                 }, {
                     headers: {
                         'Authorization': `Bearer ${token}`,

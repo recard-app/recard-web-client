@@ -39,7 +39,7 @@ const SignIn = () => {
         try {
             const { user, token, isNewUser } = await login();
             
-            const response = await fetch(`${apiurl}/auth/signin`, {
+            const response = await fetch(`${apiurl}/auth/${isNewUser ? 'signup' : 'signin'}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

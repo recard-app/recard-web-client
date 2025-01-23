@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './CreditCardSelector.scss';
 import { auth } from '../../config/firebase';
+import { useAuth } from '../../context/AuthContext';
 const apiurl = process.env.REACT_APP_BASE_URL;
 
 function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
@@ -9,6 +10,7 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
     const [creditCards, setCreditCards] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [saveStatus, setSaveStatus] = useState('');
+    const { user } = useAuth(); // Add this line to get the current user
 
     const sortCards = (cards) => {
         return [...cards].sort((a, b) => {
@@ -22,19 +24,25 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
     };
 
     useEffect(() => {
-        if (existingCreditCards.length === 0) {
-            axios.get(`${apiurl}/cards/full-list`)
-            .then(response => {
+        const fetchCards = async () => {
+            try {
+                // Only get fresh token if user is logged in
+                const headers = {};
+                if (user) {
+                    const token = await auth.currentUser.getIdToken();
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const response = await axios.get(`${apiurl}/cards/full-list`, { headers });
                 setCreditCards(sortCards(response.data));
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
-        } else {
-            setCreditCards(sortCards(existingCreditCards));
-        }
-    }, []);
-    
+            } catch (error) {
+                console.error('Error fetching cards:', error);
+            }
+        };
+
+        fetchCards();
+    }, [user]); // Add user as dependency
+
     useEffect(() => {
         //console.log(creditCards);
         returnCreditCards(creditCards);
