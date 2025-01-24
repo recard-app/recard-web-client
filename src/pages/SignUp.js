@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignUp = () => {
-    const { registerWithEmail, login } = useAuth();
+    const { registerWithEmail, login, sendVerificationEmail } = useAuth();
     const navigate = useNavigate();
     const apiurl = process.env.REACT_APP_BASE_URL;
     const [firstName, setFirstName] = useState('');
@@ -47,6 +47,9 @@ const SignUp = () => {
         
         try {
             const { user, token } = await registerWithEmail(email, password, firstName, lastName);
+            
+            // Send verification email
+            await sendVerificationEmail();
             
             const response = await fetch(`${apiurl}/auth/signup`, {
                 method: 'POST',

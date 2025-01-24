@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './HistoryEntry.scss';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { auth } from '../../../config/firebase';
+import Modal from '../../Modal';
+const apiurl = process.env.REACT_APP_BASE_URL;
 
-function HistoryEntry({ chatEntry, currentChatId }) {
+function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId }) {
   const navigate = useNavigate();
   const isCurrent = chatEntry.chatId === currentChatId;
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Format the timestamp to a readable date
   const formatDate = (timestamp) => {
@@ -48,22 +53,87 @@ function HistoryEntry({ chatEntry, currentChatId }) {
 
   const handleClick = (e) => {
     e.preventDefault();
-    navigate(`/${chatEntry.chatId}`, { replace: true });
+    if (e.target.className !== 'delete-button') {
+      navigate(`/${chatEntry.chatId}`, { replace: true });
+    }
+  };
+
+  const handleDeleteClick = (e) => {
+    e.stopPropagation();
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      const token = await auth.currentUser.getIdToken();
+      await axios.delete(`${apiurl}/history/delete/${chatEntry.chatId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      // Update the UI
+      if (onDelete) {
+        onDelete(chatEntry.chatId);
+      }
+      setShowDeleteModal(false);
+
+      // Finally, navigate if it was the current chat
+      if (chatEntry.chatId === currentChatId) {
+        returnCurrentChatId(null);
+        navigate('/', { replace: true });
+      }
+    } catch (error) {
+      console.error('Error deleting chat:', error);
+      alert('Failed to delete chat. Please try again.');
+    }
   };
 
   return (
-    <div 
-      className={`history-entry ${isCurrent ? 'current' : ''}`}
-      id={chatEntry.chatId}
-      onClick={handleClick}
-      style={{ cursor: 'pointer' }}
-    >
-      <div className="entry-content">
-        <p>{chatEntry.chatDescription}</p>
-        <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
+    <>
+      <div 
+        className={`history-entry ${isCurrent ? 'current' : ''}`}
+        id={chatEntry.chatId}
+        onClick={handleClick}
+        style={{ cursor: 'pointer' }}
+      >
+        <div className="entry-content">
+          <p>{chatEntry.chatDescription}</p>
+          <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
+        </div>
+        {isCurrent && <span className="current-indicator">Current</span>}
+        <button 
+          className="delete-button"
+          onClick={handleDeleteClick}
+        >
+          Delete
+        </button>
       </div>
-      {isCurrent && <span className="current-indicator">Current</span>}
-    </div>
+
+      <Modal 
+        show={showDeleteModal} 
+        handleClose={() => setShowDeleteModal(false)}
+      >
+        <div className="delete-confirmation">
+          <h3>Delete Chat History</h3>
+          <p>Are you sure you want to delete this chat? This action cannot be undone.</p>
+          <div className="button-group">
+            <button 
+              className="confirm-button"
+              onClick={handleDeleteConfirm}
+            >
+              Delete
+            </button>
+            <button 
+              className="cancel-button"
+              onClick={() => setShowDeleteModal(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 }
 

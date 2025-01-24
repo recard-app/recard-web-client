@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 
 // Styles
 import './App.scss';
@@ -12,6 +12,7 @@ import SignUp from './pages/SignUp';
 import Welcome from './pages/Welcome';
 import Preferences from './pages/Preferences';
 import History from './pages/History';
+import ForgotPassword from './pages/ForgotPassword';
 // Components
 import AppHeader from './components/AppHeader';
 import HistoryPanel from './components/HistoryPanel';
@@ -29,6 +30,7 @@ const quick_history_size = 3;
 function AppContent() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [creditCards, setCreditCards] = useState([]);
   const [modalShow, setModalShow] = useState(false);
@@ -39,6 +41,12 @@ function AppContent() {
   useEffect(() => {
     setCurrentChatId(null);
   }, [user]);
+
+  useEffect(() => {
+    if (location.pathname === '/' && currentChatId) {
+      navigate(`/${currentChatId}`, { replace: true });
+    }
+  }, [location.pathname, currentChatId, navigate]);
 
   const handleModalOpen = () => {
     setModalShow(true);
@@ -100,6 +108,7 @@ function AppContent() {
               listSize={quick_history_size}
               refreshTrigger={historyRefreshTrigger} 
               currentChatId={currentChatId}
+              returnCurrentChatId={getCurrentChatId}
             />
             <PromptWindow 
               creditCards={creditCards} 
@@ -118,6 +127,7 @@ function AppContent() {
               listSize={quick_history_size}
               refreshTrigger={historyRefreshTrigger}
               currentChatId={currentChatId}
+              returnCurrentChatId={getCurrentChatId}
             />
             <PromptWindow 
               creditCards={creditCards} 
@@ -138,6 +148,11 @@ function AppContent() {
             <SignIn />
           </RedirectIfAuthenticated>
         } />
+        <Route path="/forgotpassword" element={
+            <RedirectIfAuthenticated>
+                <ForgotPassword />
+            </RedirectIfAuthenticated>
+        } />
         <Route path="/signup" element={
           <RedirectIfAuthenticated>
             <SignUp />
@@ -155,7 +170,7 @@ function AppContent() {
         } />
         <Route path="/history" element={
           <History 
-            returnHistoryList={getHistoryList} 
+            returnHistoryList={getHistoryList}
             existingHistoryList={chatHistory}
             currentChatId={currentChatId}
             refreshTrigger={historyRefreshTrigger}

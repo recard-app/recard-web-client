@@ -8,7 +8,15 @@ import { useNavigate } from 'react-router-dom';
 
 const apiurl = process.env.REACT_APP_BASE_URL;
 
-function HistoryPanel({ returnHistoryList, existingHistoryList, listSize, fullListSize, refreshTrigger, currentChatId }) {
+function HistoryPanel({ 
+  returnHistoryList, 
+  existingHistoryList, 
+  listSize, 
+  fullListSize, 
+  refreshTrigger, 
+  currentChatId,
+  returnCurrentChatId = () => {},
+}) {
   const [historyList, setHistoryList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -60,6 +68,14 @@ function HistoryPanel({ returnHistoryList, existingHistoryList, listSize, fullLi
     return <div className="history-panel">Error: {error}</div>;
   }
 
+  const handleDelete = async (deletedChatId) => {
+    // If we're deleting the current chat, clear it first
+    if (deletedChatId === currentChatId) {
+      returnCurrentChatId(null);
+    }
+    setHistoryList(prevList => prevList.filter(entry => entry.chatId !== deletedChatId));
+  };
+
   return (
     <div className='history-panel'>
       {!fullListSize && <h2>Chat History</h2>}
@@ -72,6 +88,8 @@ function HistoryPanel({ returnHistoryList, existingHistoryList, listSize, fullLi
               key={entry.chatId} 
               chatEntry={entry}
               currentChatId={currentChatId}
+              onDelete={handleDelete}
+              returnCurrentChatId={returnCurrentChatId}
             />
           ))}
           {!fullListSize && (

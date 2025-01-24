@@ -10,7 +10,7 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
     const [creditCards, setCreditCards] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [saveStatus, setSaveStatus] = useState('');
-    const { user } = useAuth(); // Add this line to get the current user
+    const { user } = useAuth(); // Get the current user
 
     const sortCards = (cards) => {
         return [...cards].sort((a, b) => {
@@ -115,9 +115,11 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
                 </div>
             ))}
             <div className="save-section">
-                <button onClick={handleSave} className="save-button">
-                    Save
-                </button>
+                {user && ( // Only show the save button if the user is logged in
+                    <button onClick={handleSave} className="save-button">
+                        Save
+                    </button>
+                )}
                 {saveStatus && <p className="save-status">{saveStatus}</p>}
             </div>
         </div>

@@ -22,12 +22,18 @@ const Welcome = ({ onModalOpen }) => {
                     </div>
 
                     <div className="step">
-                        <h3>2. Ask Questions</h3>
+                        <h3>2. Verify Your Email</h3>
+                        <p>Please verify your email address to ensure account security and unlock more features.</p>
+                        <p>You can see the status and send a verification email from your <Link to="/account">account page.</Link></p>
+                    </div>
+
+                    <div className="step">
+                        <h3>3. Ask Questions</h3>
                         <p>Ask about purchases and we'll help you maximize your rewards.</p>
                     </div>
                     
                     <div className="step">
-                        <h3>3. Get Recommendations</h3>
+                        <h3>4. Get Recommendations</h3>
                         <p>Receive instant suggestions on which card to use for the best rewards.</p>
                     </div>
                 </div>

@@ -7,7 +7,10 @@ import {
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile
+  updateProfile,
+  sendEmailVerification,
+  getAuth,
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail
 } from 'firebase/auth';
 
 const AuthContext = createContext(null);
@@ -19,13 +22,16 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        // Refresh the user object to get the latest data
+        await user.reload(); // Ensure the user object is refreshed
         setUser({
           email: user.email,
           name: user.displayName,
-          picture: user.photoURL || DEFAULT_PROFILE_PICTURE, // Use default picture if no photo provided
-          uid: user.uid
+          picture: user.photoURL || DEFAULT_PROFILE_PICTURE,
+          uid: user.uid,
+          emailVerified: user.emailVerified // Ensure this is included
         });
       } else {
         setUser(null);
@@ -91,18 +97,55 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const sendVerificationEmail = async () => {
+    if (auth.currentUser && !auth.currentUser.emailVerified) {
+      try {
+        // Add configuration for email verification
+        const actionCodeSettings = {
+          url: process.env.REACT_APP_EMAIL_VERIFICATION_REDIRECT_URL || window.location.origin,
+          handleCodeInApp: true,
+        };
+
+        await sendEmailVerification(auth.currentUser, actionCodeSettings);
+        return true;
+      } catch (error) {
+        if (error.code === 'auth/too-many-requests') {
+          throw new Error('Please wait a few minutes before requesting another verification email.');
+        }
+        console.error('Error sending verification email:', error);
+        throw error;
+      }
+    }
+  };
+
+  const sendPasswordResetEmail = async (email) => {
+    try {
+      await firebaseSendPasswordResetEmail(auth, email, {
+        url: process.env.REACT_APP_PASSWORD_RESET_REDIRECT_URL || window.location.origin
+      });
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+      throw error;
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  const value = {
+    user,
+    login,
+    loginWithEmail,
+    registerWithEmail,
+    logout,
+    sendVerificationEmail,
+    sendPasswordResetEmail,
+    loading
+  };
+
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      login, 
-      loginWithEmail, 
-      registerWithEmail, 
-      logout 
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

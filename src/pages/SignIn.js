@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
 const SignIn = () => {
-    const { login, loginWithEmail } = useAuth();
+    const { login, loginWithEmail, sendPasswordResetEmail } = useAuth();
     const navigate = useNavigate();
     const apiurl = process.env.REACT_APP_BASE_URL;
     const [email, setEmail] = useState('');
@@ -81,6 +81,9 @@ const SignIn = () => {
                     required
                 />
                 <button type="submit">Sign In with Email</button>
+                <Link to="/forgotpassword" className="forgot-password-btn">
+                    Forgot Password?
+                </Link>
             </form>
 
             <div className="divider">or</div>
