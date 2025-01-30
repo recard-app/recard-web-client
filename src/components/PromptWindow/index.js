@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import PromptHistory from './PromptHistory';
@@ -30,6 +30,10 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
     const [errorMessage, setErrorMessage] = useState('');
     const [helpModalShow, setHelpModalShow] = useState(false);
 
+    const [isProcessing, setIsProcessing] = useState(false);
+    const abortControllerRef = useRef(null);
+    const [triggerCall, setTriggerCall] = useState(0);
+
     const handleErrorModalClose = () => {
         setErrorModalShow(false);
         setErrorMessage('');
@@ -37,6 +41,7 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
 
     const getPrompt = (returnPrompt) => {
         setPromptValue(returnPrompt);
+        setTriggerCall(prev => prev + 1);
     };
 
     const addChatHistory = (source, message) => {
@@ -55,7 +60,7 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
             addChatHistory(userClient, promptValue);
             callServer();
         }
-    }, [promptValue]);
+    }, [triggerCall]);
 
     useEffect(() => {
         //console.log("Updated chatHistory:", chatHistory);
@@ -98,18 +103,22 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
     }, [urlChatId, user]);
 
     const callServer = () => {
+        setIsProcessing(true);
         setIsLoading(true);
+        
+        // Create new AbortController for this request
+        abortControllerRef.current = new AbortController();
+        const signal = abortControllerRef.current.signal;
+
         const currentDate = getCurrentDateString();
         const name = user?.name || 'Guest';
 
-        // First create the user message entry
         const userMessage = {
             id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             chatSource: userClient,
             chatMessage: promptValue
         };
 
-        // Basic chat request data
         const requestData = {
             name: name,
             prompt: promptValue,
@@ -118,8 +127,7 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
             currentDate: currentDate
         };
 
-        // Get AI response
-        axios.post(`${apiurl}/ai/response`, requestData)
+        axios.post(`${apiurl}/ai/response`, requestData, { signal })
             .then(response => {
                 const aiResponse = response.data;
                 const updatedHistory = [...chatHistory, userMessage, {
@@ -132,30 +140,27 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
                 setIsLoadingSolutions(true);
                 setChatHistory(updatedHistory);
 
-                // Get solutions
                 return axios.post(`${apiurl}/ai/solutions`, {
                     ...requestData,
                     chatHistory: updatedHistory
-                }).then(solutionsResponse => ({
+                }, { signal }).then(solutionsResponse => ({
                     solutions: solutionsResponse.data,
                     updatedHistory
                 }));
             })
             .then(({ solutions, updatedHistory }) => {
+                if (signal.aborted) return;
                 setPromptSolutions(solutions);
                 setIsLoadingSolutions(false);
 
-                // If user is not logged in, stop here
                 if (!user) return;
 
-                // Get token for history operations
                 return auth.currentUser.getIdToken()
                     .then(token => {
                         const endpoint = isNewChat ? 
                             `${apiurl}/history/add` : 
                             `${apiurl}/history/update/${chatId}`;
 
-                        // Save to history
                         return axios({
                             method: isNewChat ? 'post' : 'put',
                             url: endpoint,
@@ -166,7 +171,8 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
                             headers: {
                                 'Authorization': `Bearer ${token}`,
                                 'Content-Type': 'application/json'
-                            }
+                            },
+                            signal
                         });
                     })
                     .then(response => {
@@ -178,12 +184,33 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
                     });
             })
             .catch(error => {
+                if (axios.isCancel(error)) {
+                    console.log('Request cancelled');
+                    resetLoading();
+                    abortControllerRef.current = null;
+                    return;
+                }
                 console.error(error);
-                setIsLoading(false);
-                setIsLoadingSolutions(false);
                 setErrorMessage('Error processing request, please try again.');
                 setErrorModalShow(true);
+            })
+            .finally(() => {
+                resetLoading();
+                abortControllerRef.current = null;
             });
+    };
+
+    const resetLoading = () => {
+        setIsProcessing(false);
+        setIsLoading(false);
+        setIsLoadingSolutions(false);
+    };
+
+    const handleCancel = () => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        resetLoading();
     };
 
     const handleNewTransaction = () => {
@@ -223,7 +250,11 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
             {isLoading && <div className="loading-indicator">...</div>}
             {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}
             <PromptSolution promptSolutions={promptSolutions} />
-            <PromptField returnPrompt={getPrompt} />
+            <PromptField 
+                returnPrompt={getPrompt} 
+                isProcessing={isProcessing} 
+                onCancel={handleCancel} 
+            />
         </div>
     );
 }
