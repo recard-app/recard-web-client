@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+import { auth } from './config/firebase';
 
 // Styles
 import './App.scss';
@@ -25,6 +27,7 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 // Context
 import { useAuth } from './context/AuthContext';
 
+const apiurl = process.env.REACT_APP_BASE_URL;
 const quick_history_size = 3;
 
 function AppContent() {
@@ -47,6 +50,26 @@ function AppContent() {
       navigate(`/${currentChatId}`, { replace: true });
     }
   }, [location.pathname, currentChatId, navigate]);
+
+  useEffect(() => {
+    const fetchCreditCards = async () => {
+      if (!user) return;
+      
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const response = await axios.get(`${apiurl}/cards/full-list`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setCreditCards(response.data);
+      } catch (error) {
+        console.error('Error fetching credit cards:', error);
+      }
+    };
+
+    fetchCreditCards();
+  }, [user]);
 
   const handleModalOpen = () => {
     setModalShow(true);
