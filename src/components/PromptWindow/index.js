@@ -14,6 +14,7 @@ import { auth } from '../../config/firebase';
 const apiurl = process.env.REACT_APP_BASE_URL;
 const aiClient = 'assistant';
 const userClient = 'user';
+const MAX_CHAT_MESSAGES = 20;
 
 function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate }) {
     const { chatId: urlChatId } = useParams();
@@ -33,6 +34,7 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
     const [isProcessing, setIsProcessing] = useState(false);
     const abortControllerRef = useRef(null);
     const [triggerCall, setTriggerCall] = useState(0);
+    const [isNewChatPending, setIsNewChatPending] = useState(false);
 
     const handleErrorModalClose = () => {
         setErrorModalShow(false);
@@ -40,6 +42,10 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
     };
 
     const getPrompt = (returnPrompt) => {
+        if (isNewChat && isNewChatPending) {
+            console.log('New chat creation in progress, please wait...');
+            return;
+        }
         setPromptValue(returnPrompt);
         setTriggerCall(prev => prev + 1);
     };
@@ -51,12 +57,17 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
             chatMessage: message,
         };
     
-        setChatHistory((prevChatHistory) => [...prevChatHistory, newEntry]);
-        //console.log("Successful history logged:", newEntry);
+        setChatHistory((prevChatHistory) => {
+            const updatedHistory = [...prevChatHistory, newEntry];
+            return limitChatHistory(updatedHistory);
+        });
     };
 
     useEffect(() => {
         if (promptValue !== '') {
+            if (isNewChat) {
+                setIsNewChatPending(true);
+            }
             addChatHistory(userClient, promptValue);
             callServer();
         }
@@ -85,7 +96,7 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
                     }
                 });
                 
-                setChatHistory(response.data.conversation);
+                setChatHistory(limitChatHistory(response.data.conversation));
                 setPromptSolutions(response.data.solutions);
                 setChatId(urlChatId);
                 setIsNewChat(false);
@@ -122,7 +133,7 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
         const requestData = {
             name: name,
             prompt: promptValue,
-            chatHistory: chatHistory,
+            chatHistory: limitChatHistory(chatHistory),
             creditCards: creditCards,
             currentDate: currentDate
         };
@@ -138,11 +149,11 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
                 
                 setIsLoading(false);
                 setIsLoadingSolutions(true);
-                setChatHistory(updatedHistory);
+                setChatHistory(limitChatHistory(updatedHistory));
 
                 return axios.post(`${apiurl}/ai/solutions`, {
                     ...requestData,
-                    chatHistory: updatedHistory
+                    chatHistory: limitChatHistory(updatedHistory)
                 }, { signal }).then(solutionsResponse => ({
                     solutions: solutionsResponse.data,
                     updatedHistory
@@ -179,6 +190,8 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
                         if (isNewChat && response?.data?.chatId) {
                             setChatId(response.data.chatId);
                             returnCurrentChatId(response.data.chatId);
+                            setIsNewChat(false);
+                            setIsNewChatPending(false);
                         }
                         onHistoryUpdate();
                     });
@@ -186,11 +199,13 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
             .catch(error => {
                 if (axios.isCancel(error)) {
                     console.log('Request cancelled');
+                    setIsNewChatPending(false);
                     resetLoading();
                     abortControllerRef.current = null;
                     return;
                 }
                 console.error(error);
+                setIsNewChatPending(false);
                 setErrorMessage('Error processing request, please try again.');
                 setErrorModalShow(true);
             })
@@ -217,6 +232,7 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
         setChatHistory([]);
         setPromptSolutions([]);
         setIsNewChat(true);
+        setIsNewChatPending(false);
         setChatId('');
         returnCurrentChatId('');
         navigate('/');
@@ -262,7 +278,9 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
 export default PromptWindow;
 
 
-
+const limitChatHistory = (chatHistory) => {
+    return Array.isArray(chatHistory) ? chatHistory.slice(-MAX_CHAT_MESSAGES) : [];
+};
 
 const getCurrentDateString = () => {
     const now = new Date();

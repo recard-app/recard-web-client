@@ -11,6 +11,11 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId 
   const isCurrent = chatEntry.chatId === currentChatId;
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
+  // Get the recommended card name directly from the chatEntry
+  const getRecommendedCard = () => {
+    return chatEntry.recommendedCard || null;
+  };
+
   // Format the timestamp to a readable date
   const formatDate = (timestamp) => {
     const now = new Date();
@@ -98,7 +103,12 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId 
         style={{ cursor: 'pointer' }}
       >
         <div className="entry-content">
-          <p>{chatEntry.chatDescription}</p>
+          <p className="entry-title">{chatEntry.chatDescription}</p>
+          {getRecommendedCard() && (
+            <p className="recommended-card">
+              Recommended: {getRecommendedCard()}
+            </p>
+          )}
           <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
         </div>
         {isCurrent && <span className="current-indicator">Current</span>}
