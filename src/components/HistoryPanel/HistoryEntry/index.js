@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { auth } from '../../../config/firebase';
 import Modal from '../../Modal';
+
 const apiurl = process.env.REACT_APP_BASE_URL;
 
 function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId }) {
@@ -11,9 +12,9 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId 
   const isCurrent = chatEntry.chatId === currentChatId;
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // Get the recommended card name directly from the chatEntry
+  // Get the recommended card name from solutions array
   const getRecommendedCard = () => {
-    return chatEntry.recommendedCard || null;
+    return chatEntry.solutions?.[0]?.cardName || null;
   };
 
   // Format the timestamp to a readable date
@@ -77,10 +78,11 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId 
         }
       });
       
-      // Update the UI
+      // Update both local and parent state
       if (onDelete) {
         onDelete(chatEntry.chatId);
       }
+
       setShowDeleteModal(false);
 
       // Finally, navigate if it was the current chat

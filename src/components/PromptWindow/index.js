@@ -16,7 +16,15 @@ const aiClient = 'assistant';
 const userClient = 'user';
 const MAX_CHAT_MESSAGES = 20;
 
-function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate }) {
+function PromptWindow({ 
+    creditCards, 
+    user, 
+    returnCurrentChatId, 
+    onHistoryUpdate, 
+    clearChatCallback,
+    setClearChatCallback,
+    existingHistoryList 
+}) {
     const { chatId: urlChatId } = useParams();
     const navigate = useNavigate();
     
@@ -88,7 +96,21 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
         const loadChatHistory = async () => {
             if (!user || !urlChatId || urlChatId === chatId) return;
 
+            // First check if the chat exists in the existing history
+            const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
+            
+            if (existingChat) {
+                setChatHistory(limitChatHistory(existingChat.conversation));
+                setPromptSolutions(existingChat.solutions);
+                setChatId(urlChatId);
+                setIsNewChat(false);
+                returnCurrentChatId(urlChatId);
+                return;
+            }
+
+            // If not found in existing history, fetch from API
             try {
+                console.log("chat history loaded - 1 from promptwindow");
                 const token = await auth.currentUser.getIdToken();
                 const response = await axios.get(`${apiurl}/history/get/${urlChatId}`, {
                     headers: {
@@ -107,11 +129,18 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
                 setErrorModalShow(true);
             }
         };
-
+        
         if (user) {
             loadChatHistory();
         }
-    }, [urlChatId, user]);
+    }, [urlChatId, user, existingHistoryList]);
+
+    useEffect(() => {
+        if (clearChatCallback > 0) {
+            handleNewTransaction();
+            setClearChatCallback(0);
+        }
+    }, [clearChatCallback, setClearChatCallback]);
 
     const callServer = () => {
         setIsProcessing(true);
@@ -188,12 +217,28 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
                     })
                     .then(response => {
                         if (isNewChat && response?.data?.chatId) {
+                            const newChat = {
+                                chatId: response.data.chatId,
+                                timestamp: new Date().toISOString(),
+                                conversation: updatedHistory,
+                                solutions: solutions,
+                                chatDescription: response.data.chatDescription || 'New Chat'
+                            };
+                            onHistoryUpdate(newChat);
                             setChatId(response.data.chatId);
                             returnCurrentChatId(response.data.chatId);
                             setIsNewChat(false);
                             setIsNewChatPending(false);
+                        } else {
+                            // Update existing chat
+                            const updatedChat = {
+                                chatId: chatId,
+                                timestamp: new Date().toISOString(),
+                                conversation: updatedHistory,
+                                solutions: solutions,
+                            };
+                            onHistoryUpdate(updatedChat);
                         }
-                        onHistoryUpdate();
                     });
             })
             .catch(error => {
@@ -236,7 +281,6 @@ function PromptWindow({ creditCards, user, returnCurrentChatId, onHistoryUpdate 
         setChatId('');
         returnCurrentChatId('');
         navigate('/');
-        onHistoryUpdate();
     };
 
     const handleHelpModalOpen = () => {

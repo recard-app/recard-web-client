@@ -2,7 +2,14 @@ import React from 'react';
 import HistoryPanel from '../components/HistoryPanel';
 import { Link } from 'react-router-dom';
 
-function History({ returnHistoryList, existingHistoryList, currentChatId, refreshTrigger, returnCurrentChatId }) {
+function History({ 
+  returnHistoryList, 
+  existingHistoryList, 
+  currentChatId, 
+  refreshTrigger, 
+  returnCurrentChatId,
+  onHistoryUpdate 
+}) {
   // Calculate the date 90 days ago
   const ninetyDaysAgo = new Date();
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
@@ -26,6 +33,7 @@ function History({ returnHistoryList, existingHistoryList, currentChatId, refres
           refreshTrigger={refreshTrigger}
           returnCurrentChatId={returnCurrentChatId}
           dateFilter={dateFilter}
+          onHistoryUpdate={onHistoryUpdate}
         />
       </div>
     </div>

@@ -40,6 +40,9 @@ function AppContent() {
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
+  const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(null);
+
+  const [clearChatCallback, setClearChatCallback] = useState(0);
 
   useEffect(() => {
     setCurrentChatId(null);
@@ -71,6 +74,43 @@ function AppContent() {
     fetchCreditCards();
   }, [user]);
 
+  useEffect(() => {
+    const fetchFullHistory = async () => {
+      if (!user) return;
+      
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const response = await axios.get(`${apiurl}/history/get_full_list`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          params: {
+            lastUpdate: lastUpdateTimestamp
+          }
+        });
+        
+        if (response.data.hasUpdates) {
+          // Ensure each chat history entry has all required fields
+          const processedHistory = response.data.chatHistory.map(chat => ({
+            chatId: chat.chatId,
+            timestamp: chat.timestamp,
+            chatDescription: chat.chatDescription,
+            conversation: chat.conversation,
+            solutions: chat.solutions
+          }));
+          
+          setChatHistory(processedHistory);
+          setLastUpdateTimestamp(new Date().toISOString());
+        }
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+      }
+    };
+
+    fetchFullHistory();
+    console.log("full chat history fetched");
+  }, [user, historyRefreshTrigger]);
+
   const handleModalOpen = () => {
     setModalShow(true);
   };
@@ -83,10 +123,6 @@ function AppContent() {
     setCreditCards(returnCreditCards);
   };
 
-  const getHistoryList = (returnHistoryList) => {
-    setChatHistory(returnHistoryList);
-  };
-
   const getCurrentChatId = (returnCurrentChatId) => {
     setCurrentChatId(returnCurrentChatId || null);
   };
@@ -97,8 +133,40 @@ function AppContent() {
     navigate('/signin');
   };
 
-  const handleHistoryUpdate = () => {
+  const handleHistoryUpdate = async (updatedChat) => {
+    // Return early if updatedChat is undefined
+    if (!updatedChat) return;
+
+    // If updatedChat is a function, it's a delete operation
+    if (typeof updatedChat === 'function') {
+      setChatHistory(updatedChat);  // Apply the filter function directly
+      handleClearChat();
+    } else {
+      // Handle normal chat updates
+      setChatHistory(prevHistory => {
+        const newHistory = [...prevHistory];
+        const existingIndex = newHistory.findIndex(chat => chat.chatId === updatedChat.chatId);
+
+        if (existingIndex !== -1) {
+          newHistory[existingIndex] = {
+            ...updatedChat,
+            chatDescription: updatedChat.chatDescription || newHistory[existingIndex].chatDescription,
+          };
+        } else {
+          newHistory.unshift(updatedChat);
+        }
+
+        return newHistory;
+      });
+    }
+
+    setLastUpdateTimestamp(new Date().toISOString());
     setHistoryRefreshTrigger(prev => prev + 1);
+  };
+
+  const handleClearChat = () => {
+    // Increment the callback counter to trigger a clear
+    setClearChatCallback(prev => prev + 1);
   };
 
   useEffect(() => {
@@ -106,7 +174,7 @@ function AppContent() {
   }, [creditCards]);
 
   useEffect(() => {
-    console.log(chatHistory);
+    //console.log(chatHistory);
   }, [chatHistory]);
 
   return (
@@ -125,38 +193,42 @@ function AppContent() {
         <Route path="/" element={
           <div className="app-content">
             <HistoryPanel 
-              returnHistoryList={getHistoryList} 
               existingHistoryList={chatHistory} 
               fullListSize={false} 
               listSize={quick_history_size}
-              refreshTrigger={historyRefreshTrigger} 
               currentChatId={currentChatId}
               returnCurrentChatId={getCurrentChatId}
+              onHistoryUpdate={handleHistoryUpdate}
             />
             <PromptWindow 
               creditCards={creditCards} 
               user={user} 
               returnCurrentChatId={getCurrentChatId}
               onHistoryUpdate={handleHistoryUpdate}
+              clearChatCallback={clearChatCallback}
+              setClearChatCallback={setClearChatCallback}
+              existingHistoryList={chatHistory}
             />
           </div>
         } />
         <Route path="/:chatId" element={
           <div className="app-content">
             <HistoryPanel 
-              returnHistoryList={getHistoryList} 
               existingHistoryList={chatHistory} 
               fullListSize={false} 
               listSize={quick_history_size}
-              refreshTrigger={historyRefreshTrigger}
               currentChatId={currentChatId}
               returnCurrentChatId={getCurrentChatId}
+              onHistoryUpdate={handleHistoryUpdate}
             />
             <PromptWindow 
               creditCards={creditCards} 
               user={user} 
               returnCurrentChatId={getCurrentChatId}
               onHistoryUpdate={handleHistoryUpdate}
+              clearChatCallback={clearChatCallback}
+              setClearChatCallback={setClearChatCallback}
+              existingHistoryList={chatHistory}
             />
           </div>
         } />
@@ -193,10 +265,10 @@ function AppContent() {
         } />
         <Route path="/history" element={
           <History 
-            returnHistoryList={getHistoryList}
             existingHistoryList={chatHistory}
             currentChatId={currentChatId}
-            refreshTrigger={historyRefreshTrigger}
+            returnCurrentChatId={getCurrentChatId}
+            onHistoryUpdate={handleHistoryUpdate}
           />
         } />
       </Routes>
