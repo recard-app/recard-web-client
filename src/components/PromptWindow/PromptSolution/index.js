@@ -12,8 +12,8 @@ function PromptSolution({ promptSolutions }) {
         setSolutions(solutionsArray);
     }, [promptSolutions]);
 
-    // Don't render anything if there are no solutions
-    if (solutions.length === 0) {
+    // Don't render anything if there are no solutions or if solutions lack card names
+    if (solutions.length === 0 || !solutions.some(solution => solution.cardName)) {
         return null;
     }
 
@@ -21,15 +21,21 @@ function PromptSolution({ promptSolutions }) {
         <div className="solutions-container">
             <h2>Best Cards for Your Purchase</h2>
             <div className="solution-cards">
-                {solutions.map((solution, index) => (
-                    <div key={solution.id || index} className="solution-card">
-                        <h3>{solution.cardName}</h3>
-                        <div className="card-details">
-                            <p><strong>Category:</strong> {solution.rewardCategory}</p>
-                            <p><strong>Reward Rate:</strong> {solution.rewardRate}</p>
+                {solutions
+                    .filter(solution => solution.cardName)
+                    .map((solution, index) => (
+                        <div key={solution.id || index} className="solution-card">
+                            <h3>{solution.cardName}</h3>
+                            <div className="card-details">
+                                {solution.rewardCategory && (
+                                    <p><strong>Category:</strong> {solution.rewardCategory}</p>
+                                )}
+                                {solution.rewardRate && (
+                                    <p><strong>Reward Rate:</strong> {solution.rewardRate}</p>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
             </div>
         </div>
     );
