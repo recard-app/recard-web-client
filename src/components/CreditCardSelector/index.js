@@ -14,11 +14,15 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
 
     const sortCards = (cards) => {
         return [...cards].sort((a, b) => {
-            // Sort by selected status first
+            // Sort by default card status first
+            if (a.isDefaultCard !== b.isDefaultCard) {
+                return b.isDefaultCard ? 1 : -1;
+            }
+            // Then sort by selected status
             if (a.selected !== b.selected) {
                 return b.selected ? 1 : -1;
             }
-            // If selection status is same, sort by ID
+            // If both status are same, sort by ID
             return a.id - b.id;
         });
     };
@@ -47,38 +51,56 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
             }
         };
 
+        // Initialize cards once on mount or when user changes
         fetchCards();
-    }, [user, existingCreditCards]);
+    }, [user]); // Remove existingCreditCards dependency
 
     useEffect(() => {
         //console.log(creditCards);
         returnCreditCards(creditCards);
     }, [creditCards]);
 
-    const handleCheckboxChange = (index) => {
-        const updatedCardList = [...creditCards];
-        updatedCardList[index].selected = !updatedCardList[index].selected;
-        setCreditCards(updatedCardList);
+    const handleCheckboxChange = (cardId) => {
+        setCreditCards(prevCards => 
+            prevCards.map(card => {
+                if (card.id === cardId) {
+                    const newSelected = !card.selected;
+                    return {
+                        ...card,
+                        selected: newSelected,
+                        // Remove isDefaultCard if card is being unselected
+                        ...(newSelected ? {} : { isDefaultCard: false })
+                    };
+                }
+                return card;
+            })
+        );
     };
 
-    const filteredCards = creditCards
-        .filter(card => 
-            card.cardName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            card.cardType.toLowerCase().includes(searchTerm.toLowerCase())
+    const handleSetDefault = (cardId) => {
+        setCreditCards(prevCards => 
+            prevCards.map(card => ({
+                ...card,
+                isDefaultCard: card.id === cardId // true for selected card, false for all others
+            }))
         );
+    };
 
     const handleSave = async () => {
-        const selectedCardIds = creditCards
+        const returnCreditCards = creditCards
             .filter(card => card.selected)
-            .map(card => card.id);
+            .map(card => ({
+                cardId: card.id,
+                isDefaultCard: card.isDefaultCard || false
+            }));
         
-        console.log('Selected card IDs being sent:', selectedCardIds);
+        console.log('Selected card data being sent:', returnCreditCards);
         
         try {
             // Get fresh Firebase token from the current user
             const token = await auth.currentUser.getIdToken();
             const response = await axios.post(`${apiurl}/cards/update_cards`, 
-                { cardIds: selectedCardIds },
+                { returnCreditCards },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
             console.log('Response from server:', response.data);
@@ -89,6 +111,12 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
             setSaveStatus('Error saving cards. Please try again.');
         }
     };
+
+    const filteredCards = creditCards
+        .filter(card => 
+            card.cardName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            card.cardType.toLowerCase().includes(searchTerm.toLowerCase())
+        );
 
     return (
         <div className='credit-card-selector'>
@@ -105,23 +133,34 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
             {isLoading && existingCreditCards.length === 0 && (
                 <div className="loading">Loading cards...</div>
             )}
-            {filteredCards.map((card, index) => (
-                <div key={index} className='card'>
+            {filteredCards.map((card) => (
+                <div key={card.id} className='card'>
                     <label className='card-select' htmlFor={card.id}>
                         <input 
                             type="checkbox" 
                             id={card.id}
                             name={card.cardName} 
                             value={card.cardName} 
-                            checked={card.selected} 
-                            onChange={() => handleCheckboxChange(index)}
+                            checked={card.selected || false} 
+                            onChange={() => handleCheckboxChange(card.id)}
                         />
                         <img src='/credit-card-128.png' alt='Credit Card Img' />
                         <div className='card-desc'>
-                            <p className='card-name'>{card.cardName}</p>
+                            <p className='card-name'>
+                                {card.cardName}
+                                {card.isDefaultCard && <span className="default-tag">Preferred Card</span>}
+                            </p>
                             <p className='card-type'>{card.cardType}</p>
                         </div>
                     </label>
+                    {card.selected && !card.isDefaultCard && (
+                        <button 
+                            className="set-default-button"
+                            onClick={() => handleSetDefault(card.id)}
+                        >
+                            Set as Preferred Card
+                        </button>
+                    )}
                 </div>
             ))}
             <div className="save-section">

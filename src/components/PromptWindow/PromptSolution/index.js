@@ -12,7 +12,7 @@ function PromptSolution({ promptSolutions }) {
         setSolutions(solutionsArray);
     }, [promptSolutions]);
 
-    // Don't render anything if there are no solutions or if solutions lack card names
+    // Don't render anything if there are no solutions or if all solutions lack card names
     if (solutions.length === 0 || !solutions.some(solution => solution.cardName)) {
         return null;
     }

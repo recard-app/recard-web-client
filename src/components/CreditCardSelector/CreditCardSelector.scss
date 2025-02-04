@@ -4,6 +4,31 @@
   
     }
     .card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-right: 10px;
+
+      .card-select {
+        flex-grow: 1;
+      }
+
+      .set-default-button {
+        padding: 4px 8px;
+        font-size: 0.8em;
+        background-color: #f8f8f8;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        cursor: pointer;
+        white-space: nowrap;
+        color: #666;
+
+        &:hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+      }
+
       .card-select {
         display: flex;
         align-items: center;
@@ -29,5 +54,16 @@
           }
         }
       }
+    }
+    .default-tag {
+        background-color: #e3f2fd;
+        color: #1976d2;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        margin-left: 8px;
+        font-weight: bold;
+        display: inline-block;
+        vertical-align: middle;
     }
   }

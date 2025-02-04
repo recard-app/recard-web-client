@@ -159,11 +159,14 @@ function PromptWindow({
             chatMessage: promptValue
         };
 
+        // Filter out unselected cards
+        const selectedCreditCards = creditCards.filter(card => card.selected);
+
         const requestData = {
             name: name,
             prompt: promptValue,
             chatHistory: limitChatHistory(chatHistory),
-            creditCards: creditCards,
+            creditCards: selectedCreditCards,
             currentDate: currentDate
         };
 
