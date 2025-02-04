@@ -6,11 +6,11 @@ import { useAuth } from '../../context/AuthContext';
 const apiurl = process.env.REACT_APP_BASE_URL;
 
 function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
-
-    const [creditCards, setCreditCards] = useState([]);
+    const [creditCards, setCreditCards] = useState(existingCreditCards || []);
     const [searchTerm, setSearchTerm] = useState('');
     const [saveStatus, setSaveStatus] = useState('');
-    const { user } = useAuth(); // Get the current user
+    const [isLoading, setIsLoading] = useState(false);
+    const { user } = useAuth();
 
     const sortCards = (cards) => {
         return [...cards].sort((a, b) => {
@@ -25,6 +25,7 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
 
     useEffect(() => {
         const fetchCards = async () => {
+            setIsLoading(true);
             try {
                 // Only get fresh token if user is logged in
                 const headers = {};
@@ -37,11 +38,17 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
                 setCreditCards(sortCards(response.data));
             } catch (error) {
                 console.error('Error fetching cards:', error);
+                // Keep using existingCreditCards if fetch fails
+                if (existingCreditCards) {
+                    setCreditCards(sortCards(existingCreditCards));
+                }
+            } finally {
+                setIsLoading(false);
             }
         };
 
         fetchCards();
-    }, [user]); // Add user as dependency
+    }, [user, existingCreditCards]);
 
     useEffect(() => {
         //console.log(creditCards);
@@ -95,6 +102,9 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
                     className="search-input"
                 />
             </div>
+            {isLoading && existingCreditCards.length === 0 && (
+                <div className="loading">Loading cards...</div>
+            )}
             {filteredCards.map((card, index) => (
                 <div key={index} className='card'>
                     <label className='card-select' htmlFor={card.id}>
@@ -124,7 +134,6 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
             </div>
         </div>
     );
-
 }
 
 export default CreditCardSelector;
