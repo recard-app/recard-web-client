@@ -28,7 +28,7 @@ function PromptField({ returnPrompt, isProcessing, onCancel }) {
         value={promptValue}
         onChange={inputChange}
         onKeyDown={handleKeyDown}
-        placeholder='Enter your prompt here...'
+        placeholder='Where are you shopping today?'
       />
       {isProcessing ? (
         <button className="cancel-button" onClick={onCancel}>
