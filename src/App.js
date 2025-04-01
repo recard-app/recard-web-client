@@ -172,7 +172,18 @@ function AppContent() {
   };
 
   const handleLogout = async () => {
+    // Reset all states to their initial values
     setCurrentChatId(null);
+    setChatHistory([]);
+    setCreditCards([]);
+    setModalShow(false);
+    setHistoryRefreshTrigger(0);
+    setLastUpdateTimestamp(null);
+    setClearChatCallback(0);
+    setPreferencesInstructions('');
+    setChatHistoryPreference('keep_history');
+    
+    // Perform logout and navigation
     await logout();
     navigate('/signin');
   };
@@ -273,6 +284,8 @@ function AppContent() {
               setPreferencesInstructions={setPreferencesInstructions}
               chatHistoryPreference={chatHistoryPreference}
               setChatHistoryPreference={setChatHistoryPreference}
+              setChatHistory={setChatHistory}
+              setHistoryRefreshTrigger={setHistoryRefreshTrigger}
             />
           </ProtectedRoute>
         } />
