@@ -23,7 +23,8 @@ function PromptWindow({
     onHistoryUpdate, 
     clearChatCallback,
     setClearChatCallback,
-    existingHistoryList 
+    existingHistoryList,
+    preferencesInstructions 
 }) {
     const { chatId: urlChatId } = useParams();
     const navigate = useNavigate();
@@ -167,7 +168,8 @@ function PromptWindow({
             prompt: promptValue,
             chatHistory: limitChatHistory(chatHistory),
             creditCards: selectedCreditCards,
-            currentDate: currentDate
+            currentDate: currentDate,
+            preferencesInstructions: preferencesInstructions
         };
 
         axios.post(`${apiurl}/ai/response`, requestData, { signal })

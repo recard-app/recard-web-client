@@ -3,6 +3,7 @@ import axios from 'axios';
 import './CreditCardSelector.scss';
 import { auth } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 const apiurl = process.env.REACT_APP_BASE_URL;
 
 function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
@@ -11,6 +12,7 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
     const [saveStatus, setSaveStatus] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const { user } = useAuth();
+    const navigate = useNavigate();
 
     const sortCards = (cards) => {
         return [...cards].sort((a, b) => {
@@ -118,6 +120,23 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
             card.cardType.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
+    const handleAuthRedirect = (path) => {
+        navigate(path);
+    };
+
+    if (!user) {
+        return (
+            <div className="auth-prompt">
+                <h2>Sign In Required</h2>
+                <p>Log in to unlock full features, manage your credit cards, and get the most out of ReCard!</p>
+                <div className="auth-buttons">
+                    <button onClick={() => handleAuthRedirect('/signin')}>Sign In</button>
+                    <button onClick={() => handleAuthRedirect('/signup')}>Sign Up</button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className='credit-card-selector'>
             <h3>Select your Credit Cards</h3>
@@ -164,11 +183,9 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
                 </div>
             ))}
             <div className="save-section">
-                {user && ( // Only show the save button if the user is logged in
-                    <button onClick={handleSave} className="save-button">
-                        Save
-                    </button>
-                )}
+                <button onClick={handleSave} className="save-button">
+                    Save
+                </button>
                 {saveStatus && <p className="save-status">{saveStatus}</p>}
             </div>
         </div>

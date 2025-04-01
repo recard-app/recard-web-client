@@ -43,6 +43,7 @@ function AppContent() {
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState(null);
 
   const [clearChatCallback, setClearChatCallback] = useState(0);
+  const [preferencesInstructions, setPreferencesInstructions] = useState('');
 
   useEffect(() => {
     setCurrentChatId(null);
@@ -72,6 +73,26 @@ function AppContent() {
     };
 
     fetchCreditCards();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchPreferencesInstructions = async () => {
+      if (!user) return;
+      
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const response = await axios.get(`${apiurl}/user/preferences_instructions`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setPreferencesInstructions(response.data.instructions);
+      } catch (error) {
+        console.error('Error fetching preferences instructions:', error);
+      }
+    };
+
+    fetchPreferencesInstructions();
   }, [user]);
 
   useEffect(() => {
@@ -208,6 +229,7 @@ function AppContent() {
               clearChatCallback={clearChatCallback}
               setClearChatCallback={setClearChatCallback}
               existingHistoryList={chatHistory}
+              preferencesInstructions={preferencesInstructions}
             />
           </div>
         } />
@@ -229,13 +251,18 @@ function AppContent() {
               clearChatCallback={clearChatCallback}
               setClearChatCallback={setClearChatCallback}
               existingHistoryList={chatHistory}
+              preferencesInstructions={preferencesInstructions}
             />
           </div>
         } />
         <Route path="/about" element={<About />} />
         <Route path="/preferences" element={
           <ProtectedRoute>
-            <Preferences onModalOpen={handleModalOpen} />
+            <Preferences 
+              onModalOpen={handleModalOpen} 
+              preferencesInstructions={preferencesInstructions}
+              setPreferencesInstructions={setPreferencesInstructions}
+            />
           </ProtectedRoute>
         } />
         <Route path="/signin" element={
