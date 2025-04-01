@@ -8,3 +8,27 @@
     margin-top: 12px;
     border-radius: 4px;
 }
+
+.below-prompt-field-text {
+    text-align: left;
+    padding: 8px;
+    color: #666;
+    font-size: 0.8em;
+    
+    .inline-button {
+        background-color: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 2px 4px;
+        color: #007bff;
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.9em;
+        margin: 0;
+        
+        &:hover {
+            background-color: #e0e0e0;
+            color: #0056b3;
+        }
+    }
+}

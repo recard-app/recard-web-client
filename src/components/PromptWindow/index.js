@@ -320,6 +320,11 @@ function PromptWindow({
                 isProcessing={isProcessing} 
                 onCancel={handleCancel} 
             />
+            {chatHistory.length >= MAX_CHAT_MESSAGES && (
+                <div className="below-prompt-field-text">
+                    Remember to <button onClick={handleNewTransaction} className="inline-button">create a new transaction chat</button> for best results.
+                </div>
+            )}
         </div>
     );
 }
