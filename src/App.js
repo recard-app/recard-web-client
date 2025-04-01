@@ -311,7 +311,10 @@ function AppContent() {
         } />
         <Route path="/account" element={
           <ProtectedRoute>
-            <Account />
+            <Account 
+              setChatHistory={setChatHistory}
+              setHistoryRefreshTrigger={setHistoryRefreshTrigger}
+            />
           </ProtectedRoute>
         } />
         <Route path="/history" element={
