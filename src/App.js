@@ -44,6 +44,7 @@ function AppContent() {
 
   const [clearChatCallback, setClearChatCallback] = useState(0);
   const [preferencesInstructions, setPreferencesInstructions] = useState('');
+  const [chatHistoryPreference, setChatHistoryPreference] = useState('keep_history');
 
   useEffect(() => {
     setCurrentChatId(null);
@@ -96,8 +97,30 @@ function AppContent() {
   }, [user]);
 
   useEffect(() => {
-    const fetchFullHistory = async () => {
+    const fetchChatHistoryPreference = async () => {
       if (!user) return;
+      
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const response = await axios.get(`${apiurl}/user/preferences_chat_history`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.data.chatHistory) {
+          setChatHistoryPreference(response.data.chatHistory);
+        }
+      } catch (error) {
+        console.error('Error fetching chat history preference:', error);
+      }
+    };
+
+    fetchChatHistoryPreference();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchFullHistory = async () => {
+      if (!user || chatHistoryPreference === 'do_not_track_history') return;
       
       try {
         const token = await auth.currentUser.getIdToken();
@@ -130,7 +153,7 @@ function AppContent() {
 
     fetchFullHistory();
     console.log("full chat history fetched");
-  }, [user, historyRefreshTrigger]);
+  }, [user, historyRefreshTrigger, chatHistoryPreference]);
 
   const handleModalOpen = () => {
     setModalShow(true);
@@ -198,6 +221,34 @@ function AppContent() {
     //console.log(chatHistory);
   }, [chatHistory]);
 
+  const renderMainContent = () => {
+    return (
+      <div className="app-content">
+        {chatHistoryPreference !== 'do_not_track_history' && (
+          <HistoryPanel 
+            existingHistoryList={chatHistory} 
+            fullListSize={false} 
+            listSize={quick_history_size}
+            currentChatId={currentChatId}
+            returnCurrentChatId={getCurrentChatId}
+            onHistoryUpdate={handleHistoryUpdate}
+          />
+        )}
+        <PromptWindow 
+          creditCards={creditCards} 
+          user={user} 
+          returnCurrentChatId={getCurrentChatId}
+          onHistoryUpdate={handleHistoryUpdate}
+          clearChatCallback={clearChatCallback}
+          setClearChatCallback={setClearChatCallback}
+          existingHistoryList={chatHistory}
+          preferencesInstructions={preferencesInstructions}
+          chatHistoryPreference={chatHistoryPreference}
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="app">
       <AppHeader 
@@ -211,50 +262,8 @@ function AppContent() {
       </Modal>
       
       <Routes>
-        <Route path="/" element={
-          <div className="app-content">
-            <HistoryPanel 
-              existingHistoryList={chatHistory} 
-              fullListSize={false} 
-              listSize={quick_history_size}
-              currentChatId={currentChatId}
-              returnCurrentChatId={getCurrentChatId}
-              onHistoryUpdate={handleHistoryUpdate}
-            />
-            <PromptWindow 
-              creditCards={creditCards} 
-              user={user} 
-              returnCurrentChatId={getCurrentChatId}
-              onHistoryUpdate={handleHistoryUpdate}
-              clearChatCallback={clearChatCallback}
-              setClearChatCallback={setClearChatCallback}
-              existingHistoryList={chatHistory}
-              preferencesInstructions={preferencesInstructions}
-            />
-          </div>
-        } />
-        <Route path="/:chatId" element={
-          <div className="app-content">
-            <HistoryPanel 
-              existingHistoryList={chatHistory} 
-              fullListSize={false} 
-              listSize={quick_history_size}
-              currentChatId={currentChatId}
-              returnCurrentChatId={getCurrentChatId}
-              onHistoryUpdate={handleHistoryUpdate}
-            />
-            <PromptWindow 
-              creditCards={creditCards} 
-              user={user} 
-              returnCurrentChatId={getCurrentChatId}
-              onHistoryUpdate={handleHistoryUpdate}
-              clearChatCallback={clearChatCallback}
-              setClearChatCallback={setClearChatCallback}
-              existingHistoryList={chatHistory}
-              preferencesInstructions={preferencesInstructions}
-            />
-          </div>
-        } />
+        <Route path="/" element={renderMainContent()} />
+        <Route path="/:chatId" element={renderMainContent()} />
         <Route path="/about" element={<About />} />
         <Route path="/preferences" element={
           <ProtectedRoute>
@@ -262,6 +271,8 @@ function AppContent() {
               onModalOpen={handleModalOpen} 
               preferencesInstructions={preferencesInstructions}
               setPreferencesInstructions={setPreferencesInstructions}
+              chatHistoryPreference={chatHistoryPreference}
+              setChatHistoryPreference={setChatHistoryPreference}
             />
           </ProtectedRoute>
         } />

@@ -16,6 +16,12 @@ const aiClient = 'assistant';
 const userClient = 'user';
 const MAX_CHAT_MESSAGES = 20;
 
+const CHAT_HISTORY_MESSAGES = {
+    'do_not_track_history': 'Your chat history is not being stored. Messages will be cleared when you leave or refresh.',
+    'keep_month': 'Your chat history is being stored for one month before being automatically cleared.',
+    'keep_week': 'Your chat history is being stored for one week before being automatically cleared.'
+};
+
 function PromptWindow({ 
     creditCards, 
     user, 
@@ -24,7 +30,9 @@ function PromptWindow({
     clearChatCallback,
     setClearChatCallback,
     existingHistoryList,
-    preferencesInstructions 
+    preferencesInstructions,
+    chatHistoryPreference,
+    showHistoryPanel
 }) {
     const { chatId: urlChatId } = useParams();
     const navigate = useNavigate();
@@ -95,7 +103,7 @@ function PromptWindow({
 
     useEffect(() => {
         const loadChatHistory = async () => {
-            if (!user || !urlChatId || urlChatId === chatId) return;
+            if (!user || !urlChatId || urlChatId === chatId || chatHistoryPreference === 'do_not_track_history') return;
 
             // First check if the chat exists in the existing history
             const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
@@ -111,7 +119,6 @@ function PromptWindow({
 
             // If not found in existing history, fetch from API
             try {
-                console.log("chat history loaded - 1 from promptwindow");
                 const token = await auth.currentUser.getIdToken();
                 const response = await axios.get(`${apiurl}/history/get/${urlChatId}`, {
                     headers: {
@@ -198,7 +205,14 @@ function PromptWindow({
                 setPromptSolutions(solutions);
                 setIsLoadingSolutions(false);
 
-                if (!user) return;
+                // Handle local state updates regardless of history preference
+                setChatHistory(limitChatHistory(updatedHistory));
+
+                // Only proceed with server-side history storage if tracking is enabled
+                if (!user || chatHistoryPreference === 'do_not_track_history') {
+                    setIsNewChatPending(false);  // Make sure to reset the pending state
+                    return;
+                }
 
                 return auth.currentUser.getIdToken()
                     .then(token => {
@@ -212,6 +226,7 @@ function PromptWindow({
                             data: {
                                 chatHistory: updatedHistory,
                                 promptSolutions: solutions,
+                                chatHistoryPreference: chatHistoryPreference
                             },
                             headers: {
                                 'Authorization': `Bearer ${token}`,
@@ -323,6 +338,11 @@ function PromptWindow({
             {chatHistory.length >= MAX_CHAT_MESSAGES && (
                 <div className="below-prompt-field-text">
                     Remember to <button onClick={handleNewTransaction} className="inline-button">create a new transaction chat</button> for best results.
+                </div>
+            )}
+            {CHAT_HISTORY_MESSAGES[chatHistoryPreference] && (
+                <div className="below-prompt-field-text">
+                    {CHAT_HISTORY_MESSAGES[chatHistoryPreference]}
                 </div>
             )}
         </div>

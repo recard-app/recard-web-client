@@ -1,7 +1,13 @@
 import React from 'react';
 import PreferencesModule from '../components/PreferencesModule';
 
-const Preferences = ({ onModalOpen, preferencesInstructions, setPreferencesInstructions }) => {
+const Preferences = ({ 
+    onModalOpen, 
+    preferencesInstructions, 
+    setPreferencesInstructions,
+    chatHistoryPreference,
+    setChatHistoryPreference
+}) => {
     return (
         <div className="preferences-page">
             <div className="preferences-page-container">
@@ -12,6 +18,8 @@ const Preferences = ({ onModalOpen, preferencesInstructions, setPreferencesInstr
                 <PreferencesModule 
                     initialInstructions={preferencesInstructions}
                     onInstructionsUpdate={setPreferencesInstructions}
+                    chatHistoryPreference={chatHistoryPreference}
+                    setChatHistoryPreference={setChatHistoryPreference}
                 />
             </div>
         </div>
