@@ -120,7 +120,7 @@ function AppContent() {
 
   useEffect(() => {
     const fetchFullHistory = async () => {
-      if (!user || chatHistoryPreference === 'do_not_track_history') return;
+      if (!user) return;  // Only check for user authentication
       
       try {
         const token = await auth.currentUser.getIdToken();
@@ -235,16 +235,14 @@ function AppContent() {
   const renderMainContent = () => {
     return (
       <div className="app-content">
-        {chatHistoryPreference !== 'do_not_track_history' && (
-          <HistoryPanel 
-            existingHistoryList={chatHistory} 
-            fullListSize={false} 
-            listSize={quick_history_size}
-            currentChatId={currentChatId}
-            returnCurrentChatId={getCurrentChatId}
-            onHistoryUpdate={handleHistoryUpdate}
-          />
-        )}
+        <HistoryPanel 
+          existingHistoryList={chatHistory} 
+          fullListSize={false} 
+          listSize={quick_history_size}
+          currentChatId={currentChatId}
+          returnCurrentChatId={getCurrentChatId}
+          onHistoryUpdate={handleHistoryUpdate}
+        />
         <PromptWindow 
           creditCards={creditCards} 
           user={user} 

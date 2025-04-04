@@ -17,7 +17,7 @@ const userClient = 'user';
 const MAX_CHAT_MESSAGES = 20;
 
 const CHAT_HISTORY_MESSAGES = {
-    'do_not_track_history': 'Your chat history is not being stored. Messages will be cleared when you leave or refresh.',
+    'do_not_track_history': 'Your chat history is not being stored. Messages will vanish when you leave or refresh the page.',
     'keep_month': 'Your chat history is being stored for one month before being automatically cleared.',
     'keep_week': 'Your chat history is being stored for one week before being automatically cleared.'
 };
@@ -103,7 +103,7 @@ function PromptWindow({
 
     useEffect(() => {
         const loadChatHistory = async () => {
-            if (!user || !urlChatId || urlChatId === chatId || chatHistoryPreference === 'do_not_track_history') return;
+            if (!user || !urlChatId || urlChatId === chatId) return;
 
             // First check if the chat exists in the existing history
             const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
