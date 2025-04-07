@@ -65,17 +65,25 @@ function HistoryPanel({
         cutoff: new Date(today.getTime() - week * 7 * 24 * 60 * 60 * 1000)
       })),
       // Months (1-12)
-      ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => ({
-        title: month === 1 ? "Last Month" : `${month} Months Ago`,
-        entries: [],
-        cutoff: new Date(today.getTime() - month * 30 * 24 * 60 * 60 * 1000)
-      })),
+      ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => {
+        const cutoff = new Date(today);
+        cutoff.setMonth(cutoff.getMonth() - month);
+        return {
+          title: month === 1 ? "Last Month" : `${month} Months Ago`,
+          entries: [],
+          cutoff: cutoff
+        };
+      }),
       // Years (up to 5)
-      ...[1, 2, 3, 4, 5].map(year => ({
-        title: year === 1 ? "Last Year" : `${year} Years Ago`,
-        entries: [],
-        cutoff: new Date(today.getTime() - year * 365 * 24 * 60 * 60 * 1000)
-      }))
+      ...[1, 2, 3, 4, 5].map(year => {
+        const cutoff = new Date(today);
+        cutoff.setFullYear(cutoff.getFullYear() - year);
+        return {
+          title: year === 1 ? "Last Year" : `${year} Years Ago`,
+          entries: [],
+          cutoff: cutoff
+        };
+      })
     ];
 
     entries.forEach(entry => {

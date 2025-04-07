@@ -47,6 +47,7 @@ function AppContent() {
   const [chatHistoryPreference, setChatHistoryPreference] = useState('keep_history');
 
   const [userCardDetails, setUserCardDetails] = useState([]);
+  const [subscriptionPlan, setSubscriptionPlan] = useState('free');
 
   useEffect(() => {
     setCurrentChatId(null);
@@ -178,6 +179,30 @@ function AppContent() {
     };
 
     fetchUserCardDetails();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchSubscriptionPlan = async () => {
+      if (!user) {
+        setSubscriptionPlan('free');
+        return;
+      }
+      
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const response = await axios.get(`${apiurl}/user/subscription`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setSubscriptionPlan(response.data.subscriptionPlan);
+      } catch (error) {
+        console.error('Error fetching subscription plan:', error);
+        setSubscriptionPlan('free'); // Default to free on error
+      }
+    };
+
+    fetchSubscriptionPlan();
   }, [user]);
 
   const handleModalOpen = () => {
@@ -358,6 +383,7 @@ function AppContent() {
             <Account 
               setChatHistory={setChatHistory}
               setHistoryRefreshTrigger={setHistoryRefreshTrigger}
+              subscriptionPlan={subscriptionPlan}
             />
           </ProtectedRoute>
         } />

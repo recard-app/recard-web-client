@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const apiurl = process.env.REACT_APP_BASE_URL;
 
-function Account({ setChatHistory, setHistoryRefreshTrigger }) {
+function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan }) {
   const { user, sendVerificationEmail } = useAuth();
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'success' or 'error'
@@ -186,6 +186,14 @@ function Account({ setChatHistory, setHistoryRefreshTrigger }) {
               ) : (
                 <span className="unverified">Not Verified</span>
               )}
+            </p>
+            <p>
+              <strong>Subscription Plan:</strong>{' '}
+              <span style={{ 
+                textTransform: 'capitalize',
+              }}>
+                {subscriptionPlan}
+              </span>
             </p>
             {!user.emailVerified && (
               <>
