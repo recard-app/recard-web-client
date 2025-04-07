@@ -126,12 +126,13 @@ function AppContent() {
       
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await axios.get(`${apiurl}/history/get_full_list`, {
+        const response = await axios.get(`${apiurl}/history/chat_history`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },
           params: {
-            lastUpdate: lastUpdateTimestamp
+            lastUpdate: lastUpdateTimestamp,
+            page_size: quick_history_size
           }
         });
         
