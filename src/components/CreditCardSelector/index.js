@@ -24,8 +24,8 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
             if (a.selected !== b.selected) {
                 return b.selected ? 1 : -1;
             }
-            // If both status are same, sort by ID
-            return a.id - b.id;
+            // Sort alphabetically by card name
+            return a.CardName.localeCompare(b.CardName);
         });
     };
 
@@ -96,17 +96,24 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
                 isDefaultCard: card.isDefaultCard || false
             }));
         
-        console.log('Selected card data being sent:', returnCreditCards);
-        
         try {
             // Get fresh Firebase token from the current user
             const token = await auth.currentUser.getIdToken();
-            const response = await axios.post(`${apiurl}/cards/update_cards`, 
+            
+            // Save the selected cards
+            await axios.post(
+                `${apiurl}/cards/update_cards`, 
                 { returnCreditCards },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
-            console.log('Response from server:', response.data);
-            setCreditCards(sortCards(response.data));
+
+            // Fetch the full list again to get the updated state
+            const fullListResponse = await axios.get(
+                `${apiurl}/cards/full-list`,
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+            
+            setCreditCards(sortCards(fullListResponse.data));
             setSaveStatus('Cards saved successfully!');
         } catch (error) {
             console.error('Error saving cards:', error);
@@ -116,8 +123,8 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
 
     const filteredCards = creditCards
         .filter(card => 
-            card.cardName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            card.cardType.toLowerCase().includes(searchTerm.toLowerCase())
+            card.CardName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            card.CardIssuer.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
     const handleAuthRedirect = (path) => {
@@ -158,18 +165,18 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
                         <input 
                             type="checkbox" 
                             id={card.id}
-                            name={card.cardName} 
-                            value={card.cardName} 
+                            name={card.CardName} 
+                            value={card.CardName} 
                             checked={card.selected || false} 
                             onChange={() => handleCheckboxChange(card.id)}
                         />
                         <img src='/credit-card-128.png' alt='Credit Card Img' />
                         <div className='card-desc'>
                             <p className='card-name'>
-                                {card.cardName}
+                                {card.CardName}
                                 {card.isDefaultCard && <span className="default-tag">Preferred Card</span>}
                             </p>
-                            <p className='card-type'>{card.cardType}</p>
+                            <p className='card-type'>{card.CardIssuer}</p>
                         </div>
                     </label>
                     {card.selected && !card.isDefaultCard && (

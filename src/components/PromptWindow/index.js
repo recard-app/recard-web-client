@@ -24,6 +24,7 @@ const CHAT_HISTORY_MESSAGES = {
 
 function PromptWindow({ 
     creditCards, 
+    userCardDetails,
     user, 
     returnCurrentChatId, 
     onHistoryUpdate, 
@@ -178,6 +179,11 @@ function PromptWindow({
             currentDate: currentDate,
             preferencesInstructions: preferencesInstructions
         };
+
+        // Only add userCardDetails if user is authenticated
+        if (user && userCardDetails?.length > 0) {
+            requestData.userCardDetails = userCardDetails;
+        }
 
         axios.post(`${apiurl}/ai/response`, requestData, { signal })
             .then(response => {

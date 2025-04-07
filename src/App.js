@@ -46,6 +46,8 @@ function AppContent() {
   const [preferencesInstructions, setPreferencesInstructions] = useState('');
   const [chatHistoryPreference, setChatHistoryPreference] = useState('keep_history');
 
+  const [userCardDetails, setUserCardDetails] = useState([]);
+
   useEffect(() => {
     setCurrentChatId(null);
   }, [user]);
@@ -152,8 +154,30 @@ function AppContent() {
     };
 
     fetchFullHistory();
-    console.log("full chat history fetched");
   }, [user, historyRefreshTrigger, chatHistoryPreference]);
+
+  useEffect(() => {
+    const fetchUserCardDetails = async () => {
+      if (!user) {
+        setUserCardDetails([]); // Clear details if no user
+        return;
+      }
+      
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const response = await axios.get(`${apiurl}/cards/user-card-details`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setUserCardDetails(response.data.cards);
+      } catch (error) {
+        console.error('Error fetching user card details:', error);
+      }
+    };
+
+    fetchUserCardDetails();
+  }, [user]);
 
   const handleModalOpen = () => {
     setModalShow(true);
@@ -163,8 +187,23 @@ function AppContent() {
     setModalShow(false);
   };
 
-  const getCreditCards = (returnCreditCards) => {
+  const getCreditCards = async (returnCreditCards) => {
     setCreditCards(returnCreditCards);
+    
+    // After updating credit cards, fetch fresh user card details
+    if (user) {
+      try {
+        const token = await auth.currentUser.getIdToken();
+        const response = await axios.get(`${apiurl}/cards/user-card-details`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        setUserCardDetails(response.data.cards);
+      } catch (error) {
+        console.error('Error fetching updated user card details:', error);
+      }
+    }
   };
 
   const getCurrentChatId = (returnCurrentChatId) => {
@@ -173,6 +212,7 @@ function AppContent() {
 
   const handleLogout = async () => {
     // Reset all states to their initial values
+    setUserCardDetails([]);
     setCurrentChatId(null);
     setChatHistory([]);
     setCreditCards([]);
@@ -244,7 +284,8 @@ function AppContent() {
           onHistoryUpdate={handleHistoryUpdate}
         />
         <PromptWindow 
-          creditCards={creditCards} 
+          creditCards={creditCards}
+          userCardDetails={userCardDetails}
           user={user} 
           returnCurrentChatId={getCurrentChatId}
           onHistoryUpdate={handleHistoryUpdate}
@@ -267,7 +308,11 @@ function AppContent() {
       />
       
       <Modal show={modalShow} handleClose={handleModalClose}>
-        <CreditCardSelector returnCreditCards={getCreditCards} existingCreditCards={creditCards} />
+        <CreditCardSelector 
+          returnCreditCards={getCreditCards} 
+          existingCreditCards={creditCards}
+          userCardDetails={userCardDetails}
+        />
       </Modal>
       
       <Routes>
