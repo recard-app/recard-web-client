@@ -1,13 +1,44 @@
 .prompt-history {
     margin: 12px 0;
     padding: 4px;
+    
     .entry {
-      margin: 4px 0;
+      margin: 2px 0;
+      display: flex;
+
+      p {
+        margin: 0;
+      }
+      
+      .entry-content {
+        display: flex;
+        align-items: flex-start;
+        max-width: 70%;  // Limit message width
+      }
     }
+    
     .entry-user {
       color: black;
+      justify-content: flex-end;  // Right align user messages
+      
+      .entry-content {
+        background-color: #c2c2c2;  // Facebook Messenger-like blue
+        padding: 2px 2px;
+        border-radius: 4px;
+        position: relative;
+        margin-left: auto;  // Push content to the right
+      }
     }
+    
     .entry-assistant {
-      color: blue;
+      color: #2b2b2b;
+      justify-content: flex-start;  // Left align AI messages
+      
+      .assistant-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
     }
 }

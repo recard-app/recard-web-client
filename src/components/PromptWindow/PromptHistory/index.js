@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './PromptHistory.scss';
+
 function PromptHistory({ chatHistory }) {
     const chatEntries = chatHistory;
   
@@ -7,11 +8,16 @@ function PromptHistory({ chatHistory }) {
       <div className='prompt-history'>
         {chatEntries.map((chatEntry) => (
           <div key={chatEntry.id} className={`${(chatEntry.chatSource == 'user') ? 'entry entry-user' : 'entry entry-assistant'}`}>
-            <p><b>{`${(chatEntry.chatSource == 'user') ? 'You' : 'ReCard AI'}: `}</b>{`${chatEntry.chatMessage}`}</p>
+            <div className="entry-content">
+              {chatEntry.chatSource === 'assistant' && (
+                <img src="https://placehold.co/40" alt="AI Assistant" className="assistant-avatar" />
+              )}
+              <p>{chatEntry.chatMessage}</p>
+            </div>
           </div>
         ))}
       </div>
     );
-  }
-  
-  export default PromptHistory;
+}
+
+export default PromptHistory;

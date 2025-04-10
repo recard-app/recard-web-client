@@ -17,8 +17,8 @@ function HistoryPanel({
   fullListSize, 
   currentChatId,
   returnCurrentChatId = () => {},
-  dateFilter = null,
-  onHistoryUpdate
+  onHistoryUpdate,
+  subscriptionPlan
 }) {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -189,6 +189,19 @@ function HistoryPanel({
     );
   };
 
+  const renderUpgradeMessage = () => {
+    if (!fullListSize || subscriptionPlan === 'premium') return null;
+    
+    // Only show on the last page
+    if (!paginationData || paginationData.current_page !== paginationData.total_pages) return null;
+
+    return (
+      <div className="upgrade-message">
+        <p>To see the rest of your chat history, upgrade to premium</p>
+      </div>
+    );
+  };
+
   return (
     <div className='history-panel'>
       {!fullListSize && <h2>Chat History</h2>}
@@ -214,6 +227,7 @@ function HistoryPanel({
                   ))}
                 </div>
               ))}
+              {renderUpgradeMessage()}
               {renderPagination()}
             </>
           ) : (

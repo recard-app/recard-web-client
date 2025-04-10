@@ -102,6 +102,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId 
         id={chatEntry.chatId}
         onClick={handleClick}
         style={{ cursor: 'pointer' }}
+        title={chatEntry.chatDescription}
       >
         <div className="entry-content">
           <p className="entry-title">{chatEntry.chatDescription}</p>

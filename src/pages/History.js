@@ -8,21 +8,19 @@ function History({
   currentChatId, 
   refreshTrigger, 
   returnCurrentChatId,
-  onHistoryUpdate 
+  onHistoryUpdate,
+  subscriptionPlan
 }) {
-  // Calculate the date 90 days ago
-  const ninetyDaysAgo = new Date();
-  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-
-  // Filter function to pass to HistoryPanel
-  const dateFilter = (entry) => {
-    const entryDate = new Date(entry.timestamp);
-    return entryDate >= ninetyDaysAgo;
+  const getHistoryTitle = () => {
+    if (subscriptionPlan === 'premium') {
+      return 'Chat History';
+    }
+    return 'Chat History - Last 90 Days';
   };
 
   return (
     <div className="history-page">
-      <h1>Chat History (Last 90 Days)</h1>
+      <h1>{getHistoryTitle()}</h1>
       <Link to="/">Back to Home</Link>
       <div className="history-content">
         <HistoryPanel 
@@ -32,8 +30,8 @@ function History({
           currentChatId={currentChatId}
           refreshTrigger={refreshTrigger}
           returnCurrentChatId={returnCurrentChatId}
-          dateFilter={dateFilter}
           onHistoryUpdate={onHistoryUpdate}
+          subscriptionPlan={subscriptionPlan}
         />
       </div>
     </div>
