@@ -44,60 +44,79 @@ function HistoryPanel({
   const organizeHistoryByDate = (entries) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    
-    const sections = [
-      { 
-        title: "Today",
-        entries: [],
-        cutoff: today
-      },
-      {
-        title: "Yesterday",
-        entries: [],
-        cutoff: yesterday
-      },
-      // Weeks (1-3)
-      ...[1, 2, 3].map(week => ({
-        title: week === 1 ? "Last Week" : `${week} Weeks Ago`,
-        entries: [],
-        cutoff: new Date(today.getTime() - week * 7 * 24 * 60 * 60 * 1000)
-      })),
-      // Months (1-12)
-      ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => {
-        const cutoff = new Date(today);
-        cutoff.setMonth(cutoff.getMonth() - month);
-        return {
-          title: month === 1 ? "Last Month" : `${month} Months Ago`,
-          entries: [],
-          cutoff: cutoff
-        };
-      }),
-      // Years (up to 5)
-      ...[1, 2, 3, 4, 5].map(year => {
-        const cutoff = new Date(today);
-        cutoff.setFullYear(cutoff.getFullYear() - year);
-        return {
-          title: year === 1 ? "Last Year" : `${year} Years Ago`,
-          entries: [],
-          cutoff: cutoff
-        };
-      })
-    ];
 
-    entries.forEach(entry => {
-      const entryDate = new Date(entry.timestamp);
-      for (let section of sections) {
-        if (entryDate >= section.cutoff) {
-          section.entries.push(entry);
-          break;
+    // Helper function to get month name and year
+    const getMonthYear = (date) => {
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        return `${months[date.getMonth()]} ${date.getFullYear()}`;
+    };
+
+    // Helper function to get unique key for month/year
+    const getMonthKey = (date) => {
+        return date.getFullYear() * 12 + date.getMonth();
+    };
+
+    // Group entries by their time section
+    const sections = entries.reduce((acc, entry) => {
+        const entryDate = new Date(entry.timestamp);
+        const daysDiff = Math.floor((today - entryDate) / (1000 * 60 * 60 * 24));
+
+        let key, title;
+
+        if (daysDiff < 1) {
+            key = 'today';
+            title = 'Today';
+        } else if (daysDiff < 2) {
+            key = 'yesterday';
+            title = 'Yesterday';
+        } else if (daysDiff < 7) {
+            key = 'lastweek';
+            title = 'Last Week';
+        } else if (daysDiff < 14) {
+            key = '2weeks';
+            title = '2 Weeks Ago';
+        } else if (daysDiff < 21) {
+            key = '3weeks';
+            title = '3 Weeks Ago';
+        } else {
+            // Group by month for entries older than 21 days
+            key = getMonthKey(entryDate);
+            title = getMonthYear(entryDate);
         }
-      }
-    });
 
-    // Only return sections that have entries
-    return sections.filter(section => section.entries.length > 0);
+        if (!acc[key]) {
+            acc[key] = { title, entries: [], key };
+        }
+        acc[key].entries.push(entry);
+        return acc;
+    }, {});
+
+    // Sort sections and entries
+    const orderedSections = Object.values(sections)
+        .sort((a, b) => {
+            // Special handling for non-month sections
+            const specialOrder = ['today', 'yesterday', 'lastweek', '2weeks', '3weeks'];
+            const aIndex = specialOrder.indexOf(a.key);
+            const bIndex = specialOrder.indexOf(b.key);
+            
+            if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+            if (aIndex !== -1) return -1;
+            if (bIndex !== -1) return 1;
+            
+            // For month sections, sort by their numeric key (most recent first)
+            return b.key - a.key;
+        })
+        .map(section => ({
+            title: section.title,
+            entries: section.entries.sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            )
+        }));
+
+    return orderedSections;
   };
 
   const fetchPagedHistory = async () => {

@@ -40,21 +40,20 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId 
       return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
     }
     
-    // Less than a month
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 30) {
-      return `${diffInDays} ${diffInDays === 1 ? 'day' : 'days'} ago`;
-    }
+    // After 24 hours, show Month Day, Time format
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
     
-    // Less than a year
-    const diffInMonths = Math.floor(diffInDays / 30);
-    if (diffInMonths < 12) {
-      return `${diffInMonths} ${diffInMonths === 1 ? 'month' : 'months'} ago`;
-    }
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // convert 0 to 12
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
     
-    // A year or more
-    const diffInYears = Math.floor(diffInDays / 365);
-    return `${diffInYears} ${diffInYears === 1 ? 'year' : 'years'} ago`;
+    return `${months[date.getMonth()]} ${date.getDate()}, ${hours}:${minutesStr} ${ampm}`;
   };
 
   const handleClick = (e) => {

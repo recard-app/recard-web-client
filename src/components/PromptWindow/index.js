@@ -17,9 +17,7 @@ const userClient = 'user';
 const MAX_CHAT_MESSAGES = 20;
 
 const CHAT_HISTORY_MESSAGES = {
-    'do_not_track_history': 'Your chat history is not being stored. Messages will vanish when you leave or refresh the page.',
-    'keep_month': 'Your chat history is being stored for one month before being automatically cleared.',
-    'keep_week': 'Your chat history is being stored for one week before being automatically cleared.'
+    'do_not_track_history': 'Your chat history is not being stored. Messages will vanish when you leave or refresh the page.'
 };
 
 function PromptWindow({ 
