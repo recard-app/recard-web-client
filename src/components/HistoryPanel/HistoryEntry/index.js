@@ -108,6 +108,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId 
           <p className="entry-title">{chatEntry.chatDescription}</p>
           {getRecommendedCard() && (
             <p className="recommended-card">
+              <img src="https://placehold.co/35x20" alt="Card" className="card-thumbnail" />
               Recommended: {getRecommendedCard()}
             </p>
           )}

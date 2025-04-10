@@ -37,6 +37,14 @@
             color: #666;
             margin: 0px 0 2px 0;
             font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+
+            .card-thumbnail {
+                border-radius: 2px;
+                vertical-align: middle;
+            }
         }
 
         .timestamp {

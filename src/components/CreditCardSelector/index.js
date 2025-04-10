@@ -55,7 +55,7 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
 
         // Initialize cards once on mount or when user changes
         fetchCards();
-    }, [user]); // Remove existingCreditCards dependency
+    }, [user]);
 
     useEffect(() => {
         //console.log(creditCards);
@@ -170,7 +170,7 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
                             checked={card.selected || false} 
                             onChange={() => handleCheckboxChange(card.id)}
                         />
-                        <img src='/credit-card-128.png' alt='Credit Card Img' />
+                        <img src={card.CardImage || '/credit-card-128.png'} alt='Credit Card Img' />
                         <div className='card-desc'>
                             <p className='card-name'>
                                 {card.CardName}

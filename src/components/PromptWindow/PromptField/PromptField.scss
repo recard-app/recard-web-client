@@ -1,14 +1,26 @@
 .prompt-field {
     width: 100%;
     display: flex;
-    align-items: center;
-    input {
-      height: 28px;
-      padding: 0 8px;
+    align-items: flex-start;
+    gap: 8px;
+    
+    textarea {
+      min-height: 32px;
+      max-height: 140px;
+      height: 32px;
+      padding: 4px 8px;
       flex-grow: 1;
+      resize: none;
+      overflow-y: auto;
+      line-height: 1.5;
+      font-family: inherit;
+      box-sizing: border-box;
+      transition: height 0.1s ease;
     }
+    
     button {
       width: 120px;
       height: 32px;
+      align-self: flex-start;
     }
 }

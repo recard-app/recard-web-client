@@ -25,7 +25,10 @@ function PromptSolution({ promptSolutions }) {
                     .filter(solution => solution.cardName)
                     .map((solution, index) => (
                         <div key={solution.id || index} className="solution-card">
-                            <h3>{solution.cardName}</h3>
+                            <div className="card-header">
+                                <img src="https://placehold.co/35x20" alt="Card" className="card-thumbnail" />
+                                <h3>{solution.cardName}</h3>
+                            </div>
                             <div className="card-details">
                                 {solution.rewardCategory && (
                                     <p><strong>Category:</strong> {solution.rewardCategory}</p>
