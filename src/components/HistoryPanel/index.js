@@ -132,7 +132,6 @@ function HistoryPanel({
       
       if (response.data.firstEntryDate) {
         const date = new Date(response.data.firstEntryDate);
-        console.log(date); // Log the date before setting state
         setFirstEntryDate(date);
       }
     } catch (error) {
@@ -372,12 +371,6 @@ function HistoryPanel({
     // If viewing a specific month/year (statement view)
     if (selectedMonth !== '') {
       const selectedDate = new Date(selectedYear, selectedMonth - 1, 1);
-      
-      console.log('Date comparison:', {
-        selectedDate: selectedDate.toISOString(),
-        cutoffDate: cutoffDate.toISOString(),
-        isBeforeCutoff: selectedDate < cutoffDate
-      });
 
       // Show upgrade message if the selected date is more than 90 days old
       return selectedDate < cutoffDate;
@@ -389,7 +382,7 @@ function HistoryPanel({
 
   const getUpgradeMessageText = () => {
     if (!selectedMonth) {
-      return 'Some of your older transactions are only available with a premium subscription';
+      return 'Unlock your complete transaction history with Premium';
     }
 
     const now = new Date();
@@ -400,19 +393,13 @@ function HistoryPanel({
     const monthsDiff = (cutoffDate.getFullYear() - selectedDate.getFullYear()) * 12 + 
                       (cutoffDate.getMonth() - selectedDate.getMonth());
 
-    console.log('Message calculation:', {
-      selectedDate: selectedDate.toISOString(),
-      cutoffDate: cutoffDate.toISOString(),
-      monthsDiff: monthsDiff
-    });
-
     // If the selected month is close to the 90-day cutoff (within 1 month)
     if (monthsDiff <= 1 && selectedDate < cutoffDate) {
-      return 'Some transactions older than 90 days may be hidden. Upgrade to view them';
+      return 'Any transactions older than 90 days may be hidden from this statement. Unlock all transaction history with Premium';
     }
 
     // If the selected month is well beyond the 90-day cutoff
-    return `Transactions from ${months.find(m => m.value === selectedMonth)?.label} ${selectedYear} are only available with a premium subscription`;
+    return `Access your complete ${months.find(m => m.value === selectedMonth)?.label} ${selectedYear} transaction history with Premium`;
   };
 
   const renderUpgradeMessage = () => {
@@ -482,12 +469,12 @@ function HistoryPanel({
 
   return (
     <div className='history-panel'>
-      {!fullListSize && <h2>Chat History</h2>}
+      {!fullListSize && <h2>Recent Transactions</h2>}
       {fullListSize && renderDateFilter()}
       {isLoading ? (
-        <p>Loading chat history...</p>
+        <p>Loading transaction history...</p>
       ) : displayList.length === 0 ? (
-        <p>No chat history available for this period</p>
+        <p>No transaction history available for this period</p>
       ) : (
         <>
           {fullListSize ? (

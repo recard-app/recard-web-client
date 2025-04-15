@@ -13,9 +13,9 @@ function History({
 }) {
   const getHistoryTitle = () => {
     if (subscriptionPlan === 'premium') {
-      return 'Chat History';
+      return 'Transaction History';
     }
-    return 'Chat History - Last 90 Days';
+    return 'Transaction History - Last 90 Days';
   };
 
   return (
