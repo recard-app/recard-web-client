@@ -29,30 +29,49 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 8px;
   margin-top: 1rem;
   padding: 1rem;
 
+  .pagination-numbers {
+    display: flex;
+    gap: 4px;
+  }
+
   button {
-    padding: 0.5rem 1rem;
+    padding: 6px 12px;
     border: 1px solid #ccc;
+    background: white;
     border-radius: 4px;
-    background: #fff;
     cursor: pointer;
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
+    min-width: 36px;
+    font-size: 14px;
+    
     &:hover:not(:disabled) {
       background: #f0f0f0;
     }
-  }
 
-  .page-info {
-    font-size: 0.9rem;
-    color: #666;
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    &.pagination-number {
+      &.active {
+        background: #007bff;
+        color: white;
+        border-color: #0056b3;
+        
+        &:hover {
+          background: #0056b3;
+        }
+      }
+    }
+
+    &.pagination-edge-button,
+    &.pagination-nav-button {
+      font-weight: bold;
+    }
   }
 }
 
@@ -69,5 +88,139 @@
     color: #6c757d;
     font-size: 0.9rem;
     font-weight: 500;
+  }
+}
+
+.date-filter {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 16px;
+
+  .filter-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .filter-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    
+    &:hover {
+      border-color: #999;
+    }
+
+    select {
+      appearance: none;
+      border: none;
+      background: transparent;
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      
+      &:focus {
+        outline: none;
+      }
+
+      &::-ms-expand {
+        display: none;
+      }
+    }
+
+    .month-select {
+      min-width: 140px;
+      border-right: 1px solid #ddd;
+      padding-right: 24px; // Space for dropdown arrow
+    }
+
+    .year-select {
+      min-width: 90px;
+      padding-right: 32px; // Space for dropdown arrow and some padding before clear button
+    }
+
+    .clear-filter {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      color: #666;
+      border-radius: 50%;
+      
+      &:hover {
+        background-color: #f0f0f0;
+        color: #333;
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+      }
+    }
+
+    // Custom dropdown arrows
+    .month-select,
+    .year-select {
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #666;
+        pointer-events: none;
+      }
+    }
+
+    // When the filter has focus
+    &:focus-within {
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+    }
+
+    // Active state styling (when filter is applied)
+    &.active {
+      background-color: #333;
+      border-color: #333;
+
+      select {
+        color: white;
+        
+        option {
+          color: black; // Keep dropdown options black text
+          background: white;
+        }
+      }
+
+      .clear-filter {
+        color: white;
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+          color: white;
+        }
+      }
+    }
   }
 }
