@@ -9,7 +9,8 @@ function History({
   refreshTrigger, 
   returnCurrentChatId,
   onHistoryUpdate,
-  subscriptionPlan
+  subscriptionPlan,
+  userCardDetails
 }) {
   const getHistoryTitle = () => {
     if (subscriptionPlan === 'premium') {
@@ -32,6 +33,7 @@ function History({
           returnCurrentChatId={returnCurrentChatId}
           onHistoryUpdate={onHistoryUpdate}
           subscriptionPlan={subscriptionPlan}
+          userCardDetails={userCardDetails}
         />
       </div>
     </div>

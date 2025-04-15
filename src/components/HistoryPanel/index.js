@@ -18,7 +18,8 @@ function HistoryPanel({
   currentChatId,
   returnCurrentChatId = () => {},
   onHistoryUpdate,
-  subscriptionPlan
+  subscriptionPlan,
+  userCardDetails
 }) {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -489,6 +490,7 @@ function HistoryPanel({
                       currentChatId={currentChatId}
                       onDelete={handleDelete}
                       returnCurrentChatId={returnCurrentChatId}
+                      userCardDetails={userCardDetails}
                     />
                   ))}
                 </div>
@@ -504,6 +506,7 @@ function HistoryPanel({
                         currentChatId={currentChatId}
                         onDelete={handleDelete}
                         returnCurrentChatId={returnCurrentChatId}
+                        userCardDetails={userCardDetails}
                       />
                     ))}
                   </div>
@@ -521,6 +524,7 @@ function HistoryPanel({
                 currentChatId={currentChatId}
                 onDelete={handleDelete}
                 returnCurrentChatId={returnCurrentChatId}
+                userCardDetails={userCardDetails}
               />
             ))
           )}

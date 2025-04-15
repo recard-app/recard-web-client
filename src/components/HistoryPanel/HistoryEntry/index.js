@@ -7,14 +7,23 @@ import Modal from '../../Modal';
 
 const apiurl = process.env.REACT_APP_BASE_URL;
 
-function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId }) {
+function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId, userCardDetails }) {
   const navigate = useNavigate();
   const isCurrent = chatEntry.chatId === currentChatId;
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // Get the recommended card name from solutions array
+  // Get the recommended card details from solutions array and userCardDetails
   const getRecommendedCard = () => {
-    return chatEntry.solutions?.[0]?.cardName || null;
+    const recommendedSolution = chatEntry.solutions?.[0];
+    if (!recommendedSolution) return null;
+
+    // Find matching card details using the solution's id
+    const cardDetails = userCardDetails?.find(card => card.id === recommendedSolution.id);
+    
+    return {
+      name: cardDetails?.CardName || recommendedSolution.cardName,
+      image: cardDetails?.CardImage || 'https://placehold.co/20x20'
+    };
   };
 
   // Format the timestamp to a readable date
@@ -95,6 +104,8 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId 
     }
   };
 
+  const recommendedCard = getRecommendedCard();
+
   return (
     <>
       <div 
@@ -106,10 +117,10 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId 
       >
         <div className="entry-content">
           <p className="entry-title">{chatEntry.chatDescription}</p>
-          {getRecommendedCard() && (
+          {recommendedCard && (
             <p className="recommended-card">
-              <img src="https://placehold.co/35x20" alt="Card" className="card-thumbnail" />
-              Recommended: {getRecommendedCard()}
+              <img src={recommendedCard.image} alt={recommendedCard.name} className="card-thumbnail" />
+              Recommended: {recommendedCard.name}
             </p>
           )}
           <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
