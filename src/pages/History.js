@@ -10,7 +10,7 @@ function History({
   returnCurrentChatId,
   onHistoryUpdate,
   subscriptionPlan,
-  userCardDetails
+  creditCards
 }) {
   const getHistoryTitle = () => {
     if (subscriptionPlan === 'premium') {
@@ -33,7 +33,7 @@ function History({
           returnCurrentChatId={returnCurrentChatId}
           onHistoryUpdate={onHistoryUpdate}
           subscriptionPlan={subscriptionPlan}
-          userCardDetails={userCardDetails}
+          creditCards={creditCards}
         />
       </div>
     </div>

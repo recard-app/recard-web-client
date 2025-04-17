@@ -309,7 +309,7 @@ function AppContent() {
           returnCurrentChatId={getCurrentChatId}
           onHistoryUpdate={handleHistoryUpdate}
           subscriptionPlan={subscriptionPlan}
-          userCardDetails={userCardDetails}
+          creditCards={creditCards}
         />
         <PromptWindow 
           creditCards={creditCards}
@@ -396,7 +396,7 @@ function AppContent() {
             returnCurrentChatId={getCurrentChatId}
             onHistoryUpdate={handleHistoryUpdate}
             subscriptionPlan={subscriptionPlan}
-            userCardDetails={userCardDetails}
+            creditCards={creditCards}
           />
         } />
       </Routes>

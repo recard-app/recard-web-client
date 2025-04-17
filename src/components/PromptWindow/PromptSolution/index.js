@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './PromptSolution.scss';
 
-function PromptSolution({ promptSolutions, userCardDetails }) {
+function PromptSolution({ promptSolutions, creditCards }) {
     const [solutions, setSolutions] = useState([]);
 
     useEffect(() => {
@@ -25,7 +25,7 @@ function PromptSolution({ promptSolutions, userCardDetails }) {
                     .filter(solution => solution.cardName)
                     .map((solution, index) => {
                         // Find matching card details using the solution's id
-                        const cardDetails = userCardDetails?.find(card => card.id === solution.id);
+                        const cardDetails = creditCards?.find(card => card.id === solution.id);
                         
                         // If no matching card is found, use the solution's default values
                         const cardName = cardDetails?.CardName || solution.cardName;

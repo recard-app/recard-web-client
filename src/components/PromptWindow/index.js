@@ -333,7 +333,7 @@ function PromptWindow({
             <PromptHistory chatHistory={chatHistory} />
             {isLoading && <div className="loading-indicator">...</div>}
             {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}
-            <PromptSolution promptSolutions={promptSolutions} userCardDetails={userCardDetails} />
+            <PromptSolution promptSolutions={promptSolutions} creditCards={creditCards} />
             <PromptField 
                 returnPrompt={getPrompt} 
                 isProcessing={isProcessing} 

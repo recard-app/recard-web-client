@@ -7,18 +7,18 @@ import Modal from '../../Modal';
 
 const apiurl = process.env.REACT_APP_BASE_URL;
 
-function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId, userCardDetails }) {
+function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId, creditCards }) {
   const navigate = useNavigate();
   const isCurrent = chatEntry.chatId === currentChatId;
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  // Get the recommended card details from solutions array and userCardDetails
+  // Get the recommended card details from solutions array and creditCards
   const getRecommendedCard = () => {
     const recommendedSolution = chatEntry.solutions?.[0];
     if (!recommendedSolution) return null;
 
     // Find matching card details using the solution's id
-    const cardDetails = userCardDetails?.find(card => card.id === recommendedSolution.id);
+    const cardDetails = creditCards?.find(card => card.id === recommendedSolution.id);
     
     return {
       name: cardDetails?.CardName || recommendedSolution.cardName,
