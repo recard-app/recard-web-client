@@ -120,7 +120,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
           {recommendedCard && (
             <p className="recommended-card">
               <img src={recommendedCard.image} alt={recommendedCard.name} className="card-thumbnail" />
-              Recommended: {recommendedCard.name}
+              {recommendedCard.name}
             </p>
           )}
           <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
