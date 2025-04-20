@@ -4,22 +4,22 @@ $secondary-color: #6c757d;
 $background-color: #f8f9fa;
 
 // Reset/Normalize CSS (if needed)
-// @import '~normalize.css';
+// @use '~normalize.css' as *;
 
 // Third-party imports (if any)
-// @import '~bootstrap/scss/bootstrap';
+// @use '~bootstrap/scss/bootstrap' as *;
 
 // Component styles
-@import './components/AppHeader/AppHeader.scss';
-@import './components/PromptWindow/PromptWindow.scss';
-@import './components/PromptWindow/PromptHistory/PromptHistory.scss';
-@import './components/PromptWindow/PromptField/PromptField.scss';
-@import './components/PromptWindow/PromptSolution/PromptSolution.scss';
-@import './components/PromptWindow/PromptHelpModal/PromptHelpModal.scss';
-@import './components/Modal/Modal.scss';
-@import './components/CreditCardSelector/CreditCardSelector.scss';
-@import './components/HistoryPanel/HistoryPanel.scss';
-
+@use './components/AppHeader/AppHeader.scss' as *;
+@use './components/PromptWindow/PromptWindow.scss' as *;
+@use './components/PromptWindow/PromptHistory/PromptHistory.scss' as *;
+@use './components/PromptWindow/PromptField/PromptField.scss' as *;
+@use './components/PromptWindow/PromptSolution/PromptSolution.scss' as *;
+@use './components/PromptWindow/PromptHelpModal/PromptHelpModal.scss' as *;
+@use './components/Modal/Modal.scss' as *;
+@use './components/CreditCardSelector/CreditCardSelector.scss' as *;
+@use './components/HistoryPanel/HistoryPanel.scss' as *;
+@use './components/PreferencesModule/PreferencesModule.scss' as *;
 // Base app styles
 .app {
   display: block;
