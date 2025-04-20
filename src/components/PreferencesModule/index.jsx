@@ -3,7 +3,7 @@ import axios from 'axios';
 import { auth } from '../../config/firebase';
 import './PreferencesModule.scss';
 
-const apiurl = process.env.REACT_APP_BASE_URL;
+const apiurl = import.meta.env.VITE_BASE_URL;
 
 const CHAT_HISTORY_OPTIONS = [
     { value: 'keep_history', label: 'Keep chat history' },

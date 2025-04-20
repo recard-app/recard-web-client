@@ -4,7 +4,7 @@ import './CreditCardSelector.scss';
 import { auth } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-const apiurl = process.env.REACT_APP_BASE_URL;
+const apiurl = import.meta.env.VITE_BASE_URL;
 
 function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
     const [creditCards, setCreditCards] = useState(existingCreditCards || []);

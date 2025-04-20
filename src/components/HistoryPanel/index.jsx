@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { auth } from '../../config/firebase';
 
-const apiurl = process.env.REACT_APP_BASE_URL;
+const apiurl = import.meta.env.VITE_BASE_URL;
 
 // Define the page size limit as a constant
 const PAGE_SIZE_LIMIT = 20;

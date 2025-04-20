@@ -27,7 +27,7 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 // Context
 import { useAuth } from './context/AuthContext';
 
-const apiurl = process.env.REACT_APP_BASE_URL;
+const apiurl = import.meta.env.VITE_BASE_URL;
 const quick_history_size = 3;
 
 function AppContent() {

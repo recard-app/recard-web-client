@@ -11,7 +11,7 @@ import './PromptWindow.scss';
 import axios from 'axios';
 import { auth } from '../../config/firebase';
 
-const apiurl = process.env.REACT_APP_BASE_URL;
+const apiurl = import.meta.env.VITE_BASE_URL;
 const aiClient = 'assistant';
 const userClient = 'user';
 const MAX_CHAT_MESSAGES = 20;

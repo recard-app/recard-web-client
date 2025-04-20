@@ -15,7 +15,7 @@ import {
 
 const AuthContext = createContext(null);
 
-const DEFAULT_PROFILE_PICTURE = 'http://localhost:3000/account.png';
+const DEFAULT_PROFILE_PICTURE = 'http://localhost:5173/account.png';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }) => {
       try {
         // Add configuration for email verification
         const actionCodeSettings = {
-          url: process.env.REACT_APP_EMAIL_VERIFICATION_REDIRECT_URL || window.location.origin,
+          url: import.meta.env.VITE_EMAIL_VERIFICATION_REDIRECT_URL || window.location.origin,
           handleCodeInApp: true,
         };
 
@@ -121,7 +121,7 @@ export const AuthProvider = ({ children }) => {
   const sendPasswordResetEmail = async (email) => {
     try {
       await firebaseSendPasswordResetEmail(auth, email, {
-        url: process.env.REACT_APP_PASSWORD_RESET_REDIRECT_URL || window.location.origin
+        url: import.meta.env.VITE_PASSWORD_RESET_REDIRECT_URL || window.location.origin
       });
     } catch (error) {
       console.error('Error sending password reset email:', error);

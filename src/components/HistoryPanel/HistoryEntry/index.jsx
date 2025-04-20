@@ -5,7 +5,7 @@ import axios from 'axios';
 import { auth } from '../../../config/firebase';
 import Modal from '../../Modal';
 
-const apiurl = process.env.REACT_APP_BASE_URL;
+const apiurl = import.meta.env.VITE_BASE_URL;
 
 function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId, creditCards }) {
   const navigate = useNavigate();

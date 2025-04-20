@@ -4,7 +4,7 @@ import Modal from '../components/Modal';
 import { auth } from '../config/firebase';
 import axios from 'axios';
 
-const apiurl = process.env.REACT_APP_BASE_URL;
+const apiurl = import.meta.env.VITE_BASE_URL;
 
 function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan }) {
   const { user, sendVerificationEmail } = useAuth();

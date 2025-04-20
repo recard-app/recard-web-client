@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 const SignUp = () => {
     const { registerWithEmail, login, sendVerificationEmail } = useAuth();
     const navigate = useNavigate();
-    const apiurl = process.env.REACT_APP_BASE_URL;
+    const apiurl = import.meta.env.VITE_BASE_URL;
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
