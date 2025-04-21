@@ -4,6 +4,7 @@ import './CreditCardSelector.scss';
 import { auth } from '../../config/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+
 const apiurl = import.meta.env.VITE_BASE_URL;
 
 function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
@@ -40,7 +41,10 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
                     headers['Authorization'] = `Bearer ${token}`;
                 }
 
-                const response = await axios.get(`${apiurl}/cards/full-list`, { headers });
+                const response = await axios.get(
+                    `${apiurl}/credit-cards/list/previews?includeCardSelection=true`,
+                    { headers }
+                );
                 setCreditCards(sortCards(response.data));
             } catch (error) {
                 console.error('Error fetching cards:', error);
@@ -102,14 +106,14 @@ function CreditCardSelector({ returnCreditCards, existingCreditCards }) {
             
             // Save the selected cards
             await axios.post(
-                `${apiurl}/cards/update_cards`, 
+                `${apiurl}/users/cards/update`, 
                 { returnCreditCards },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
             // Fetch the full list again to get the updated state
             const fullListResponse = await axios.get(
-                `${apiurl}/cards/full-list`,
+                `${apiurl}/credit-cards/list/previews?includeCardSelection=true`,
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
             

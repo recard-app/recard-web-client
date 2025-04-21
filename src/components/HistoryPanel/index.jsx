@@ -125,7 +125,7 @@ function HistoryPanel({
   const fetchFirstEntryDate = async () => {
     try {
       const token = await auth.currentUser.getIdToken();
-      const response = await axios.get(`${apiurl}/history/history_start`, {
+      const response = await axios.get(`${apiurl}/users/history/start_date`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -250,7 +250,7 @@ function HistoryPanel({
         params.year = selectedYear.toString();
       }
 
-      const response = await axios.get(`${apiurl}/history/chat_history`, {
+      const response = await axios.get(`${apiurl}/users/history`, {
         headers: {
           'Authorization': `Bearer ${token}`
         },

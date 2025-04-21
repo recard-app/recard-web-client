@@ -12,6 +12,7 @@ import axios from 'axios';
 import { auth } from '../../config/firebase';
 
 const apiurl = import.meta.env.VITE_BASE_URL;
+
 const aiClient = 'assistant';
 const userClient = 'user';
 const MAX_CHAT_MESSAGES = 20;
@@ -119,7 +120,7 @@ function PromptWindow({
             // If not found in existing history, fetch from API
             try {
                 const token = await auth.currentUser.getIdToken();
-                const response = await axios.get(`${apiurl}/history/get/${urlChatId}`, {
+                const response = await axios.get(`${apiurl}/users/history/${urlChatId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -183,7 +184,7 @@ function PromptWindow({
             requestData.userCardDetails = userCardDetails;
         }
 
-        axios.post(`${apiurl}/ai/response`, requestData, { signal })
+        axios.post(`${apiurl}/chat/response`, requestData, { signal })
             .then(response => {
                 const aiResponse = response.data;
                 const updatedHistory = [...chatHistory, userMessage, {
@@ -196,7 +197,7 @@ function PromptWindow({
                 setIsLoadingSolutions(true);
                 setChatHistory(limitChatHistory(updatedHistory));
 
-                return axios.post(`${apiurl}/ai/solutions`, {
+                return axios.post(`${apiurl}/chat/solution`, {
                     ...requestData,
                     chatHistory: limitChatHistory(updatedHistory)
                 }, { signal }).then(solutionsResponse => ({
@@ -221,8 +222,8 @@ function PromptWindow({
                 return auth.currentUser.getIdToken()
                     .then(token => {
                         const endpoint = isNewChat ? 
-                            `${apiurl}/history/add` : 
-                            `${apiurl}/history/update/${chatId}`;
+                            `${apiurl}/users/history` : 
+                            `${apiurl}/users/history/${chatId}`;
 
                         return axios({
                             method: isNewChat ? 'post' : 'put',

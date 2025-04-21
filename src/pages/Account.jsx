@@ -14,7 +14,6 @@ function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan })
   const [deleteStatus, setDeleteStatus] = useState({ type: 'confirm', message: '' });
 
   const handleVerificationEmail = async () => {
-    console.log(user);
     try {
       await sendVerificationEmail();
       setMessageType('success');
@@ -28,7 +27,7 @@ function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan })
   const handleDeleteAllChats = async () => {
     try {
       const token = await auth.currentUser.getIdToken();
-      const response = await axios.delete(`${apiurl}/history/delete_all_chats`, {
+      const response = await axios.delete(`${apiurl}/users/history/all`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

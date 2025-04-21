@@ -33,8 +33,8 @@ function PreferencesModule({
 
                 // Load both preferences in parallel
                 const [instructionsResponse, chatHistoryResponse] = await Promise.all([
-                    axios.get(`${apiurl}/user/preferences_instructions`, { headers }),
-                    axios.get(`${apiurl}/user/preferences_chat_history`, { headers })
+                    axios.get(`${apiurl}/users/preferences/instructions`, { headers }),
+                    axios.get(`${apiurl}/users/preferences/chat_history`, { headers })
                 ]);
 
                 // Update instructions
@@ -70,12 +70,12 @@ function PreferencesModule({
             // Save both preferences in parallel
             await Promise.all([
                 axios.post(
-                    `${apiurl}/user/preferences_instructions`,
+                    `${apiurl}/users/preferences/instructions`,
                     { instructions },
                     { headers }
                 ),
                 axios.post(
-                    `${apiurl}/user/preferences_chat_history`,
+                    `${apiurl}/users/preferences/chat_history`,
                     { chatHistory: chatHistoryPreference },
                     { headers }
                 )

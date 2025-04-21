@@ -65,7 +65,7 @@ function AppContent() {
       
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await axios.get(`${apiurl}/cards/full-list`, {
+        const response = await axios.get(`${apiurl}/credit-cards/list/previews?includeCardSelection=true`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -85,7 +85,7 @@ function AppContent() {
       
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await axios.get(`${apiurl}/user/preferences_instructions`, {
+        const response = await axios.get(`${apiurl}/users/preferences/instructions`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -105,7 +105,7 @@ function AppContent() {
       
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await axios.get(`${apiurl}/user/preferences_chat_history`, {
+        const response = await axios.get(`${apiurl}/users/preferences/chat_history`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -127,7 +127,7 @@ function AppContent() {
       
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await axios.get(`${apiurl}/history/chat_history`, {
+        const response = await axios.get(`${apiurl}/users/history`, {
           headers: {
             'Authorization': `Bearer ${token}`
           },
@@ -167,7 +167,7 @@ function AppContent() {
       
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await axios.get(`${apiurl}/cards/user-card-details`, {
+        const response = await axios.get(`${apiurl}/users/cards/details`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -190,7 +190,7 @@ function AppContent() {
       
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await axios.get(`${apiurl}/user/subscription`, {
+        const response = await axios.get(`${apiurl}/users/subscription/plan`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -220,7 +220,7 @@ function AppContent() {
     if (user) {
       try {
         const token = await auth.currentUser.getIdToken();
-        const response = await axios.get(`${apiurl}/cards/user-card-details`, {
+        const response = await axios.get(`${apiurl}/users/cards/details`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

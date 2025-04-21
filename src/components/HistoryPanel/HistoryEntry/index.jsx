@@ -80,7 +80,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
   const handleDeleteConfirm = async () => {
     try {
       const token = await auth.currentUser.getIdToken();
-      await axios.delete(`${apiurl}/history/delete/${chatEntry.chatId}`, {
+      await axios.delete(`${apiurl}/users/history/${chatEntry.chatId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 
+const apiurl = import.meta.env.VITE_BASE_URL;
+
 const SignUp = () => {
     const { registerWithEmail, login, sendVerificationEmail } = useAuth();
     const navigate = useNavigate();
-    const apiurl = import.meta.env.VITE_BASE_URL;
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
