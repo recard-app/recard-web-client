@@ -106,7 +106,7 @@ function PromptWindow({
             if (!user || !urlChatId || urlChatId === chatId) return;
 
             // First check if the chat exists in the existing history
-            const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
+            const existingChat = existingHistoryList.find(chat => chat.id === urlChatId);
             
             if (existingChat) {
                 setChatHistory(limitChatHistory(existingChat.conversation));
