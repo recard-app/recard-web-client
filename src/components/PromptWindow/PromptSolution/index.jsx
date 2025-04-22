@@ -28,7 +28,7 @@ function PromptSolution({ promptSolutions, creditCards }) {
                         const cardDetails = creditCards?.find(card => card.id === solution.id);
                         
                         // If no matching card is found, use the solution's default values
-                        const cardName = cardDetails?.CardName || solution.cardName;
+                        const cardName = cardDetails?.CardName || solution.CardName;
                         const cardImage = cardDetails?.CardImage || 'https://placehold.co/20x20';
                         
                         return (
@@ -38,11 +38,11 @@ function PromptSolution({ promptSolutions, creditCards }) {
                                     <h3>{cardName}</h3>
                                 </div>
                                 <div className="card-details">
-                                    {solution.rewardCategory && (
-                                        <p><strong>Category:</strong> {solution.rewardCategory}</p>
+                                    {solution.RewardCategory && (
+                                        <p><strong>Category:</strong> {solution.RewardCategory}</p>
                                     )}
-                                    {solution.rewardRate && (
-                                        <p><strong>Reward Rate:</strong> {solution.rewardRate}</p>
+                                    {solution.RewardRate && (
+                                        <p><strong>Reward Rate:</strong> {solution.RewardRate}</p>
                                     )}
                                 </div>
                             </div>
