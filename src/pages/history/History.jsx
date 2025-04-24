@@ -1,5 +1,5 @@
 import React from 'react';
-import HistoryPanel from '../components/HistoryPanel';
+import HistoryPanel from '../../components/HistoryPanel';
 import { Link } from 'react-router-dom';
 
 function History({ 

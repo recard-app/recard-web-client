@@ -1,5 +1,5 @@
 import React from 'react';
-import PreferencesModule from '../components/PreferencesModule';
+import PreferencesModule from '../../components/PreferencesModule';
 
 const Preferences = ({ 
     onModalOpen, 

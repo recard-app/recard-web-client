@@ -7,14 +7,14 @@ import { auth } from './config/firebase';
 import './App.scss';
 
 // Pages
-import About from './pages/About';
-import Account from './pages/Account';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import Welcome from './pages/Welcome';
-import Preferences from './pages/Preferences';
-import History from './pages/History';
-import ForgotPassword from './pages/ForgotPassword';
+import About from './pages/about/About';
+import Account from './pages/account/Account';
+import Preferences from './pages/preferences/Preferences';
+import SignIn from './pages/authentication/SignIn';
+import SignUp from './pages/authentication/SignUp';
+import ForgotPassword from './pages/authentication/ForgotPassword';
+import Welcome from './pages/authentication/Welcome';
+import History from './pages/history/History';
 // Components
 import AppHeader from './components/AppHeader';
 import HistoryPanel from './components/HistoryPanel';

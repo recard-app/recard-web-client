@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import Modal from '../components/Modal';
-import { auth } from '../config/firebase';
+import { useAuth } from '../../context/AuthContext';
+import Modal from '../../components/Modal';
+import { auth } from '../../config/firebase';
 import axios from 'axios';
 
 const apiurl = import.meta.env.VITE_BASE_URL;
