@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { CreditCard } from '../types/CreditCardTypes';
 import { apiurl, getAuthHeaders } from './index';
+import { Conversation } from '../types';
 
 /**
- * Service class for user-related API operations
+ * Service class for user-related Credit Card API operations
  */
 export const UserCreditCardService = {
     /**
@@ -28,5 +29,15 @@ export const UserCreditCardService = {
             { returnCreditCards: selectedCards },
             { headers }
         );
+    }
+};
+
+export const UserHistoryService = {
+    /**
+     * Deletes History Entry
+     */
+    async deleteHistoryEntry(chatId: string): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.delete(`${apiurl}/users/history/${chatId}`, { headers });
     }
 };

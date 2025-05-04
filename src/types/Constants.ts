@@ -1,0 +1,1 @@
+export const PLACEHOLDER_CARD_IMAGE = 'https://placehold.co/20x20';

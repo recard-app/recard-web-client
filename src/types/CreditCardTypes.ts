@@ -12,6 +12,11 @@ export interface CreditCard {
     isDefaultCard?: boolean; // Whether this is the user's default card (optional, for user context)
 }
 
+export interface SimpleCardDisplay {
+    name: string;
+    image: string;
+}
+
 // Response types
 
 /**
