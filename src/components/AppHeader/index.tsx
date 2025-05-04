@@ -1,27 +1,32 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User as FirebaseUser } from 'firebase/auth';
 import './AppHeader.scss';
-
-interface AppHeaderProps {
-  user: FirebaseUser | null;
-  onModalOpen: () => void;
-  onLogout: () => void;
-}
+import { AppHeaderProps, handleClickOutside } from './utils';
 
 const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) => {
+  /**
+   * State to control profile dropdown menu visibility
+   * true = dropdown is visible, false = dropdown is hidden
+   */
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  /**
+   * Ref to track dropdown container element for click outside detection
+   * Used to close dropdown when clicking outside of it
+   */
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
+  /**
+   * Effect to handle clicking outside of dropdown menu
+   * - Adds click event listener to document
+   * - Checks if click was outside dropdown area
+   * - Closes dropdown if click was outside
+   * - Cleans up event listener on unmount
+   */
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    const listener = (event: MouseEvent) => handleClickOutside(event, dropdownRef, setDropdownOpen);
+    document.addEventListener('mousedown', listener);
+    return () => document.removeEventListener('mousedown', listener);
   }, []);
 
   return (
