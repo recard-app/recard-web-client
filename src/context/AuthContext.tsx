@@ -34,10 +34,21 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 const DEFAULT_PROFILE_PICTURE = 'http://localhost:5173/account.png';
 
+/**
+ * AuthProvider component handles Firebase authentication state and methods.
+ * Provides authentication context to child components.
+ */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  /**
+   * Sets up a Firebase auth state listener that:
+   * - Updates the user state when auth state changes
+   * - Reloads user data to ensure it's fresh
+   * - Handles initial loading state
+   * Returns cleanup function to unsubscribe when component unmounts
+   */
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
@@ -52,6 +63,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
+  /**
+   * Handles Google Sign-In authentication
+   * @returns Object containing:
+   * - user: Authenticated Firebase user
+   * - token: JWT token for API calls
+   * - isNewUser: Boolean indicating if this is a new user
+   */
   const login = async () => {
     const provider = new GoogleAuthProvider();
     try {
@@ -66,6 +84,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * Signs out the current user and clears auth state
+   * Redirects to sign-in page handled by route protection
+   */
   const logout = async (): Promise<void> => {
     try {
       await signOut(auth);
@@ -75,6 +97,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * Creates new user account with email/password
+   * Also sets up initial profile with name and default picture
+   * @param email - User's email
+   * @param password - User's password
+   * @param firstName - User's first name
+   * @param lastName - User's last name
+   * @returns Object containing authenticated user and JWT token
+   */
   const registerWithEmail = async (
     email: string,
     password: string,
@@ -95,6 +126,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * Authenticates existing user with email/password
+   * @param email - User's email
+   * @param password - User's password
+   * @returns Object containing authenticated user and JWT token
+   */
   const loginWithEmail = async (email: string, password: string) => {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
@@ -106,6 +143,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * Sends email verification to currently signed-in user
+   * Includes configuration for redirect URL after verification
+   * @returns Promise<boolean> - True if email sent successfully
+   * @throws Error if too many requests or other issues
+   */
   const sendVerificationEmail = async (): Promise<boolean> => {
     if (auth.currentUser && !auth.currentUser.emailVerified) {
       try {
@@ -128,6 +171,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return false;
   };
 
+  /**
+   * Sends password reset email to specified address
+   * Includes configuration for redirect URL after reset
+   * @param email - Email address to send reset link to
+   */
   const sendPasswordResetEmail = async (email: string): Promise<void> => {
     try {
       await firebaseSendPasswordResetEmail(auth, email, {
@@ -161,6 +209,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
+/**
+ * Custom hook to access auth context
+ * @throws Error if used outside of AuthProvider
+ * @returns AuthContextType containing user state and auth methods
+ */
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
