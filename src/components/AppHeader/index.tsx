@@ -1,7 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './AppHeader.scss';
-import { AppHeaderProps, handleClickOutside } from './utils';
+import { handleClickOutside } from './utils';
+import { User as FirebaseUser } from 'firebase/auth';
+/**
+ * Props interface for AppHeader component
+ * @property {FirebaseUser | null} user - Current Firebase user or null if not authenticated
+ * @property {() => void} onModalOpen - Callback to open credit card selection modal
+ * @property {() => void} onLogout - Callback to handle user logout
+ */
+export interface AppHeaderProps {
+  user: FirebaseUser | null;
+  onModalOpen: () => void;
+  onLogout: () => void;
+}
 
 const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) => {
   /**
