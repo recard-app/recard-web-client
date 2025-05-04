@@ -1,6 +1,7 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { auth } from '../config/firebase';
 import { 
+  User as FirebaseUser,
   GoogleAuthProvider, 
   signInWithPopup, 
   onAuthStateChanged,
@@ -10,29 +11,38 @@ import {
   updateProfile,
   sendEmailVerification,
   getAuth,
-  sendPasswordResetEmail as firebaseSendPasswordResetEmail
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail,
+  UserCredential
 } from 'firebase/auth';
 
-const AuthContext = createContext(null);
+interface AuthContextType {
+  user: FirebaseUser | null;
+  login: () => Promise<{ user: FirebaseUser; token: string; isNewUser: boolean }>;
+  loginWithEmail: (email: string, password: string) => Promise<{ user: FirebaseUser; token: string }>;
+  registerWithEmail: (email: string, password: string, firstName: string, lastName: string) => Promise<{ user: FirebaseUser; token: string }>;
+  logout: () => Promise<void>;
+  sendVerificationEmail: () => Promise<boolean>;
+  sendPasswordResetEmail: (email: string) => Promise<void>;
+  loading: boolean;
+}
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
 
 const DEFAULT_PROFILE_PICTURE = 'http://localhost:5173/account.png';
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // Refresh the user object to get the latest data
-        await user.reload(); // Ensure the user object is refreshed
-        setUser({
-          email: user.email,
-          name: user.displayName,
-          picture: user.photoURL || DEFAULT_PROFILE_PICTURE,
-          uid: user.uid,
-          emailVerified: user.emailVerified // Ensure this is included
-        });
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        await firebaseUser.reload();
+        setUser(firebaseUser);
       } else {
         setUser(null);
       }
@@ -47,13 +57,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      // Check if this is a new user
-      const isNewUser = result._tokenResponse.isNewUser;
-      if (isNewUser) {
-        console.log('First time sign in with Google!');
-        // You can perform additional setup for new users here
-      }
-      // Get ID token for backend authentication
+      const isNewUser = (result as any)._tokenResponse.isNewUser;
       const token = await user.getIdToken();
       return { user, token, isNewUser };
     } catch (error) {
@@ -62,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     try {
       await signOut(auth);
       setUser(null);
@@ -71,12 +75,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const registerWithEmail = async (email, password, firstName, lastName) => {
+  const registerWithEmail = async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string
+  ) => {
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
-      // Update the user's display name with first and last name
       await updateProfile(result.user, {
-        displayName: `${firstName} ${lastName}`
+        displayName: `${firstName} ${lastName}`,
+        photoURL: DEFAULT_PROFILE_PICTURE
       });
       const token = await result.user.getIdToken();
       return { user: result.user, token };
@@ -86,7 +95,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const loginWithEmail = async (email, password) => {
+  const loginWithEmail = async (email: string, password: string) => {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       const token = await result.user.getIdToken();
@@ -97,7 +106,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const sendVerificationEmail = async () => {
+  const sendVerificationEmail = async (): Promise<boolean> => {
     if (auth.currentUser && !auth.currentUser.emailVerified) {
       try {
         // Add configuration for email verification
@@ -108,7 +117,7 @@ export const AuthProvider = ({ children }) => {
 
         await sendEmailVerification(auth.currentUser, actionCodeSettings);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         if (error.code === 'auth/too-many-requests') {
           throw new Error('Please wait a few minutes before requesting another verification email.');
         }
@@ -116,9 +125,10 @@ export const AuthProvider = ({ children }) => {
         throw error;
       }
     }
+    return false;
   };
 
-  const sendPasswordResetEmail = async (email) => {
+  const sendPasswordResetEmail = async (email: string): Promise<void> => {
     try {
       await firebaseSendPasswordResetEmail(auth, email, {
         url: import.meta.env.VITE_PASSWORD_RESET_REDIRECT_URL || window.location.origin
@@ -133,7 +143,7 @@ export const AuthProvider = ({ children }) => {
     return <div>Loading...</div>;
   }
 
-  const value = {
+  const value: AuthContextType = {
     user,
     login,
     loginWithEmail,
@@ -151,4 +161,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext); 
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}; 

@@ -1,14 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { User as FirebaseUser } from 'firebase/auth';
 import './AppHeader.scss';
 
-const AppHeader = ({ user, onModalOpen, onLogout }) => {
+interface AppHeaderProps {
+  user: FirebaseUser | null;
+  onModalOpen: () => void;
+  onLogout: () => void;
+}
+
+const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
     };
@@ -28,9 +35,9 @@ const AppHeader = ({ user, onModalOpen, onLogout }) => {
         <Link to="/about">About</Link>
         {user ? (
           <div className="profile-dropdown" ref={dropdownRef}>
-            {user.picture && (
+            {user.photoURL && (
               <img 
-                src={user.picture} 
+                src={user.photoURL} 
                 alt="Profile" 
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
