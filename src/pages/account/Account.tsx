@@ -1,59 +1,47 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Modal, useModal } from '../../components/Modal';
-import { auth } from '../../config/firebase';
-import axios from 'axios';
+import { ChatHistory, SubscriptionPlan } from '../../types/UserTypes';
+import { 
+  DeleteStatusType, 
+  handleVerificationEmail as handleVerificationEmailUtil,
+  handleDeleteAllChats as handleDeleteAllChatsUtil,
+} from './utils';
+import './Account.scss';
 
-const apiurl = import.meta.env.VITE_BASE_URL;
+/**
+ * Props for the Account component
+ * @interface AccountProps
+ * @property {React.Dispatch<React.SetStateAction<ChatHistory>>} setChatHistory - Function to update the chat history state
+ * @property {React.Dispatch<React.SetStateAction<number>>} setHistoryRefreshTrigger - Function to trigger a refresh of the chat history
+ * @property {SubscriptionPlan} subscriptionPlan - The user's current subscription plan ('free' or 'premium')
+ */
+interface AccountProps {
+  setChatHistory: React.Dispatch<React.SetStateAction<ChatHistory>>;
+  setHistoryRefreshTrigger: React.Dispatch<React.SetStateAction<number>>;
+  subscriptionPlan: SubscriptionPlan;
+}
 
-function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan }) {
+const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan }) => {
   const { user, sendVerificationEmail } = useAuth();
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
-  const [deleteStatus, setDeleteStatus] = useState({ type: 'confirm', message: '' });
+  const [message, setMessage] = useState<string>('');
+  const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
+  const [deleteStatus, setDeleteStatus] = useState<DeleteStatusType>({ type: 'confirm', message: '' });
 
   const deleteModal = useModal();
 
-  const handleVerificationEmail = async () => {
-    try {
-      await sendVerificationEmail();
-      setMessageType('success');
-      setMessage('Verification email sent! Please check your inbox.');
-    } catch (error) {
-      setMessageType('error');
-      setMessage(error.message || 'Failed to send verification email. Please try again later.');
-    }
+  const handleVerificationEmailClick = async (): Promise<void> => {
+    const result = await handleVerificationEmailUtil(sendVerificationEmail);
+    setMessageType(result.messageType);
+    setMessage(result.message);
   };
 
-  const handleDeleteAllChats = async () => {
-    try {
-      const token = await auth.currentUser.getIdToken();
-      const response = await axios.delete(`${apiurl}/users/history/all`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (response.status === 200) {
-        setChatHistory([]);
-        setHistoryRefreshTrigger(prev => prev + 1);
-        setDeleteStatus({ 
-          type: 'success', 
-          message: 'All chat history has been deleted successfully.' 
-        });
-      } else {
-        throw new Error('Failed to delete chat history');
-      }
-    } catch (error) {
-      console.error('Error deleting chat history:', error);
-      setDeleteStatus({ 
-        type: 'error', 
-        message: 'Failed to delete chat history. Please try again.' 
-      });
-    }
+  const handleDeleteAllChatsClick = async (): Promise<void> => {
+    const result = await handleDeleteAllChatsUtil(setChatHistory, setHistoryRefreshTrigger);
+    setDeleteStatus(result);
   };
 
-  const handleCloseModal = () => {
+  const handleCloseModal = (): void => {
     deleteModal.close();
     setDeleteStatus({ type: 'confirm', message: '' });
   };
@@ -62,92 +50,50 @@ function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan })
     switch (deleteStatus.type) {
       case 'success':
         return (
-          <div style={{ padding: '20px', textAlign: 'center' }}>
+          <div className="modal-container">
             <h2 style={{ color: '#4CAF50' }}>Success!</h2>
             <p style={{ margin: '20px 0' }}>{deleteStatus.message}</p>
-            <button
-              onClick={handleCloseModal}
-              style={{
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                backgroundColor: '#4CAF50',
-                color: 'white'
-              }}
-            >
+            <button onClick={handleCloseModal} className="modal-button modal-button--success">
               Close
             </button>
           </div>
         );
       case 'error':
         return (
-          <div style={{ padding: '20px', textAlign: 'center' }}>
+          <div className="modal-container">
             <h2 style={{ color: '#f44336' }}>Error</h2>
             <p style={{ margin: '20px 0' }}>{deleteStatus.message}</p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-              <button
-                onClick={handleCloseModal}
-                style={{
-                  padding: '8px 16px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  backgroundColor: '#fff'
-                }}
-              >
+            <div className="modal-button-container">
+              <button onClick={handleCloseModal} className="modal-button modal-button--close">
                 Close
               </button>
               <button
                 onClick={() => {
                   setDeleteStatus({ type: 'confirm', message: '' });
-                  handleDeleteAllChats();
+                  handleDeleteAllChatsClick();
                 }}
-                style={{
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  backgroundColor: '#f44336',
-                  color: 'white'
-                }}
+                className="modal-button modal-button--error"
               >
                 Try Again
               </button>
             </div>
           </div>
         );
-      default: // 'confirm' case
+      default:
         return (
-          <div style={{ padding: '20px', textAlign: 'center' }}>
+          <div className="modal-container">
             <h2>Delete All Chat History</h2>
             <p style={{ margin: '20px 0' }}>
               Are you sure you want to delete all chat history? 
               This action cannot be undone.
             </p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-              <button
-                onClick={handleCloseModal}
-                style={{
-                  padding: '8px 16px',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  backgroundColor: '#fff'
-                }}
-              >
+            <div className="modal-button-container">
+              <button onClick={handleCloseModal} className="modal-button modal-button--close">
                 Cancel
               </button>
               <button
-                onClick={handleDeleteAllChats}
-                style={{
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  backgroundColor: '#ff0000',
-                  color: 'white'
-                }}
+                onClick={handleDeleteAllChatsClick}
+                className="modal-button modal-button--error"
               >
                 Delete All
               </button>
@@ -163,9 +109,9 @@ function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan })
       <div className="account-content">
         {user ? (
           <div className="user-info">
-            {user.picture && (
+            {user.photoURL && (
               <img 
-                src={user.picture} 
+                src={user.photoURL} 
                 alt="Profile" 
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
@@ -177,7 +123,7 @@ function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan })
                 }} 
               />
             )}
-            <p><strong>Name:</strong> {user.name}</p>
+            <p><strong>Name:</strong> {user.displayName}</p>
             <p><strong>Email:</strong> {user.email}</p>
             <p>
               <strong>Email Status:</strong>{' '}
@@ -199,7 +145,7 @@ function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan })
               <>
                 <button 
                   className="verify-button"
-                  onClick={handleVerificationEmail}
+                  onClick={handleVerificationEmailClick}
                 >
                   Send Verification Email
                 </button>

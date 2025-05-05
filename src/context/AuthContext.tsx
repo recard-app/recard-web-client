@@ -150,25 +150,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * @throws Error if too many requests or other issues
    */
   const sendVerificationEmail = async (): Promise<boolean> => {
-    if (auth.currentUser && !auth.currentUser.emailVerified) {
-      try {
-        // Add configuration for email verification
-        const actionCodeSettings = {
-          url: import.meta.env.VITE_EMAIL_VERIFICATION_REDIRECT_URL || window.location.origin,
-          handleCodeInApp: true,
-        };
-
-        await sendEmailVerification(auth.currentUser, actionCodeSettings);
-        return true;
-      } catch (error: any) {
-        if (error.code === 'auth/too-many-requests') {
-          throw new Error('Please wait a few minutes before requesting another verification email.');
-        }
-        console.error('Error sending verification email:', error);
-        throw error;
-      }
+    if (!auth.currentUser) {
+      throw new Error('No user is currently signed in');
     }
-    return false;
+    
+    if (auth.currentUser.emailVerified) {
+      throw new Error('Email is already verified');
+    }
+
+    try {
+      const actionCodeSettings = {
+        url: import.meta.env.VITE_EMAIL_VERIFICATION_REDIRECT_URL || window.location.origin,
+        handleCodeInApp: true,
+      };
+
+      await sendEmailVerification(auth.currentUser, actionCodeSettings);
+      return true;
+    } catch (error: any) {
+      if (error.code === 'auth/too-many-requests') {
+        throw new Error('Please wait a few minutes before requesting another verification email.');
+      }
+      // Handle other Firebase auth errors
+      const errorMessage = error.message || 'Failed to send verification email';
+      throw new Error(errorMessage);
+    }
   };
 
   /**

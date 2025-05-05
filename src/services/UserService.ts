@@ -71,6 +71,19 @@ export const UserHistoryService = {
             { headers }
         );
         return response.data;
+    },
+
+    /**
+     * Deletes all chat history for the current user
+     * @returns Promise<void>
+     */
+    async deleteAllHistory(): Promise<void> {
+        const headers = await getAuthHeaders();
+        const response = await axios.delete(`${apiurl}/users/history/all`, { headers });
+        
+        if (response.status !== 200) {
+            throw new Error('Failed to delete chat history');
+        }
     }
 };
 
