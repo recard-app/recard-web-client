@@ -20,7 +20,7 @@ import AppHeader from './components/AppHeader';
 import HistoryPanel from './components/HistoryPanel';
 import PromptWindow from './components/PromptWindow';
 import CreditCardSelector from './components/CreditCardSelector';
-import Modal from './components/Modal';
+import { Modal, useModal } from './components/Modal';
 import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 
@@ -36,7 +36,6 @@ function AppContent() {
   const location = useLocation();
 
   const [creditCards, setCreditCards] = useState([]);
-  const [modalShow, setModalShow] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [currentChatId, setCurrentChatId] = useState(null);
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState(0);
@@ -48,6 +47,8 @@ function AppContent() {
 
   const [userCardDetails, setUserCardDetails] = useState([]);
   const [subscriptionPlan, setSubscriptionPlan] = useState('free');
+
+  const modal = useModal();
 
   useEffect(() => {
     setCurrentChatId(null);
@@ -205,14 +206,6 @@ function AppContent() {
     fetchSubscriptionPlan();
   }, [user]);
 
-  const handleModalOpen = () => {
-    setModalShow(true);
-  };
-
-  const handleModalClose = () => {
-    setModalShow(false);
-  };
-
   const getCreditCards = async (returnCreditCards) => {
     setCreditCards(returnCreditCards);
     
@@ -242,7 +235,7 @@ function AppContent() {
     setCurrentChatId(null);
     setChatHistory([]);
     setCreditCards([]);
-    setModalShow(false);
+    modal.close();
     setHistoryRefreshTrigger(0);
     setLastUpdateTimestamp(null);
     setClearChatCallback(0);
@@ -290,14 +283,6 @@ function AppContent() {
     setClearChatCallback(prev => prev + 1);
   };
 
-  useEffect(() => {
-    //console.log(creditCards);
-  }, [creditCards]);
-
-  useEffect(() => {
-    //console.log(chatHistory);
-  }, [chatHistory]);
-
   const renderMainContent = () => {
     return (
       <div className="app-content">
@@ -331,11 +316,14 @@ function AppContent() {
     <div className="app">
       <AppHeader 
         user={user}
-        onModalOpen={handleModalOpen}
+        onModalOpen={modal.open}
         onLogout={handleLogout}
       />
       
-      <Modal show={modalShow} handleClose={handleModalClose}>
+      <Modal 
+        isOpen={modal.isOpen} 
+        onClose={modal.close}
+      >
         <CreditCardSelector 
           returnCreditCards={getCreditCards} 
           existingCreditCards={creditCards}
@@ -350,7 +338,7 @@ function AppContent() {
         <Route path="/preferences" element={
           <ProtectedRoute>
             <Preferences 
-              onModalOpen={handleModalOpen} 
+              onModalOpen={modal.open}
               preferencesInstructions={preferencesInstructions}
               setPreferencesInstructions={setPreferencesInstructions}
               chatHistoryPreference={chatHistoryPreference}
@@ -377,7 +365,7 @@ function AppContent() {
         } />
         <Route path="/welcome" element={
           <ProtectedRoute>
-            <Welcome onModalOpen={handleModalOpen} />
+            <Welcome onModalOpen={modal.open} />
           </ProtectedRoute>
         } />
         <Route path="/account" element={

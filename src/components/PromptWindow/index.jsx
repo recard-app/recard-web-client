@@ -5,7 +5,7 @@ import PromptHistory from './PromptHistory';
 import PromptField from './PromptField';
 import PromptSolution from './PromptSolution';
 import PromptHelpModal from './PromptHelpModal';
-import Modal from '../Modal';
+import { Modal, useModal } from '../Modal';
 import './PromptWindow.scss';
 
 import axios from 'axios';
@@ -44,17 +44,17 @@ function PromptWindow({
     const [isNewChat, setIsNewChat] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSolutions, setIsLoadingSolutions] = useState(false);
-    const [errorModalShow, setErrorModalShow] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [helpModalShow, setHelpModalShow] = useState(false);
-
     const [isProcessing, setIsProcessing] = useState(false);
     const abortControllerRef = useRef(null);
     const [triggerCall, setTriggerCall] = useState(0);
     const [isNewChatPending, setIsNewChatPending] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const errorModal = useModal();
+    const helpModal = useModal();
 
     const handleErrorModalClose = () => {
-        setErrorModalShow(false);
+        errorModal.close();
         setErrorMessage('');
     };
 
@@ -134,7 +134,7 @@ function PromptWindow({
             } catch (error) {
                 console.error('Error loading chat:', error);
                 setErrorMessage('Error loading chat history');
-                setErrorModalShow(true);
+                errorModal.open();
             }
         };
         
@@ -277,7 +277,7 @@ function PromptWindow({
                 console.error(error);
                 setIsNewChatPending(false);
                 setErrorMessage('Error processing request, please try again.');
-                setErrorModalShow(true);
+                errorModal.open();
             })
             .finally(() => {
                 resetLoading();
@@ -308,13 +308,8 @@ function PromptWindow({
         navigate('/');
     };
 
-    const handleHelpModalOpen = () => {
-        setHelpModalShow(true);
-    };
-
-    const handleHelpModalClose = () => {
-        setHelpModalShow(false);
-    };
+    const handleHelpModalOpen = helpModal.open;
+    const handleHelpModalClose = helpModal.close;
 
     return (
         <div className='prompt-window'>
@@ -323,11 +318,13 @@ function PromptWindow({
                 <button onClick={handleHelpModalOpen}>Help</button>
             </div>
             
-            <Modal show={errorModalShow} handleClose={handleErrorModalClose}>
-                <div>{errorMessage}</div>
+            <Modal isOpen={errorModal.isOpen} onClose={handleErrorModalClose}>
+                <div className="error-content">
+                    {errorMessage}
+                </div>
             </Modal>
 
-            <Modal show={helpModalShow} handleClose={handleHelpModalClose}>
+            <Modal isOpen={helpModal.isOpen} onClose={handleHelpModalClose}>
                 <PromptHelpModal />
             </Modal>
 

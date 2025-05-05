@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate } from 'react-router-dom';
 import { Conversation, CreditCard } from '../../../types';
 import { formatDate, getRecommendedCard, deleteChatEntry } from './utils';
-import Modal from '../../Modal';
+import { Modal, useModal } from '../../Modal';
 
 const apiurl = import.meta.env.VITE_BASE_URL;
 
@@ -27,8 +27,9 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
   const navigate = useNavigate();
   // Tracks whether this entry is the currently selected chat
   const isCurrent = chatEntry.chatId === currentChatId;
-  // Controls the visibility of the delete confirmation modal
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+
+  // Use the useModal hook for managing the delete confirmation modal
+  const deleteModal = useModal();
 
   /**
    * Handles clicking on the history entry
@@ -47,7 +48,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
    */
   const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.stopPropagation();
-    setShowDeleteModal(true);
+    deleteModal.open(); // Open the modal using the hook
   };
 
   /**
@@ -61,7 +62,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
         returnCurrentChatId,
         navigate
       });
-      setShowDeleteModal(false);
+      deleteModal.close();
     } catch (error) {
       console.error('Error deleting chat:', error);
       alert('Failed to delete chat. Please try again.');
@@ -100,8 +101,8 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
       </div>
 
       <Modal 
-        show={showDeleteModal} 
-        handleClose={() => setShowDeleteModal(false)}
+        isOpen={deleteModal.isOpen} 
+        onClose={deleteModal.close}
       >
         <div className="delete-confirmation">
           <h3>Delete Chat History</h3>
@@ -115,7 +116,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
             </button>
             <button 
               className="cancel-button"
-              onClick={() => setShowDeleteModal(false)}
+              onClick={deleteModal.close}
             >
               Cancel
             </button>

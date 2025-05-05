@@ -3,8 +3,7 @@ import './CreditCardSelector.scss';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { sortCards, filterCards, formatCardsForSubmission, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections } from './utils';
-import { UserCreditCardService } from '../../services';
+import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections } from './utils';
 
 /**
  * Props interface for the CreditCardSelector component

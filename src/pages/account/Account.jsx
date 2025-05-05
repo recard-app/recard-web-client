@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import Modal from '../../components/Modal';
+import { Modal, useModal } from '../../components/Modal';
 import { auth } from '../../config/firebase';
 import axios from 'axios';
 
@@ -10,8 +10,9 @@ function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan })
   const { user, sendVerificationEmail } = useAuth();
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'success' or 'error'
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState({ type: 'confirm', message: '' });
+
+  const deleteModal = useModal();
 
   const handleVerificationEmail = async () => {
     try {
@@ -53,7 +54,7 @@ function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan })
   };
 
   const handleCloseModal = () => {
-    setShowDeleteModal(false);
+    deleteModal.close();
     setDeleteStatus({ type: 'confirm', message: '' });
   };
 
@@ -222,7 +223,7 @@ function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan })
               <h2 style={{ color: '#ff0000' }}>Danger Zone</h2>
               <p>Once you delete your chat history, there is no going back. Please be certain.</p>
               <button 
-                onClick={() => setShowDeleteModal(true)}
+                onClick={deleteModal.open}
                 style={{
                   backgroundColor: '#ff0000',
                   color: 'white',
@@ -243,8 +244,8 @@ function Account({ setChatHistory, setHistoryRefreshTrigger, subscriptionPlan })
       </div>
 
       <Modal 
-        show={showDeleteModal} 
-        handleClose={handleCloseModal}
+        isOpen={deleteModal.isOpen} 
+        onClose={handleCloseModal}
       >
         {renderModalContent()}
       </Modal>
