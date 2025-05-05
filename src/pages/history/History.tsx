@@ -4,10 +4,8 @@ import { Link } from 'react-router-dom';
 import { Conversation, CreditCard, SubscriptionPlan } from '../../types';
 
 interface HistoryProps {
-  returnHistoryList: (history: Conversation[]) => void;
   existingHistoryList: Conversation[];
   currentChatId: string | null;
-  refreshTrigger: boolean;
   returnCurrentChatId: (chatId: string | null) => void;
   onHistoryUpdate: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
   subscriptionPlan: SubscriptionPlan;
@@ -15,10 +13,8 @@ interface HistoryProps {
 }
 
 function History({ 
-  returnHistoryList, 
   existingHistoryList, 
   currentChatId, 
-  refreshTrigger, 
   returnCurrentChatId,
   onHistoryUpdate,
   subscriptionPlan,
@@ -38,10 +34,8 @@ function History({
       <div className="history-content">
         <HistoryPanel 
           fullListSize={true} 
-          returnHistoryList={returnHistoryList} 
           existingHistoryList={existingHistoryList}
           currentChatId={currentChatId}
-          refreshTrigger={refreshTrigger}
           returnCurrentChatId={returnCurrentChatId}
           onHistoryUpdate={onHistoryUpdate}
           subscriptionPlan={subscriptionPlan}

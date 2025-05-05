@@ -33,8 +33,6 @@ export interface HistoryPanelProps {
   fullListSize: boolean;
   currentChatId: string | null;
   returnCurrentChatId: (chatId: string | null) => void;
-  returnHistoryList: (history: Conversation[]) => void;
-  refreshTrigger: boolean;
   onHistoryUpdate?: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
   subscriptionPlan?: SubscriptionPlan;
   creditCards: CreditCard[];
@@ -46,8 +44,6 @@ function HistoryPanel({
   fullListSize, 
   currentChatId,
   returnCurrentChatId,
-  returnHistoryList,
-  refreshTrigger,
   onHistoryUpdate,
   subscriptionPlan = 'free',
   creditCards

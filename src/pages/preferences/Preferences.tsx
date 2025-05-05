@@ -1,7 +1,16 @@
 import React from 'react';
 import PreferencesModule from '../../components/PreferencesModule';
+import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 
-const Preferences = ({ 
+interface PreferencesProps {
+    onModalOpen: () => void;
+    preferencesInstructions: InstructionsPreference;
+    setPreferencesInstructions: (instructions: InstructionsPreference) => void;
+    chatHistoryPreference: ChatHistoryPreference;
+    setChatHistoryPreference: (preference: ChatHistoryPreference) => void;
+}
+
+const Preferences: React.FC<PreferencesProps> = ({ 
     onModalOpen, 
     preferencesInstructions, 
     setPreferencesInstructions,
@@ -16,7 +25,7 @@ const Preferences = ({
                     Manage Credit Cards
                 </button>
                 <PreferencesModule 
-                    initialInstructions={preferencesInstructions}
+                    customInstructions={preferencesInstructions}
                     onInstructionsUpdate={setPreferencesInstructions}
                     chatHistoryPreference={chatHistoryPreference}
                     setChatHistoryPreference={setChatHistoryPreference}
