@@ -1,51 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { auth } from '../../config/firebase';
+import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
+import { UserPreferencesService } from '../../services/UserService';
+import { CHAT_HISTORY_OPTIONS } from './utils';
 import './PreferencesModule.scss';
 
-const apiurl = import.meta.env.VITE_BASE_URL;
-
-const CHAT_HISTORY_OPTIONS = [
-    { value: 'keep_history', label: 'Keep chat history' },
-    { value: 'do_not_track_history', label: 'Do not track chat history' },
-    // { value: 'keep_week', label: 'Keep chat history for 1 week' },
-    // { value: 'keep_month', label: 'Keep chat history for 1 month' }
-];
+/**
+ * Props interface for PreferencesModule component.
+ * 
+ * @param customInstructions - Initial instructions passed to the component.
+ * @param onInstructionsUpdate - Callback to update instructions.
+ * @param chatHistoryPreference - Current chat history preference.
+ * @param setChatHistoryPreference - Function to set chat history preference.
+ */
+interface PreferencesModuleProps {
+    customInstructions: InstructionsPreference; 
+    onInstructionsUpdate: (instructions: InstructionsPreference) => void; 
+    chatHistoryPreference: ChatHistoryPreference; 
+    setChatHistoryPreference: (preference: ChatHistoryPreference) => void; 
+}
 
 function PreferencesModule({ 
-    initialInstructions, 
+    customInstructions, 
     onInstructionsUpdate,
     chatHistoryPreference,
     setChatHistoryPreference
-}) {
-    const [instructions, setInstructions] = useState(initialInstructions || '');
-    const [isSaving, setIsSaving] = useState(false);
-    const [message, setMessage] = useState('');
+}: PreferencesModuleProps) {
+    const [instructions, setInstructions] = useState<string>(customInstructions || '');
+    const [isSaving, setIsSaving] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>('');
 
-    // Load both preferences when component mounts
     useEffect(() => {
         const loadAllPreferences = async () => {
             try {
-                const token = await auth.currentUser.getIdToken();
-                const headers = {
-                    'Authorization': `Bearer ${token}`
-                };
+                const { instructionsResponse, chatHistoryResponse } = 
+                    await UserPreferencesService.loadAllPreferences();
 
-                // Load both preferences in parallel
-                const [instructionsResponse, chatHistoryResponse] = await Promise.all([
-                    axios.get(`${apiurl}/users/preferences/instructions`, { headers }),
-                    axios.get(`${apiurl}/users/preferences/chat_history`, { headers })
-                ]);
-
-                // Update instructions
-                if (instructionsResponse.data.instructions !== undefined) {
-                    setInstructions(instructionsResponse.data.instructions);
-                    onInstructionsUpdate(instructionsResponse.data.instructions);
+                // Update custom instructions
+                if (instructionsResponse.instructions !== undefined) {
+                    setInstructions(instructionsResponse.instructions);
+                    onInstructionsUpdate(instructionsResponse.instructions);
                 }
 
                 // Update chat history preference
-                if (chatHistoryResponse.data.chatHistory) {
-                    setChatHistoryPreference(chatHistoryResponse.data.chatHistory);
+                if (chatHistoryResponse.chatHistory) {
+                    setChatHistoryPreference(chatHistoryResponse.chatHistory);
                 }
             } catch (error) {
                 console.error('Error loading preferences:', error);
@@ -54,33 +52,17 @@ function PreferencesModule({
         };
 
         loadAllPreferences();
-    }, []); // Run once when component mounts
+    }, []);
 
-    const handleSave = async () => {
+    /**
+     * Handles saving user preferences.
+     */
+    const handleSave = async (): Promise<void> => {
         setIsSaving(true);
         setMessage('');
 
         try {
-            const token = await auth.currentUser.getIdToken();
-            const headers = {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            };
-
-            // Save both preferences in parallel
-            await Promise.all([
-                axios.post(
-                    `${apiurl}/users/preferences/instructions`,
-                    { instructions },
-                    { headers }
-                ),
-                axios.post(
-                    `${apiurl}/users/preferences/chat_history`,
-                    { chatHistory: chatHistoryPreference },
-                    { headers }
-                )
-            ]);
-
+            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference);
             setMessage('All preferences saved successfully!');
             onInstructionsUpdate(instructions);
         } catch (error) {
@@ -97,7 +79,7 @@ function PreferencesModule({
             <div className="preferences-content">
                 <textarea
                     value={instructions}
-                    onChange={(e) => setInstructions(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
                     placeholder="Enter your special instructions for the AI assistant..."
                     rows={6}
                     className="preferences-textarea"
@@ -108,7 +90,8 @@ function PreferencesModule({
                     <select
                         id="chatHistorySelect"
                         value={chatHistoryPreference || 'keep_history'}
-                        onChange={(e) => setChatHistoryPreference(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
+                            setChatHistoryPreference(e.target.value as ChatHistoryPreference)}
                         className="chat-history-select"
                     >
                         {CHAT_HISTORY_OPTIONS.map(option => (

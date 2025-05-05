@@ -2,6 +2,7 @@ import axios from 'axios';
 import { CreditCard } from '../types/CreditCardTypes';
 import { apiurl, getAuthHeaders } from './index';
 import { Conversation, StartDateResponse, HistoryParams, PagedHistoryResponse } from '../types';
+import { ChatHistoryPreference, InstructionsPreference, PreferencesResponse } from '../types/UserTypes';
 
 /**
  * Service class for user-related Credit Card API operations
@@ -70,5 +71,57 @@ export const UserHistoryService = {
             { headers }
         );
         return response.data;
+    }
+};
+
+/**
+ * Service class for user preferences-related operations
+ */
+export const UserPreferencesService = {
+    /**
+     * Loads user preferences for both instructions and chat history
+     * @returns Promise containing both preferences responses
+     */
+    async loadAllPreferences(): Promise<{
+        instructionsResponse: PreferencesResponse;
+        chatHistoryResponse: PreferencesResponse;
+    }> {
+        const headers = await getAuthHeaders();
+        
+        const [instructionsResponse, chatHistoryResponse] = await Promise.all([
+            axios.get<PreferencesResponse>(`${apiurl}/users/preferences/instructions`, { headers }),
+            axios.get<PreferencesResponse>(`${apiurl}/users/preferences/chat_history`, { headers })
+        ]);
+
+        return {
+            instructionsResponse: instructionsResponse.data,
+            chatHistoryResponse: chatHistoryResponse.data
+        };
+    },
+
+    /**
+     * Saves both instructions and chat history preferences
+     * @param instructions User's custom instructions
+     * @param chatHistory User's chat history preference
+     * @returns Promise containing both preferences responses
+     */
+    async savePreferences(
+        instructions: string, 
+        chatHistory: ChatHistoryPreference
+    ): Promise<void> {
+        const headers = await getAuthHeaders();
+        
+        await Promise.all([
+            axios.post<PreferencesResponse>(
+                `${apiurl}/users/preferences/instructions`,
+                { instructions },
+                { headers }
+            ),
+            axios.post<PreferencesResponse>(
+                `${apiurl}/users/preferences/chat_history`,
+                { chatHistory },
+                { headers }
+            )
+        ]);
     }
 };
