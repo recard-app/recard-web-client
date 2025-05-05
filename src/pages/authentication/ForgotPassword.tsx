@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 
-const ForgotPassword = () => {
+const ForgotPassword: React.FC = () => {
     const { sendPasswordResetEmail } = useAuth();
-    const [email, setEmail] = useState('');
-    const [error, setError] = useState('');
-    const [message, setMessage] = useState('');
+    const [email, setEmail] = useState<string>('');
+    const [error, setError] = useState<string>('');
+    const [message, setMessage] = useState<string>('');
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
             await sendPasswordResetEmail(email);
             setError('');
             setMessage('Password reset email sent! Please check your inbox.');
-        } catch (error) {
+        } catch (error: any) {
             setError(error.message || 'Failed to send reset email');
         }
     };
@@ -29,7 +29,7 @@ const ForgotPassword = () => {
                     type="email"
                     placeholder="Email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                     required
                 />
                 <button type="submit">Send Reset Link</button>

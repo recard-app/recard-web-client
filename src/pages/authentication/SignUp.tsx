@@ -1,20 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { User as FirebaseUser } from 'firebase/auth';
+import { UserAuthService } from '../../services/UserService';
 
 const apiurl = import.meta.env.VITE_BASE_URL;
 
-const SignUp = () => {
+/**
+ * Interface representing the structure of the authentication response.
+ */
+interface AuthResponse {
+    user: FirebaseUser;
+    token: string;
+    isNewUser?: boolean;
+}
+
+/**
+ * Interface representing the structure of an error response.
+ */
+interface SignUpError {
+    message: string;
+}
+
+/**
+ * SignUp component for user registration.
+ */
+const SignUp: React.FC = () => {
     const { registerWithEmail, login, sendVerificationEmail } = useAuth();
     const navigate = useNavigate();
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
+    const [firstName, setFirstName] = useState<string>('');
+    const [lastName, setLastName] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [error, setError] = useState<string>('');
 
-    const validateNames = () => {
+    /**
+     * Validates the first and last names entered by the user.
+     * @returns {boolean} - Returns true if names are valid, otherwise false.
+     */
+    const validateNames = (): boolean => {
         // Check if names are empty after trimming
         if (firstName.trim().length === 0 || lastName.trim().length === 0) {
             setError('First name and last name cannot be empty');
@@ -31,7 +56,12 @@ const SignUp = () => {
         return true;
     };
 
-    const handleSignUp = async (e) => {
+    /**
+     * Handles the sign-up process for a new user.
+     * @param {FormEvent<HTMLFormElement>} e - The form event.
+     * @returns {Promise<void>}
+     */
+    const handleSignUp = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
         setError('');
 
@@ -47,60 +77,44 @@ const SignUp = () => {
         }
         
         try {
-            const { user, token } = await registerWithEmail(email, password, firstName, lastName);
+            const { user } = await registerWithEmail(email, password, firstName, lastName) as AuthResponse;
             
             // Send verification email
             await sendVerificationEmail();
             
-            const response = await fetch(`${apiurl}/auth/signup`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    firstName,
-                    lastName
-                })
-            });
+            // Use the UserAuthService for backend registration
+            await UserAuthService.emailSignUp(firstName, lastName);
             
-            if (response.ok) {
-                console.log('Registration successful');
-                navigate('/welcome');
-            } else {
-                // Handle server validation errors
-                const data = await response.json();
-                setError(data.error || 'Registration failed');
-            }
+            console.log('Registration successful');
+            navigate('/welcome');
         } catch (error) {
-            setError(error.message);
-            console.error('Registration failed:', error);
+            const err = error as SignUpError;
+            setError(err.message);
+            console.error('Registration failed:', err);
         }
     };
 
-    const handleGoogleSignIn = async () => {
+    /**
+     * Handles Google sign-in for the user.
+     * @returns {Promise<void>}
+     */
+    const handleGoogleSignIn = async (): Promise<void> => {
         try {
-            const { user, token, isNewUser } = await login();
+            const { isNewUser } = await login() as AuthResponse;
             
-            const response = await fetch(`${apiurl}/auth/${isNewUser ? 'signup' : 'signin'}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            // Use the UserAuthService for Google authentication
+            await UserAuthService.googleSignIn(isNewUser);
             
-            if (response.ok) {
-                console.log('Authentication successful');
-                if (isNewUser) {
-                    navigate('/welcome');
-                } else {
-                    navigate('/');
-                }
+            console.log('Authentication successful');
+            if (isNewUser) {
+                navigate('/welcome');
+            } else {
+                navigate('/');
             }
         } catch (error) {
-            setError(error.message);
-            console.error('Authentication failed:', error);
+            const err = error as SignUpError;
+            setError(err.message);
+            console.error('Authentication failed:', err);
         }
     };
 
