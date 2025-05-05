@@ -54,3 +54,33 @@ export interface PreferencesResponse {
     instructions?: InstructionsPreference;
     error?: string;
 }
+
+// History Navigation Types
+
+/**
+ * Interface for pagination data returned from the API
+ */
+export interface PaginationData {
+    current_page: number;
+    total_pages: number;
+    has_previous: boolean;
+    has_next: boolean;
+}
+
+/**
+ * Interface for history API request parameters
+ */
+export interface HistoryParams {
+    page: number;
+    page_size: number;
+    month?: string;
+    year?: string;
+}
+
+/**
+ * Interface for paginated history response
+ */
+export interface PagedHistoryResponse {
+    chatHistory: Conversation[];
+    pagination: PaginationData;
+}

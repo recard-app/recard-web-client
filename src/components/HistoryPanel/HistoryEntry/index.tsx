@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { Conversation, CreditCard } from '../../../types';
 import { formatDate, getRecommendedCard, deleteChatEntry } from './utils';
 import Modal from '../../Modal';
-import { UserHistoryService } from '../../../services/UserService';
 
 const apiurl = import.meta.env.VITE_BASE_URL;
 
