@@ -1,6 +1,18 @@
 import React from 'react';
 import HistoryPanel from '../../components/HistoryPanel';
 import { Link } from 'react-router-dom';
+import { Conversation, CreditCard, SubscriptionPlan } from '../../types';
+
+interface HistoryProps {
+  returnHistoryList: (history: Conversation[]) => void;
+  existingHistoryList: Conversation[];
+  currentChatId: string | null;
+  refreshTrigger: boolean;
+  returnCurrentChatId: (chatId: string | null) => void;
+  onHistoryUpdate: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
+  subscriptionPlan: SubscriptionPlan;
+  creditCards: CreditCard[];
+}
 
 function History({ 
   returnHistoryList, 
@@ -11,8 +23,8 @@ function History({
   onHistoryUpdate,
   subscriptionPlan,
   creditCards
-}) {
-  const getHistoryTitle = () => {
+}: HistoryProps): React.ReactElement {
+  const getHistoryTitle = (): string => {
     if (subscriptionPlan === 'premium') {
       return 'Transaction History';
     }

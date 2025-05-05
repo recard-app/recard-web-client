@@ -29,10 +29,12 @@ const PAGE_SIZE_LIMIT = HISTORY_PAGE_SIZE;
  */
 export interface HistoryPanelProps {
   existingHistoryList: Conversation[];
-  listSize: number;
+  listSize?: number;
   fullListSize: boolean;
   currentChatId: string | null;
   returnCurrentChatId: (chatId: string | null) => void;
+  returnHistoryList: (history: Conversation[]) => void;
+  refreshTrigger: boolean;
   onHistoryUpdate?: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
   subscriptionPlan?: SubscriptionPlan;
   creditCards: CreditCard[];
@@ -44,6 +46,8 @@ function HistoryPanel({
   fullListSize, 
   currentChatId,
   returnCurrentChatId,
+  returnHistoryList,
+  refreshTrigger,
   onHistoryUpdate,
   subscriptionPlan = 'free',
   creditCards
