@@ -2,7 +2,7 @@ import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
-import { UserAuthService } from '../../services/UserService';
+import { AuthService } from '../../services';
 
 /**
  * Interface representing the response from the authentication service.
@@ -30,7 +30,7 @@ const SignIn: React.FC = () => {
         
         try {
             await loginWithEmail(email, password); // Attempt to log in with email and password
-            await UserAuthService.emailSignIn();
+            await AuthService.emailSignIn();
             console.log('Authentication successful');
             navigate('/');
         } catch (error: any) {
@@ -46,7 +46,7 @@ const SignIn: React.FC = () => {
     const handleGoogleSignIn = async (): Promise<void> => {
         try {
             const { isNewUser }: AuthResponse = await login(); // Attempt to log in with Google
-            await UserAuthService.googleSignIn(isNewUser); // Call the Google sign-in service
+            await AuthService.googleSignIn(isNewUser); // Call the Google sign-in service
             console.log('Authentication successful');
             if (isNewUser) {
                 navigate('/welcome');

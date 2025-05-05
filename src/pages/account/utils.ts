@@ -1,5 +1,5 @@
 import { ChatHistory } from '../../types/UserTypes';
-import { UserHistoryService } from '../../services/UserService';
+import { UserHistoryService } from '../../services';
 
 /**
  * Type for managing the delete operation status

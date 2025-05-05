@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
-import { UserPreferencesService } from '../../services/UserService';
+import { UserPreferencesService } from '../../services';
 import { CHAT_HISTORY_OPTIONS } from './utils';
 import './PreferencesModule.scss';
 

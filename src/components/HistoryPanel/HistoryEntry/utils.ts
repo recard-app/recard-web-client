@@ -1,5 +1,5 @@
 import { CreditCard, SimpleCardDisplay, ChatSolution, PLACEHOLDER_CARD_IMAGE } from '../../../types';
-import { UserHistoryService } from '../../../services/UserService';
+import { UserHistoryService } from '../../../services';
 
 /**
  * Retrieves the recommended card details from the chat solutions

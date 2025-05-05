@@ -19,3 +19,4 @@ export const getAuthHeaders = async () => {
 
 // Export all services
 export * from './UserService';
+export * from './AuthService';

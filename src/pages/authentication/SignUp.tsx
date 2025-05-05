@@ -2,7 +2,7 @@ import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
-import { UserAuthService } from '../../services/UserService';
+import { AuthService } from '../../services';
 
 const apiurl = import.meta.env.VITE_BASE_URL;
 
@@ -83,7 +83,7 @@ const SignUp: React.FC = () => {
             await sendVerificationEmail();
             
             // Use the UserAuthService for backend registration
-            await UserAuthService.emailSignUp(firstName, lastName);
+            await AuthService.emailSignUp(firstName, lastName);
             
             console.log('Registration successful');
             navigate('/welcome');
@@ -103,7 +103,7 @@ const SignUp: React.FC = () => {
             const { isNewUser } = await login() as AuthResponse;
             
             // Use the UserAuthService for Google authentication
-            await UserAuthService.googleSignIn(isNewUser);
+            await AuthService.googleSignIn(isNewUser);
             
             console.log('Authentication successful');
             if (isNewUser) {
