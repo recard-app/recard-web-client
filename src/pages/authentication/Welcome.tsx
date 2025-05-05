@@ -2,12 +2,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const Welcome = ({ onModalOpen }) => {
+interface WelcomeProps {
+    onModalOpen: () => void;
+}
+
+const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
     const { user } = useAuth();
+    
     return (
         <div className="welcome-page">
             <h1>
-                {user.name ? `Hi ${user.name}! Welcome to ReCard! 👋` : 'Hi! Welcome to ReCard! 👋'}
+                {user?.displayName ? `Hi ${user.displayName}! Welcome to ReCard! 👋` : 'Hi! Welcome to ReCard! 👋'}
             </h1>
             
             <div className="welcome-content">
