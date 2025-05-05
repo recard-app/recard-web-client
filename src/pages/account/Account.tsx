@@ -51,8 +51,8 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
       case 'success':
         return (
           <div className="modal-container">
-            <h2 style={{ color: '#4CAF50' }}>Success!</h2>
-            <p style={{ margin: '20px 0' }}>{deleteStatus.message}</p>
+            <h2 className="modal-heading--success">Success!</h2>
+            <p className="modal-message">{deleteStatus.message}</p>
             <button onClick={handleCloseModal} className="modal-button modal-button--success">
               Close
             </button>
@@ -61,8 +61,8 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
       case 'error':
         return (
           <div className="modal-container">
-            <h2 style={{ color: '#f44336' }}>Error</h2>
-            <p style={{ margin: '20px 0' }}>{deleteStatus.message}</p>
+            <h2 className="modal-heading--error">Error</h2>
+            <p className="modal-message">{deleteStatus.message}</p>
             <div className="modal-button-container">
               <button onClick={handleCloseModal} className="modal-button modal-button--close">
                 Close
@@ -83,7 +83,7 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
         return (
           <div className="modal-container">
             <h2>Delete All Chat History</h2>
-            <p style={{ margin: '20px 0' }}>
+            <p className="modal-message">
               Are you sure you want to delete all chat history? 
               This action cannot be undone.
             </p>
@@ -115,17 +115,12 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
                 alt="Profile" 
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
-                style={{ 
-                  width: '100px', 
-                  height: '100px', 
-                  borderRadius: '50%',
-                  marginBottom: '20px'
-                }} 
+                className="profile-image"
               />
             )}
             <p><strong>Name:</strong> {user.displayName}</p>
             <p><strong>Email:</strong> {user.email}</p>
-            <p>
+            <p className="email-status">
               <strong>Email Status:</strong>{' '}
               {user.emailVerified ? (
                 <span className="verified">Verified ✓</span>
@@ -135,9 +130,7 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
             </p>
             <p>
               <strong>Subscription Plan:</strong>{' '}
-              <span style={{ 
-                textTransform: 'capitalize',
-              }}>
+              <span className="subscription-plan">
                 {subscriptionPlan}
               </span>
             </p>
@@ -157,28 +150,12 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
               </>
             )}
 
-            {/* Danger Zone Section */}
-            <div className="danger-zone" style={{ 
-              marginTop: '2rem', 
-              padding: '1rem', 
-              border: '1px solid #ff0000', 
-              borderRadius: '4px',
-              width: '100%',
-              maxWidth: '500px'
-            }}>
-              <h2 style={{ color: '#ff0000' }}>Danger Zone</h2>
+            <div className="danger-zone">
+              <h2 className="danger-zone__title">Danger Zone</h2>
               <p>Once you delete your chat history, there is no going back. Please be certain.</p>
               <button 
                 onClick={deleteModal.open}
-                style={{
-                  backgroundColor: '#ff0000',
-                  color: 'white',
-                  padding: '0.5rem 1rem',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  marginTop: '1rem'
-                }}
+                className="danger-zone__button"
               >
                 Delete All Chat History
               </button>

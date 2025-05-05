@@ -1,7 +1,68 @@
+.account {
+  &-page {
+    // Add any page-level styles
+  }
+
+  &-content {
+    // Add content wrapper styles
+  }
+}
+
+.user-info {
+  .profile-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+  }
+
+  .subscription-plan {
+    text-transform: capitalize;
+  }
+
+  .email-status {
+    .verified {
+      color: #4CAF50;
+    }
+
+    .unverified {
+      color: #f44336;
+    }
+  }
+
+  .verify-button {
+    // Add verify button styles
+  }
+
+  .message {
+    &.success {
+      color: #4CAF50;
+    }
+
+    &.error {
+      color: #f44336;
+    }
+  }
+}
+
 .modal {
   &-container {
     padding: 20px;
     text-align: center;
+  }
+
+  &-heading {
+    &--success {
+      color: #4CAF50;
+    }
+
+    &--error {
+      color: #f44336;
+    }
+  }
+
+  &-message {
+    margin: 20px 0;
   }
 
   &-button-container {
@@ -31,5 +92,28 @@
       border: 1px solid #ccc;
       background-color: #fff;
     }
+  }
+}
+
+.danger-zone {
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 1px solid #ff0000;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 500px;
+
+  &__title {
+    color: #ff0000;
+  }
+
+  &__button {
+    background-color: #ff0000;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1rem;
   }
 }
