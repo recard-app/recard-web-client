@@ -1,7 +1,14 @@
 import axios from 'axios';
 import { CreditCard } from '../types/CreditCardTypes';
 import { apiurl, getAuthHeaders } from './index';
-import { Conversation, StartDateResponse, HistoryParams, PagedHistoryResponse } from '../types';
+import { 
+    Conversation, 
+    StartDateResponse, 
+    HistoryParams, 
+    PagedHistoryResponse,
+    ChatMessage,
+    ChatSolution 
+} from '../types';
 import { ChatHistoryPreference, InstructionsPreference, PreferencesResponse } from '../types/UserTypes';
 
 /**
@@ -99,6 +106,49 @@ export const UserHistoryService = {
         );
         return response.data;
     },
+
+    /**
+     * Creates a new chat history entry
+     * @param chatHistory Array of chat messages
+     * @param promptSolutions Array of solutions
+     * @param signal Optional AbortController signal
+     * @returns Promise containing the created conversation
+     */
+    async createChatHistory(
+        chatHistory: ChatMessage[],
+        promptSolutions: ChatSolution,
+        signal?: AbortSignal
+    ): Promise<Conversation> {
+        const headers = await getAuthHeaders();
+        const response = await axios.post<Conversation>(
+            `${apiurl}/users/history`,
+            { chatHistory, promptSolutions },
+            { headers, signal }
+        );
+        return response.data;
+    },
+
+    /**
+     * Updates an existing chat history entry
+     * @param chatId ID of the chat to update
+     * @param chatHistory Updated array of chat messages
+     * @param promptSolutions Updated array of solutions
+     * @param signal Optional AbortController signal
+     * @returns Promise<void>
+     */
+    async updateChatHistory(
+        chatId: string,
+        chatHistory: ChatMessage[],
+        promptSolutions: ChatSolution,
+        signal?: AbortSignal
+    ): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.put(
+            `${apiurl}/users/history/${chatId}`,
+            { chatHistory, promptSolutions },
+            { headers, signal }
+        );
+    }
 };
 
 /**
