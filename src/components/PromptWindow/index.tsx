@@ -10,17 +10,15 @@ import { Modal, useModal } from '../Modal';
 import './PromptWindow.scss';
 
 import axios from 'axios';
-import { auth } from '../../config/firebase';
 
 // Import types
 import { CreditCard } from '../../types/CreditCardTypes';
 import { ChatMessage, ChatSolution, Conversation, ChatRequestData } from '../../types/ChatTypes';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 import { CHAT_SOURCE, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, RECOMMENDED_MAX_CHAT_MESSAGES } from '../../types';
-import { UserHistoryService } from '../../services';
+import { UserHistoryService, ChatService } from '../../services';
 
-const apiurl = import.meta.env.VITE_BASE_URL;
-
+// Constants
 const aiClient = CHAT_SOURCE.ASSISTANT;
 const userClient = CHAT_SOURCE.USER;
 const MAX_CHAT_MESSAGES = RECOMMENDED_MAX_CHAT_MESSAGES;
@@ -213,106 +211,92 @@ function PromptWindow({
             requestData.userCardDetails = userCardDetails;
         }
 
-        axios.post(`${apiurl}/chat/response`, requestData, { signal })
-            .then(response => {
-                const aiResponse = response.data;
-                const updatedHistory = [...chatHistory, userMessage, {
-                    id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                    chatSource: aiClient,
-                    chatMessage: aiResponse
-                }];
-                
-                setIsLoading(false);
-                setIsLoadingSolutions(true);
-                setChatHistory(limitChatHistory(updatedHistory));
+        try {
+            // Get chat response
+            const aiResponse = await ChatService.getChatResponse(requestData, signal);
+            const updatedHistory = [...chatHistory, userMessage, {
+                id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                chatSource: aiClient,
+                chatMessage: aiResponse
+            }];
+            
+            setIsLoading(false);
+            setIsLoadingSolutions(true);
+            setChatHistory(limitChatHistory(updatedHistory));
 
-                return axios.post(`${apiurl}/chat/solution`, {
-                    ...requestData,
-                    chatHistory: limitChatHistory(updatedHistory)
-                }, { signal }).then(solutionsResponse => ({
-                    solutions: solutionsResponse.data,
-                    updatedHistory
-                }));
-            })
-            .then(({ solutions, updatedHistory }) => {
-                if (signal.aborted) return;
-                setPromptSolutions(solutions);
-                setIsLoadingSolutions(false);
+            // Get solution recommendations
+            const solutions = await ChatService.getChatSolution({
+                ...requestData,
+                chatHistory: limitChatHistory(updatedHistory)
+            }, signal);
 
-                // Handle local state updates regardless of history preference
-                setChatHistory(limitChatHistory(updatedHistory));
+            if (signal.aborted) return;
+            setPromptSolutions(solutions);
+            setIsLoadingSolutions(false);
 
-                // Only proceed with server-side history storage if tracking is enabled
-                if (!user || chatHistoryPreference === CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
-                    setIsNewChatPending(false);  // Make sure to reset the pending state
-                    return;
-                }
+            // Handle local state updates regardless of history preference
+            setChatHistory(limitChatHistory(updatedHistory));
 
-                return auth.currentUser.getIdToken()
-                    .then(token => {
-                        const endpoint = isNewChat ? 
-                            `${apiurl}/users/history` : 
-                            `${apiurl}/users/history/${chatId}`;
-
-                        return axios({
-                            method: isNewChat ? 'post' : 'put',
-                            url: endpoint,
-                            data: {
-                                chatHistory: updatedHistory,
-                                promptSolutions: solutions,
-                                chatHistoryPreference: chatHistoryPreference
-                            },
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            signal
-                        });
-                    })
-                    .then(response => {
-                        if (isNewChat && response?.data?.chatId) {
-                            const newChat = {
-                                chatId: response.data.chatId,
-                                timestamp: new Date().toISOString(),
-                                conversation: updatedHistory,
-                                solutions: solutions,
-                                chatDescription: response.data.chatDescription || DEFAULT_CHAT_NAME
-                            };
-                            onHistoryUpdate(newChat);
-                            setChatId(response.data.chatId);
-                            returnCurrentChatId(response.data.chatId);
-                            setIsNewChat(false);
-                            setIsNewChatPending(false);
-                        } else {
-                            // Update existing chat
-                            const updatedChat = {
-                                chatId: chatId,
-                                timestamp: new Date().toISOString(),
-                                conversation: updatedHistory,
-                                solutions: solutions,
-                                chatDescription: response.data.chatDescription || existingHistoryList.find(chat => chat.chatId === chatId)?.chatDescription || DEFAULT_CHAT_NAME
-                            };
-                            onHistoryUpdate(updatedChat);
-                        }
-                    });
-            })
-            .catch(error => {
-                if (axios.isCancel(error)) {
-                    console.log('Request cancelled');
-                    setIsNewChatPending(false);
-                    resetLoading();
-                    abortControllerRef.current = null;
-                    return;
-                }
-                console.error(error);
+            // Only proceed with server-side history storage if tracking is enabled
+            if (!user || chatHistoryPreference === CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
                 setIsNewChatPending(false);
-                setErrorMessage('Error processing request, please try again.');
-                errorModal.open();
-            })
-            .finally(() => {
+                return;
+            }
+
+            // Handle history storage
+            if (isNewChat) {
+                const response = await UserHistoryService.createChatHistory(
+                    updatedHistory,
+                    solutions,
+                    signal
+                );
+
+                const newChat = {
+                    chatId: response.chatId,
+                    timestamp: new Date().toISOString(),
+                    conversation: updatedHistory,
+                    solutions: solutions,
+                    chatDescription: response.chatDescription || DEFAULT_CHAT_NAME
+                };
+                onHistoryUpdate(newChat);
+                setChatId(response.chatId);
+                returnCurrentChatId(response.chatId);
+                setIsNewChat(false);
+                setIsNewChatPending(false);
+            } else {
+                await UserHistoryService.updateChatHistory(
+                    chatId,
+                    updatedHistory,
+                    solutions,
+                    signal
+                );
+
+                // Update existing chat
+                const updatedChat = {
+                    chatId: chatId,
+                    timestamp: new Date().toISOString(),
+                    conversation: updatedHistory,
+                    solutions: solutions,
+                    chatDescription: existingHistoryList.find(chat => chat.chatId === chatId)?.chatDescription || DEFAULT_CHAT_NAME
+                };
+                onHistoryUpdate(updatedChat);
+            }
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                console.log('Request cancelled');
+                setIsNewChatPending(false);
                 resetLoading();
                 abortControllerRef.current = null;
-            });
+                return;
+            }
+            console.error(error);
+            setIsNewChatPending(false);
+            setErrorMessage('Error processing request, please try again.');
+            errorModal.open();
+        } finally {
+            resetLoading();
+            abortControllerRef.current = null;
+        }
     };
 
     const resetLoading = () => {

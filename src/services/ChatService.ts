@@ -1,17 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from './index';
-import { ChatMessage, CreditCard, ChatSolution } from '../types';
-import { InstructionsPreference } from '../types/UserTypes';
-
-interface ChatRequestData {
-    name: string;
-    prompt: string;
-    chatHistory: ChatMessage[];
-    creditCards: CreditCard[];
-    currentDate: string;
-    preferencesInstructions: InstructionsPreference;
-    userCardDetails?: string[];
-}
+import { ChatRequestData, ChatSolution } from '../types';
 
 export const ChatService = {
     /**
