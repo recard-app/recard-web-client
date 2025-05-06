@@ -57,6 +57,13 @@ interface PromptWindowProps {
     showHistoryPanel: boolean;
 }
 
+/**
+ * Main PromptWindow component that handles chat interactions between user and AI.
+ * Manages chat history, solutions, and API interactions for credit card recommendations.
+ * 
+ * @param {PromptWindowProps} props - Component props including credit cards, user details, and callbacks
+ * @returns {JSX.Element} Rendered PromptWindow component
+ */
 function PromptWindow({ 
     creditCards, 
     userCardDetails,
@@ -73,20 +80,35 @@ function PromptWindow({
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
     
+    // Stores the current input value in the prompt field
     const [promptValue, setPromptValue] = useState<string>('');
+    // Maintains the array of chat messages between user and AI in the current conversation
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+    // Stores the AI's credit card recommendations and solutions for the current conversation
     const [promptSolutions, setPromptSolutions] = useState<ChatSolution>([]);
+    // Unique identifier for the current chat conversation
     const [chatId, setChatId] = useState<string>('');
+    // Tracks whether this is a new chat conversation (true) or loading an existing one (false)
     const [isNewChat, setIsNewChat] = useState<boolean>(true);
+    // Indicates whether the initial AI response is being loaded
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    // Indicates whether the AI is generating card recommendations/solutions
     const [isLoadingSolutions, setIsLoadingSolutions] = useState<boolean>(false);
+    // Overall processing state that covers both chat response and solutions generation
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    // Reference to AbortController for cancelling ongoing API requests
     const abortControllerRef = useRef<AbortController | null>(null);
+    // Counter used to trigger new API calls when prompt is submitted
     const [triggerCall, setTriggerCall] = useState<number>(0);
+    // Indicates whether a new chat creation request is in progress
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
+    // Stores error messages to display to the user
     const [errorMessage, setErrorMessage] = useState<string>('');
 
+
+    // Modal for displaying error messages
     const errorModal = useModal();
+    // Modal for displaying help information
     const helpModal = useModal();
 
     const handleErrorModalClose = () => {
@@ -94,6 +116,12 @@ function PromptWindow({
         setErrorMessage('');
     };
 
+    /**
+     * Retrieves user prompt input and triggers the chat process.
+     * Prevents new chat creation if one is already pending.
+     * 
+     * @param {string} returnPrompt - The prompt text received from the input field
+     */
     const getPrompt = (returnPrompt: string) => {
         if (isNewChat && isNewChatPending) {
             console.log('New chat creation in progress, please wait...');
@@ -103,6 +131,13 @@ function PromptWindow({
         setTriggerCall(prev => prev + 1);
     };
 
+    /**
+     * Adds a new message to the chat history with a unique ID.
+     * Limits the chat history to the maximum allowed messages.
+     * 
+     * @param {typeof userClient | typeof aiClient} source - The source of the message (user or AI)
+     * @param {string} message - The message content to add
+     */
     const addChatHistory = (source: typeof userClient | typeof aiClient, message: string): void => {
         const newEntry: ChatMessage = {
             id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -116,6 +151,15 @@ function PromptWindow({
         });
     };
 
+    /**
+     * Effect hook that triggers when a new prompt is submitted.
+     * Handles the initial processing of a new chat message:
+     * - Sets pending state for new chats
+     * - Adds the user's message to chat history
+     * - Initiates the server call for AI response
+     * 
+     * @dependency {triggerCall} - Incremented when a new prompt is submitted
+     */
     useEffect(() => {
         if (promptValue !== '') {
             if (isNewChat) {
@@ -126,6 +170,12 @@ function PromptWindow({
         }
     }, [triggerCall]);
 
+    /**
+     * Effect hook that synchronizes the URL with the current chat ID.
+     * Updates the URL and notifies parent component when chat ID changes.
+     * 
+     * @dependency {chatId} - The current chat ID
+     */
     useEffect(() => {
         if (chatId && chatId !== urlChatId) {
             returnCurrentChatId(chatId);
@@ -133,6 +183,36 @@ function PromptWindow({
         }
     }, [chatId]);
 
+    /**
+     * Helper function to set chat states when loading existing chat data.
+     * Updates chat history, solutions, chat ID, and related states.
+     * 
+     * @param {ChatMessage[]} conversation - The chat conversation history
+     * @param {ChatSolution} solutions - The chat solutions
+     * @param {string} newChatId - The chat ID to set
+     */
+    const setExistingChatStates = (
+        conversation: ChatMessage[],
+        solutions: ChatSolution,
+        newChatId: string
+    ): void => {
+        setChatHistory(limitChatHistory(conversation));
+        setPromptSolutions(solutions);
+        setChatId(newChatId);
+        setIsNewChat(false);
+        returnCurrentChatId(newChatId);
+    };
+
+    /**
+     * Effect hook that loads chat history when accessing an existing chat.
+     * Handles two scenarios:
+     * 1. Loads chat from existing history list (in-memory)
+     * 2. Fetches chat from API if not found in memory
+     * 
+     * @dependency {urlChatId} - Chat ID from URL parameters
+     * @dependency {user} - Current user object
+     * @dependency {existingHistoryList} - List of existing chat histories
+     */
     useEffect(() => {
         const loadChatHistory = async () => {
             if (!user || !urlChatId || urlChatId === chatId) return;
@@ -141,23 +221,14 @@ function PromptWindow({
             const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
             
             if (existingChat) {
-                setChatHistory(limitChatHistory(existingChat.conversation));
-                setPromptSolutions(existingChat.solutions);
-                setChatId(urlChatId);
-                setIsNewChat(false);
-                returnCurrentChatId(urlChatId);
+                setExistingChatStates(existingChat.conversation, existingChat.solutions, urlChatId);
                 return;
             }
 
             // If not found in existing history, fetch from API
             try {
                 const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
-                
-                setChatHistory(limitChatHistory(response.conversation));
-                setPromptSolutions(response.solutions);
-                setChatId(urlChatId);
-                setIsNewChat(false);
-                returnCurrentChatId(urlChatId);
+                setExistingChatStates(response.conversation, response.solutions, urlChatId);
             } catch (error) {
                 console.error('Error loading chat:', error);
                 setErrorMessage('Error loading chat history');
@@ -170,6 +241,13 @@ function PromptWindow({
         }
     }, [urlChatId, user, existingHistoryList]);
 
+    /**
+     * Effect hook that handles clearing the chat when triggered externally.
+     * Resets the chat window when clearChatCallback is incremented.
+     * 
+     * @dependency {clearChatCallback} - External trigger to clear chat
+     * @dependency {setClearChatCallback} - Function to reset the clear chat trigger
+     */
     useEffect(() => {
         if (clearChatCallback > 0) {
             handleNewTransaction();
@@ -177,26 +255,16 @@ function PromptWindow({
         }
     }, [clearChatCallback, setClearChatCallback]);
 
-    const callServer = async (): Promise<void> => {
-        setIsProcessing(true);
-        setIsLoading(true);
-        
-        // Create new AbortController for this request
-        abortControllerRef.current = new AbortController();
-        const signal = abortControllerRef.current.signal;
-
-        const currentDate = getCurrentDateString();
-        const name = user?.displayName || 'Guest';
-
-        const userMessage: ChatMessage = {
-            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            chatSource: userClient,
-            chatMessage: promptValue
-        };
-
-        // Filter out unselected cards
+    /**
+     * Prepares the data object for API requests.
+     * Includes chat history, selected credit cards, and user preferences.
+     * 
+     * @param {string} name - User's name or 'Guest'
+     * @param {string} currentDate - Current timestamp string
+     * @returns {ChatRequestData} Formatted request data for API calls
+     */
+    const prepareRequestData = (name: string, currentDate: string): ChatRequestData => {
         const selectedCreditCards = creditCards.filter(card => card.selected);
-
         const requestData: ChatRequestData = {
             name,
             prompt: promptValue,
@@ -206,81 +274,136 @@ function PromptWindow({
             preferencesInstructions
         };
 
-        // Only add userCardDetails if user is authenticated
         if (user && userCardDetails?.length > 0) {
             requestData.userCardDetails = userCardDetails;
         }
 
+        return requestData;
+    };
+
+    /**
+     * Processes the chat interaction and generates solutions.
+     * Handles both AI response generation and card recommendations.
+     * 
+     * @param {ChatRequestData} requestData - Data for the API request
+     * @param {ChatMessage} userMessage - The user's message
+     * @param {AbortSignal} signal - Signal for request cancellation
+     * @returns {Promise<{updatedHistory: ChatMessage[], solutions: ChatSolution}>} Updated chat history and solutions
+     */
+    const processChatAndSolutions = async (
+        requestData: ChatRequestData,
+        userMessage: ChatMessage,
+        signal: AbortSignal
+    ): Promise<{ updatedHistory: ChatMessage[], solutions: ChatSolution }> => {
+        const aiResponse = await ChatService.getChatResponse(requestData, signal);
+        const updatedHistory = [...chatHistory, userMessage, {
+            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            chatSource: aiClient,
+            chatMessage: aiResponse
+        }];
+        
+        setIsLoading(false);
+        setIsLoadingSolutions(true);
+
+        setChatHistory(limitChatHistory(updatedHistory));
+
+        const solutions = await ChatService.getChatSolution({
+            ...requestData,
+            chatHistory: limitChatHistory(updatedHistory)
+        }, signal);
+
+        if (signal.aborted) throw new Error('Request aborted');
+        
+        return { updatedHistory, solutions };
+    };
+
+    /**
+     * Handles the storage and updating of chat history.
+     * Creates new chat sessions or updates existing ones based on user preferences.
+     * 
+     * @param {ChatMessage[]} updatedHistory - The new chat history to store
+     * @param {ChatSolution} solutions - The generated solutions
+     * @param {AbortSignal} signal - Signal for request cancellation
+     */
+    const handleHistoryStorage = async (
+        updatedHistory: ChatMessage[],
+        solutions: ChatSolution,
+        signal: AbortSignal
+    ): Promise<void> => {
+        if (!user || chatHistoryPreference === CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
+            setIsNewChatPending(false);
+            return;
+        }
+
+        if (isNewChat) {
+            const response = await UserHistoryService.createChatHistory(
+                updatedHistory,
+                solutions,
+                signal
+            );
+
+            const newChat = {
+                chatId: response.chatId,
+                timestamp: new Date().toISOString(),
+                conversation: updatedHistory,
+                solutions: solutions,
+                chatDescription: response.chatDescription || DEFAULT_CHAT_NAME
+            };
+            onHistoryUpdate(newChat);
+
+            setChatId(response.chatId);
+            returnCurrentChatId(response.chatId);
+
+            setIsNewChat(false);
+            setIsNewChatPending(false);
+        } else {
+            await UserHistoryService.updateChatHistory(
+                chatId,
+                updatedHistory,
+                solutions,
+                signal
+            );
+
+            const updatedChat = {
+                chatId: chatId,
+                timestamp: new Date().toISOString(),
+                conversation: updatedHistory,
+                solutions: solutions,
+                chatDescription: existingHistoryList.find(chat => chat.chatId === chatId)?.chatDescription || DEFAULT_CHAT_NAME
+            };
+            onHistoryUpdate(updatedChat);
+        }
+    };
+
+    /**
+     * Main function that orchestrates the entire chat process.
+     * Handles API calls, updates state, and manages error handling.
+     */
+    const callServer = async (): Promise<void> => {
+        setIsProcessing(true);
+        setIsLoading(true);
+        
+        abortControllerRef.current = new AbortController();
+        const signal = abortControllerRef.current.signal;
+
+        const currentDate = getCurrentDateString();
+        const name = user?.displayName || 'Guest';
+        const userMessage: ChatMessage = {
+            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            chatSource: userClient,
+            chatMessage: promptValue
+        };
+
         try {
-            // Get chat response
-            const aiResponse = await ChatService.getChatResponse(requestData, signal);
-            const updatedHistory = [...chatHistory, userMessage, {
-                id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                chatSource: aiClient,
-                chatMessage: aiResponse
-            }];
+            const requestData = prepareRequestData(name, currentDate);
+            const { updatedHistory, solutions } = await processChatAndSolutions(requestData, userMessage, signal);
             
-            setIsLoading(false);
-            setIsLoadingSolutions(true);
-            setChatHistory(limitChatHistory(updatedHistory));
-
-            // Get solution recommendations
-            const solutions = await ChatService.getChatSolution({
-                ...requestData,
-                chatHistory: limitChatHistory(updatedHistory)
-            }, signal);
-
-            if (signal.aborted) return;
             setPromptSolutions(solutions);
             setIsLoadingSolutions(false);
-
-            // Handle local state updates regardless of history preference
+            
             setChatHistory(limitChatHistory(updatedHistory));
-
-            // Only proceed with server-side history storage if tracking is enabled
-            if (!user || chatHistoryPreference === CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
-                setIsNewChatPending(false);
-                return;
-            }
-
-            // Handle history storage
-            if (isNewChat) {
-                const response = await UserHistoryService.createChatHistory(
-                    updatedHistory,
-                    solutions,
-                    signal
-                );
-
-                const newChat = {
-                    chatId: response.chatId,
-                    timestamp: new Date().toISOString(),
-                    conversation: updatedHistory,
-                    solutions: solutions,
-                    chatDescription: response.chatDescription || DEFAULT_CHAT_NAME
-                };
-                onHistoryUpdate(newChat);
-                setChatId(response.chatId);
-                returnCurrentChatId(response.chatId);
-                setIsNewChat(false);
-                setIsNewChatPending(false);
-            } else {
-                await UserHistoryService.updateChatHistory(
-                    chatId,
-                    updatedHistory,
-                    solutions,
-                    signal
-                );
-
-                // Update existing chat
-                const updatedChat = {
-                    chatId: chatId,
-                    timestamp: new Date().toISOString(),
-                    conversation: updatedHistory,
-                    solutions: solutions,
-                    chatDescription: existingHistoryList.find(chat => chat.chatId === chatId)?.chatDescription || DEFAULT_CHAT_NAME
-                };
-                onHistoryUpdate(updatedChat);
-            }
+            
+            await handleHistoryStorage(updatedHistory, solutions, signal);
         } catch (error) {
             if (axios.isCancel(error)) {
                 console.log('Request cancelled');
@@ -299,12 +422,18 @@ function PromptWindow({
         }
     };
 
+    /**
+     * Resets all loading states to their default values.
+     */
     const resetLoading = () => {
         setIsProcessing(false);
         setIsLoading(false);
         setIsLoadingSolutions(false);
     };
 
+    /**
+     * Cancels ongoing API requests and resets loading states.
+     */
     const handleCancel = () => {
         if (abortControllerRef.current) {
             abortControllerRef.current.abort();
@@ -312,6 +441,10 @@ function PromptWindow({
         resetLoading();
     };
 
+    /**
+     * Resets the chat window to start a new transaction.
+     * Clears history, solutions, and navigates to root.
+     */
     const handleNewTransaction = () => {
         setChatHistory([]);
         setPromptSolutions([]);
@@ -368,10 +501,22 @@ function PromptWindow({
 export default PromptWindow;
 
 
+/**
+ * Limits the chat history to the maximum allowed messages.
+ * 
+ * @param {ChatMessage[]} chatHistory - The chat history to limit
+ * @returns {ChatMessage[]} Limited chat history array
+ */
 const limitChatHistory = (chatHistory: ChatMessage[]): ChatMessage[] => {
     return Array.isArray(chatHistory) ? chatHistory.slice(-MAX_CHAT_MESSAGES) : [];
 };
 
+/**
+ * Generates a formatted current date string.
+ * Format: YYYY-MM-DD HH:mm:ss
+ * 
+ * @returns {string} Formatted current date and time
+ */
 const getCurrentDateString = (): string => {
     const now = new Date();
   
