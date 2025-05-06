@@ -1,8 +1,9 @@
+import { ChatSourceType } from './Constants';
 import { CreditCard } from './CreditCardTypes';
 
 export interface ChatMessage {
     id: string;
-    chatSource: 'user' | 'assistant' | 'developer';
+    chatSource: ChatSourceType;
     chatMessage: string;
 }
 

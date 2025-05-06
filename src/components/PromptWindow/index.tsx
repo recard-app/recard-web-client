@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { User as FirebaseUser } from 'firebase/auth';
 
 import PromptHistory from './PromptHistory';
 import PromptField from './PromptField';
@@ -11,15 +12,50 @@ import './PromptWindow.scss';
 import axios from 'axios';
 import { auth } from '../../config/firebase';
 
+// Import types
+import { CreditCard } from '../../types/CreditCardTypes';
+import { ChatMessage, ChatSolution, Conversation } from '../../types/ChatTypes';
+import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
+import { CHAT_SOURCE, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, RECOMMENDED_MAX_CHAT_MESSAGES } from '../../types';
+
 const apiurl = import.meta.env.VITE_BASE_URL;
 
-const aiClient = 'assistant';
-const userClient = 'user';
-const MAX_CHAT_MESSAGES = 20;
+const aiClient = CHAT_SOURCE.ASSISTANT;
+const userClient = CHAT_SOURCE.USER;
+const MAX_CHAT_MESSAGES = RECOMMENDED_MAX_CHAT_MESSAGES;
 
-const CHAT_HISTORY_MESSAGES = {
-    'do_not_track_history': 'Your chat history is not being stored. Messages will vanish when you leave or refresh the page.'
+const CHAT_HISTORY_MESSAGES: Record<ChatHistoryPreferenceType, string> = {
+    [CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY]: 'Your chat history is not being stored. Messages will vanish when you leave or refresh the page.',
+    [CHAT_HISTORY_PREFERENCE.KEEP_HISTORY]: ''
 };
+
+/**
+ * Props for the PromptWindow component.
+ * @param {CreditCard[]} creditCards - An array of credit cards.
+ * @param {string[]} userCardDetails - An array of user card details.
+ * @param {FirebaseUser | null} user - The current user.
+ * @param {function} returnCurrentChatId - A function to return the current chat ID.
+ * @param {function} onHistoryUpdate - A function to update the history.
+ * @param {number} clearChatCallback - A callback to clear the chat.
+ * @param {function} setClearChatCallback - A function to set the clear chat callback.
+ * @param {Conversation[]} existingHistoryList - An array of existing history.
+ * @param {string} preferencesInstructions - The preferences instructions.
+ * @param {ChatHistoryPreference} chatHistoryPreference - The chat history preference.
+ * @param {boolean} showHistoryPanel - Whether to show the history panel.
+ */
+interface PromptWindowProps {
+    creditCards: CreditCard[];
+    userCardDetails: string[];
+    user: FirebaseUser | null;
+    returnCurrentChatId: (chatId: string) => void;
+    onHistoryUpdate: (chat: Conversation) => void;
+    clearChatCallback: number;
+    setClearChatCallback: (value: number) => void;
+    existingHistoryList: Conversation[];
+    preferencesInstructions: InstructionsPreference;
+    chatHistoryPreference: ChatHistoryPreference;
+    showHistoryPanel: boolean;
+}
 
 function PromptWindow({ 
     creditCards, 
@@ -33,22 +69,22 @@ function PromptWindow({
     preferencesInstructions,
     chatHistoryPreference,
     showHistoryPanel
-}) {
-    const { chatId: urlChatId } = useParams();
+}: PromptWindowProps) {
+    const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
     
-    const [promptValue, setPromptValue] = useState('');
-    const [chatHistory, setChatHistory] = useState([]);
-    const [promptSolutions, setPromptSolutions] = useState([]);
-    const [chatId, setChatId] = useState('');
-    const [isNewChat, setIsNewChat] = useState(true);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isLoadingSolutions, setIsLoadingSolutions] = useState(false);
-    const [isProcessing, setIsProcessing] = useState(false);
-    const abortControllerRef = useRef(null);
-    const [triggerCall, setTriggerCall] = useState(0);
-    const [isNewChatPending, setIsNewChatPending] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [promptValue, setPromptValue] = useState<string>('');
+    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+    const [promptSolutions, setPromptSolutions] = useState<ChatSolution>([]);
+    const [chatId, setChatId] = useState<string>('');
+    const [isNewChat, setIsNewChat] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoadingSolutions, setIsLoadingSolutions] = useState<boolean>(false);
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const abortControllerRef = useRef<AbortController | null>(null);
+    const [triggerCall, setTriggerCall] = useState<number>(0);
+    const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
     const errorModal = useModal();
     const helpModal = useModal();
@@ -58,7 +94,7 @@ function PromptWindow({
         setErrorMessage('');
     };
 
-    const getPrompt = (returnPrompt) => {
+    const getPrompt = (returnPrompt: string) => {
         if (isNewChat && isNewChatPending) {
             console.log('New chat creation in progress, please wait...');
             return;
@@ -67,8 +103,8 @@ function PromptWindow({
         setTriggerCall(prev => prev + 1);
     };
 
-    const addChatHistory = (source, message) => {
-        const newEntry = {
+    const addChatHistory = (source: typeof userClient | typeof aiClient, message: string): void => {
+        const newEntry: ChatMessage = {
             id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             chatSource: source,
             chatMessage: message,
@@ -91,10 +127,6 @@ function PromptWindow({
     }, [triggerCall]);
 
     useEffect(() => {
-        //console.log("Updated chatHistory:", chatHistory);
-    }, [chatHistory]);
-
-    useEffect(() => {
         if (chatId && chatId !== urlChatId) {
             returnCurrentChatId(chatId);
             navigate(`/${chatId}`, { replace: true });
@@ -106,7 +138,7 @@ function PromptWindow({
             if (!user || !urlChatId || urlChatId === chatId) return;
 
             // First check if the chat exists in the existing history
-            const existingChat = existingHistoryList.find(chat => chat.id === urlChatId);
+            const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
             
             if (existingChat) {
                 setChatHistory(limitChatHistory(existingChat.conversation));
@@ -150,7 +182,7 @@ function PromptWindow({
         }
     }, [clearChatCallback, setClearChatCallback]);
 
-    const callServer = () => {
+    const callServer = async (): Promise<void> => {
         setIsProcessing(true);
         setIsLoading(true);
         
@@ -159,9 +191,9 @@ function PromptWindow({
         const signal = abortControllerRef.current.signal;
 
         const currentDate = getCurrentDateString();
-        const name = user?.name || 'Guest';
+        const name = user?.displayName || 'Guest';
 
-        const userMessage = {
+        const userMessage: ChatMessage = {
             id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             chatSource: userClient,
             chatMessage: promptValue
@@ -170,13 +202,21 @@ function PromptWindow({
         // Filter out unselected cards
         const selectedCreditCards = creditCards.filter(card => card.selected);
 
-        const requestData = {
-            name: name,
+        const requestData: {
+            name: string;
+            prompt: string;
+            chatHistory: ChatMessage[];
+            creditCards: CreditCard[];
+            currentDate: string;
+            preferencesInstructions: InstructionsPreference;
+            userCardDetails?: string[];
+        } = {
+            name,
             prompt: promptValue,
             chatHistory: limitChatHistory(chatHistory),
             creditCards: selectedCreditCards,
-            currentDate: currentDate,
-            preferencesInstructions: preferencesInstructions
+            currentDate,
+            preferencesInstructions
         };
 
         // Only add userCardDetails if user is authenticated
@@ -214,7 +254,7 @@ function PromptWindow({
                 setChatHistory(limitChatHistory(updatedHistory));
 
                 // Only proceed with server-side history storage if tracking is enabled
-                if (!user || chatHistoryPreference === 'do_not_track_history') {
+                if (!user || chatHistoryPreference === CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
                     setIsNewChatPending(false);  // Make sure to reset the pending state
                     return;
                 }
@@ -261,6 +301,7 @@ function PromptWindow({
                                 timestamp: new Date().toISOString(),
                                 conversation: updatedHistory,
                                 solutions: solutions,
+                                chatDescription: response.data.chatDescription || existingHistoryList.find(chat => chat.chatId === chatId)?.chatDescription || 'New Chat'
                             };
                             onHistoryUpdate(updatedChat);
                         }
@@ -354,16 +395,16 @@ function PromptWindow({
 export default PromptWindow;
 
 
-const limitChatHistory = (chatHistory) => {
+const limitChatHistory = (chatHistory: ChatMessage[]): ChatMessage[] => {
     return Array.isArray(chatHistory) ? chatHistory.slice(-MAX_CHAT_MESSAGES) : [];
 };
 
-const getCurrentDateString = () => {
+const getCurrentDateString = (): string => {
     const now = new Date();
   
     // Format the date components
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
   
     // Format the time components
@@ -373,4 +414,4 @@ const getCurrentDateString = () => {
   
     // Combine into a single string
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  };
+};
