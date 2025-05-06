@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { CreditCard } from '../../../types/CreditCardTypes';
+import { ChatSolutionCard } from '../../../types/ChatTypes';
+import { PLACEHOLDER_CARD_IMAGE } from '../../../types';
 import './PromptSolution.scss';
 
-function PromptSolution({ promptSolutions, creditCards }) {
-    const [solutions, setSolutions] = useState([]);
+/**
+ * Props for the PromptSolution component.
+ * @param {ChatSolutionCard | ChatSolutionCard[]} promptSolutions - The solution(s) to display.
+ * @param {CreditCard[]} creditCards - The list of credit cards to display.
+ */
+interface PromptSolutionProps {
+    promptSolutions: ChatSolutionCard | ChatSolutionCard[];
+    creditCards?: CreditCard[];
+}
 
+function PromptSolution({ promptSolutions, creditCards }: PromptSolutionProps): React.ReactElement | null {
+    // The list of solutions to display.
+    const [solutions, setSolutions] = useState<ChatSolutionCard[]>([]);
+
+    // Convert the promptSolutions to an array if it is a valid solution object.
     useEffect(() => {
-        // Convert single object to array if needed
         const solutionsArray = Array.isArray(promptSolutions) 
             ? promptSolutions 
             : promptSolutions ? [promptSolutions] : [];
@@ -28,8 +42,8 @@ function PromptSolution({ promptSolutions, creditCards }) {
                         const cardDetails = creditCards?.find(card => card.id === solution.id);
                         
                         // If no matching card is found, use the solution's default values
-                        const cardName = cardDetails?.CardName || solution.CardName;
-                        const cardImage = cardDetails?.CardImage || 'https://placehold.co/20x20';
+                        const cardName = cardDetails?.CardName || solution.cardName;
+                        const cardImage = cardDetails?.CardImage || PLACEHOLDER_CARD_IMAGE;
                         
                         return (
                             <div key={solution.id || index} className="solution-card">
@@ -38,11 +52,11 @@ function PromptSolution({ promptSolutions, creditCards }) {
                                     <h3>{cardName}</h3>
                                 </div>
                                 <div className="card-details">
-                                    {solution.RewardCategory && (
-                                        <p><strong>Category:</strong> {solution.RewardCategory}</p>
+                                    {solution.rewardCategory && (
+                                        <p><strong>Category:</strong> {solution.rewardCategory}</p>
                                     )}
-                                    {solution.RewardRate && (
-                                        <p><strong>Reward Rate:</strong> {solution.RewardRate}</p>
+                                    {solution.rewardRate && (
+                                        <p><strong>Reward Rate:</strong> {solution.rewardRate}</p>
                                     )}
                                 </div>
                             </div>
