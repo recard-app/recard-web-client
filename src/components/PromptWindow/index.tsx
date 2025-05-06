@@ -14,15 +14,17 @@ import { auth } from '../../config/firebase';
 
 // Import types
 import { CreditCard } from '../../types/CreditCardTypes';
-import { ChatMessage, ChatSolution, Conversation } from '../../types/ChatTypes';
+import { ChatMessage, ChatSolution, Conversation, ChatRequestData } from '../../types/ChatTypes';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 import { CHAT_SOURCE, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, RECOMMENDED_MAX_CHAT_MESSAGES } from '../../types';
+import { UserHistoryService } from '../../services';
 
 const apiurl = import.meta.env.VITE_BASE_URL;
 
 const aiClient = CHAT_SOURCE.ASSISTANT;
 const userClient = CHAT_SOURCE.USER;
 const MAX_CHAT_MESSAGES = RECOMMENDED_MAX_CHAT_MESSAGES;
+const DEFAULT_CHAT_NAME = 'New Transaction Chat';
 
 const CHAT_HISTORY_MESSAGES: Record<ChatHistoryPreferenceType, string> = {
     [CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY]: 'Your chat history is not being stored. Messages will vanish when you leave or refresh the page.',
@@ -151,15 +153,10 @@ function PromptWindow({
 
             // If not found in existing history, fetch from API
             try {
-                const token = await auth.currentUser.getIdToken();
-                const response = await axios.get(`${apiurl}/users/history/${urlChatId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
                 
-                setChatHistory(limitChatHistory(response.data.conversation));
-                setPromptSolutions(response.data.solutions);
+                setChatHistory(limitChatHistory(response.conversation));
+                setPromptSolutions(response.solutions);
                 setChatId(urlChatId);
                 setIsNewChat(false);
                 returnCurrentChatId(urlChatId);
@@ -202,15 +199,7 @@ function PromptWindow({
         // Filter out unselected cards
         const selectedCreditCards = creditCards.filter(card => card.selected);
 
-        const requestData: {
-            name: string;
-            prompt: string;
-            chatHistory: ChatMessage[];
-            creditCards: CreditCard[];
-            currentDate: string;
-            preferencesInstructions: InstructionsPreference;
-            userCardDetails?: string[];
-        } = {
+        const requestData: ChatRequestData = {
             name,
             prompt: promptValue,
             chatHistory: limitChatHistory(chatHistory),
@@ -287,7 +276,7 @@ function PromptWindow({
                                 timestamp: new Date().toISOString(),
                                 conversation: updatedHistory,
                                 solutions: solutions,
-                                chatDescription: response.data.chatDescription || 'New Chat'
+                                chatDescription: response.data.chatDescription || DEFAULT_CHAT_NAME
                             };
                             onHistoryUpdate(newChat);
                             setChatId(response.data.chatId);
@@ -301,7 +290,7 @@ function PromptWindow({
                                 timestamp: new Date().toISOString(),
                                 conversation: updatedHistory,
                                 solutions: solutions,
-                                chatDescription: response.data.chatDescription || existingHistoryList.find(chat => chat.chatId === chatId)?.chatDescription || 'New Chat'
+                                chatDescription: response.data.chatDescription || existingHistoryList.find(chat => chat.chatId === chatId)?.chatDescription || DEFAULT_CHAT_NAME
                             };
                             onHistoryUpdate(updatedChat);
                         }

@@ -1,5 +1,6 @@
 import { ChatSourceType } from './Constants';
 import { CreditCard } from './CreditCardTypes';
+import { InstructionsPreference } from './UserTypes';
 
 export interface ChatMessage {
     id: string;
@@ -43,4 +44,14 @@ export interface ChatSolutionCard {
     cardName: string;
     rewardCategory?: string;
     rewardRate?: string;
+}
+
+export interface ChatRequestData {
+    name: string;
+    prompt: string;
+    chatHistory: ChatMessage[];
+    creditCards: CreditCard[];
+    currentDate: string;
+    preferencesInstructions: InstructionsPreference;
+    userCardDetails?: string[];
 }

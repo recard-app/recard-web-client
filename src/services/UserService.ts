@@ -84,7 +84,21 @@ export const UserHistoryService = {
         if (response.status !== 200) {
             throw new Error('Failed to delete chat history');
         }
-    }
+    },
+
+    /**
+     * Fetches a specific chat history entry by ID
+     * @param chatId ID of the chat to fetch
+     * @returns Promise containing the conversation data
+     */
+    async fetchChatHistoryById(chatId: string): Promise<Conversation> {
+        const headers = await getAuthHeaders();
+        const response = await axios.get<Conversation>(
+            `${apiurl}/users/history/${chatId}`,
+            { headers }
+        );
+        return response.data;
+    },
 };
 
 /**
