@@ -36,7 +36,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) =>
    * - Cleans up event listener on unmount
    */
   useEffect(() => {
-    const listener = (event: MouseEvent) => handleClickOutside(event, dropdownRef, setDropdownOpen);
+    const listener = (event: Event) => handleClickOutside(event, dropdownRef, setDropdownOpen);
     document.addEventListener('mousedown', listener);
     return () => document.removeEventListener('mousedown', listener);
   }, []);
