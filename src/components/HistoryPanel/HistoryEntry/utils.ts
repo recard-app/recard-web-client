@@ -1,4 +1,4 @@
-import { CreditCard, SimpleCardDisplay, ChatSolution, PLACEHOLDER_CARD_IMAGE } from '../../../types';
+import { CreditCard, SimpleCardDisplay, ChatSolution, PLACEHOLDER_CARD_IMAGE, MONTH_ABBREVIATIONS } from '../../../types';
 import { UserHistoryService } from '../../../services';
 
 /**
@@ -46,11 +46,6 @@ export const formatDate = (timestamp: string): string => {
     return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
   }
   
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-  
   let hours = date.getHours();
   const minutes = date.getMinutes();
   const ampm = hours >= 12 ? 'PM' : 'AM';
@@ -58,7 +53,7 @@ export const formatDate = (timestamp: string): string => {
   hours = hours ? hours : 12;
   const minutesStr = minutes < 10 ? '0' + minutes : minutes;
   
-  return `${months[date.getMonth()]} ${date.getDate()}, ${hours}:${minutesStr} ${ampm}`;
+  return `${MONTH_ABBREVIATIONS[date.getMonth()]} ${date.getDate()}, ${hours}:${minutesStr} ${ampm}`;
 };
 
 /**

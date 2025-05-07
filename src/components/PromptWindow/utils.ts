@@ -2,14 +2,14 @@ import React from 'react';
 import { ChatMessage, ChatSolution, ChatRequestData, Conversation } from '../../types/ChatTypes';
 import { InstructionsPreference } from '../../types/UserTypes';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { CHAT_SOURCE, RECOMMENDED_MAX_CHAT_MESSAGES, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType } from '../../types';
+import { CHAT_SOURCE, RECOMMENDED_MAX_CHAT_MESSAGES, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, DEFAULT_CHAT_NAME_PLACEHOLDER } from '../../types';
 import { UserHistoryService, ChatService } from '../../services';
 
 // Constants
 export const aiClient = CHAT_SOURCE.ASSISTANT;
 export const userClient = CHAT_SOURCE.USER;
 export const MAX_CHAT_MESSAGES = RECOMMENDED_MAX_CHAT_MESSAGES;
-export const DEFAULT_CHAT_NAME = 'New Transaction Chat';
+export const DEFAULT_CHAT_NAME = DEFAULT_CHAT_NAME_PLACEHOLDER;
 
 export const CHAT_HISTORY_MESSAGES: Record<ChatHistoryPreferenceType, string> = {
     [CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY]: 'Your chat history is not being stored. Messages will vanish when you leave or refresh the page.',

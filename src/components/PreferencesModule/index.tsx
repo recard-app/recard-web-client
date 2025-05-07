@@ -80,7 +80,7 @@ function PreferencesModule({
                 <textarea
                     value={instructions}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
-                    placeholder="Enter your special instructions for the AI assistant..."
+                    placeholder="Enter your special instructions for the ReCard AI assistant..."
                     rows={6}
                     className="preferences-textarea"
                 />

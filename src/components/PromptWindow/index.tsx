@@ -28,6 +28,7 @@ import { CreditCard } from '../../types/CreditCardTypes';
 import { ChatMessage, ChatSolution, Conversation } from '../../types/ChatTypes';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 import { aiClient, userClient, MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
+import { NO_DISPLAY_NAME_PLACEHOLDER } from '../../types';
 
 /**
  * Props for the PromptWindow component.
@@ -218,7 +219,7 @@ function PromptWindow({
         const signal = abortControllerRef.current.signal;
 
         const currentDate = getCurrentDateString();
-        const name = user?.displayName || 'Guest';
+        const name = user?.displayName || NO_DISPLAY_NAME_PLACEHOLDER;
         const userMessage: ChatMessage = {
             id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             chatSource: userClient,

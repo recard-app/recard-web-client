@@ -5,8 +5,6 @@ import { Conversation, CreditCard } from '../../../types';
 import { formatDate, getRecommendedCard, deleteChatEntry } from './utils';
 import { Modal, useModal } from '../../Modal';
 
-const apiurl = import.meta.env.VITE_BASE_URL;
-
 /**
  * Props interface for the HistoryEntry component
  * @property chatEntry - The conversation data to display

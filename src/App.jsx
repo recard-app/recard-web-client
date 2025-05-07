@@ -27,8 +27,11 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 // Context
 import { useAuth } from './context/AuthContext';
 
+// Constants
+import { GLOBAL_QUICK_HISTORY_SIZE, CHAT_HISTORY_PREFERENCE, SUBSCRIPTION_PLAN } from './types';
+
 const apiurl = import.meta.env.VITE_BASE_URL;
-const quick_history_size = 3;
+const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 
 function AppContent() {
   const { user, logout } = useAuth();
@@ -43,10 +46,10 @@ function AppContent() {
 
   const [clearChatCallback, setClearChatCallback] = useState(0);
   const [preferencesInstructions, setPreferencesInstructions] = useState('');
-  const [chatHistoryPreference, setChatHistoryPreference] = useState('keep_history');
+  const [chatHistoryPreference, setChatHistoryPreference] = useState(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
 
   const [userCardDetails, setUserCardDetails] = useState([]);
-  const [subscriptionPlan, setSubscriptionPlan] = useState('free');
+  const [subscriptionPlan, setSubscriptionPlan] = useState(SUBSCRIPTION_PLAN.FREE);
 
   const modal = useModal();
 
@@ -185,7 +188,7 @@ function AppContent() {
   useEffect(() => {
     const fetchSubscriptionPlan = async () => {
       if (!user) {
-        setSubscriptionPlan('free');
+        setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE);
         return;
       }
       
@@ -199,7 +202,7 @@ function AppContent() {
         setSubscriptionPlan(response.data.subscriptionPlan);
       } catch (error) {
         console.error('Error fetching subscription plan:', error);
-        setSubscriptionPlan('free'); // Default to free on error
+        setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE); // Default to free on error
       }
     };
 
@@ -240,7 +243,7 @@ function AppContent() {
     setLastUpdateTimestamp(null);
     setClearChatCallback(0);
     setPreferencesInstructions('');
-    setChatHistoryPreference('keep_history');
+    setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
     
     // Perform logout and navigation
     await logout();

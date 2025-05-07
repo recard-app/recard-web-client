@@ -9,7 +9,7 @@ import {
   CreditCard,
   SubscriptionPlan
 } from '../../types';
-import { HISTORY_PAGE_SIZE } from '../../types/Constants';
+import { HISTORY_PAGE_SIZE, SUBSCRIPTION_PLAN } from '../../types';
 import {
   organizeHistoryByDate,
   getAvailableYears,
@@ -45,7 +45,7 @@ function HistoryPanel({
   currentChatId,
   returnCurrentChatId,
   onHistoryUpdate,
-  subscriptionPlan = 'free',
+  subscriptionPlan = SUBSCRIPTION_PLAN.FREE,
   creditCards
 }: HistoryPanelProps) {
   const { user } = useAuth();

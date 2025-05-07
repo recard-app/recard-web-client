@@ -1,4 +1,5 @@
 import { Conversation } from "./ChatTypes";
+import { ChatHistoryPreferenceType, SubscriptionPlanType } from "./Constants";
 
 export type SelectedCards = string[];
 
@@ -7,10 +8,10 @@ export interface UserPreferences {
     instructions?: InstructionsPreference;
 }
 
-export type ChatHistoryPreference = 'keep_history' | 'do_not_track_history';
+export type ChatHistoryPreference = ChatHistoryPreferenceType;
 export type InstructionsPreference = string;
 
-export type SubscriptionPlan = 'free' | 'premium';
+export type SubscriptionPlan = SubscriptionPlanType;
 
 export type ChatHistory = Conversation[];
 

@@ -4,7 +4,7 @@ import {
   HistoryParams, 
   PaginationData
 } from '../../types';
-import { MONTH_OPTIONS, MONTH_NAMES } from '../../types/Constants';
+import { MONTH_OPTIONS, MONTH_NAMES, SUBSCRIPTION_PLAN } from '../../types';
 import { UserHistoryService } from '../../services';
 
 /**
@@ -108,14 +108,14 @@ export const fetchPagedHistory = async (
  * Gets the list of available years based on subscription plan and first entry date
  */
 export const getAvailableYears = (
-  subscriptionPlan: SubscriptionPlan = 'free',
+  subscriptionPlan: SubscriptionPlan = SUBSCRIPTION_PLAN.FREE,
   firstEntryDate: Date | null
 ): number[] => {
   const now = new Date();
   const cutoffDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 90);
   const years: number[] = [];
 
-  if (subscriptionPlan === 'premium' && firstEntryDate) {
+  if (subscriptionPlan === SUBSCRIPTION_PLAN.PREMIUM && firstEntryDate) {
     // For premium users, show years from first entry up to current
     const startYear = firstEntryDate.getFullYear();
     const endYear = now.getFullYear();
@@ -138,7 +138,7 @@ export const getAvailableYears = (
  * Gets the list of available months based on subscription plan and selected year
  */
 export const getAvailableMonths = (
-  subscriptionPlan: SubscriptionPlan = 'free',
+  subscriptionPlan: SubscriptionPlan = SUBSCRIPTION_PLAN.FREE,
   firstEntryDate: Date | null,
   selectedYear: number
 ): MonthOption[] => {
@@ -147,7 +147,7 @@ export const getAvailableMonths = (
   
   let availableMonths = [...MONTH_OPTIONS];
 
-  if (subscriptionPlan === 'premium' && firstEntryDate) {
+  if (subscriptionPlan === SUBSCRIPTION_PLAN.PREMIUM && firstEntryDate) {
     // For premium users, limit months based on firstEntryDate
     if (selectedYear === firstEntryDate.getFullYear()) {
       availableMonths = availableMonths.filter(month => 
@@ -258,7 +258,7 @@ export const shouldShowUpgradeMessage = (
   selectedYear: number,
   firstEntryDate: Date | null
 ): boolean => {
-  if (!fullListSize || !paginationData || subscriptionPlan === 'premium') return false;
+  if (!fullListSize || !paginationData || subscriptionPlan === SUBSCRIPTION_PLAN.PREMIUM) return false;
   
   // Only show on last page
   if (paginationData.current_page !== paginationData.total_pages) return false;

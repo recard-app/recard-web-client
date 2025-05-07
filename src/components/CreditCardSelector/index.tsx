@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections } from './utils';
+import { PLACEHOLDER_CARD_IMAGE } from '../../types';
 
 /**
  * Props interface for the CreditCardSelector component
@@ -129,7 +130,7 @@ const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCar
                             checked={card.selected || false} 
                             onChange={() => handleCheckboxChange(card.id)}
                         />
-                        <img src={card.CardImage || '/credit-card-128.png'} alt='Credit Card Img' />
+                        <img src={card.CardImage || PLACEHOLDER_CARD_IMAGE} alt='Credit Card Img' />
                         <div className='card-desc'>
                             <p className='card-name'>
                                 {card.CardName}

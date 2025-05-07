@@ -1,6 +1,6 @@
 import { ChatSourceType } from './Constants';
 import { CreditCard } from './CreditCardTypes';
-import { InstructionsPreference } from './UserTypes';
+import { CardDetailsList, InstructionsPreference } from './UserTypes';
 
 export interface ChatMessage {
     id: string;
@@ -22,12 +22,12 @@ export interface ChatRequestBody {
     chatHistory: ChatMessage[];
     creditCards: CreditCard[];
     currentDate: string;
-    preferencesInstructions: string;
-    userCardDetails: string[];
+    preferencesInstructions: InstructionsPreference;
+    userCardDetails: CardDetailsList;
 }
 
 export interface OpenAIChatMessage {
-    role: 'user' | 'assistant' | 'developer';
+    role: ChatSourceType;
     content: string;
 }
 
@@ -53,5 +53,5 @@ export interface ChatRequestData {
     creditCards: CreditCard[];
     currentDate: string;
     preferencesInstructions: InstructionsPreference;
-    userCardDetails?: string[];
+    userCardDetails?: CardDetailsList;
 }

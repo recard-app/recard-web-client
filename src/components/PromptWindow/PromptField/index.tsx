@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect, JSX } from 'react';
 import { adjustTextareaHeight, canSubmitPrompt, shouldSubmitOnEnter } from './utils';
 import './PromptField.scss';
+import { CHAT_MAX_FIELD_HEIGHT } from '../../../types';
 
 /**
  * Maximum height of the textarea.
  */
-const TEXT_AREA_MAX_HEIGHT = 250;
+const TEXT_AREA_MAX_HEIGHT = CHAT_MAX_FIELD_HEIGHT;
 
 /**
  * Props for the PromptField component.

@@ -14,6 +14,7 @@ import {
   sendPasswordResetEmail as firebaseSendPasswordResetEmail,
   UserCredential
 } from 'firebase/auth';
+import { PLACEHOLDER_PROFILE_IMAGE } from '../types';
 
 interface AuthContextType {
   user: FirebaseUser | null;
@@ -32,7 +33,7 @@ interface AuthProviderProps {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-const DEFAULT_PROFILE_PICTURE = 'http://localhost:5173/account.png';
+const DEFAULT_PROFILE_PICTURE = PLACEHOLDER_PROFILE_IMAGE;
 
 /**
  * AuthProvider component handles Firebase authentication state and methods.
