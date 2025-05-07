@@ -42,7 +42,6 @@ import { NO_DISPLAY_NAME_PLACEHOLDER } from '../../types';
  * @param {Conversation[]} existingHistoryList - An array of existing history.
  * @param {string} preferencesInstructions - The preferences instructions.
  * @param {ChatHistoryPreference} chatHistoryPreference - The chat history preference.
- * @param {boolean} showHistoryPanel - Whether to show the history panel.
  */
 interface PromptWindowProps {
     creditCards: CreditCard[];
@@ -55,7 +54,6 @@ interface PromptWindowProps {
     existingHistoryList: Conversation[];
     preferencesInstructions: InstructionsPreference;
     chatHistoryPreference: ChatHistoryPreference;
-    showHistoryPanel: boolean;
 }
 
 /**
@@ -76,7 +74,6 @@ function PromptWindow({
     existingHistoryList,
     preferencesInstructions,
     chatHistoryPreference,
-    showHistoryPanel
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
