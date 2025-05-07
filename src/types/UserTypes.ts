@@ -62,10 +62,12 @@ export interface PreferencesResponse {
  * Interface for pagination data returned from the API
  */
 export interface PaginationData {
-    current_page: number;
+    total_items: number;
     total_pages: number;
-    has_previous: boolean;
+    current_page: number;
+    page_size: number;
     has_next: boolean;
+    has_previous: boolean;
 }
 
 /**
@@ -76,12 +78,22 @@ export interface HistoryParams {
     page_size: number;
     month?: string;
     year?: string;
+    lastUpdate?: string;
 }
 
 /**
  * Interface for paginated history response
  */
 export interface PagedHistoryResponse {
+    hasUpdates: boolean;
     chatHistory: Conversation[];
     pagination: PaginationData;
+    filters: {
+        month: number | null;
+        year: number | null;
+    };
+    restrictions: {
+        message: string;
+        upgrade_required: boolean;
+    } | null;
 }

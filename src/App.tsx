@@ -1,8 +1,14 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import { User as FirebaseUser } from 'firebase/auth';
-import { auth } from './config/firebase';
+
+// Services
+import { 
+  CardService, 
+  UserService, 
+  UserCreditCardService, 
+  UserHistoryService, 
+  UserPreferencesService 
+} from './services';
 
 // Styles
 import './App.scss';
@@ -28,16 +34,21 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 // Context
 import { useAuth } from './context/AuthContext';
 
-// Constants
-import { GLOBAL_QUICK_HISTORY_SIZE, CHAT_HISTORY_PREFERENCE, SUBSCRIPTION_PLAN } from './types';
+// Constants and Types
+import { 
+  GLOBAL_QUICK_HISTORY_SIZE, 
+  CHAT_HISTORY_PREFERENCE, 
+  SUBSCRIPTION_PLAN, 
+  CreditCard, 
+  Conversation,  
+  CardDetailsList, 
+  ChatHistoryPreference, 
+  InstructionsPreference, 
+  PagedHistoryResponse,
+  HistoryParams,
+  SubscriptionPlan 
+} from './types';
 
-// Types
-import { CreditCard } from './types/CreditCardTypes';
-import { Conversation, ChatMessage } from './types/ChatTypes';
-import { ChatHistoryPreferenceType, SubscriptionPlanType } from './types/Constants';
-import { CardDetailsList, ChatHistoryPreference } from './types/UserTypes';
-
-const apiurl = import.meta.env.VITE_BASE_URL;
 const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 
 interface AppContentProps {}
@@ -47,43 +58,49 @@ function AppContent({}: AppContentProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // State for managing credit cards in the application
   const [creditCards, setCreditCards] = useState<CreditCard[]>([]);
-  const [chatHistory, setChatHistory] = useState<Conversation[]>([]);
-  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
-  const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState<number>(0);
-  const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState<string | null>(null);
-
-  const [clearChatCallback, setClearChatCallback] = useState<number>(0);
-  const [preferencesInstructions, setPreferencesInstructions] = useState<string>('');
-  const [chatHistoryPreference, setChatHistoryPreference] = useState<ChatHistoryPreferenceType>(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
-
+  // State for storing user's card details
   const [userCardDetails, setUserCardDetails] = useState<CardDetailsList>([]);
-  const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlanType>(SUBSCRIPTION_PLAN.FREE);
+  // State for storing chat history/conversations
+  const [chatHistory, setChatHistory] = useState<Conversation[]>([]);
+  // State for tracking the current active chat ID
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
+  // State to trigger history refresh when needed
+  const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState<number>(0);
+  // State to track the last update timestamp for chat history
+  const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState<string | null>(null);
+  // State to trigger chat clearing functionality
+  const [clearChatCallback, setClearChatCallback] = useState<number>(0);
+  // State for storing user preferences instructions
+  const [preferencesInstructions, setPreferencesInstructions] = useState<InstructionsPreference>('');
+  // State for managing chat history preference (keep/clear)
+  const [chatHistoryPreference, setChatHistoryPreference] = useState<ChatHistoryPreference>(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
+  // State for tracking user's subscription plan
+  const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
 
   const modal = useModal();
 
+  // Effect to reset current chat ID when user changes
   useEffect(() => {
     setCurrentChatId(null);
   }, [user]);
 
+  // Effect to handle navigation when on root path with active chat
   useEffect(() => {
     if (location.pathname === '/' && currentChatId) {
       navigate(`/${currentChatId}`, { replace: true });
     }
   }, [location.pathname, currentChatId, navigate]);
 
+  // Effect to fetch credit cards when user is authenticated
   useEffect(() => {
     const fetchCreditCards = async () => {
       if (!user) return;
       
       try {
-        const token = await auth.currentUser?.getIdToken();
-        const response = await axios.get<CreditCard[]>(`${apiurl}/credit-cards/list/previews?includeCardSelection=true`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        setCreditCards(response.data);
+        const cards = await CardService.fetchCreditCards(true);
+        setCreditCards(cards);
       } catch (error) {
         console.error('Error fetching credit cards:', error);
       }
@@ -92,18 +109,14 @@ function AppContent({}: AppContentProps) {
     fetchCreditCards();
   }, [user]);
 
+  // Effect to fetch user preferences instructions
   useEffect(() => {
     const fetchPreferencesInstructions = async () => {
       if (!user) return;
       
       try {
-        const token = await auth.currentUser?.getIdToken();
-        const response = await axios.get<{ instructions: string }>(`${apiurl}/users/preferences/instructions`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        setPreferencesInstructions(response.data.instructions);
+        const response = await UserPreferencesService.loadInstructionsPreferences();
+        setPreferencesInstructions(response.data);
       } catch (error) {
         console.error('Error fetching preferences instructions:', error);
       }
@@ -112,19 +125,15 @@ function AppContent({}: AppContentProps) {
     fetchPreferencesInstructions();
   }, [user]);
 
+  // Effect to fetch chat history preference settings
   useEffect(() => {
     const fetchChatHistoryPreference = async () => {
       if (!user) return;
       
       try {
-        const token = await auth.currentUser?.getIdToken();
-        const response = await axios.get<{ chatHistory: ChatHistoryPreferenceType }>(`${apiurl}/users/preferences/chat_history`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (response.data.chatHistory) {
-          setChatHistoryPreference(response.data.chatHistory);
+        const response = await UserPreferencesService.loadChatHistoryPreferences();
+        if (response.data) {
+          setChatHistoryPreference(response.data as ChatHistoryPreference);
         }
       } catch (error) {
         console.error('Error fetching chat history preference:', error);
@@ -134,31 +143,23 @@ function AppContent({}: AppContentProps) {
     fetchChatHistoryPreference();
   }, [user]);
 
+  // Effect to fetch full chat history with updates
   useEffect(() => {
     const fetchFullHistory = async () => {
       if (!user) return;  // Only check for user authentication
       
       try {
-        const token = await auth.currentUser?.getIdToken();
-        const response = await axios.get<{ hasUpdates: boolean; chatHistory: Conversation[] }>(`${apiurl}/users/history`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          params: {
-            lastUpdate: lastUpdateTimestamp,
-            page_size: quick_history_size
-          }
-        });
+        const params: HistoryParams = {
+          lastUpdate: lastUpdateTimestamp,
+          page_size: quick_history_size,
+          page: 1
+        };
+
+        const response: PagedHistoryResponse = await UserHistoryService.fetchPagedHistory(params);
         
-        if (response.data.hasUpdates) {
+        if (response.hasUpdates) {
           // Ensure each chat history entry has all required fields
-          const processedHistory = response.data.chatHistory.map(chat => ({
-            chatId: chat.chatId,
-            timestamp: chat.timestamp,
-            chatDescription: chat.chatDescription,
-            conversation: chat.conversation,
-            solutions: chat.solutions
-          }));
+          const processedHistory = response.chatHistory;
           
           setChatHistory(processedHistory);
           setLastUpdateTimestamp(new Date().toISOString());
@@ -171,6 +172,7 @@ function AppContent({}: AppContentProps) {
     fetchFullHistory();
   }, [user, historyRefreshTrigger, chatHistoryPreference]);
 
+  // Effect to fetch user's card details
   useEffect(() => {
     const fetchUserCardDetails = async () => {
       if (!user) {
@@ -179,13 +181,8 @@ function AppContent({}: AppContentProps) {
       }
       
       try {
-        const token = await auth.currentUser?.getIdToken();
-        const response = await axios.get<{ cards: CardDetailsList }>(`${apiurl}/users/cards/details`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        setUserCardDetails(response.data.cards);
+        const details = await UserCreditCardService.fetchUserCardDetails();
+        setUserCardDetails(details);
       } catch (error) {
         console.error('Error fetching user card details:', error);
       }
@@ -194,6 +191,22 @@ function AppContent({}: AppContentProps) {
     fetchUserCardDetails();
   }, [user]);
 
+  // Function to update credit cards and refresh user card details
+  const getCreditCards = async (returnCreditCards: CreditCard[]): Promise<void> => {
+    setCreditCards(returnCreditCards);
+    
+    // After updating credit cards, fetch fresh user card details
+    if (user) {
+      try {
+        const details = await UserCreditCardService.fetchUserCardDetails();
+        setUserCardDetails(details);
+      } catch (error) {
+        console.error('Error fetching updated user card details:', error);
+      }
+    }
+  };
+
+  // Effect to fetch user's subscription plan
   useEffect(() => {
     const fetchSubscriptionPlan = async () => {
       if (!user) {
@@ -202,13 +215,8 @@ function AppContent({}: AppContentProps) {
       }
       
       try {
-        const token = await auth.currentUser?.getIdToken();
-        const response = await axios.get<{ subscriptionPlan: SubscriptionPlanType }>(`${apiurl}/users/subscription/plan`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        setSubscriptionPlan(response.data.subscriptionPlan);
+        const plan = await UserService.fetchUserSubscriptionPlan();
+        setSubscriptionPlan(plan);
       } catch (error) {
         console.error('Error fetching subscription plan:', error);
         setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE); // Default to free on error
@@ -218,29 +226,12 @@ function AppContent({}: AppContentProps) {
     fetchSubscriptionPlan();
   }, [user]);
 
-  const getCreditCards = async (returnCreditCards: CreditCard[]): Promise<void> => {
-    setCreditCards(returnCreditCards);
-    
-    // After updating credit cards, fetch fresh user card details
-    if (user) {
-      try {
-        const token = await auth.currentUser?.getIdToken();
-        const response = await axios.get<{ cards: CardDetailsList }>(`${apiurl}/users/cards/details`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        setUserCardDetails(response.data.cards);
-      } catch (error) {
-        console.error('Error fetching updated user card details:', error);
-      }
-    }
-  };
-
+  // Function to update current chat ID
   const getCurrentChatId = (returnCurrentChatId: string | null): void => {
     setCurrentChatId(returnCurrentChatId);
   };
 
+  // Function to handle user logout and reset all states
   const handleLogout = async (): Promise<void> => {
     // Reset all states to their initial values
     setUserCardDetails([]);
@@ -259,6 +250,7 @@ function AppContent({}: AppContentProps) {
     navigate('/signin');
   };
 
+  // Function to handle chat history updates and deletions
   const handleHistoryUpdate = async (updatedChat: Conversation | ((prevHistory: Conversation[]) => Conversation[])): Promise<void> => {
     // Return early if updatedChat is undefined
     if (!updatedChat) return;
@@ -290,6 +282,7 @@ function AppContent({}: AppContentProps) {
     setHistoryRefreshTrigger(prev => prev + 1);
   };
 
+  // Function to trigger chat clearing
   const handleClearChat = (): void => {
     // Increment the callback counter to trigger a clear
     setClearChatCallback(prev => prev + 1);
