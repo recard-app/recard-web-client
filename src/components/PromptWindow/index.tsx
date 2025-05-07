@@ -9,11 +9,6 @@ import PromptHelpModal from './PromptHelpModal';
 import { Modal, useModal } from '../Modal';
 import './PromptWindow.scss';
 import {
-    handleErrorModalClose,
-    getPrompt,
-    addChatHistory,
-    setExistingChatStates,
-    loadChatHistory,
     prepareRequestData,
     processChatAndSolutions,
     handleHistoryStorage,
@@ -29,6 +24,7 @@ import { ChatMessage, ChatSolution, Conversation } from '../../types/ChatTypes';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 import { aiClient, userClient, MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER } from '../../types';
+import { UserHistoryService } from '../../services';
 
 /**
  * Props for the PromptWindow component.
@@ -109,33 +105,67 @@ function PromptWindow({
     // Modal for displaying help information
     const helpModal = useModal();
 
-    const handleErrorModalCloseWrapper = () => {
-        handleErrorModalClose(errorModal, setErrorMessage);
+    /**
+     * Handles closing the error modal and clearing the error message.
+     */
+    const handleErrorModalClose = () => {
+        errorModal.close();
+        setErrorMessage('');
     };
 
-    const getPromptWrapper = (returnPromptStr: string) => {
-        getPrompt(returnPromptStr, isNewChat, isNewChatPending, setPromptValue, setTriggerCall);
+    /**
+     * Retrieves user prompt input and triggers the chat process.
+     * Prevents new chat creation if one is already pending.
+     * 
+     * @param {string} returnPromptStr - The prompt text received from the input field
+     */
+    const getPrompt = (returnPromptStr: string) => {
+        if (isNewChat && isNewChatPending) {
+            console.log('New chat creation in progress, please wait...');
+            return;
+        }
+        setPromptValue(returnPromptStr);
+        setTriggerCall(prev => prev + 1);
     };
 
-    const addChatHistoryWrapper = (source: typeof userClient | typeof aiClient, message: string) => {
-        addChatHistory(source, message, setChatHistory);
+    /**
+     * Adds a new message to the chat history with a unique ID.
+     * Limits the chat history to the maximum allowed messages.
+     * 
+     * @param {typeof userClient | typeof aiClient} source - The source of the message (user or AI)
+     * @param {string} message - The message content to add
+     */
+    const addChatHistory = (source: typeof userClient | typeof aiClient, message: string) => {
+        const newEntry: ChatMessage = {
+            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            chatSource: source,
+            chatMessage: message,
+        };
+
+        setChatHistory((prevChatHistory) => {
+            const updatedHistory = [...prevChatHistory, newEntry];
+            return limitChatHistory(updatedHistory);
+        });
     };
 
-    const setExistingChatStatesWrapper = (
+    /**
+     * Helper function to set chat states when loading existing chat data.
+     * Updates chat history, solutions, chat ID, and related states.
+     * 
+     * @param {ChatMessage[]} conversation - The chat conversation history
+     * @param {ChatSolution} solutions - The chat solutions
+     * @param {string} newChatId - The chat ID to set
+     */
+    const setExistingChatStates = (
         conversation: ChatMessage[],
         solutions: ChatSolution,
         newChatId: string
     ) => {
-        setExistingChatStates(
-            conversation,
-            solutions,
-            newChatId,
-            setChatHistory,
-            setPromptSolutions,
-            setChatId,
-            setIsNewChat,
-            returnCurrentChatId
-        );
+        setChatHistory(limitChatHistory(conversation));
+        setPromptSolutions(solutions);
+        setChatId(newChatId);
+        setIsNewChat(false);
+        returnCurrentChatId(newChatId);
     };
 
     /**
@@ -152,7 +182,7 @@ function PromptWindow({
             if (isNewChat) {
                 setIsNewChatPending(true);
             }
-            addChatHistoryWrapper(userClient, promptValue);
+            addChatHistory(userClient, promptValue);
             callServer();
         }
     }, [triggerCall]);
@@ -172,9 +202,7 @@ function PromptWindow({
 
     /**
      * Effect hook that loads chat history when accessing an existing chat.
-     * Handles two scenarios:
-     * 1. Loads chat from existing history list (in-memory)
-     * 2. Fetches chat from API if not found in memory
+     * Handles loading from existing history list (in-memory) or fetching from API.
      * 
      * @dependency {urlChatId} - Chat ID from URL parameters
      * @dependency {user} - Current user object
@@ -182,15 +210,26 @@ function PromptWindow({
      */
     useEffect(() => {
         if (user) {
-            loadChatHistory(
-                user,
-                urlChatId,
-                chatId,
-                existingHistoryList,
-                setExistingChatStatesWrapper,
-                setErrorMessage,
-                errorModal
-            );
+            const loadHistory = async () => {
+                if (!user || !urlChatId || urlChatId === chatId) return;
+
+                const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
+                
+                if (existingChat) {
+                    setExistingChatStates(existingChat.conversation, existingChat.solutions, urlChatId);
+                    return;
+                }
+
+                try {
+                    const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
+                    setExistingChatStates(response.conversation, response.solutions, urlChatId);
+                } catch (error) {
+                    console.error('Error loading chat:', error);
+                    setErrorMessage('Error loading chat history');
+                    errorModal.open();
+                }
+            };
+            loadHistory();
         }
     }, [urlChatId, user, existingHistoryList]);
 
@@ -326,7 +365,7 @@ function PromptWindow({
                 <button onClick={handleHelpModalOpen}>Help</button>
             </div>
             
-            <Modal isOpen={errorModal.isOpen} onClose={handleErrorModalCloseWrapper}>
+            <Modal isOpen={errorModal.isOpen} onClose={handleErrorModalClose}>
                 <div className="error-content">
                     {errorMessage}
                 </div>
@@ -341,7 +380,7 @@ function PromptWindow({
             {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}
             <PromptSolution promptSolutions={promptSolutions} creditCards={creditCards} />
             <PromptField 
-                returnPrompt={getPromptWrapper} 
+                returnPrompt={getPrompt} 
                 isProcessing={isProcessing} 
                 onCancel={handleCancel} 
             />
