@@ -1,5 +1,5 @@
 import { CreditCard } from '../../types/CreditCardTypes';
-import { UserCreditCardService } from '../../services';
+import { CardService, UserCreditCardService } from '../../services';
 
 /**
  * Sorts credit cards by priority:
@@ -47,7 +47,7 @@ export const formatCardsForSubmission = (cards: CreditCard[]) => {
  */
 export const fetchUserCards = async (existingCreditCards: CreditCard[]): Promise<CreditCard[]> => {
     try {
-        const cards = await UserCreditCardService.fetchCreditCards();
+        const cards = await CardService.fetchCreditCards(true);
         return sortCards(cards);
     } catch (error) {
         console.error('Error fetching cards:', error);
@@ -94,7 +94,7 @@ export const saveUserCardSelections = async (cards: CreditCard[]): Promise<{
         const cardsToSubmit = formatCardsForSubmission(cards);
         await UserCreditCardService.updateUserCards(cardsToSubmit);
         
-        const updatedCards = await UserCreditCardService.fetchCreditCards();
+        const updatedCards = await CardService.fetchCreditCards(true);
         return {
             success: true,
             message: 'Cards saved successfully!',

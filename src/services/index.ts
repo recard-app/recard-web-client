@@ -21,3 +21,4 @@ export const getAuthHeaders = async () => {
 export * from './UserService';
 export * from './AuthService';
 export * from './ChatService';
+export * from './CardService';
