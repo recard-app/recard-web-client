@@ -116,7 +116,7 @@ function AppContent({}: AppContentProps) {
       
       try {
         const response = await UserPreferencesService.loadInstructionsPreferences();
-        setPreferencesInstructions(response.data);
+        setPreferencesInstructions(response.data || '');
       } catch (error) {
         console.error('Error fetching preferences instructions:', error);
       }
@@ -150,7 +150,7 @@ function AppContent({}: AppContentProps) {
       
       try {
         const params: HistoryParams = {
-          lastUpdate: lastUpdateTimestamp,
+          lastUpdate: lastUpdateTimestamp || undefined,
           page_size: quick_history_size,
           page: 1
         };
@@ -300,6 +300,7 @@ function AppContent({}: AppContentProps) {
           onHistoryUpdate={handleHistoryUpdate}
           subscriptionPlan={subscriptionPlan}
           creditCards={creditCards}
+          historyRefreshTrigger={historyRefreshTrigger}
         />
         <PromptWindow 
           creditCards={creditCards}
@@ -387,6 +388,7 @@ function AppContent({}: AppContentProps) {
             onHistoryUpdate={handleHistoryUpdate}
             subscriptionPlan={subscriptionPlan}
             creditCards={creditCards}
+            historyRefreshTrigger={historyRefreshTrigger}
           />
         } />
       </Routes>

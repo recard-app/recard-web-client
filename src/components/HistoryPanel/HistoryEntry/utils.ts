@@ -69,7 +69,8 @@ export const deleteChatEntry = async (
   callbacks: {
     onDelete?: (chatId: string) => void,
     returnCurrentChatId: (chatId: string | null) => void,
-    navigate: (path: string, options: { replace: boolean }) => void
+    navigate: (path: string, options: { replace: boolean }) => void,
+    currentPath: string
   }
 ): Promise<void> => {
   await UserHistoryService.deleteHistoryEntry(chatId);
@@ -78,8 +79,13 @@ export const deleteChatEntry = async (
     callbacks.onDelete(chatId);
   }
 
+  // Cancels the renavigation if the user is on the history page. 
+  // It should only redirect to the home page if the user is on the home page and deleted their current chat. 
   if (chatId === currentChatId) {
     callbacks.returnCurrentChatId(null);
-    callbacks.navigate('/', { replace: true });
+    // Only navigate if we're NOT on the history page (including any parameters)
+    if (!callbacks.currentPath.startsWith('/history')) {
+      callbacks.navigate('/', { replace: true });
+    }
   }
 };

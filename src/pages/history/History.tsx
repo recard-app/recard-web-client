@@ -10,6 +10,7 @@ interface HistoryProps {
   onHistoryUpdate: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
   subscriptionPlan: SubscriptionPlan;
   creditCards: CreditCard[];
+  historyRefreshTrigger: number;
 }
 
 function History({ 
@@ -18,7 +19,8 @@ function History({
   returnCurrentChatId,
   onHistoryUpdate,
   subscriptionPlan,
-  creditCards
+  creditCards,
+  historyRefreshTrigger
 }: HistoryProps): React.ReactElement {
   const getHistoryTitle = (): string => {
     if (subscriptionPlan === 'premium') {
@@ -40,6 +42,7 @@ function History({
           onHistoryUpdate={onHistoryUpdate}
           subscriptionPlan={subscriptionPlan}
           creditCards={creditCards}
+          historyRefreshTrigger={historyRefreshTrigger}
         />
       </div>
     </div>

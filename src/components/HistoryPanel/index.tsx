@@ -33,9 +33,10 @@ export interface HistoryPanelProps {
   fullListSize: boolean;
   currentChatId: string | null;
   returnCurrentChatId: (chatId: string | null) => void;
-  onHistoryUpdate?: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
-  subscriptionPlan?: SubscriptionPlan;
+  onHistoryUpdate: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
+  subscriptionPlan: SubscriptionPlan;
   creditCards: CreditCard[];
+  historyRefreshTrigger: number;
 }
 
 function HistoryPanel({ 
@@ -46,7 +47,8 @@ function HistoryPanel({
   returnCurrentChatId,
   onHistoryUpdate,
   subscriptionPlan = SUBSCRIPTION_PLAN.FREE,
-  creditCards
+  creditCards,
+  historyRefreshTrigger
 }: HistoryPanelProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -65,6 +67,11 @@ function HistoryPanel({
   // Date of the first entry in history
   const [firstEntryDate, setFirstEntryDate] = useState<Date | null>(null);
 
+  // Initial loading state based on whether we have history
+  useEffect(() => {
+    setIsLoading(existingHistoryList.length === 0);
+  }, []);
+
   /**
    * Effect hook to fetch history when filters change
    */
@@ -77,7 +84,7 @@ function HistoryPanel({
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
         .slice(0, listSize));
     }
-  }, [fullListSize, user, selectedMonth, selectedYear]);
+  }, [fullListSize, user, selectedMonth, selectedYear, historyRefreshTrigger]);
 
   /**
    * Effect hook to fetch history when page changes
@@ -86,7 +93,7 @@ function HistoryPanel({
     if (user && fullListSize) {
       fetchPagedHistoryData();
     }
-  }, [currentPage]);
+  }, [currentPage, historyRefreshTrigger]);
 
   /**
    * Effect hook to fetch first entry date on mount
@@ -146,7 +153,7 @@ function HistoryPanel({
   // Use paginatedList instead of displayList for the full view
   const displayList = fullListSize 
     ? paginatedList 
-    : [...existingHistoryList]
+    : existingHistoryList
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
         .slice(0, listSize);
 
@@ -304,7 +311,7 @@ function HistoryPanel({
     <div className='history-panel'>
       {!fullListSize && <h2>Recent Transactions</h2>}
       {fullListSize && renderDateFilter()}
-      {isLoading ? (
+      {isLoading && displayList.length === 0 ? (
         <p>Loading transaction history...</p>
       ) : displayList.length === 0 ? (
         <p>No transaction history available for this period</p>

@@ -1,6 +1,6 @@
 import React from 'react';
 import './HistoryEntry.scss';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Conversation, CreditCard } from '../../../types';
 import { formatDate, getRecommendedCard, deleteChatEntry } from './utils';
 import { Modal, useModal } from '../../Modal';
@@ -23,6 +23,7 @@ interface HistoryEntryProps {
 
 function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId, creditCards }: HistoryEntryProps): React.ReactElement {
   const navigate = useNavigate();
+  const location = useLocation();
   // Tracks whether this entry is the currently selected chat
   const isCurrent = chatEntry.chatId === currentChatId;
 
@@ -58,7 +59,8 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
       await deleteChatEntry(chatEntry.chatId, currentChatId, {
         onDelete,
         returnCurrentChatId,
-        navigate
+        navigate,
+        currentPath: location.pathname
       });
       deleteModal.close();
     } catch (error) {
