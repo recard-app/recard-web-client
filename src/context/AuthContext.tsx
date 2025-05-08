@@ -10,9 +10,9 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   sendEmailVerification,
-  getAuth,
-  sendPasswordResetEmail as firebaseSendPasswordResetEmail,
-  UserCredential
+  //getAuth,
+  //UserCredential
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail
 } from 'firebase/auth';
 import { PLACEHOLDER_PROFILE_IMAGE } from '../types';
 

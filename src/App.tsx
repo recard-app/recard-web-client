@@ -358,8 +358,16 @@ function AppContent({}: AppContentProps) {
       </Modal>
       
       <Routes>
-        <Route path="/" element={renderMainContent()} />
-        <Route path="/:chatId" element={renderMainContent()} />
+        <Route path="/" element={
+          <ProtectedRoute>
+            {renderMainContent()}
+          </ProtectedRoute>
+        } />
+        <Route path="/:chatId" element={
+          <ProtectedRoute>
+            {renderMainContent()}
+          </ProtectedRoute>
+        } />
         <Route path="/about" element={<About />} />
         <Route path="/preferences" element={
           <ProtectedRoute>

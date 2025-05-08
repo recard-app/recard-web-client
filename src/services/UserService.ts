@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { CreditCard } from '../types/CreditCardTypes';
 import { apiurl, getAuthHeaders } from './index';
 import { 
     Conversation, 

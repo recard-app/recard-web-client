@@ -49,7 +49,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) =>
       </div>
       
       <nav className="nav-links">
-        <button onClick={onModalOpen}>Select your Credit Cards</button>
+        {user && <button onClick={onModalOpen}>Select your Credit Cards</button>}
         <Link to="/about">About</Link>
         {user ? (
           <div className="profile-dropdown" ref={dropdownRef}>
