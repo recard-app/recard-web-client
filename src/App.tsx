@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
-
+import { HelmetProvider, Helmet } from 'react-helmet-async';
+import { APP_NAME } from './types';
 // Services
 import { 
   CardService, 
@@ -38,7 +39,7 @@ import { useAuth } from './context/AuthContext';
 import { 
   GLOBAL_QUICK_HISTORY_SIZE, 
   CHAT_HISTORY_PREFERENCE, 
-  SUBSCRIPTION_PLAN, 
+  SUBSCRIPTION_PLAN,
   CreditCard, 
   Conversation,  
   CardDetailsList, 
@@ -288,6 +289,23 @@ function AppContent({}: AppContentProps) {
     setClearChatCallback(prev => prev + 1);
   };
 
+  const createTitle = (suffix?: string) => {
+    return suffix ? APP_NAME + ' - ' + suffix : APP_NAME;
+  };
+
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path === '/history') return createTitle('History');
+    if (path === '/about') return createTitle('About');
+    if (path === '/preferences') return createTitle('Preferences');
+    if (path === '/account') return createTitle('Account');
+    if (path === '/signin') return createTitle('Sign In');
+    if (path === '/signup') return createTitle('Sign Up');
+    if (path === '/forgotpassword') return createTitle('Reset Password');
+    if (path === '/welcome') return createTitle('Welcome');
+    return createTitle();
+  };
+
   const renderMainContent = () => {
     return (
       <div className="app-content">
@@ -320,6 +338,9 @@ function AppContent({}: AppContentProps) {
 
   return (
     <div className="app">
+      <Helmet>
+        <title>{getPageTitle()}</title>
+      </Helmet>
       <AppHeader 
         user={user}
         onModalOpen={modal.open}
@@ -399,7 +420,9 @@ function AppContent({}: AppContentProps) {
 function App() {
   return (
     <Router>
-      <AppContent />
+      <HelmetProvider>
+        <AppContent />
+      </HelmetProvider>
     </Router>
   );
 }
