@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections } from './utils';
-import { PLACEHOLDER_CARD_IMAGE } from '../../types';
+import { PLACEHOLDER_CARD_IMAGE, APP_NAME } from '../../types';
 
 /**
  * Props interface for the CreditCardSelector component
@@ -95,7 +95,7 @@ const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCar
         return (
             <div className="auth-prompt">
                 <h2>Sign In Required</h2>
-                <p>Log in to unlock full features, manage your credit cards, and get the most out of ReCard!</p>
+                <p>Log in to unlock full features, manage your credit cards, and get the most out of {APP_NAME}!</p>
                 <div className="auth-buttons">
                     <button onClick={() => handleAuthRedirect('/signin')}>Sign In</button>
                     <button onClick={() => handleAuthRedirect('/signup')}>Sign Up</button>

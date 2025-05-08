@@ -1,4 +1,3 @@
-import React from 'react';
 import { ChatMessage, ChatSolution, ChatRequestData, Conversation } from '../../types/ChatTypes';
 import { InstructionsPreference } from '../../types/UserTypes';
 import { CreditCard } from '../../types/CreditCardTypes';

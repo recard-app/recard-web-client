@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './AppHeader.scss';
 import { handleClickOutside } from './utils';
 import { User as FirebaseUser } from 'firebase/auth';
+import { APP_NAME } from '../../types';
 /**
  * Props interface for AppHeader component
  * @property {FirebaseUser | null} user - Current Firebase user or null if not authenticated
@@ -44,7 +45,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) =>
   return (
     <header className="app-header">
       <div className="logo">
-        <Link to="/"><h1>ReCard</h1></Link>
+        <Link to="/"><h1>{APP_NAME}</h1></Link>
       </div>
       
       <nav className="nav-links">
