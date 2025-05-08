@@ -1,5 +1,7 @@
 import React from 'react';
-import { marked } from 'marked';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import { ChatMessage } from '../../../types/ChatTypes';
 import './PromptHistory.scss';
 import { PLACEHOLDER_ASSISTANT_IMAGE } from '../../../types';
@@ -13,22 +15,26 @@ interface PromptHistoryProps {
 }
 
 function PromptHistory({ chatHistory }: PromptHistoryProps): React.ReactElement {
-  const chatEntries = chatHistory;
-  
   return (
     <div className='prompt-history'>
-      {chatEntries.map((chatEntry) => (
+      {chatHistory.map((chatEntry) => (
         <div key={chatEntry.id} className={`${(chatEntry.chatSource === 'user') ? 'entry entry-user' : 'entry entry-assistant'}`}>
           <div className="entry-content">
             {chatEntry.chatSource === 'assistant' && (
               <img src={PLACEHOLDER_ASSISTANT_IMAGE} alt="AI Assistant" className="assistant-avatar" />
             )}
-            <p 
-              className="message-text" 
-              dangerouslySetInnerHTML={{ 
-                __html: marked(chatEntry.chatMessage) 
-              }} 
-            />
+            <div className="message-text">
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm, remarkBreaks]}
+                components={{
+                  p: ({node, ...props}) => <p className="markdown-paragraph" {...props} />,
+                  // Ensure line breaks are respected
+                  br: () => <br className="custom-break" />
+                }}
+              >
+                {chatEntry.chatMessage}
+              </ReactMarkdown>
+            </div>
           </div>
         </div>
       ))}

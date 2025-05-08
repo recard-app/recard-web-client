@@ -8,45 +8,85 @@
 
     p {
       margin: 0;
+      padding: 0;
+      min-height: 0;
+      height: auto;
+      line-height: 1;
     }
-    
+
     .entry-content {
       display: flex;
       align-items: flex-start;
-      max-width: 70%;  // Limit message width
+      max-width: 70%;
 
-      p, h1, h2, h3, h4, h5, h6, ul, ol, li {
+      p, h1, h2, h3, h4, h5, h6, ul, ol, li, div, span {
         margin: 0;
         padding: 0;
+        min-height: 0;
+        line-height: 1.2;
       }
 
       .message-text {
-        white-space: pre-line;
+        white-space: pre-wrap;
         word-wrap: break-word;
         padding: 8px;
         margin: 0;
+        font-size: 14px;
+        
+        p, h1, h2, h3, h4, h5, h6, blockquote, pre, code {
+          margin: 0.5em 0;
+          line-height: 1.4;
+        }
+        
+        /* First element shouldn't have top margin */
+        & > *:first-child {
+          margin-top: 0;
+        }
+        
+        /* Last element shouldn't have bottom margin */
+        & > *:last-child {
+          margin-bottom: 0;
+        }
+        
+        /* Styling for paragraphs */
+        .markdown-paragraph {
+          margin: 0.5em 0;
+        }
+        
+        /* Empty paragraphs create proper spacing */
+        .markdown-paragraph:empty {
+          min-height: 1em;
+        }
+        
+        /* Fix for list styles */
+        ul, ol {
+          padding-left: 20px;
+          margin: 0.5em 0;
+        }
+        
+        li {
+          margin: 0.2em 0;
+        }
+        
+        /* Preserve multiple line breaks */
+        br {
+          display: block;
+          content: "";
+          margin-top: 0.5em;
+        }
+        
+        /* Custom styling for breaks from remarkBreaks */
+        .custom-break {
+          display: block;
+          margin-top: 0.7em;
+        }
 
         strong {
-          font-weight: 600;  // or 700 for bolder text
-          margin: 0;
+          font-weight: 600;
         }
 
         em {
           font-style: italic;
-          margin: 0;
-        }
-
-        ul, ol {
-          margin: 0;
-          padding-left: 20px;
-        }
-
-        li {
-          margin: 0;
-        }
-
-        p {
-          margin: 0;
         }
       }
     }
@@ -58,7 +98,7 @@
     
     .entry-content {
       background-color: #c2c2c2;  // Facebook Messenger-like blue
-      padding: 2px 2px;
+      padding: 2px;
       border-radius: 4px;
       position: relative;
       margin-left: auto;  // Push content to the right
