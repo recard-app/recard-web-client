@@ -116,7 +116,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId }: PromptSolution
                                         onClick={() => handleCardSelection(solution.id)}
                                         disabled={isUpdating}
                                     >
-                                        {isUpdating ? 'Updating...' : isSelected ? 'Selected for Purchase' : 'Use this Card'}
+                                        {isUpdating ? 'Updating...' : isSelected ? 'Used for Purchase' : 'Use this Card'}
                                     </button>
                                 </div>
                             </div>
