@@ -7,7 +7,8 @@ import {
     PagedHistoryResponse,
     ChatMessage,
     ChatSolution,
-    CardDetailsList 
+    CardDetailsList,
+    ChatSolutionSelectedCardId 
 } from '../types';
 import { ChatHistoryPreference, InstructionsPreference, PreferencesResponse, SubscriptionPlan } from '../types/UserTypes';
 
@@ -163,6 +164,24 @@ export const UserHistoryService = {
             `${apiurl}/users/history/${chatId}`,
             { chatHistory, promptSolutions },
             { headers, signal }
+        );
+    },
+
+    /**
+     * Updates the selected card for a specific chat transaction
+     * @param chatId ID of the chat to update
+     * @param cardSelection ID of the selected card
+     * @returns Promise<void>
+     */
+    async updateTransactionCardSelection(
+        chatId: string,
+        cardSelection: ChatSolutionSelectedCardId
+    ): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.put(
+            `${apiurl}/users/history/${chatId}/transaction-card-selection`,
+            { cardSelection },
+            { headers }
         );
     }
 };

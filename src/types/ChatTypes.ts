@@ -14,6 +14,7 @@ export interface Conversation {
     timestamp: string;
     conversation: ChatMessage[];
     solutions: ChatSolution;
+    cardSelection: ChatSolutionSelectedCardId;
 }
 
 export interface ChatRequestBody {
@@ -38,6 +39,7 @@ export interface OpenAIResponse {
 }
 
 export type ChatSolution = ChatSolutionCard[];
+export type ChatSolutionSelectedCardId = string;
 
 export interface ChatSolutionCard {
     id: string;

@@ -150,6 +150,7 @@ export const handleHistoryStorage = async (
             timestamp: new Date().toISOString(),
             conversation: updatedHistory,
             solutions: solutions,
+            cardSelection: '',
             chatDescription: response.chatDescription || DEFAULT_CHAT_NAME
         };
         onHistoryUpdate(newChat);
@@ -167,12 +168,14 @@ export const handleHistoryStorage = async (
             signal
         );
 
+        const existingChat = existingHistoryList.find(chat => chat.chatId === chatId);
         const updatedChat = {
             chatId: chatId,
             timestamp: new Date().toISOString(),
             conversation: updatedHistory,
             solutions: solutions,
-            chatDescription: existingHistoryList.find(chat => chat.chatId === chatId)?.chatDescription || DEFAULT_CHAT_NAME
+            cardSelection: existingChat?.cardSelection || '',
+            chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME
         };
         onHistoryUpdate(updatedChat);
     }
