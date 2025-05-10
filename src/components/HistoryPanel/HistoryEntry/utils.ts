@@ -1,26 +1,5 @@
-import { CreditCard, SimpleCardDisplay, ChatSolution, PLACEHOLDER_CARD_IMAGE, MONTH_ABBREVIATIONS } from '../../../types';
+import { MONTH_ABBREVIATIONS } from '../../../types';
 import { UserHistoryService } from '../../../services';
-
-/**
- * Retrieves the recommended card details from the chat solutions
- * @param solutions - Array of chat solutions
- * @param creditCards - Available credit cards
- * @returns Card display information or null if no recommendation exists
- */
-export const getRecommendedCard = (
-  solutions: ChatSolution | undefined,
-  creditCards: CreditCard[] | undefined
-): SimpleCardDisplay | null => {
-  const recommendedSolution = Array.isArray(solutions) ? solutions[0] : null;
-  if (!recommendedSolution) return null;
-
-  const cardDetails = creditCards?.find(card => card.id === recommendedSolution.id);
-  
-  return {
-    name: cardDetails?.CardName || recommendedSolution.cardName,
-    image: cardDetails?.CardImage || PLACEHOLDER_CARD_IMAGE
-  };
-};
 
 /**
  * Formats a timestamp into a human-readable string

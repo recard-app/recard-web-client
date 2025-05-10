@@ -281,7 +281,8 @@ function PromptWindow({
                 chatHistory,
                 setIsLoading,
                 setIsLoadingSolutions,
-                setChatHistory
+                setChatHistory,
+                promptSolutions
             );
             
             setPromptSolutions(solutions);

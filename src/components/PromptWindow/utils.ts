@@ -67,6 +67,7 @@ export const prepareRequestData = (
  * @param {Function} setIsLoading - Function to update loading state
  * @param {Function} setIsLoadingSolutions - Function to update solutions loading state
  * @param {Function} setChatHistory - Function to update chat history state
+ * @param {ChatSolution} existingSolutions - Current solutions to preserve if new ones are empty
  * @returns {Promise<{updatedHistory: ChatMessage[], solutions: ChatSolution}>} Updated chat history and solutions
  */
 export const processChatAndSolutions = async (
@@ -76,7 +77,8 @@ export const processChatAndSolutions = async (
     chatHistory: ChatMessage[],
     setIsLoading: (loading: boolean) => void,
     setIsLoadingSolutions: (loading: boolean) => void,
-    setChatHistory: (history: ChatMessage[]) => void
+    setChatHistory: (history: ChatMessage[]) => void,
+    existingSolutions: ChatSolution
 ): Promise<{ updatedHistory: ChatMessage[], solutions: ChatSolution }> => {
     const aiResponse = await ChatService.getChatResponse(requestData, signal);
     const updatedHistory = [...chatHistory, userMessage, {
@@ -90,12 +92,17 @@ export const processChatAndSolutions = async (
 
     setChatHistory(limitChatHistory(updatedHistory));
 
-    const solutions = await ChatService.getChatSolution({
+    const newSolutions = await ChatService.getChatSolution({
         ...requestData,
         chatHistory: limitChatHistory(updatedHistory)
     }, signal);
 
     if (signal.aborted) throw new Error('Request aborted');
+    
+    // If new solutions are empty, keep existing solutions
+    const solutions = Array.isArray(newSolutions) && newSolutions.length === 0 
+        ? existingSolutions 
+        : newSolutions;
     
     return { updatedHistory, solutions };
 };

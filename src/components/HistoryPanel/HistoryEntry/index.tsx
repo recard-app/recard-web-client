@@ -2,7 +2,7 @@ import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE } from '../../../types';
-import { formatDate, getRecommendedCard, deleteChatEntry } from './utils';
+import { formatDate, deleteChatEntry } from './utils';
 import { Modal, useModal } from '../../Modal';
 
 /**
@@ -69,19 +69,14 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
     }
   };
 
-  // Stores the recommended card information for this chat entry
-  const recommendedCard = getRecommendedCard(chatEntry.solutions, creditCards);
-  
   // Get the selected card if it exists
   const selectedCard = chatEntry.cardSelection && chatEntry.cardSelection !== '' 
     ? creditCards?.find(card => card.id === chatEntry.cardSelection)
     : null;
 
-  // Use selected card if available, otherwise use recommended card
   const displayCard = selectedCard 
     ? { name: selectedCard.CardName, image: selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE }
-    : recommendedCard;
-  const isSelected = !!selectedCard;
+    : null;
 
   return (
     <>
@@ -95,7 +90,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
         <div className="entry-content">
           <p className="entry-title">{chatEntry.chatDescription}</p>
           {displayCard && (
-            <p className={`recommended-card ${isSelected ? 'selected' : ''}`}>
+            <p className="selected-card-display">
               <img src={displayCard.image} alt={displayCard.name} className="card-thumbnail" />
               {displayCard.name}
             </p>
