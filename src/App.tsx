@@ -355,7 +355,6 @@ function AppContent({}: AppContentProps) {
           existingHistoryList={chatHistory}
           preferencesInstructions={preferencesInstructions}
           chatHistoryPreference={chatHistoryPreference}
-          historyRefreshTrigger={historyRefreshTrigger}
         />
       </div>
     );

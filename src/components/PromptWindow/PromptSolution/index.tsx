@@ -32,10 +32,10 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
     // Flag to disable all buttons during updates
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-    // Update active card when prop changes
+    // Update active card when prop changes or when chatId changes
     useEffect(() => {
         setActiveCardId(selectedCardId || '');
-    }, [selectedCardId]);
+    }, [selectedCardId, chatId]);
 
     // Convert the promptSolutions to an array
     useEffect(() => {
@@ -83,6 +83,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                 onHistoryUpdate(updatedChat);
             }
         } catch (error) {
+            console.error('Error updating card selection:', error);
             // Reset UI to match server state on error
             setActiveCardId(selectedCardId || '');
         } finally {

@@ -156,6 +156,7 @@ function PromptWindow({
      * @param {ChatMessage[]} conversation - The chat conversation history
      * @param {ChatSolution} solutions - The chat solutions
      * @param {string} newChatId - The chat ID to set
+     * @param {ChatSolutionSelectedCardId} cardSelection - The selected card ID
      */
     const setExistingChatStates = (
         conversation: ChatMessage[],
@@ -168,7 +169,7 @@ function PromptWindow({
         setChatId(newChatId);
         setIsNewChat(false);
         returnCurrentChatId(newChatId);
-        setSelectedCardId(cardSelection);
+        setSelectedCardId(cardSelection || '');
     };
 
     /**
@@ -214,7 +215,15 @@ function PromptWindow({
     useEffect(() => {
         if (user) {
             const loadHistory = async () => {
-                if (!user || !urlChatId || urlChatId === chatId) return;
+                if (!user || !urlChatId) return;
+                
+                // Return early if the URL chat ID is the same as the current chat ID
+                if (urlChatId === chatId) return;
+                
+                // Always reset selectedCardId when loading a new chat
+                setSelectedCardId('');
+                // Reset solutions when changing chats
+                setPromptSolutions([]);
 
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
                 
@@ -249,6 +258,18 @@ function PromptWindow({
             setClearChatCallback(0);
         }
     }, [clearChatCallback, setClearChatCallback]);
+
+    /**
+     * Effect hook that ensures selectedCardId is reset when chatId changes
+     * This helps maintain state consistency when switching between chats
+     * 
+     * @dependency {chatId} - The current chat ID
+     */
+    useEffect(() => {
+        if (!chatId) {
+            setSelectedCardId('');
+        }
+    }, [chatId]);
 
     const callServer = async (): Promise<void> => {
         setIsProcessing(true);

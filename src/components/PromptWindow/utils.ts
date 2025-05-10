@@ -1,4 +1,4 @@
-import { ChatMessage, ChatSolution, ChatRequestData, Conversation, ChatSolutionSelectedCardId } from '../../types/ChatTypes';
+import { ChatMessage, ChatSolution, ChatRequestData, Conversation } from '../../types/ChatTypes';
 import { InstructionsPreference } from '../../types/UserTypes';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { CHAT_SOURCE, RECOMMENDED_MAX_CHAT_MESSAGES, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, DEFAULT_CHAT_NAME_PLACEHOLDER } from '../../types';
