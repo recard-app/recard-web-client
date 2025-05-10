@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CreditCard } from '../../../types/CreditCardTypes';
-import { ChatSolutionCard, ChatSolutionSelectedCardId } from '../../../types/ChatTypes';
+import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation } from '../../../types/ChatTypes';
 import { PLACEHOLDER_CARD_IMAGE } from '../../../types';
 import { UserHistoryService } from '../../../services';
 import './PromptSolution.scss';
@@ -11,20 +11,22 @@ import './PromptSolution.scss';
  * @param {ChatSolutionCard | ChatSolutionCard[]} promptSolutions - The solution(s) to display.
  * @param {CreditCard[]} creditCards - The list of credit cards to display.
  * @param {string} chatId - The ID of the current chat.
+ * @param {function} onHistoryUpdate - Callback to update chat history when card selection changes.
  */
 interface PromptSolutionProps {
     promptSolutions: ChatSolutionCard | ChatSolutionCard[];
     creditCards?: CreditCard[];
     chatId: string;
+    onHistoryUpdate: (chat: Conversation) => void;
 }
 
-function PromptSolution({ promptSolutions, creditCards, chatId }: PromptSolutionProps): React.ReactElement | null {
+function PromptSolution({ promptSolutions, creditCards, chatId, onHistoryUpdate }: PromptSolutionProps): React.ReactElement | null {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     // The list of solutions to display.
     const [solutions, setSolutions] = useState<ChatSolutionCard[]>([]);
     // Track which card is selected
     const [selectedCardId, setSelectedCardId] = useState<ChatSolutionSelectedCardId | null>(null);
-    // Track which card is currently being updated - this is basically being used as a isloading boolean
+    // Track which card is currently being updated
     const [updatingCardId, setUpdatingCardId] = useState<ChatSolutionSelectedCardId | null>(null);
 
     // Initialize selected card from existing chat history
@@ -65,6 +67,10 @@ function PromptSolution({ promptSolutions, creditCards, chatId }: PromptSolution
             }
             await UserHistoryService.updateTransactionCardSelection(effectiveChatId, newSelectedCardId);
             setSelectedCardId(newSelectedCardId || null);
+
+            // Fetch updated chat history and trigger update
+            const updatedChat = await UserHistoryService.fetchChatHistoryById(effectiveChatId);
+            onHistoryUpdate(updatedChat);
         } catch (error) {
             console.error('Failed to update card selection:', error);
         } finally {

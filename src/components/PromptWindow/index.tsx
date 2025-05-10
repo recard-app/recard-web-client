@@ -382,6 +382,7 @@ function PromptWindow({
                 promptSolutions={promptSolutions} 
                 creditCards={creditCards} 
                 chatId={chatId}
+                onHistoryUpdate={onHistoryUpdate}
             />
             <PromptField 
                 returnPrompt={getPrompt} 

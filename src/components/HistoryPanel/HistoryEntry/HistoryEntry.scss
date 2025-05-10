@@ -33,17 +33,21 @@
         }
 
         .recommended-card {
-            font-size: 0.9em;
-            color: #666;
-            margin: 0px 0 2px 0;
-            font-style: italic;
             display: flex;
             align-items: center;
             gap: 8px;
+            margin: 4px 0;
+            font-size: 0.9em;
+            color: #666;
+
+            &.selected {
+                color: #2ecc71;
+                font-weight: 500;
+            }
 
             .card-thumbnail {
-                border-radius: 2px;
-                vertical-align: middle;
+                width: 30px;
+                height: 24px;
             }
         }
 
