@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import './AppHeader.scss';
-import { handleClickOutside } from './utils';
 import { User as FirebaseUser } from 'firebase/auth';
 import { APP_NAME } from '../../types';
+import { Dropdown } from '../../elements/Elements';
+
 /**
  * Props interface for AppHeader component
  * @property {FirebaseUser | null} user - Current Firebase user or null if not authenticated
@@ -17,31 +18,6 @@ export interface AppHeaderProps {
 }
 
 const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) => {
-  /**
-   * State to control profile dropdown menu visibility
-   * true = dropdown is visible, false = dropdown is hidden
-   */
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  /**
-   * Ref to track dropdown container element for click outside detection
-   * Used to close dropdown when clicking outside of it
-   */
-  const dropdownRef = useRef<HTMLDivElement | null>(null);
-
-  /**
-   * Effect to handle clicking outside of dropdown menu
-   * - Adds click event listener to document
-   * - Checks if click was outside dropdown area
-   * - Closes dropdown if click was outside
-   * - Cleans up event listener on unmount
-   */
-  useEffect(() => {
-    const listener = (event: Event) => handleClickOutside(event, dropdownRef, setDropdownOpen);
-    document.addEventListener('mousedown', listener);
-    return () => document.removeEventListener('mousedown', listener);
-  }, []);
-
   return (
     <header className="app-header">
       <div className="logo">
@@ -52,39 +28,33 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) =>
         {user && <button onClick={onModalOpen}>Select your Credit Cards</button>}
         <Link to="/about">About</Link>
         {user ? (
-          <div className="profile-dropdown" ref={dropdownRef}>
-            {user.photoURL && (
-              <img 
-                src={user.photoURL} 
-                alt="Profile" 
-                crossOrigin="anonymous"
-                referrerPolicy="no-referrer"
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                style={{ 
-                  width: '32px', 
-                  height: '32px', 
-                  borderRadius: '50%',
-                  marginLeft: '10px',
-                  marginRight: '10px',
-                  cursor: 'pointer'
-                }} 
-              />
-            )}
-            {dropdownOpen && (
-              <div className="dropdown-menu">
-                <Link to="/preferences" onClick={() => setDropdownOpen(false)}>Preferences</Link>
-                <Link to="/account" onClick={() => setDropdownOpen(false)}>My Account</Link>
-                <button 
-                  onClick={() => {
-                    setDropdownOpen(false);
-                    onLogout();
-                  }}
-                >
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </div>
+          <Dropdown 
+            trigger={
+              user.photoURL && (
+                <img 
+                  src={user.photoURL} 
+                  alt="Profile" 
+                  crossOrigin="anonymous"
+                  referrerPolicy="no-referrer"
+                  style={{ 
+                    width: '32px', 
+                    height: '32px', 
+                    borderRadius: '50%',
+                    marginLeft: '10px',
+                    marginRight: '10px',
+                    cursor: 'pointer'
+                  }} 
+                />
+              )
+            }
+            className="profile-dropdown"
+          >
+            <Link to="/preferences">Preferences</Link>
+            <Link to="/account">My Account</Link>
+            <button onClick={onLogout}>
+              Sign Out
+            </button>
+          </Dropdown>
         ) : (
           <Link to="/signin">
             <button>Sign In</button>

@@ -1,8 +1,5 @@
 .credit-card-selector {
     text-align: left;
-    h3 {
-  
-    }
     .card {
       display: flex;
       justify-content: space-between;
@@ -108,9 +105,11 @@
           letter-spacing: 0.5px;
         }
         
+        /*
         .section-cards {
           // Existing card styles apply here
         }
+        */
       }
       
       .selectable-card {
