@@ -72,18 +72,32 @@ function HistoryPanel({
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   // Date of the first entry in history
   const [firstEntryDate, setFirstEntryDate] = useState<Date | null>(null);
+  // Show completed only preference
   const [showCompletedOnly, setShowCompletedOnly] = useState<boolean>(showCompletedOnlyPreference);
+  // Loading state for toggling completed only preference
   const [isTogglingCompleted, setIsTogglingCompleted] = useState<boolean>(false);
 
   // Effect to update showCompletedOnly when the preference changes
   useEffect(() => {
-    setShowCompletedOnly(showCompletedOnlyPreference);
-  }, [showCompletedOnlyPreference]);
+    // Only update the local state if the preference changed
+    if (showCompletedOnly !== showCompletedOnlyPreference) {
+      setShowCompletedOnly(showCompletedOnlyPreference);
+    }
+  }, [showCompletedOnlyPreference]); // Remove historyRefreshTrigger dependency
 
   // Initial loading state based on whether we have history
   useEffect(() => {
     setIsLoading(existingHistoryList.length === 0);
   }, []);
+
+  /**
+   * Effect hook to fetch history when page changes
+   */
+  useEffect(() => {
+    if (user && fullListSize) {
+      fetchPagedHistoryData();
+    }
+  }, [currentPage, historyRefreshTrigger]);
 
   /**
    * Effect hook to fetch history when filters change
@@ -97,16 +111,7 @@ function HistoryPanel({
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
         .slice(0, listSize));
     }
-  }, [fullListSize, user, selectedMonth, selectedYear, historyRefreshTrigger]);
-
-  /**
-   * Effect hook to fetch history when page changes
-   */
-  useEffect(() => {
-    if (user && fullListSize) {
-      fetchPagedHistoryData();
-    }
-  }, [currentPage, historyRefreshTrigger]);
+  }, [fullListSize, user, selectedMonth, selectedYear, showCompletedOnly]);
 
   /**
    * Effect hook to fetch first entry date on mount
@@ -125,7 +130,7 @@ function HistoryPanel({
   };
 
   /**
-   * Wrapper function to fetch paginated history and update state
+   * Wrapper function to fetch paginated history and update state - for view all history page essentially
    */
   const fetchPagedHistoryData = async () => {
     if (!user || !fullListSize) return;
@@ -136,7 +141,8 @@ function HistoryPanel({
         currentPage,
         pageSize: PAGE_SIZE_LIMIT,
         selectedMonth,
-        selectedYear
+        selectedYear,
+        showCompletedOnly
       });
       
       if (result.chatHistory) {
@@ -170,20 +176,25 @@ function HistoryPanel({
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
         .slice(0, listSize);
 
-  // Filter the display list based on the toggle state
-  const filteredDisplayList = showCompletedOnly
-    ? displayList.filter(entry => entry.cardSelection !== '' && entry.cardSelection !== undefined)
-    : displayList;
-
   /**
    * Handles the toggle of completed transactions filter
    * @param newValue The new toggle state
    */
   const handleCompletedToggle = async (newValue: boolean) => {
+    // Skip if already toggling or if the new value is the same as current
+    if (isTogglingCompleted || newValue === showCompletedOnly) return;
+    
     try {
       setIsTogglingCompleted(true);
+      // Update local state immediately for responsive UI
       setShowCompletedOnly(newValue);
+      
+      // Update the preference on the server
       await UserPreferencesService.updateShowCompletedOnlyPreference(newValue);
+      
+      // Use onHistoryUpdate to trigger the historyRefreshTrigger in App.tsx
+      // This causes App.tsx to re-fetch the preference from the database
+      onHistoryUpdate(prev => [...prev]);
     } catch (error) {
       // Revert the toggle if the update fails
       setShowCompletedOnly(!newValue);
@@ -366,9 +377,9 @@ function HistoryPanel({
       {!fullListSize && <h2>Recent Transactions</h2>}
       {fullListSize && renderDateFilter()}
       {fullListSize && renderCompletedToggle()}
-      {isLoading && filteredDisplayList.length === 0 ? (
+      {isLoading && displayList.length === 0 ? (
         <p>Loading transaction history...</p>
-      ) : filteredDisplayList.length === 0 ? (
+      ) : displayList.length === 0 ? (
         <p>No transaction history available for this period</p>
       ) : (
         <>
@@ -377,7 +388,7 @@ function HistoryPanel({
               {/* Show filtered results without categories */}
               {(selectedMonth !== '') ? (
                 <div className="history-entries">
-                  {filteredDisplayList.map(entry => (
+                  {displayList.map(entry => (
                     <HistoryEntry 
                       key={entry.chatId} 
                       chatEntry={entry}
@@ -390,7 +401,7 @@ function HistoryPanel({
                 </div>
               ) : (
                 // Show categorized view only when no filters are applied
-                organizeHistoryByDate(filteredDisplayList).map(section => (
+                organizeHistoryByDate(displayList).map(section => (
                   <div key={section.title} className="history-section">
                     <h3 className="section-title">{section.title}</h3>
                     {section.entries.map(entry => (
@@ -411,7 +422,7 @@ function HistoryPanel({
             </>
           ) : (
             // Show simple list for sidebar view
-            filteredDisplayList.map(entry => (
+            displayList.map(entry => (
               <HistoryEntry 
                 key={entry.chatId} 
                 chatEntry={entry}

@@ -33,6 +33,7 @@ export const fetchPagedHistory = async (
       pageSize: number,
       selectedMonth: string,
       selectedYear: number,
+      showCompletedOnly: boolean
     }
   ): Promise<{
     chatHistory: Conversation[],
@@ -40,17 +41,18 @@ export const fetchPagedHistory = async (
     error?: Error
   }> => {
     try {
+      // Build API parameters with proper types
       const apiParams: HistoryParams = {
         page: params.currentPage,
-        page_size: params.pageSize,
+        page_size: params.pageSize
       };
-  
-      // Only add month if it's selected (year is always selected)
+      
+      // Only add month/year if selected
       if (params.selectedMonth !== '') {
         apiParams.month = params.selectedMonth;
         apiParams.year = params.selectedYear.toString();
       }
-  
+      
       const response = await UserHistoryService.fetchPagedHistory(apiParams);
       
       return {

@@ -112,6 +112,26 @@ function AppContent({}: AppContentProps) {
     fetchCreditCards();
   }, [user]);
 
+  // Effect to fetch show completed only preference
+  useEffect(() => {
+    const fetchShowCompletedOnlyPreference = async () => {
+      if (!user) {
+        setShowCompletedOnlyPreference(false);
+        return;
+      }
+      
+      try {
+        const response = await UserPreferencesService.loadShowCompletedOnlyPreference();
+        setShowCompletedOnlyPreference(response.data === 'true');
+      } catch (error) {
+        console.error('Error fetching show completed only preference:', error);
+        setShowCompletedOnlyPreference(false);
+      }
+    };
+
+    fetchShowCompletedOnlyPreference();
+  }, [user, historyRefreshTrigger]);
+
   // Effect to fetch user preferences instructions
   useEffect(() => {
     const fetchPreferencesInstructions = async () => {
@@ -155,7 +175,8 @@ function AppContent({}: AppContentProps) {
         const params: HistoryParams = {
           lastUpdate: lastUpdateTimestamp || undefined,
           page_size: quick_history_size,
-          page: 1
+          page: 1,
+          forceShowAll: 'true'
         };
 
         const response: PagedHistoryResponse = await UserHistoryService.fetchPagedHistory(params);
@@ -192,26 +213,6 @@ function AppContent({}: AppContentProps) {
     };
 
     fetchUserCardDetails();
-  }, [user]);
-
-  // Effect to fetch show completed only preference
-  useEffect(() => {
-    const fetchShowCompletedOnlyPreference = async () => {
-      if (!user) {
-        setShowCompletedOnlyPreference(false);
-        return;
-      }
-      
-      try {
-        const response = await UserPreferencesService.loadShowCompletedOnlyPreference();
-        setShowCompletedOnlyPreference(response.data === 'true');
-      } catch (error) {
-        console.error('Error fetching show completed only preference:', error);
-        setShowCompletedOnlyPreference(false);
-      }
-    };
-
-    fetchShowCompletedOnlyPreference();
   }, [user]);
 
   // Function to update credit cards and refresh user card details
