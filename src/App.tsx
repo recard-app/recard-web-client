@@ -79,7 +79,6 @@ function AppContent({}: AppContentProps) {
   const [chatHistoryPreference, setChatHistoryPreference] = useState<ChatHistoryPreference>(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
   // State for managing show completed only preference
   const [showCompletedOnlyPreference, setShowCompletedOnlyPreference] = useState<ShowCompletedOnlyPreference>(false);
-
   // State for tracking user's subscription plan
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
 
@@ -268,6 +267,7 @@ function AppContent({}: AppContentProps) {
     setClearChatCallback(0);
     setPreferencesInstructions('');
     setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
+    setShowCompletedOnlyPreference(false);
     
     // Perform logout and navigation
     await logout();
@@ -355,6 +355,7 @@ function AppContent({}: AppContentProps) {
           existingHistoryList={chatHistory}
           preferencesInstructions={preferencesInstructions}
           chatHistoryPreference={chatHistoryPreference}
+          historyRefreshTrigger={historyRefreshTrigger}
         />
       </div>
     );

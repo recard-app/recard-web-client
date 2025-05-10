@@ -82,6 +82,7 @@ export interface HistoryParams {
     month?: string;
     year?: string;
     lastUpdate?: string;
+    onlyCompletedTransactions?: ShowCompletedOnlyPreference;
 }
 
 /**

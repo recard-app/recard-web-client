@@ -17,36 +17,27 @@ interface PromptSolutionProps {
     promptSolutions: ChatSolutionCard | ChatSolutionCard[];
     creditCards?: CreditCard[];
     chatId: string;
+    selectedCardId: ChatSolutionSelectedCardId | null;
     onHistoryUpdate: (chat: Conversation) => void;
 }
 
-function PromptSolution({ promptSolutions, creditCards, chatId, onHistoryUpdate }: PromptSolutionProps): React.ReactElement | null {
+function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, onHistoryUpdate }: PromptSolutionProps): React.ReactElement | null {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
-    // The list of solutions to display.
+    // The list of solutions to display
     const [solutions, setSolutions] = useState<ChatSolutionCard[]>([]);
-    // Track which card is selected
-    const [selectedCardId, setSelectedCardId] = useState<ChatSolutionSelectedCardId | null>(null);
-    // Track which card is currently being updated
-    const [updatingCardId, setUpdatingCardId] = useState<ChatSolutionSelectedCardId | null>(null);
+    // Currently selected card in the UI
+    const [activeCardId, setActiveCardId] = useState<string>(selectedCardId || '');
+    // Card being updated (for UI indication)
+    const [updatingCardId, setUpdatingCardId] = useState<string | null>(null);
+    // Flag to disable all buttons during updates
+    const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-    // Initialize selected card from existing chat history
+    // Update active card when prop changes
     useEffect(() => {
-        const effectiveChatId = chatId || urlChatId;
-        if (effectiveChatId) {
-            // Fetch the chat history to get the current card selection
-            UserHistoryService.fetchChatHistoryById(effectiveChatId)
-                .then(chat => {
-                    if (chat.cardSelection) {
-                        setSelectedCardId(chat.cardSelection);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching chat history:', error);
-                });
-        }
-    }, [chatId, urlChatId]);
+        setActiveCardId(selectedCardId || '');
+    }, [selectedCardId]);
 
-    // Convert the promptSolutions to an array if it is a valid solution object.
+    // Convert the promptSolutions to an array
     useEffect(() => {
         const solutionsArray = Array.isArray(promptSolutions) 
             ? promptSolutions 
@@ -56,25 +47,48 @@ function PromptSolution({ promptSolutions, creditCards, chatId, onHistoryUpdate 
 
     // Handle card selection
     const handleCardSelection = async (cardId: string) => {
-        try {
-            setUpdatingCardId(cardId);
-            const newSelectedCardId = cardId === selectedCardId ? '' : cardId;
-            
-            // Use urlChatId as fallback when chatId is empty
-            const effectiveChatId = chatId || urlChatId;
-            if (!effectiveChatId) {
-                throw new Error('No chat ID available');
-            }
-            await UserHistoryService.updateTransactionCardSelection(effectiveChatId, newSelectedCardId);
-            setSelectedCardId(newSelectedCardId || null);
+        // Get effective chat ID
+        const effectiveChatId = chatId || urlChatId;
+        if (!effectiveChatId) {
+            return;
+        }
 
-            // Fetch updated chat history and trigger update
+        // Prevent actions during updates
+        if (isUpdating) {
+            return;
+        }
+
+        // Set updating state
+        setIsUpdating(true);
+        setUpdatingCardId(cardId);
+
+        try {
+            // Determine if we're selecting or deselecting
+            const isDeselecting = cardId === activeCardId;
+            
+            // New card ID to send to server
+            const newCardId = isDeselecting ? '' : cardId;
+            
+            // Update UI immediately for responsive feel
+            setActiveCardId(newCardId);
+
+            // Send update to server
+            await UserHistoryService.updateTransactionCardSelection(effectiveChatId, newCardId);
+            
+            // Fetch updated chat history to ensure we have the latest state
             const updatedChat = await UserHistoryService.fetchChatHistoryById(effectiveChatId);
-            onHistoryUpdate(updatedChat);
+            
+            // Update parent component
+            if (updatedChat) {
+                onHistoryUpdate(updatedChat);
+            }
         } catch (error) {
-            console.error('Failed to update card selection:', error);
+            // Reset UI to match server state on error
+            setActiveCardId(selectedCardId || '');
         } finally {
+            // Clear updating states
             setUpdatingCardId(null);
+            setIsUpdating(false);
         }
     };
 
@@ -96,8 +110,12 @@ function PromptSolution({ promptSolutions, creditCards, chatId, onHistoryUpdate 
                         // If no matching card is found, use the solution's default values
                         const cardName = cardDetails?.CardName || solution.cardName;
                         const cardImage = cardDetails?.CardImage || PLACEHOLDER_CARD_IMAGE;
-                        const isSelected = solution.id === selectedCardId;
-                        const isUpdating = solution.id === updatingCardId;
+                        
+                        // Card is selected if it matches the active card ID
+                        const isSelected = solution.id === activeCardId;
+                        
+                        // This specific card is being updated
+                        const isUpdatingThis = solution.id === updatingCardId;
                         
                         return (
                             <div 
@@ -122,7 +140,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, onHistoryUpdate 
                                         onClick={() => handleCardSelection(solution.id)}
                                         disabled={isUpdating}
                                     >
-                                        {isUpdating ? 'Updating...' : isSelected ? 'Used for Purchase' : 'Use this Card'}
+                                        {isUpdatingThis ? 'Updating...' : isSelected ? 'Used for Purchase' : 'Use this Card'}
                                     </button>
                                 </div>
                             </div>

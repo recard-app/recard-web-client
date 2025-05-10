@@ -19,9 +19,9 @@ import {
 import axios from 'axios';
 
 // Import types
-import { CreditCard } from '../../types/CreditCardTypes';
-import { ChatMessage, ChatSolution, Conversation } from '../../types/ChatTypes';
-import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
+import { CreditCard } from '../../types';
+import { ChatMessage, ChatSolution, ChatSolutionSelectedCardId, Conversation } from '../../types';
+import { ChatHistoryPreference, InstructionsPreference } from '../../types';
 import { aiClient, userClient, MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER } from '../../types';
 import { UserHistoryService } from '../../services';
@@ -80,6 +80,8 @@ function PromptWindow({
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     // Stores the AI's credit card recommendations and solutions for the current conversation
     const [promptSolutions, setPromptSolutions] = useState<ChatSolution>([]);
+    // Stores the selected card ID for the current conversation
+    const [selectedCardId, setSelectedCardId] = useState<ChatSolutionSelectedCardId>('');
     // Unique identifier for the current chat conversation
     const [chatId, setChatId] = useState<string>('');
     // Tracks whether this is a new chat conversation (true) or loading an existing one (false)
@@ -98,7 +100,6 @@ function PromptWindow({
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
     // Stores error messages to display to the user
     const [errorMessage, setErrorMessage] = useState<string>('');
-
 
     // Modal for displaying error messages
     const errorModal = useModal();
@@ -159,13 +160,15 @@ function PromptWindow({
     const setExistingChatStates = (
         conversation: ChatMessage[],
         solutions: ChatSolution,
-        newChatId: string
+        newChatId: string,
+        cardSelection: ChatSolutionSelectedCardId
     ) => {
         setChatHistory(limitChatHistory(conversation));
         setPromptSolutions(solutions);
         setChatId(newChatId);
         setIsNewChat(false);
         returnCurrentChatId(newChatId);
+        setSelectedCardId(cardSelection);
     };
 
     /**
@@ -216,13 +219,13 @@ function PromptWindow({
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
                 
                 if (existingChat) {
-                    setExistingChatStates(existingChat.conversation, existingChat.solutions, urlChatId);
+                    setExistingChatStates(existingChat.conversation, existingChat.solutions, urlChatId, existingChat.cardSelection);
                     return;
                 }
 
                 try {
                     const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
-                    setExistingChatStates(response.conversation, response.solutions, urlChatId);
+                    setExistingChatStates(response.conversation, response.solutions, urlChatId, response.cardSelection);
                 } catch (error) {
                     console.error('Error loading chat:', error);
                     setErrorMessage('Error loading chat history');
@@ -349,6 +352,7 @@ function PromptWindow({
     const handleNewTransaction = () => {
         setChatHistory([]);
         setPromptSolutions([]);
+        setSelectedCardId('');
         setIsNewChat(true);
         setIsNewChatPending(false);
         setChatId('');
@@ -383,6 +387,7 @@ function PromptWindow({
                 promptSolutions={promptSolutions} 
                 creditCards={creditCards} 
                 chatId={chatId}
+                selectedCardId={selectedCardId}
                 onHistoryUpdate={onHistoryUpdate}
             />
             <PromptField 
