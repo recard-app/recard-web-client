@@ -81,7 +81,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
   return (
     <>
       <div 
-        className={`history-entry ${isCurrent ? 'current' : ''}`}
+        className={`history-entry ${isCurrent ? 'current' : ''} ${displayCard ? 'has-selected-card' : ''}`}
         id={chatEntry.chatId}
         onClick={handleClick}
         style={{ cursor: 'pointer' }}
