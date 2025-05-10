@@ -2,14 +2,18 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
+import '../../elements/Elements.scss';
+import { ToggleSwitch } from '../../elements/Elements';
 import { useNavigate } from 'react-router-dom';
 import {
   Conversation, 
   PaginationData,
   CreditCard,
-  SubscriptionPlan
+  SubscriptionPlan,
+  ShowCompletedOnlyPreference
 } from '../../types';
 import { HISTORY_PAGE_SIZE, SUBSCRIPTION_PLAN } from '../../types';
+import { UserPreferencesService } from '../../services/UserService';
 import {
   organizeHistoryByDate,
   getAvailableYears,
@@ -37,6 +41,7 @@ export interface HistoryPanelProps {
   subscriptionPlan: SubscriptionPlan;
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
+  showCompletedOnlyPreference: ShowCompletedOnlyPreference;
 }
 
 function HistoryPanel({ 
@@ -48,7 +53,8 @@ function HistoryPanel({
   onHistoryUpdate,
   subscriptionPlan = SUBSCRIPTION_PLAN.FREE,
   creditCards,
-  historyRefreshTrigger
+  historyRefreshTrigger,
+  showCompletedOnlyPreference
 }: HistoryPanelProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -66,6 +72,13 @@ function HistoryPanel({
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   // Date of the first entry in history
   const [firstEntryDate, setFirstEntryDate] = useState<Date | null>(null);
+  const [showCompletedOnly, setShowCompletedOnly] = useState<boolean>(showCompletedOnlyPreference);
+  const [isTogglingCompleted, setIsTogglingCompleted] = useState<boolean>(false);
+
+  // Effect to update showCompletedOnly when the preference changes
+  useEffect(() => {
+    setShowCompletedOnly(showCompletedOnlyPreference);
+  }, [showCompletedOnlyPreference]);
 
   // Initial loading state based on whether we have history
   useEffect(() => {
@@ -156,6 +169,29 @@ function HistoryPanel({
     : existingHistoryList
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
         .slice(0, listSize);
+
+  // Filter the display list based on the toggle state
+  const filteredDisplayList = showCompletedOnly
+    ? displayList.filter(entry => entry.cardSelection !== '' && entry.cardSelection !== undefined)
+    : displayList;
+
+  /**
+   * Handles the toggle of completed transactions filter
+   * @param newValue The new toggle state
+   */
+  const handleCompletedToggle = async (newValue: boolean) => {
+    try {
+      setIsTogglingCompleted(true);
+      setShowCompletedOnly(newValue);
+      await UserPreferencesService.updateShowCompletedOnlyPreference(newValue);
+    } catch (error) {
+      // Revert the toggle if the update fails
+      setShowCompletedOnly(!newValue);
+      console.error('Failed to update show completed only preference:', error);
+    } finally {
+      setIsTogglingCompleted(false);
+    }
+  };
 
   /**
    * Renders pagination controls
@@ -307,13 +343,32 @@ function HistoryPanel({
     );
   };
 
+  /**
+   * Renders the completed transactions toggle
+   * @returns JSX for completed transactions toggle
+   */
+  const renderCompletedToggle = () => {
+    if (!fullListSize) return null;
+
+    return (
+      <ToggleSwitch
+        id="completedToggle"
+        label="Only show completed transactions"
+        checked={showCompletedOnly}
+        onChange={handleCompletedToggle}
+        disabled={isTogglingCompleted}
+      />
+    );
+  };
+
   return (
     <div className='history-panel'>
       {!fullListSize && <h2>Recent Transactions</h2>}
       {fullListSize && renderDateFilter()}
-      {isLoading && displayList.length === 0 ? (
+      {fullListSize && renderCompletedToggle()}
+      {isLoading && filteredDisplayList.length === 0 ? (
         <p>Loading transaction history...</p>
-      ) : displayList.length === 0 ? (
+      ) : filteredDisplayList.length === 0 ? (
         <p>No transaction history available for this period</p>
       ) : (
         <>
@@ -322,7 +377,7 @@ function HistoryPanel({
               {/* Show filtered results without categories */}
               {(selectedMonth !== '') ? (
                 <div className="history-entries">
-                  {displayList.map(entry => (
+                  {filteredDisplayList.map(entry => (
                     <HistoryEntry 
                       key={entry.chatId} 
                       chatEntry={entry}
@@ -335,7 +390,7 @@ function HistoryPanel({
                 </div>
               ) : (
                 // Show categorized view only when no filters are applied
-                organizeHistoryByDate(displayList).map(section => (
+                organizeHistoryByDate(filteredDisplayList).map(section => (
                   <div key={section.title} className="history-section">
                     <h3 className="section-title">{section.title}</h3>
                     {section.entries.map(entry => (
@@ -356,7 +411,7 @@ function HistoryPanel({
             </>
           ) : (
             // Show simple list for sidebar view
-            displayList.map(entry => (
+            filteredDisplayList.map(entry => (
               <HistoryEntry 
                 key={entry.chatId} 
                 chatEntry={entry}

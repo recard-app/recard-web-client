@@ -1,7 +1,7 @@
 import React from 'react';
 import HistoryPanel from '../../components/HistoryPanel';
 import { Link } from 'react-router-dom';
-import { Conversation, CreditCard, SubscriptionPlan } from '../../types';
+import { Conversation, CreditCard, ShowCompletedOnlyPreference, SubscriptionPlan } from '../../types';
 
 interface HistoryProps {
   existingHistoryList: Conversation[];
@@ -11,6 +11,7 @@ interface HistoryProps {
   subscriptionPlan: SubscriptionPlan;
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
+  showCompletedOnlyPreference: ShowCompletedOnlyPreference;
 }
 
 function History({ 
@@ -20,7 +21,8 @@ function History({
   onHistoryUpdate,
   subscriptionPlan,
   creditCards,
-  historyRefreshTrigger
+  historyRefreshTrigger,
+  showCompletedOnlyPreference
 }: HistoryProps): React.ReactElement {
   const getHistoryTitle = (): string => {
     if (subscriptionPlan === 'premium') {
@@ -43,6 +45,7 @@ function History({
           subscriptionPlan={subscriptionPlan}
           creditCards={creditCards}
           historyRefreshTrigger={historyRefreshTrigger}
+          showCompletedOnlyPreference={showCompletedOnlyPreference}
         />
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import PreferencesModule from '../../components/PreferencesModule';
-import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
+import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPreference } from '../../types/UserTypes';
 
 interface PreferencesProps {
     onModalOpen: () => void;
@@ -8,6 +8,8 @@ interface PreferencesProps {
     setPreferencesInstructions: (instructions: InstructionsPreference) => void;
     chatHistoryPreference: ChatHistoryPreference;
     setChatHistoryPreference: (preference: ChatHistoryPreference) => void;
+    showCompletedOnlyPreference: ShowCompletedOnlyPreference;
+    setShowCompletedOnlyPreference: (preference: ShowCompletedOnlyPreference) => void;
 }
 
 const Preferences: React.FC<PreferencesProps> = ({ 
@@ -15,7 +17,9 @@ const Preferences: React.FC<PreferencesProps> = ({
     preferencesInstructions, 
     setPreferencesInstructions,
     chatHistoryPreference,
-    setChatHistoryPreference
+    setChatHistoryPreference,
+    showCompletedOnlyPreference,
+    setShowCompletedOnlyPreference
 }) => {
     return (
         <div className="preferences-page">
@@ -29,6 +33,8 @@ const Preferences: React.FC<PreferencesProps> = ({
                     onInstructionsUpdate={setPreferencesInstructions}
                     chatHistoryPreference={chatHistoryPreference}
                     setChatHistoryPreference={setChatHistoryPreference}
+                    showCompletedOnlyPreference={showCompletedOnlyPreference}
+                    setShowCompletedOnlyPreference={setShowCompletedOnlyPreference}
                 />
             </div>
         </div>

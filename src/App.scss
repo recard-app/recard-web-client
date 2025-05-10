@@ -24,6 +24,9 @@ $background-color: #f8f9fa;
 // Pages Styles
 @use './pages/account/Account.scss' as *;
 
+// Other Styles
+@use './elements/Elements.scss' as *;
+
 // Base app styles
 .app {
   display: block;

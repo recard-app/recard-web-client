@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
+import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
 import { CHAT_HISTORY_OPTIONS } from './utils';
 import './PreferencesModule.scss';
@@ -17,13 +17,17 @@ interface PreferencesModuleProps {
     onInstructionsUpdate: (instructions: InstructionsPreference) => void; 
     chatHistoryPreference: ChatHistoryPreference; 
     setChatHistoryPreference: (preference: ChatHistoryPreference) => void; 
+    showCompletedOnlyPreference: ShowCompletedOnlyPreference;
+    setShowCompletedOnlyPreference: (preference: ShowCompletedOnlyPreference) => void;
 }
 
 function PreferencesModule({ 
     customInstructions, 
     onInstructionsUpdate,
     chatHistoryPreference,
-    setChatHistoryPreference
+    setChatHistoryPreference,
+    showCompletedOnlyPreference,
+    setShowCompletedOnlyPreference
 }: PreferencesModuleProps) {
     const [instructions, setInstructions] = useState<string>(customInstructions || '');
     const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -32,7 +36,7 @@ function PreferencesModule({
     useEffect(() => {
         const loadAllPreferences = async () => {
             try {
-                const { instructionsResponse, chatHistoryResponse } = 
+                const { instructionsResponse, chatHistoryResponse, showCompletedOnlyResponse } = 
                     await UserPreferencesService.loadAllPreferences();
 
                 // Update custom instructions
@@ -44,6 +48,11 @@ function PreferencesModule({
                 // Update chat history preference
                 if (chatHistoryResponse.chatHistory) {
                     setChatHistoryPreference(chatHistoryResponse.chatHistory);
+                }
+
+                // Update show completed only preference
+                if (showCompletedOnlyResponse.showCompletedOnly !== undefined) {
+                    setShowCompletedOnlyPreference(showCompletedOnlyResponse.showCompletedOnly);
                 }
             } catch (error) {
                 console.error('Error loading preferences:', error);
@@ -62,7 +71,7 @@ function PreferencesModule({
         setMessage('');
 
         try {
-            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference);
+            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference, showCompletedOnlyPreference);
             setMessage('All preferences saved successfully!');
             onInstructionsUpdate(instructions);
         } catch (error) {
@@ -99,6 +108,20 @@ function PreferencesModule({
                                 {option.label}
                             </option>
                         ))}
+                    </select>
+                </div>
+
+                <div className="show-completed-preference">
+                    <label htmlFor="showCompletedSelect">Transaction Display Preference:</label>
+                    <select
+                        id="showCompletedSelect"
+                        value={showCompletedOnlyPreference.toString()}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
+                            setShowCompletedOnlyPreference(e.target.value === 'true')}
+                        className="show-completed-select"
+                    >
+                        <option value="false">Show all transactions</option>
+                        <option value="true">Only show completed transactions</option>
                     </select>
                 </div>
 

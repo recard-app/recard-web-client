@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
-import { APP_NAME } from './types';
+import { APP_NAME, ShowCompletedOnlyPreference } from './types';
 // Services
 import { 
   CardService, 
@@ -77,6 +77,9 @@ function AppContent({}: AppContentProps) {
   const [preferencesInstructions, setPreferencesInstructions] = useState<InstructionsPreference>('');
   // State for managing chat history preference (keep/clear)
   const [chatHistoryPreference, setChatHistoryPreference] = useState<ChatHistoryPreference>(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
+  // State for managing show completed only preference
+  const [showCompletedOnlyPreference, setShowCompletedOnlyPreference] = useState<ShowCompletedOnlyPreference>(false);
+
   // State for tracking user's subscription plan
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
 
@@ -171,7 +174,7 @@ function AppContent({}: AppContentProps) {
     };
 
     fetchFullHistory();
-  }, [user, historyRefreshTrigger, chatHistoryPreference]);
+  }, [user, historyRefreshTrigger, chatHistoryPreference, showCompletedOnlyPreference]);
 
   // Effect to fetch user's card details
   useEffect(() => {
@@ -190,6 +193,26 @@ function AppContent({}: AppContentProps) {
     };
 
     fetchUserCardDetails();
+  }, [user]);
+
+  // Effect to fetch show completed only preference
+  useEffect(() => {
+    const fetchShowCompletedOnlyPreference = async () => {
+      if (!user) {
+        setShowCompletedOnlyPreference(false);
+        return;
+      }
+      
+      try {
+        const response = await UserPreferencesService.loadShowCompletedOnlyPreference();
+        setShowCompletedOnlyPreference(response.data === 'true');
+      } catch (error) {
+        console.error('Error fetching show completed only preference:', error);
+        setShowCompletedOnlyPreference(false);
+      }
+    };
+
+    fetchShowCompletedOnlyPreference();
   }, [user]);
 
   // Function to update credit cards and refresh user card details
@@ -319,6 +342,7 @@ function AppContent({}: AppContentProps) {
           subscriptionPlan={subscriptionPlan}
           creditCards={creditCards}
           historyRefreshTrigger={historyRefreshTrigger}
+          showCompletedOnlyPreference={showCompletedOnlyPreference}
         />
         <PromptWindow 
           creditCards={creditCards}
@@ -377,6 +401,8 @@ function AppContent({}: AppContentProps) {
               setPreferencesInstructions={setPreferencesInstructions}
               chatHistoryPreference={chatHistoryPreference}
               setChatHistoryPreference={(preference: ChatHistoryPreference) => setChatHistoryPreference(preference)}
+              showCompletedOnlyPreference={showCompletedOnlyPreference}
+              setShowCompletedOnlyPreference={(preference: ShowCompletedOnlyPreference) => setShowCompletedOnlyPreference(preference)}
             />
           </ProtectedRoute>
         } />
@@ -418,6 +444,7 @@ function AppContent({}: AppContentProps) {
             subscriptionPlan={subscriptionPlan}
             creditCards={creditCards}
             historyRefreshTrigger={historyRefreshTrigger}
+            showCompletedOnlyPreference={showCompletedOnlyPreference}
           />
         } />
       </Routes>

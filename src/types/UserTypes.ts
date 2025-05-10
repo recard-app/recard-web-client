@@ -6,10 +6,12 @@ export type SelectedCards = string[];
 export interface UserPreferences {
     chatHistory?: ChatHistoryPreference;
     instructions?: InstructionsPreference;
+    showCompletedOnly?: ShowCompletedOnlyPreference;
 }
 
 export type ChatHistoryPreference = ChatHistoryPreferenceType;
 export type InstructionsPreference = string;
+export type ShowCompletedOnlyPreference = boolean;
 
 export type SubscriptionPlan = SubscriptionPlanType;
 
@@ -53,6 +55,7 @@ export interface PreferencesResponse {
     data?: string;
     chatHistory?: ChatHistoryPreference;
     instructions?: InstructionsPreference;
+    showCompletedOnly?: ShowCompletedOnlyPreference;
     error?: string;
 }
 

@@ -10,7 +10,7 @@ import {
     CardDetailsList,
     ChatSolutionSelectedCardId 
 } from '../types';
-import { ChatHistoryPreference, InstructionsPreference, PreferencesResponse, SubscriptionPlan } from '../types/UserTypes';
+import { ChatHistoryPreference, InstructionsPreference, PreferencesResponse, SubscriptionPlan, ShowCompletedOnlyPreference } from '../types/UserTypes';
 
 export const UserService = {
     /**
@@ -204,6 +204,22 @@ export const UserPreferencesService = {
     },
 
     /**
+     * Updates instructions preference
+     * @param instructions User's custom instructions
+     * @returns Promise<void>
+     */
+    async updateInstructionsPreference(
+        instructions: InstructionsPreference
+    ): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.post<PreferencesResponse>(
+            `${apiurl}/users/preferences/instructions`,
+            { instructions },
+            { headers }
+        );
+    },
+
+    /**
      * Loads chat history preferences
      * @returns Promise containing chat history preferences response
      */
@@ -217,47 +233,88 @@ export const UserPreferencesService = {
     },
 
     /**
-     * Loads user preferences for both instructions and chat history
-     * @returns Promise containing both preferences responses
+     * Updates chat history preference
+     * @param chatHistory User's chat history preference
+     * @returns Promise<void>
+     */
+    async updateChatHistoryPreference(
+        chatHistory: ChatHistoryPreference
+    ): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.post<PreferencesResponse>(
+            `${apiurl}/users/preferences/chat_history`,
+            { chatHistory },
+            { headers }
+        );
+    },
+
+    /**
+     * Loads show completed only preference
+     * @returns Promise containing show completed only preference response
+     */
+    async loadShowCompletedOnlyPreference(): Promise<PreferencesResponse> {
+        const headers = await getAuthHeaders();
+        const response = await axios.get<PreferencesResponse>(
+            `${apiurl}/users/preferences/only_show_completed_transactions`,
+            { headers }
+        );
+        return response.data;
+    },
+
+    /**
+     * Updates show completed only preference
+     * @param showCompletedOnly Whether to show only completed transactions
+     * @returns Promise<void>
+     */
+    async updateShowCompletedOnlyPreference(
+        showCompletedOnly: ShowCompletedOnlyPreference
+    ): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.post<PreferencesResponse>(
+            `${apiurl}/users/preferences/only_show_completed_transactions`,
+            { showCompletedOnly },
+            { headers }
+        );
+    },
+
+    /**
+     * Loads all user preferences including instructions, chat history, and show completed only
+     * @returns Promise containing all preferences responses
      */
     async loadAllPreferences(): Promise<{
         instructionsResponse: PreferencesResponse;
         chatHistoryResponse: PreferencesResponse;
+        showCompletedOnlyResponse: PreferencesResponse;
     }> {
-        const [instructionsResponse, chatHistoryResponse] = await Promise.all([
+        const [instructionsResponse, chatHistoryResponse, showCompletedOnlyResponse] = await Promise.all([
             this.loadInstructionsPreferences(),
-            this.loadChatHistoryPreferences()
+            this.loadChatHistoryPreferences(),
+            this.loadShowCompletedOnlyPreference()
         ]);
 
         return {
             instructionsResponse,
-            chatHistoryResponse
+            chatHistoryResponse,
+            showCompletedOnlyResponse
         };
     },
 
     /**
-     * Saves both instructions and chat history preferences
+     * Saves all preferences
      * @param instructions User's custom instructions
      * @param chatHistory User's chat history preference
-     * @returns Promise containing both preferences responses
+     * @param showCompletedOnly User's show completed only preference
+     * @returns Promise<void>
      */
     async savePreferences(
         instructions: InstructionsPreference, 
-        chatHistory: ChatHistoryPreference
+        chatHistory: ChatHistoryPreference,
+        showCompletedOnly: ShowCompletedOnlyPreference
     ): Promise<void> {
-        const headers = await getAuthHeaders();
-        
         await Promise.all([
-            axios.post<PreferencesResponse>(
-                `${apiurl}/users/preferences/instructions`,
-                { instructions },
-                { headers }
-            ),
-            axios.post<PreferencesResponse>(
-                `${apiurl}/users/preferences/chat_history`,
-                { chatHistory },
-                { headers }
-            )
+            this.updateInstructionsPreference(instructions),
+            this.updateChatHistoryPreference(chatHistory),
+            this.updateShowCompletedOnlyPreference(showCompletedOnly)
         ]);
     }
 };
