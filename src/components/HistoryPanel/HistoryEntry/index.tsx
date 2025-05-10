@@ -1,9 +1,10 @@
 import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE } from '../../../types';
+import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, TEMP_ICON } from '../../../types';
 import { formatDate, deleteChatEntry } from './utils';
 import { Modal, useModal } from '../../Modal';
+import { Dropdown } from '../../../elements/Elements';
 
 /**
  * Props interface for the HistoryEntry component
@@ -36,18 +37,24 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
    */
   const handleClick = (e: React.MouseEvent<HTMLDivElement>): void => {
     e.preventDefault();
-    if ((e.target as HTMLElement).className !== 'delete-button') {
+    // Make sure we're not clicking on the action icon or its dropdown
+    if (!(e.target as HTMLElement).closest('.actions-dropdown')) {
       navigate(`/${chatEntry.chatId}`, { replace: true });
     }
   };
 
   /**
-   * Handles clicking the delete button
-   * @param e - Click event
+   * Handles clicking the delete option
    */
-  const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    e.stopPropagation();
-    deleteModal.open(); // Open the modal using the hook
+  const handleDeleteClick = (): void => {
+    deleteModal.open();
+  };
+
+  /**
+   * Placeholder for rename functionality
+   */
+  const handleRenameClick = (): void => {
+    console.log('Rename functionality to be implemented');
   };
 
   /**
@@ -96,14 +103,18 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
             </p>
           )}
           <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
+          {isCurrent && <span className="current-indicator">Current</span>}
         </div>
-        {isCurrent && <span className="current-indicator">Current</span>}
-        <button 
-          className="delete-button"
-          onClick={handleDeleteClick}
-        >
-          Delete
-        </button>
+        
+        <div className="actions-dropdown">
+          <Dropdown
+            trigger={<img src={TEMP_ICON} alt="Actions" className="action-icon" />}
+            align="right"
+          >
+            <button onClick={handleRenameClick}>Rename</button>
+            <button onClick={handleDeleteClick} className="delete-action">Delete</button>
+          </Dropdown>
+        </div>
       </div>
 
       <Modal 

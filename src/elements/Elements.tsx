@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, ReactElement } from 'react';
+import ReactDOM from 'react-dom';
 import './Elements.scss';
 
 interface ToggleSwitchProps {
@@ -58,11 +59,37 @@ export const Dropdown: React.FC<DropdownProps> = ({
   align = 'right'
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Position state for the dropdown
+  const [position, setPosition] = useState({
+    top: 0,
+    left: 0,
+    right: 0
+  });
+
+  // Update position when trigger is clicked
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      
+      setPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        right: window.innerWidth - (rect.right + window.scrollX)
+      });
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        triggerRef.current && 
+        !triggerRef.current.contains(event.target as Node) &&
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -71,30 +98,48 @@ export const Dropdown: React.FC<DropdownProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Create the dropdown menu component
+  const dropdownMenu = isOpen ? (
+    ReactDOM.createPortal(
+      <div 
+        ref={dropdownRef}
+        className={`dropdown-menu dropdown-align-${align}`}
+        style={{
+          position: 'absolute',
+          top: `${position.top}px`,
+          ...(align === 'right' ? { right: `${position.right}px` } : { left: `${position.left}px` }),
+        }}
+      >
+        {React.Children.map(children, (child) => {
+          if (React.isValidElement(child)) {
+            // Type assertion to let TypeScript know this element might have onClick
+            const childElement = child as ReactElement & WithOnClick;
+            return React.cloneElement(childElement, {
+              onClick: (e: React.MouseEvent) => {
+                if (childElement.props.onClick) {
+                  childElement.props.onClick(e);
+                }
+                setIsOpen(false);
+              }
+            });
+          }
+          return child;
+        })}
+      </div>,
+      document.body
+    )
+  ) : null;
+
   return (
-    <div className={`dropdown-container ${className}`} ref={dropdownRef}>
-      <div className="dropdown-trigger" onClick={() => setIsOpen(!isOpen)}>
+    <div className={`dropdown-container ${className}`}>
+      <div 
+        ref={triggerRef}
+        className="dropdown-trigger" 
+        onClick={() => setIsOpen(!isOpen)}
+      >
         {trigger}
       </div>
-      {isOpen && (
-        <div className={`dropdown-menu dropdown-align-${align}`}>
-          {React.Children.map(children, (child) => {
-            if (React.isValidElement(child)) {
-              // Type assertion to let TypeScript know this element might have onClick
-              const childElement = child as ReactElement & WithOnClick;
-              return React.cloneElement(childElement, {
-                onClick: (e: React.MouseEvent) => {
-                  if (childElement.props.onClick) {
-                    childElement.props.onClick(e);
-                  }
-                  setIsOpen(false);
-                }
-              });
-            }
-            return child;
-          })}
-        </div>
-      )}
+      {dropdownMenu}
     </div>
   );
 };
