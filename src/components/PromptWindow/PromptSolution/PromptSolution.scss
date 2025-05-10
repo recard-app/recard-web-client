@@ -109,4 +109,82 @@
       }
     }
   }
+
+  .modal-overlay {
+    .modal-content {
+      padding-top: 10px;
+      
+      .close-btn {
+        top: 5px;
+        right: 10px;
+      }
+    }
+  }
+}
+
+.select-different-card {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  
+  .selection-label {
+    font-size: 0.9em;
+    color: #666;
+    margin-right: 10px;
+  }
+  
+  .select-card-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: #e3e3e3;
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+  
+  .selected-card-button {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 3px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: #f0f0f0;
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .selected-card-image {
+      height: 24px;
+      width: auto;
+      margin-right: 8px;
+      border-radius: 3px;
+    }
+    
+    .selected-card-name {
+      font-size: 0.9em;
+      font-weight: 500;
+      color: #333;
+    }
+  }
 }

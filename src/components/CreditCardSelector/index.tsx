@@ -29,6 +29,7 @@ const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCar
     const [saveStatus, setSaveStatus] = useState<string>('');
     // State for tracking loading state during API calls
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
     const { user } = useAuth();
     const navigate = useNavigate();
 
