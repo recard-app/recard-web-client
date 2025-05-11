@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, ReactElement } from 'react';
 import ReactDOM from 'react-dom';
 import './Elements.scss';
-import { TEMP_ICON } from '../types';
 
 interface ToggleSwitchProps {
   id: string;
