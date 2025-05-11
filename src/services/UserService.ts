@@ -179,8 +179,26 @@ export const UserHistoryService = {
     ): Promise<void> {
         const headers = await getAuthHeaders();
         await axios.put(
-            `${apiurl}/users/history/${chatId}/transaction-card-selection`,
+            `${apiurl}/users/history/${chatId}/transaction_card_selection`,
             { cardSelection },
+            { headers }
+        );
+    },
+
+    /**
+     * Updates the chat description for a specific chat
+     * @param chatId ID of the chat to update
+     * @param chatDescription New description for the chat
+     * @returns Promise<void>
+     */
+    async updateChatDescription(
+        chatId: string,
+        chatDescription: string
+    ): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.put(
+            `${apiurl}/users/history/${chatId}/chat_description`,
+            { chatDescription },
             { headers }
         );
     }

@@ -1,16 +1,19 @@
 import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON } from '../../../types';
+import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON, CHAT_DESCRIPTION_MAX_LENGTH } from '../../../types';
 import { formatDate, deleteChatEntry } from './utils';
 import { Modal, useModal } from '../../Modal';
 import { Dropdown, DropdownItem } from '../../../elements/Elements';
+import { UserHistoryService } from '../../../services';
+import { useState } from 'react';
 
 /**
  * Props interface for the HistoryEntry component
  * @property chatEntry - The conversation data to display
  * @property currentChatId - The ID of the currently active chat
  * @property onDelete - Optional callback when a chat is deleted
+ * @property refreshHistory - Optional callback to force history refresh
  * @property returnCurrentChatId - Callback to update the current chat ID
  * @property creditCards - Optional array of available credit cards
  */
@@ -18,11 +21,12 @@ interface HistoryEntryProps {
   chatEntry: Conversation;
   currentChatId: string | null;
   onDelete?: (chatId: string) => void;
+  refreshHistory?: () => Promise<boolean>;
   returnCurrentChatId: (chatId: string | null) => void;
   creditCards?: CreditCard[];
 }
 
-function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId, creditCards }: HistoryEntryProps): React.ReactElement {
+function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, returnCurrentChatId, creditCards }: HistoryEntryProps): React.ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   // Tracks whether this entry is the currently selected chat
@@ -30,6 +34,12 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
 
   // Use the useModal hook for managing the delete confirmation modal
   const deleteModal = useModal();
+  // Add a rename modal
+  const renameModal = useModal();
+  // State for the new chat description
+  const [newChatDescription, setNewChatDescription] = useState(chatEntry.chatDescription);
+  // State for tracking loading state during rename
+  const [isRenaming, setIsRenaming] = useState(false);
 
   /**
    * Handles clicking on the history entry
@@ -51,10 +61,39 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
   };
 
   /**
-   * Placeholder for rename functionality
+   * Handles clicking the rename option
    */
   const handleRenameClick = (): void => {
-    console.log('Rename functionality to be implemented');
+    setNewChatDescription(chatEntry.chatDescription);
+    renameModal.open();
+  };
+
+  /**
+   * Handles the submission of the rename form
+   */
+  const handleRenameSubmit = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+    if (!newChatDescription.trim()) return;
+    
+    try {
+      setIsRenaming(true);
+      
+      // Always make the direct API call
+      await UserHistoryService.updateChatDescription(chatEntry.chatId, newChatDescription);
+      
+      // Then trigger refresh through parent component
+      if (refreshHistory) {
+        // Use the refreshHistory callback to trigger a refresh
+        await refreshHistory();
+      }
+      
+      renameModal.close();
+    } catch (error) {
+      console.error('Error renaming chat:', error);
+      alert('Failed to rename chat. Please try again.');
+    } finally {
+      setIsRenaming(false);
+    }
   };
 
   /**
@@ -117,6 +156,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
         </div>
       </div>
 
+      {/* Delete Modal */}
       <Modal 
         isOpen={deleteModal.isOpen} 
         onClose={deleteModal.close}
@@ -138,6 +178,49 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
               Cancel
             </button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Rename Modal */}
+      <Modal
+        isOpen={renameModal.isOpen}
+        onClose={renameModal.close}
+      >
+        <div className="rename-dialog">
+          <h3>Rename Chat</h3>
+          <form onSubmit={handleRenameSubmit}>
+            <input
+              type="text"
+              value={newChatDescription}
+              onChange={(e) => setNewChatDescription(e.target.value)}
+              placeholder="Enter a new name for this chat"
+              className="rename-input"
+              maxLength={CHAT_DESCRIPTION_MAX_LENGTH}
+              minLength={1}
+              required
+              autoFocus
+            />
+            <div className="character-count">
+              {newChatDescription.length}/{CHAT_DESCRIPTION_MAX_LENGTH}
+            </div>
+            <div className="button-group">
+              <button
+                type="submit"
+                className="confirm-button"
+                disabled={isRenaming || !newChatDescription.trim()}
+              >
+                {isRenaming ? 'Saving...' : 'Save'}
+              </button>
+              <button
+                type="button"
+                className="cancel-button"
+                onClick={renameModal.close}
+                disabled={isRenaming}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
       </Modal>
     </>

@@ -104,7 +104,6 @@ export const fetchPagedHistory = async (
       onHistoryUpdate(prevHistory => prevHistory.filter(chat => chat.chatId !== deletedChatId));
     }
   };
-  
 
 /**
  * Gets the list of available years based on subscription plan and first entry date

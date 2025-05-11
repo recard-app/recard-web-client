@@ -169,6 +169,20 @@ function HistoryPanel({
     handleHistoryDelete(deletedChatId, currentChatId, returnCurrentChatId, onHistoryUpdate);
   };
 
+  /**
+   * Forces a refresh of the history data
+   */
+  const forceHistoryRefresh = async () => {
+    try {
+      // Trigger history refresh via onHistoryUpdate
+      onHistoryUpdate(prevHistory => [...prevHistory]);
+      return true; // Return success
+    } catch (error) {
+      console.error('Failed to refresh history:', error);
+      return false; // Return failure
+    }
+  };
+
   // Use paginatedList instead of displayList for the full view
   const displayList = fullListSize 
     ? paginatedList 
@@ -394,6 +408,7 @@ function HistoryPanel({
                       chatEntry={entry}
                       currentChatId={currentChatId}
                       onDelete={handleDelete}
+                      refreshHistory={forceHistoryRefresh}
                       returnCurrentChatId={returnCurrentChatId}
                       creditCards={creditCards}
                     />
@@ -410,6 +425,7 @@ function HistoryPanel({
                         chatEntry={entry}
                         currentChatId={currentChatId}
                         onDelete={handleDelete}
+                        refreshHistory={forceHistoryRefresh}
                         returnCurrentChatId={returnCurrentChatId}
                         creditCards={creditCards}
                       />
@@ -428,6 +444,7 @@ function HistoryPanel({
                 chatEntry={entry}
                 currentChatId={currentChatId}
                 onDelete={handleDelete}
+                refreshHistory={forceHistoryRefresh}
                 returnCurrentChatId={returnCurrentChatId}
                 creditCards={creditCards}
               />
