@@ -43,6 +43,8 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
   const [newChatDescription, setNewChatDescription] = useState(chatEntry.chatDescription);
   // State for tracking loading state during rename
   const [isRenaming, setIsRenaming] = useState(false);
+  // State for error message
+  const [renameError, setRenameError] = useState<string | null>(null);
 
   /**
    * Handles clicking on the history entry
@@ -70,6 +72,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
   const handleRenameClick = (e: React.MouseEvent): void => {
     e.stopPropagation(); // Prevent event bubbling
     setNewChatDescription(chatEntry.chatDescription);
+    setRenameError(null); // Clear any previous errors
     openRenameModal();
   };
 
@@ -78,25 +81,41 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
    */
   const handleRenameSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    if (!newChatDescription.trim()) return;
+    
+    // Validate input
+    if (!newChatDescription.trim()) {
+      return;
+    }
+    
+    // Clear any previous errors
+    setRenameError(null);
+    
+    // Set loading state
+    setIsRenaming(true);
     
     try {
-      setIsRenaming(true);
+      // 1. Update the chat description via API
+      await UserHistoryService.updateChatDescription(
+        chatEntry.chatId,
+        newChatDescription
+      );
       
-      // Always make the direct API call
-      await UserHistoryService.updateChatDescription(chatEntry.chatId, newChatDescription);
-      
-      // Then trigger refresh through parent component
-      if (refreshHistory) {
-        // Use the refreshHistory callback to trigger a refresh
-        await refreshHistory();
-      }
-      
+      // 2. First, close the modal - This is the key change
       closeRenameModal();
+      
+      // 3. Then refresh history if available (don't wait for it)
+      if (refreshHistory) {
+        refreshHistory().catch(error => {
+          console.error('Failed to refresh history:', error);
+          // No need to handle UI since modal is already closed
+        });
+      }
     } catch (error) {
-      console.error('Error renaming chat:', error);
-      alert('Failed to rename chat. Please try again.');
+      // Handle API error
+      console.error('Failed to rename chat:', error);
+      setRenameError('Failed to rename chat. Please try again.');
     } finally {
+      // Reset loading state
       setIsRenaming(false);
     }
   };
@@ -213,6 +232,11 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
             <div className="character-count">
               {newChatDescription.length}/{CHAT_DESCRIPTION_MAX_LENGTH}
             </div>
+            {renameError && (
+              <div className="error-message" style={{ color: 'red', marginTop: '10px', fontSize: '14px' }}>
+                {renameError}
+              </div>
+            )}
             <div className="button-group">
               <button
                 type="submit"

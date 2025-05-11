@@ -46,7 +46,12 @@ export const useModal = (
 
   const open = () => setIsOpen(true);
   
-  const close = () => setIsOpen(false);
+  const close = () => {
+    setIsOpen(false);
+    if (modalId) {
+      sessionStorage.removeItem(`modal_${modalId}`);
+    }
+  };
   
   const toggle = () => setIsOpen(prev => !prev);
 
