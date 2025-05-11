@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './AppHeader.scss';
 import { User as FirebaseUser } from 'firebase/auth';
-import { APP_NAME } from '../../types';
-import { Dropdown } from '../../elements/Elements';
+import { APP_NAME, DROPDOWN_ICON } from '../../types';
+import { Dropdown, DropdownItem } from '../../elements/Elements';
 
 /**
  * Props interface for AppHeader component
@@ -49,11 +49,13 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) =>
             }
             className="profile-dropdown"
           >
-            <Link to="/preferences">Preferences</Link>
-            <Link to="/account">My Account</Link>
-            <button onClick={onLogout}>
-              Sign Out
-            </button>
+            <Link to="/preferences">
+              <DropdownItem>Preferences</DropdownItem>
+            </Link>
+            <Link to="/account">
+              <DropdownItem icon={DROPDOWN_ICON}>My Account</DropdownItem>
+            </Link>
+            <DropdownItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICON}>Sign Out</DropdownItem>
           </Dropdown>
         ) : (
           <Link to="/signin">

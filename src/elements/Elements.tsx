@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, ReactElement } from 'react';
 import ReactDOM from 'react-dom';
 import './Elements.scss';
+import { TEMP_ICON } from '../types';
 
 interface ToggleSwitchProps {
   id: string;
@@ -51,6 +52,28 @@ interface WithOnClick {
     onClick?: (e: React.MouseEvent) => void;
   };
 }
+
+// New component for dropdown menu items with icons
+export interface DropdownItemProps {
+  icon?: string; // Optional icon URL
+  className?: string;
+  onClick?: (e: React.MouseEvent) => void;
+  children: React.ReactNode;
+}
+
+export const DropdownItem: React.FC<DropdownItemProps> = ({
+  icon, // Changed from default value to truly optional
+  className = '',
+  onClick,
+  children
+}) => {
+  return (
+    <button className={`dropdown-item ${className} ${!icon ? 'no-icon' : ''}`} onClick={onClick}>
+      {icon && <img src={icon} alt="" className="dropdown-item-icon" />}
+      <span className="dropdown-item-text">{children}</span>
+    </button>
+  );
+};
 
 export const Dropdown: React.FC<DropdownProps> = ({
   trigger,
@@ -114,14 +137,29 @@ export const Dropdown: React.FC<DropdownProps> = ({
           if (React.isValidElement(child)) {
             // Type assertion to let TypeScript know this element might have onClick
             const childElement = child as ReactElement & WithOnClick;
-            return React.cloneElement(childElement, {
-              onClick: (e: React.MouseEvent) => {
-                if (childElement.props.onClick) {
-                  childElement.props.onClick(e);
+            
+            // If it's not already a DropdownItem and has a standard onClick
+            if (childElement.type !== DropdownItem) {
+              return React.cloneElement(childElement, {
+                onClick: (e: React.MouseEvent) => {
+                  if (childElement.props.onClick) {
+                    childElement.props.onClick(e);
+                  }
+                  setIsOpen(false);
                 }
-                setIsOpen(false);
-              }
-            });
+              });
+            } 
+            // If it's a DropdownItem, we need to handle the onClick differently
+            else {
+              return React.cloneElement(childElement, {
+                onClick: (e: React.MouseEvent) => {
+                  if (childElement.props.onClick) {
+                    childElement.props.onClick(e);
+                  }
+                  setIsOpen(false);
+                }
+              });
+            }
           }
           return child;
         })}

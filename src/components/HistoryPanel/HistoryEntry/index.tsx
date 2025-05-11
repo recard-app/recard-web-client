@@ -1,10 +1,10 @@
 import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, TEMP_ICON } from '../../../types';
+import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON } from '../../../types';
 import { formatDate, deleteChatEntry } from './utils';
 import { Modal, useModal } from '../../Modal';
-import { Dropdown } from '../../../elements/Elements';
+import { Dropdown, DropdownItem } from '../../../elements/Elements';
 
 /**
  * Props interface for the HistoryEntry component
@@ -108,11 +108,11 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, returnCurrentChatId,
         
         <div className="actions-dropdown">
           <Dropdown
-            trigger={<img src={TEMP_ICON} alt="Actions" className="action-icon" />}
+            trigger={<img src={DROPDOWN_ICON} alt="Actions" className="action-icon" />}
             align="right"
           >
-            <button onClick={handleRenameClick}>Rename</button>
-            <button onClick={handleDeleteClick} className="delete-action">Delete</button>
+            <DropdownItem onClick={handleRenameClick}>Rename</DropdownItem>
+            <DropdownItem onClick={handleDeleteClick} className="delete-action" icon={DROPDOWN_ICON}>Delete</DropdownItem>
           </Dropdown>
         </div>
       </div>
