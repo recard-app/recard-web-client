@@ -32,10 +32,13 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
   // Tracks whether this entry is the currently selected chat
   const isCurrent = chatEntry.chatId === currentChatId;
 
-  // Use the useModal hook for managing the delete confirmation modal
-  const deleteModal = useModal();
-  // Add a rename modal
-  const renameModal = useModal();
+  // Use the enhanced useModal hook with modalType and entityId
+  const { isOpen: isDeleteModalOpen, open: openDeleteModal, close: closeDeleteModal } = 
+    useModal(false, 'delete', chatEntry.chatId);
+    
+  const { isOpen: isRenameModalOpen, open: openRenameModal, close: closeRenameModal } = 
+    useModal(false, 'rename', chatEntry.chatId);
+  
   // State for the new chat description
   const [newChatDescription, setNewChatDescription] = useState(chatEntry.chatDescription);
   // State for tracking loading state during rename
@@ -56,16 +59,18 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
   /**
    * Handles clicking the delete option
    */
-  const handleDeleteClick = (): void => {
-    deleteModal.open();
+  const handleDeleteClick = (e: React.MouseEvent): void => {
+    e.stopPropagation(); // Prevent event bubbling
+    openDeleteModal();
   };
 
   /**
    * Handles clicking the rename option
    */
-  const handleRenameClick = (): void => {
+  const handleRenameClick = (e: React.MouseEvent): void => {
+    e.stopPropagation(); // Prevent event bubbling
     setNewChatDescription(chatEntry.chatDescription);
-    renameModal.open();
+    openRenameModal();
   };
 
   /**
@@ -87,7 +92,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
         await refreshHistory();
       }
       
-      renameModal.close();
+      closeRenameModal();
     } catch (error) {
       console.error('Error renaming chat:', error);
       alert('Failed to rename chat. Please try again.');
@@ -108,7 +113,8 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
         navigate,
         currentPath: location.pathname
       });
-      deleteModal.close();
+      
+      closeDeleteModal();
     } catch (error) {
       console.error('Error deleting chat:', error);
       alert('Failed to delete chat. Please try again.');
@@ -158,8 +164,10 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
 
       {/* Delete Modal */}
       <Modal 
-        isOpen={deleteModal.isOpen} 
-        onClose={deleteModal.close}
+        isOpen={isDeleteModalOpen} 
+        onClose={closeDeleteModal}
+        modalType="delete"
+        entityId={chatEntry.chatId}
       >
         <div className="delete-confirmation">
           <h3>Delete Chat History</h3>
@@ -173,7 +181,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
             </button>
             <button 
               className="cancel-button"
-              onClick={deleteModal.close}
+              onClick={closeDeleteModal}
             >
               Cancel
             </button>
@@ -183,8 +191,10 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
 
       {/* Rename Modal */}
       <Modal
-        isOpen={renameModal.isOpen}
-        onClose={renameModal.close}
+        isOpen={isRenameModalOpen}
+        onClose={closeRenameModal}
+        modalType="rename"
+        entityId={chatEntry.chatId}
       >
         <div className="rename-dialog">
           <h3>Rename Chat</h3>
@@ -214,7 +224,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
               <button
                 type="button"
                 className="cancel-button"
-                onClick={renameModal.close}
+                onClick={closeRenameModal}
                 disabled={isRenaming}
               >
                 Cancel
