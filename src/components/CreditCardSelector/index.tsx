@@ -117,45 +117,48 @@ const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCar
                     className="search-input"
                 />
             </div>
-            {isLoading && existingCreditCards.length === 0 && (
+            {isLoading ? (
                 <div className="loading">Loading cards...</div>
-            )}
-            {filteredCards.map((card) => (
-                <div key={card.id} className='card'>
-                    <label className='card-select' htmlFor={card.id}>
-                        <input 
-                            type="checkbox" 
-                            id={card.id}
-                            name={card.CardName} 
-                            value={card.CardName} 
-                            checked={card.selected || false} 
-                            onChange={() => handleCheckboxChange(card.id)}
-                        />
-                        <img src={card.CardImage || PLACEHOLDER_CARD_IMAGE} alt='Credit Card Img' />
-                        <div className='card-desc'>
-                            <p className='card-name'>
-                                {card.CardName}
-                                {card.isDefaultCard && <span className="default-tag">Preferred Card</span>}
-                            </p>
-                            <p className='card-type'>{card.CardIssuer}</p>
+            ) : (
+                <>
+                    {filteredCards.map((card) => (
+                        <div key={card.id} className='card'>
+                            <label className='card-select' htmlFor={card.id}>
+                                <input 
+                                    type="checkbox" 
+                                    id={card.id}
+                                    name={card.CardName} 
+                                    value={card.CardName} 
+                                    checked={card.selected || false} 
+                                    onChange={() => handleCheckboxChange(card.id)}
+                                />
+                                <img src={card.CardImage || PLACEHOLDER_CARD_IMAGE} alt='Credit Card Img' />
+                                <div className='card-desc'>
+                                    <p className='card-name'>
+                                        {card.CardName}
+                                        {card.isDefaultCard && <span className="default-tag">Preferred Card</span>}
+                                    </p>
+                                    <p className='card-type'>{card.CardIssuer}</p>
+                                </div>
+                            </label>
+                            {card.selected && !card.isDefaultCard && (
+                                <button 
+                                    className="set-default-button"
+                                    onClick={() => handleSetDefault(card.id)}
+                                >
+                                    Set as Preferred Card
+                                </button>
+                            )}
                         </div>
-                    </label>
-                    {card.selected && !card.isDefaultCard && (
-                        <button 
-                            className="set-default-button"
-                            onClick={() => handleSetDefault(card.id)}
-                        >
-                            Set as Preferred Card
+                    ))}
+                    <div className="save-section">
+                        <button onClick={handleSave} className="save-button">
+                            Save
                         </button>
-                    )}
-                </div>
-            ))}
-            <div className="save-section">
-                <button onClick={handleSave} className="save-button">
-                    Save
-                </button>
-                {saveStatus && <p className="save-status">{saveStatus}</p>}
-            </div>
+                        {saveStatus && <p className="save-status">{saveStatus}</p>}
+                    </div>
+                </>
+            )}
         </div>
     );
 };
