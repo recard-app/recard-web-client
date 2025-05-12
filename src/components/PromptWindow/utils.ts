@@ -49,7 +49,7 @@ export const prepareRequestData = (
         preferencesInstructions
     };
 
-    if (user && userCardDetails?.length > 0) {
+    if (user && userCardDetails) {
         requestData.userCardDetails = userCardDetails;
     }
 
