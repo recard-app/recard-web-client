@@ -101,3 +101,11 @@ export interface PagedHistoryResponse {
         upgrade_required: boolean;
     } | null;
 }
+
+// Define the subscription plan response structure based on the server implementation
+export interface SubscriptionPlanResponse {
+    success: boolean;
+    subscriptionPlan: SubscriptionPlan;
+    message?: string;
+    error?: string;
+}

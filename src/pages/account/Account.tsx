@@ -131,7 +131,7 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
             <p>
               <strong>Subscription Plan:</strong>{' '}
               <span className="subscription-plan">
-                {typeof subscriptionPlan === 'string' ? subscriptionPlan : 'Unknown'}
+                {subscriptionPlan}
               </span>
             </p>
             {!user.emailVerified && (

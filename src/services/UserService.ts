@@ -8,22 +8,35 @@ import {
     ChatMessage,
     ChatSolution,
     CardDetailsList,
-    ChatSolutionSelectedCardId 
+    ChatSolutionSelectedCardId,
+    SUBSCRIPTION_PLAN
 } from '../types';
-import { ChatHistoryPreference, InstructionsPreference, PreferencesResponse, SubscriptionPlan, ShowCompletedOnlyPreference } from '../types/UserTypes';
+import { ChatHistoryPreference, InstructionsPreference, PreferencesResponse, SubscriptionPlan, ShowCompletedOnlyPreference, SubscriptionPlanResponse } from '../types';
 
 export const UserService = {
     /**
      * Fetches user's subscription plan
-     * @returns Promise containing the user's subscription plan
+     * @returns Promise containing the user's subscription plan as a valid SubscriptionPlanType
      */
     async fetchUserSubscriptionPlan(): Promise<SubscriptionPlan> {
         const headers = await getAuthHeaders();
-        const response = await axios.get<SubscriptionPlan>(
+        const response = await axios.get<SubscriptionPlanResponse>(
             `${apiurl}/users/subscription/plan`,
             { headers }
         );
-        return response.data;
+        
+        // The server always returns an object with success and subscriptionPlan properties
+        // If there's an error, we'll fall back to the FREE plan
+        if (response.data.success && response.data.subscriptionPlan) {
+            // Verify it's a valid subscription plan type
+            const validPlans = Object.values(SUBSCRIPTION_PLAN);
+            if (validPlans.includes(response.data.subscriptionPlan as any)) {
+                return response.data.subscriptionPlan;
+            }
+        }
+        
+        // Default fallback for invalid values or errors
+        return SUBSCRIPTION_PLAN.FREE;
     }
 };
 
