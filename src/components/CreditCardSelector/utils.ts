@@ -10,10 +10,10 @@ import { CardService, UserCreditCardService } from '../../services';
 export const sortCards = (cards: CreditCard[]): CreditCard[] => {
     return [...cards].sort((a, b) => {
         if (a.isDefaultCard !== b.isDefaultCard) {
-            return b.isDefaultCard ? 1 : -1;
+            return a.isDefaultCard ? -1 : 1;
         }
         if (a.selected !== b.selected) {
-            return b.selected ? 1 : -1;
+            return a.selected ? -1 : 1;
         }
         return a.CardName.localeCompare(b.CardName);
     });

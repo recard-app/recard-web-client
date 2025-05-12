@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CreditCardSelector.scss';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { filterCards, fetchUserCards } from './utils';
+import { filterCards, fetchUserCards, sortCards } from './utils';
 import { PLACEHOLDER_CARD_IMAGE } from '../../types';
 
 /**
@@ -25,27 +25,27 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   onSelectCard,
   selectedCardId
 }) => {
-  // State for managing the list of all credit cards
-  const [cards, setCards] = useState<CreditCard[]>(creditCards || []);
+  // State for managing the list of all credit cards, initialized with sorted existing cards
+  const [cards, setCards] = useState<CreditCard[]>(sortCards(creditCards || []));
   // State for managing the search input value
   const [searchTerm, setSearchTerm] = useState<string>('');
-  // State for tracking loading state during API calls
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // State for tracking if we're loading initial data
+  const [isInitialLoad, setIsInitialLoad] = useState<boolean>(cards.length === 0);
 
   /**
-   * Fetch cards and organize them on component mount
+   * Fetch cards and organize them in the background
+   * Shows existing cards immediately while fetching updated data
    */
   useEffect(() => {
     const loadCards = async () => {
-      setIsLoading(true);
       try {
-        const fetchedCards = await fetchUserCards(creditCards);
+        const fetchedCards = await fetchUserCards(cards);
         setCards(fetchedCards);
+        setIsInitialLoad(false);
       } catch (error) {
         console.error('Error loading cards:', error);
-        setCards(creditCards);
+        setIsInitialLoad(false);
       }
-      setIsLoading(false);
     };
 
     loadCards();
@@ -67,6 +67,9 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   
   // All other cards (not selected in user profile)
   let otherCards = filteredCards.filter(card => !card.selected);
+  
+  // Determine section header for non-selected cards
+  const otherCardsHeader = userCards.length > 0 ? "Other Cards" : "All Cards";
   
   // If the currently selected card is in the "Other Cards" list, sort it to the top
   if (selectedCardId) {
@@ -116,7 +119,7 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
         />
       </div>
       
-      {isLoading && (
+      {isInitialLoad && (
         <div className="loading">Loading cards...</div>
       )}
       
@@ -132,14 +135,14 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
         
         {otherCards.length > 0 && (
           <div className="card-section">
-            <h4 className="section-header">Other Cards</h4>
+            <h4 className="section-header">{otherCardsHeader}</h4>
             <div className="section-cards">
               {otherCards.map(renderCard)}
             </div>
           </div>
         )}
         
-        {filteredCards.length === 0 && !isLoading && (
+        {filteredCards.length === 0 && !isInitialLoad && (
           <div className="no-results">No cards match your search</div>
         )}
       </div>
