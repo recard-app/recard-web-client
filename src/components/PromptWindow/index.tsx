@@ -410,6 +410,7 @@ function PromptWindow({
                 chatId={chatId}
                 selectedCardId={selectedCardId}
                 onHistoryUpdate={onHistoryUpdate}
+                chatHistory={chatHistory}
             />
             <PromptField 
                 returnPrompt={getPrompt} 

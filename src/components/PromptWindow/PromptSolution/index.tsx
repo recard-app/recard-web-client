@@ -13,17 +13,20 @@ import './PromptSolution.scss';
  * @param {ChatSolutionCard | ChatSolutionCard[]} promptSolutions - The solution(s) to display.
  * @param {CreditCard[]} creditCards - The list of credit cards to display.
  * @param {string} chatId - The ID of the current chat.
+ * @param {Conversation[]} chatHistory - The chat history to display.
+ * @param {ChatSolutionSelectedCardId | null} selectedCardId - The ID of the selected card.
  * @param {function} onHistoryUpdate - Callback to update chat history when card selection changes.
  */
 interface PromptSolutionProps {
     promptSolutions: ChatSolutionCard | ChatSolutionCard[];
     creditCards?: CreditCard[];
     chatId: string;
+    chatHistory: Conversation[];
     selectedCardId: ChatSolutionSelectedCardId | null;
     onHistoryUpdate: (chat: Conversation) => void;
 }
 
-function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, onHistoryUpdate }: PromptSolutionProps): React.ReactElement | null {
+function PromptSolution({ promptSolutions, creditCards, chatId, chatHistory, selectedCardId, onHistoryUpdate }: PromptSolutionProps): React.ReactElement | null {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     // The list of solutions to display
     const [solutions, setSolutions] = useState<ChatSolutionCard[]>([]);
@@ -105,7 +108,34 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
 
     // Don't render anything if there are no solutions or if all solutions lack card names
     if (solutions.length === 0 || !solutions.some(solution => solution.cardName)) {
-        return null;
+        return (
+            <div className="solutions-container">
+                {chatHistory.length >= 2 && (
+                    <div className="select-purchase-card">
+                        <button 
+                            className="select-purchase-card-button"
+                            onClick={cardSelectorModal.open}
+                            disabled={isUpdating}
+                        >
+                            Select a Card for Purchase
+                        </button>
+                    </div>
+                )}
+
+                <Modal 
+                    isOpen={cardSelectorModal.isOpen} 
+                    onClose={cardSelectorModal.close}
+                >
+                    {creditCards && (
+                        <SingleCardSelector
+                            creditCards={creditCards}
+                            onSelectCard={handleCardSelectedFromModal}
+                            selectedCardId={activeCardId}
+                        />
+                    )}
+                </Modal>
+            </div>
+        );
     }
 
     return (

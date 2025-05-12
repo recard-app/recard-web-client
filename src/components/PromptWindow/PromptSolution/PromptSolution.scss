@@ -188,3 +188,28 @@
     }
   }
 }
+
+.select-purchase-card {
+  padding: 8px 0;
+  display: flex;
+  justify-content: flex-start;
+  
+  .select-purchase-card-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: #e3e3e3;
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
