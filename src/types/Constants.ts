@@ -1,18 +1,12 @@
-export const APP_NAME = 'ReCard';
-export const PLACEHOLDER_CARD_IMAGE = 'https://placehold.co/20x20';
-export const PLACEHOLDER_ASSISTANT_IMAGE = 'https://placehold.co/40x40';
-export const HISTORY_PAGE_SIZE = 20;
-export const RECOMMENDED_MAX_CHAT_MESSAGES = 20;
-export const GLOBAL_QUICK_HISTORY_SIZE = 3;
-export const CHAT_MAX_FIELD_HEIGHT = 250;
+/**
+ * ------------------------------------------------------------------------------------------------
+ * 
+ * SHARED CONSTANTS
+ * 
+ * ------------------------------------------------------------------------------------------------
+ */
+
 export const CHAT_DESCRIPTION_MAX_LENGTH = 40;
-
-export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
-export const PLACEHOLDER_PROFILE_IMAGE = 'http://localhost:5173/account.png';
-export const DEFAULT_CHAT_NAME_PLACEHOLDER = 'New Transaction Chat';
-
-export const TEMP_ICON = 'https://placehold.co/20x20';
-export const DROPDOWN_ICON = 'https://placehold.co/16x16';
 
 export const CHAT_SOURCE = {
     USER: 'user',
@@ -32,6 +26,29 @@ export const SUBSCRIPTION_PLAN = {
     PREMIUM: 'premium'
 } as const;
 export type SubscriptionPlanType = typeof SUBSCRIPTION_PLAN[keyof typeof SUBSCRIPTION_PLAN];
+
+/**
+ * ------------------------------------------------------------------------------------------------
+ * 
+ * CLIENT CONSTANTS
+ * 
+ * ------------------------------------------------------------------------------------------------
+ */
+
+export const APP_NAME = 'ReCard';
+export const PLACEHOLDER_CARD_IMAGE = 'https://placehold.co/20x20';
+export const PLACEHOLDER_ASSISTANT_IMAGE = 'https://placehold.co/40x40';
+export const HISTORY_PAGE_SIZE = 20;
+export const RECOMMENDED_MAX_CHAT_MESSAGES = 20;
+export const GLOBAL_QUICK_HISTORY_SIZE = 3;
+export const CHAT_MAX_FIELD_HEIGHT = 250;
+
+export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
+export const PLACEHOLDER_PROFILE_IMAGE = 'http://localhost:5173/account.png';
+export const DEFAULT_CHAT_NAME_PLACEHOLDER = 'New Transaction Chat';
+
+export const TEMP_ICON = 'https://placehold.co/20x20';
+export const DROPDOWN_ICON = 'https://placehold.co/16x16';
 
 export interface MonthOption {
     value: number;

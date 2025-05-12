@@ -1,4 +1,12 @@
 /**
+ * ------------------------------------------------------------------------------------------------
+ * 
+ * SHARED API AND CLIENT TYPES
+ * 
+ * ------------------------------------------------------------------------------------------------
+ */
+
+/**
  * Represents a credit card in the system for display purposes.
  */
 export interface CreditCard {
@@ -12,9 +20,54 @@ export interface CreditCard {
     isDefaultCard?: boolean; // Whether this is the user's default card (optional, for user context)
 }
 
-export interface SimpleCardDisplay {
-    name: string;
-    image: string;
+/**
+ * Represents a perk associated with a credit card
+ */
+export interface CardPerk {
+    Title: string;
+    Category: string;
+    SubCategory: string;
+    Description: string;
+    Details: string;
+}
+
+/**
+ * Represents a credit/benefit associated with a credit card
+ */
+export interface CardCredit {
+    Title: string;
+    Category: string;
+    SubCategory: string;
+    Description: string;
+    Value: string;
+    TimePeriod: string;
+    Details: string;
+}
+
+/**
+ * Represents a rewards multiplier for specific spending categories
+ */
+export interface CardMultiplier {
+    Name: string;
+    Category: string;
+    SubCategory: string;
+    Description: string;
+    Multiplier: number | null;
+    Details: string;
+}
+
+/**
+ * Represents detailed information about a credit card including all benefits and features
+ */
+export interface CreditCardDetails extends CreditCard {
+    AnnualFee: number | null;
+    ForeignExchangeFee: string;
+    ForeignExchangeFeePercentage: number | null;
+    RewardsCurrency: string;
+    PointsPerDollar: number | null;
+    Perks: CardPerk[];
+    Credits: CardCredit[];
+    Multipliers: CardMultiplier[];
 }
 
 // Response types
@@ -31,4 +84,17 @@ export type CreditCardDetailsResponse = CreditCard;
 
 export interface CardParams {
     cardId: string;
+}
+
+/**
+ * ------------------------------------------------------------------------------------------------
+ * 
+ * CLIENT TYPES
+ * 
+ * ------------------------------------------------------------------------------------------------
+ */
+
+export interface SimpleCardDisplay {
+    name: string;
+    image: string;
 }

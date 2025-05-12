@@ -1,19 +1,8 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { User as FirebaseUser } from 'firebase/auth';
 import { AuthService } from '../../services';
-
-const apiurl = import.meta.env.VITE_BASE_URL;
-
-/**
- * Interface representing the structure of the authentication response.
- */
-interface AuthResponse {
-    user: FirebaseUser;
-    token: string;
-    isNewUser?: boolean;
-}
+import { AuthResponse } from '../../types';
 
 /**
  * Interface representing the structure of an error response.
@@ -78,6 +67,10 @@ const SignUp: React.FC = () => {
         
         try {
             const { user } = await registerWithEmail(email, password, firstName, lastName) as AuthResponse;
+
+            if (!user) {
+                throw new Error('Registration failed - no user returned');
+            }
             
             // Send verification email
             await sendVerificationEmail();
@@ -103,7 +96,7 @@ const SignUp: React.FC = () => {
             const { isNewUser } = await login() as AuthResponse;
             
             // Use the UserAuthService for Google authentication
-            await AuthService.googleSignIn(isNewUser);
+            await AuthService.googleSignIn(isNewUser ?? false);
             
             console.log('Authentication successful');
             if (isNewUser) {

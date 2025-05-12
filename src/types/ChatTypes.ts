@@ -2,6 +2,14 @@ import { ChatSourceType } from './Constants';
 import { CreditCard } from './CreditCardTypes';
 import { CardDetailsList, InstructionsPreference } from './UserTypes';
 
+/**
+ * ------------------------------------------------------------------------------------------------
+ * 
+ * SHARED API AND CLIENT TYPES
+ * 
+ * ------------------------------------------------------------------------------------------------
+ */
+
 export interface ChatMessage {
     id: string;
     chatSource: ChatSourceType;
@@ -17,14 +25,14 @@ export interface Conversation {
     cardSelection: ChatSolutionSelectedCardId;
 }
 
-export interface ChatRequestBody {
+export interface ChatRequestData {
     name: string;
     prompt: string;
     chatHistory: ChatMessage[];
     creditCards: CreditCard[];
     currentDate: string;
     preferencesInstructions: InstructionsPreference;
-    userCardDetails: CardDetailsList;
+    userCardDetails?: CardDetailsList;
 }
 
 export interface OpenAIChatMessage {
@@ -48,12 +56,10 @@ export interface ChatSolutionCard {
     rewardRate?: string;
 }
 
-export interface ChatRequestData {
-    name: string;
-    prompt: string;
-    chatHistory: ChatMessage[];
-    creditCards: CreditCard[];
-    currentDate: string;
-    preferencesInstructions: InstructionsPreference;
-    userCardDetails?: CardDetailsList;
-}
+/**
+ * ------------------------------------------------------------------------------------------------
+ * 
+ * CLIENT TYPES
+ * 
+ * ------------------------------------------------------------------------------------------------
+ */

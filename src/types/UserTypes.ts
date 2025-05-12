@@ -1,6 +1,14 @@
 import { Conversation } from "./ChatTypes";
 import { ChatHistoryPreferenceType, SubscriptionPlanType } from "./Constants";
 
+/**
+ * ------------------------------------------------------------------------------------------------
+ * 
+ * SHARED API AND CLIENT TYPES
+ * 
+ * ------------------------------------------------------------------------------------------------
+ */
+
 export type SelectedCards = string[];
 
 export interface UserPreferences {
@@ -36,6 +44,20 @@ export interface User {
     updatedAt?: string;
 }
 
+// Params types
+
+/**
+ * Interface for history API request parameters
+ */
+export interface HistoryParams {
+    page: number;
+    page_size: number;
+    month?: string;
+    year?: string;
+    lastUpdate?: string;
+    forceShowAll?: string;
+}
+
 // Response types
 
 export type ProfileResponse = {
@@ -59,30 +81,11 @@ export interface PreferencesResponse {
     error?: string;
 }
 
-// History Navigation Types
-
-/**
- * Interface for pagination data returned from the API
- */
-export interface PaginationData {
-    total_items: number;
-    total_pages: number;
-    current_page: number;
-    page_size: number;
-    has_next: boolean;
-    has_previous: boolean;
-}
-
-/**
- * Interface for history API request parameters
- */
-export interface HistoryParams {
-    page: number;
-    page_size: number;
-    month?: string;
-    year?: string;
-    lastUpdate?: string;
-    forceShowAll?: string;
+export interface SubscriptionPlanResponse {
+    success: boolean;
+    subscriptionPlan: SubscriptionPlan;
+    message?: string;
+    error?: string;
 }
 
 /**
@@ -102,10 +105,24 @@ export interface PagedHistoryResponse {
     } | null;
 }
 
-// Define the subscription plan response structure based on the server implementation
-export interface SubscriptionPlanResponse {
-    success: boolean;
-    subscriptionPlan: SubscriptionPlan;
-    message?: string;
-    error?: string;
+// History Navigation Types
+
+/**
+ * Interface for pagination data returned from the API
+ */
+export interface PaginationData {
+    total_items: number;
+    total_pages: number;
+    current_page: number;
+    page_size: number;
+    has_next: boolean;
+    has_previous: boolean;
 }
+
+/**
+ * ------------------------------------------------------------------------------------------------
+ * 
+ * CLIENT TYPES
+ * 
+ * ------------------------------------------------------------------------------------------------
+ */

@@ -1,17 +1,8 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { User as FirebaseUser } from 'firebase/auth';
 import { AuthService } from '../../services';
-
-/**
- * Interface representing the response from the authentication service.
- */
-interface AuthResponse {
-    user: FirebaseUser; // The authenticated Firebase user object
-    token: string;      // The authentication token for the user
-    isNewUser?: boolean; // Optional flag indicating if the user is new
-}
+import { AuthResponse } from '../../types';
 
 const SignIn: React.FC = () => {
     const { login, loginWithEmail } = useAuth(); // Destructure login methods from AuthContext
