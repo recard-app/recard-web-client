@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CreditCard } from '../../../types/CreditCardTypes';
-import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation } from '../../../types/ChatTypes';
+import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage } from '../../../types';
 import { PLACEHOLDER_CARD_IMAGE } from '../../../types';
 import { UserHistoryService } from '../../../services';
 import SingleCardSelector from '../../CreditCardSelector/SingleCardSelector';
@@ -13,20 +13,20 @@ import './PromptSolution.scss';
  * @param {ChatSolutionCard | ChatSolutionCard[]} promptSolutions - The solution(s) to display.
  * @param {CreditCard[]} creditCards - The list of credit cards to display.
  * @param {string} chatId - The ID of the current chat.
- * @param {Conversation[]} chatHistory - The chat history to display.
  * @param {ChatSolutionSelectedCardId | null} selectedCardId - The ID of the selected card.
  * @param {function} onHistoryUpdate - Callback to update chat history when card selection changes.
+ * @param {ChatMessage[]} chatHistory - The chat history between user and AI.
  */
 interface PromptSolutionProps {
     promptSolutions: ChatSolutionCard | ChatSolutionCard[];
     creditCards?: CreditCard[];
     chatId: string;
-    chatHistory: Conversation[];
     selectedCardId: ChatSolutionSelectedCardId | null;
     onHistoryUpdate: (chat: Conversation) => void;
+    chatHistory: ChatMessage[];
 }
 
-function PromptSolution({ promptSolutions, creditCards, chatId, chatHistory, selectedCardId, onHistoryUpdate }: PromptSolutionProps): React.ReactElement | null {
+function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, onHistoryUpdate, chatHistory }: PromptSolutionProps): React.ReactElement | null {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     // The list of solutions to display
     const [solutions, setSolutions] = useState<ChatSolutionCard[]>([]);
