@@ -10,7 +10,8 @@ import {
   PaginationData,
   CreditCard,
   SubscriptionPlan,
-  ShowCompletedOnlyPreference
+  ShowCompletedOnlyPreference,
+  SHOW_SUBSCRIPTION_MENTIONS
 } from '../../types';
 import { HISTORY_PAGE_SIZE, SUBSCRIPTION_PLAN } from '../../types';
 import { UserPreferencesService } from '../../services/UserService';
@@ -300,7 +301,7 @@ function HistoryPanel({
    * @returns JSX for upgrade message
    */
   const renderUpgradeMessage = () => {
-    if (!shouldShowUpgradeMessage(fullListSize, paginationData, subscriptionPlan, selectedMonth, selectedYear, firstEntryDate)) return null;
+    if (!SHOW_SUBSCRIPTION_MENTIONS || !shouldShowUpgradeMessage(fullListSize, paginationData, subscriptionPlan, selectedMonth, selectedYear, firstEntryDate)) return null;
 
     return (
       <div className="upgrade-message">

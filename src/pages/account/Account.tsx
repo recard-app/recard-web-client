@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Modal, useModal } from '../../components/Modal';
-import { ChatHistory, SubscriptionPlan } from '../../types/UserTypes';
+import { ChatHistory, SubscriptionPlan } from '../../types';
+import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
 import { 
   DeleteStatusType, 
   handleVerificationEmail as handleVerificationEmailUtil,
@@ -128,12 +129,14 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
                 <span className="unverified">Not Verified</span>
               )}
             </p>
-            <p>
-              <strong>Subscription Plan:</strong>{' '}
-              <span className="subscription-plan">
-                {subscriptionPlan}
-              </span>
-            </p>
+            {SHOW_SUBSCRIPTION_MENTIONS && (
+              <p>
+                <strong>Subscription Plan:</strong>{' '}
+                <span className="subscription-plan">
+                  {subscriptionPlan}
+                </span>
+              </p>
+            )}
             {!user.emailVerified && (
               <>
                 <button 

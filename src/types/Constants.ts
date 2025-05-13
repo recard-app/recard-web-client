@@ -42,6 +42,7 @@ export const HISTORY_PAGE_SIZE = 20;
 export const RECOMMENDED_MAX_CHAT_MESSAGES = 20;
 export const GLOBAL_QUICK_HISTORY_SIZE = 3;
 export const CHAT_MAX_FIELD_HEIGHT = 250;
+export const SHOW_SUBSCRIPTION_MENTIONS = true;
 
 export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
 export const PLACEHOLDER_PROFILE_IMAGE = 'http://localhost:5173/account.png';
