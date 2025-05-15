@@ -68,6 +68,7 @@ export type ProfileResponse = {
     preferencesChatHistory: string;
     preferencesShowCompletedOnly: boolean;
     subscriptionPlan: SubscriptionPlan;
+    role: RoleType;
 }
 
 export interface StartDateResponse {
