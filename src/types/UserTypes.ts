@@ -35,7 +35,9 @@ export interface User {
     chatHistory?: ChatHistory;
     selectedCards?: SelectedCards;
     defaultCard?: DefaultCard;
-    preferences?: UserPreferences;
+    preferencesInstructions?: string;
+    preferencesChatHistory?: ChatHistoryPreference;
+    preferencesShowCompletedOnly?: ShowCompletedOnlyPreference;
     subscriptionPlan?: SubscriptionPlan;
     accountCreatedAt?: string;
     accountUpdatedAt?: string;
@@ -63,6 +65,7 @@ export interface HistoryParams {
 export type ProfileResponse = {
     preferencesInstructions: string;
     preferencesChatHistory: string;
+    preferencesShowCompletedOnly: boolean;
     subscriptionPlan: SubscriptionPlan;
 }
 
