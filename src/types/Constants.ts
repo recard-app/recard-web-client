@@ -27,6 +27,12 @@ export const SUBSCRIPTION_PLAN = {
 } as const;
 export type SubscriptionPlanType = typeof SUBSCRIPTION_PLAN[keyof typeof SUBSCRIPTION_PLAN];
 
+export const ROLE_TYPE = {
+    ADMIN: 'admin',
+    USER: 'user'
+} as const;
+export type RoleType = typeof ROLE_TYPE[keyof typeof ROLE_TYPE];
+
 /**
  * ------------------------------------------------------------------------------------------------
  * 

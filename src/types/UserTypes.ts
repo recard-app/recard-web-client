@@ -1,5 +1,5 @@
 import { Conversation } from "./ChatTypes";
-import { ChatHistoryPreferenceType, SubscriptionPlanType } from "./Constants";
+import { ChatHistoryPreferenceType, RoleType, SubscriptionPlanType } from "./Constants";
 
 /**
  * ------------------------------------------------------------------------------------------------
@@ -38,7 +38,8 @@ export interface User {
     preferencesInstructions?: string;
     preferencesChatHistory?: ChatHistoryPreference;
     preferencesShowCompletedOnly?: ShowCompletedOnlyPreference;
-    subscriptionPlan?: SubscriptionPlan;
+    subscriptionPlan: SubscriptionPlan;
+    role: RoleType;
     accountCreatedAt?: string;
     accountUpdatedAt?: string;
     lastLoginAt?: string;
