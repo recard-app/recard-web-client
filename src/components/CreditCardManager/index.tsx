@@ -310,6 +310,11 @@ const CreditCardManager = () => {
                                     {multiplier.Details && (
                                         <div className="multiplier-details">{multiplier.Details}</div>
                                     )}
+                                    {(multiplier.Category || multiplier.SubCategory) && (
+                                        <div className="multiplier-category">
+                                            {multiplier.Category}{multiplier.SubCategory ? ` › ${multiplier.SubCategory}` : ''}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
