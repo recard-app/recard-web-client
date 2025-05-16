@@ -23,7 +23,7 @@ import SignUp from './pages/authentication/SignUp';
 import ForgotPassword from './pages/authentication/ForgotPassword';
 import Welcome from './pages/authentication/Welcome';
 import History from './pages/history/History';
-import ManageCards from './pages/manage-cards/ManageCards';
+import MyCards from './pages/my-cards/MyCards';
 // Components
 import AppHeader from './components/AppHeader';
 import HistoryPanel from './components/HistoryPanel';
@@ -328,7 +328,7 @@ function AppContent({}: AppContentProps) {
     if (path === '/signup') return createTitle('Sign Up');
     if (path === '/forgotpassword') return createTitle('Reset Password');
     if (path === '/welcome') return createTitle('Welcome');
-    if (path === '/manage-cards') return createTitle('Manage Cards');
+    if (path === '/my-cards') return createTitle('My Cards');
     return createTitle();
   };
 
@@ -450,9 +450,9 @@ function AppContent({}: AppContentProps) {
             showCompletedOnlyPreference={showCompletedOnlyPreference}
           />
         } />
-        <Route path="/manage-cards" element={
+        <Route path="/my-cards" element={
           <ProtectedRoute>
-            <ManageCards />
+            <MyCards />
           </ProtectedRoute>
         } />
       </Routes>

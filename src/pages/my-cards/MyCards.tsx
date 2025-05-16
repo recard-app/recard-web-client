@@ -1,14 +1,14 @@
 import React from 'react';
 import CreditCardManager from '../../components/CreditCardManager';
 
-const ManageCards = () => {
+const MyCards = () => {
     return (
         <div>
-            <h1>Manage Your Cards</h1>
+            <h1>My Cards</h1>
             <p>Set your credit cards to be used for your account.</p>
             <CreditCardManager />
         </div>
     );
 };
 
-export default ManageCards;
+export default MyCards;

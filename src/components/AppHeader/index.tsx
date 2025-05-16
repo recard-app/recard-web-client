@@ -26,7 +26,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) =>
       
       <nav className="nav-links">
         {user && <button onClick={onModalOpen}>Select your Credit Cards</button>}
-        <Link to="/about">About</Link>
         {user ? (
           <Dropdown 
             trigger={
@@ -49,8 +48,8 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) =>
             }
             className="profile-dropdown"
           >
-            <Link to="/manage-cards">
-              <DropdownItem icon={DROPDOWN_ICON}>Manage Cards</DropdownItem>
+            <Link to="/my-cards">
+              <DropdownItem icon={DROPDOWN_ICON}>My Cards</DropdownItem>
             </Link>
             <Link to="/preferences">
               <DropdownItem>Preferences</DropdownItem>
