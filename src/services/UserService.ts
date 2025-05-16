@@ -9,7 +9,8 @@ import {
     ChatSolution,
     CardDetailsList,
     ChatSolutionSelectedCardId,
-    SUBSCRIPTION_PLAN
+    SUBSCRIPTION_PLAN,
+    CreditCardDetails
 } from '../types';
 import { ChatHistoryPreference, InstructionsPreference, PreferencesResponse, SubscriptionPlan, ShowCompletedOnlyPreference, SubscriptionPlanResponse } from '../types';
 
@@ -65,6 +66,22 @@ export const UserCreditCardService = {
         const response = await axios.get<CardDetailsList>(
             `${apiurl}/users/cards/details`,
             { headers }
+        );
+        return response.data;
+    },
+    
+    /**
+     * Fetches detailed information for all user's selected credit cards
+     * @returns Promise containing the detailed credit card information for user's cards
+     */
+    async fetchUserCardsDetailedInfo(): Promise<CreditCardDetails[]> {
+        const headers = await getAuthHeaders();
+        const response = await axios.get<CreditCardDetails[]>(
+            `${apiurl}/credit-cards/list/details`,
+            { 
+                headers,
+                params: { userCardsOnly: true } 
+            }
         );
         return response.data;
     }

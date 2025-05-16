@@ -78,6 +78,11 @@ export interface CreditCardDetails extends CreditCard {
 export type CreditCardListResponse = CreditCard[];
 
 /**
+ * Represents the response for a list of credit cards with details (with selection info).
+ */
+export type CreditCardListDetailsResponse = CreditCardDetails[];
+
+/**
  * Represents the response for a single card details request.
  */
 export type CreditCardDetailsResponse = CreditCard;

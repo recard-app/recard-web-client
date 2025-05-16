@@ -20,6 +20,7 @@ $background-color: #f8f9fa;
 @use './components/CreditCardSelector/CreditCardSelector.scss' as *;
 @use './components/HistoryPanel/HistoryPanel.scss' as *;
 @use './components/PreferencesModule/PreferencesModule.scss' as *;
+@use './components/CreditCardManager/CreditCardManager.scss' as *;
 
 // Pages Styles
 @use './pages/account/Account.scss' as *;

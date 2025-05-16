@@ -44,10 +44,16 @@ export const formatCardsForSubmission = (cards: CreditCard[]) => {
 
 /**
  * Fetches credit cards and handles errors
+ * @param existingCreditCards The existing credit cards array to use as fallback
+ * @param includeSelectedInfo Whether to include selection info in the response
+ * @returns An array of credit cards
  */
-export const fetchUserCards = async (existingCreditCards: CreditCard[]): Promise<CreditCard[]> => {
+export const fetchUserCards = async (
+    existingCreditCards: CreditCard[], 
+    includeSelectedInfo: boolean = true
+): Promise<CreditCard[]> => {
     try {
-        const cards = await CardService.fetchCreditCards(true);
+        const cards = await CardService.fetchCreditCards(includeSelectedInfo);
         return sortCards(cards);
     } catch (error) {
         console.error('Error fetching cards:', error);

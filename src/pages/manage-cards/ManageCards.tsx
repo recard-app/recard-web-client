@@ -1,10 +1,12 @@
 import React from 'react';
+import CreditCardManager from '../../components/CreditCardManager';
 
 const ManageCards = () => {
     return (
         <div>
-            <h1>Manage Cards Page</h1>
-            <p>This is the manage cards page content.</p>
+            <h1>Manage Your Cards</h1>
+            <p>Set your credit cards to be used for your account.</p>
+            <CreditCardManager />
         </div>
     );
 };

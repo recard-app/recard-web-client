@@ -9,11 +9,13 @@ import { PLACEHOLDER_CARD_IMAGE } from '../../types';
  * @property creditCards - Array of available credit cards
  * @property onSelectCard - Callback function when a card is selected
  * @property selectedCardId - Currently selected card ID (if any)
+ * @property showOnlyUnselectedCards - When true, only shows cards that aren't in the user's collection and hides section headers
  */
 interface SingleCardSelectorProps {
   creditCards: CreditCard[];
   onSelectCard: (card: CreditCard) => void;
   selectedCardId?: string;
+  showOnlyUnselectedCards?: boolean;
 }
 
 /**
@@ -23,7 +25,8 @@ interface SingleCardSelectorProps {
 const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   creditCards,
   onSelectCard,
-  selectedCardId
+  selectedCardId,
+  showOnlyUnselectedCards = false
 }) => {
   // State for managing the list of all credit cards, initialized with sorted existing cards
   const [cards, setCards] = useState<CreditCard[]>(sortCards(creditCards || []));
@@ -80,6 +83,9 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
     });
   }
 
+  // Determine which cards to display based on the showOnlyUnselectedCards prop
+  const cardsToDisplay = showOnlyUnselectedCards ? otherCards : null;
+
   // Render a single card
   const renderCard = (card: CreditCard) => (
     <div 
@@ -124,25 +130,37 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
       )}
       
       <div className="cards-container">
-        {userCards.length > 0 && (
-          <div className="card-section">
-            <h4 className="section-header">My Cards</h4>
-            <div className="section-cards">
-              {userCards.map(renderCard)}
-            </div>
+        {/* When showing only unselected cards, we just render them directly without sections */}
+        {showOnlyUnselectedCards ? (
+          <div className="section-cards">
+            {otherCards.map(renderCard)}
+            {otherCards.length === 0 && !isInitialLoad && (
+              <div className="no-results">No cards available to add</div>
+            )}
           </div>
+        ) : (
+          <>
+            {userCards.length > 0 && (
+              <div className="card-section">
+                <h4 className="section-header">My Cards</h4>
+                <div className="section-cards">
+                  {userCards.map(renderCard)}
+                </div>
+              </div>
+            )}
+            
+            {otherCards.length > 0 && (
+              <div className="card-section">
+                <h4 className="section-header">{otherCardsHeader}</h4>
+                <div className="section-cards">
+                  {otherCards.map(renderCard)}
+                </div>
+              </div>
+            )}
+          </>
         )}
         
-        {otherCards.length > 0 && (
-          <div className="card-section">
-            <h4 className="section-header">{otherCardsHeader}</h4>
-            <div className="section-cards">
-              {otherCards.map(renderCard)}
-            </div>
-          </div>
-        )}
-        
-        {filteredCards.length === 0 && !isInitialLoad && (
+        {filteredCards.length === 0 && !isInitialLoad && !showOnlyUnselectedCards && (
           <div className="no-results">No cards match your search</div>
         )}
       </div>
