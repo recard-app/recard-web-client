@@ -23,6 +23,7 @@ $background-color: #f8f9fa;
 
 // Pages Styles
 @use './pages/account/Account.scss' as *;
+@use './pages/manage-cards/ManageCards.scss' as *;
 
 // Other Styles
 @use './elements/Elements.scss' as *;

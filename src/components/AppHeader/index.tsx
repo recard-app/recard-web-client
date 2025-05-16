@@ -49,6 +49,9 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) =>
             }
             className="profile-dropdown"
           >
+            <Link to="/manage-cards">
+              <DropdownItem icon={DROPDOWN_ICON}>Manage Cards</DropdownItem>
+            </Link>
             <Link to="/preferences">
               <DropdownItem>Preferences</DropdownItem>
             </Link>
