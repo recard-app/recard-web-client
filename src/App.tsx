@@ -15,7 +15,6 @@ import {
 import './App.scss';
 
 // Pages
-import About from './pages/about/About';
 import Account from './pages/account/Account';
 import Preferences from './pages/preferences/Preferences';
 import SignIn from './pages/authentication/SignIn';
@@ -321,7 +320,6 @@ function AppContent({}: AppContentProps) {
   const getPageTitle = () => {
     const path = location.pathname;
     if (path === '/history') return createTitle('History');
-    if (path === '/about') return createTitle('About');
     if (path === '/preferences') return createTitle('Preferences');
     if (path === '/account') return createTitle('Account');
     if (path === '/signin') return createTitle('Sign In');
@@ -395,7 +393,6 @@ function AppContent({}: AppContentProps) {
             {renderMainContent()}
           </ProtectedRoute>
         } />
-        <Route path="/about" element={<About />} />
         <Route path="/preferences" element={
           <ProtectedRoute>
             <Preferences 
