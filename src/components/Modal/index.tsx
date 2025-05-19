@@ -10,6 +10,7 @@ interface ModalProps {
   modalType?: string; // Type of modal (e.g., 'delete', 'rename')
   entityId?: string; // ID of the entity the modal is related to
   modalId?: string; // Legacy support, will be deprecated
+  width?: string; // Optional width parameter for the modal
 }
 
 const Modal: React.FC<ModalProps> = ({ 
@@ -18,7 +19,8 @@ const Modal: React.FC<ModalProps> = ({
   children, 
   modalType,
   entityId,
-  modalId: legacyModalId 
+  modalId: legacyModalId,
+  width 
 }) => {
   // Determine the modal ID to use - prefer new style, fall back to legacy
   const getModalId = (): string | undefined => {
@@ -86,7 +88,11 @@ const Modal: React.FC<ModalProps> = ({
   // This ensures the modal is not affected by parent component z-index or overflow settings
   return ReactDOM.createPortal(
     <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+      <div 
+        className="modal-content" 
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        style={width ? { width } : undefined}
+      >
         <button className="close-btn" onClick={handleClose}>X</button>
         {children}
       </div>

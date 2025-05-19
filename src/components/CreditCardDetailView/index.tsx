@@ -1,0 +1,139 @@
+import React from 'react';
+import './CreditCardDetailView.scss';
+import { CreditCardDetails } from '../../types/CreditCardTypes';
+import { PLACEHOLDER_CARD_IMAGE } from '../../types';
+
+interface CreditCardDetailViewProps {
+    cardDetails: CreditCardDetails | null;
+    isLoading: boolean;
+}
+
+const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({ cardDetails, isLoading }) => {
+    // For initial load, show loading state
+    if (isLoading) {
+        return <div className="card-details-loading">Loading cards details...</div>;
+    }
+    
+    if (!cardDetails) {
+        return <div className="no-card-details">Select a card to view details</div>;
+    }
+
+    return (
+        <div className="card-details">
+            <div className="card-header">
+                <img 
+                    src={cardDetails.CardImage || PLACEHOLDER_CARD_IMAGE} 
+                    alt={`${cardDetails.CardName} card`} 
+                    className="card-image"
+                />
+                <div className="card-header-info">
+                    <h2>{cardDetails.CardName}</h2>
+                    <p className="card-issuer">{cardDetails.CardIssuer}</p>
+                    <p className="card-network">{cardDetails.CardNetwork}</p>
+                    {cardDetails.isDefaultCard && <span className="preferred-badge">Preferred Card</span>}
+                </div>
+            </div>
+            
+            {/* Display the card's description/details */}
+            {cardDetails.CardDetails && cardDetails.CardDetails.trim() !== '' && (
+                <div className="card-description-section">
+                    <p className="card-description">{cardDetails.CardDetails}</p>
+                </div>
+            )}
+            
+            <div className="card-info-section">
+                <div className="card-basic-info">
+                    <div className="info-item">
+                        <span className="label">Annual Fee</span>
+                        <span className="value">{cardDetails.AnnualFee !== null ? `$${cardDetails.AnnualFee}` : 'None'}</span>
+                    </div>
+                    <div className="info-item">
+                        <span className="label">Foreign Transaction Fee</span>
+                        <span className="value">{cardDetails.ForeignExchangeFee}</span>
+                    </div>
+                    <div className="info-item">
+                        <span className="label">Rewards Currency</span>
+                        <span className="value">{cardDetails.RewardsCurrency}</span>
+                    </div>
+                    <div className="info-item">
+                        <span className="label">Points Per Dollar</span>
+                        <span className="value">{cardDetails.PointsPerDollar !== null ? cardDetails.PointsPerDollar : 'N/A'}</span>
+                    </div>
+                </div>
+            </div>
+            
+            {cardDetails.Multipliers && cardDetails.Multipliers.length > 0 && (
+                <div className="card-section">
+                    <h3>Reward Multipliers</h3>
+                    <div className="multipliers-list">
+                        {cardDetails.Multipliers.map((multiplier, index) => (
+                            <div key={index} className="multiplier-item">
+                                <div className="multiplier-name">{multiplier.Name}</div>
+                                <div className="multiplier-value">{multiplier.Multiplier}x</div>
+                                <div className="multiplier-desc">{multiplier.Description}</div>
+                                {multiplier.Details && (
+                                    <div className="multiplier-details">{multiplier.Details}</div>
+                                )}
+                                {(multiplier.Category || multiplier.SubCategory) && (
+                                    <div className="multiplier-category">
+                                        {multiplier.Category}{multiplier.SubCategory ? ` › ${multiplier.SubCategory}` : ''}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+            
+            {cardDetails.Credits && cardDetails.Credits.length > 0 && (
+                <div className="card-section">
+                    <h3>Card Credits</h3>
+                    <div className="credits-list">
+                        {cardDetails.Credits.map((credit, index) => (
+                            <div key={index} className="credit-item">
+                                <div className="credit-header">
+                                    <span className="credit-title">{credit.Title}</span>
+                                    <span className="credit-value">{credit.Value}</span>
+                                </div>
+                                <div className="credit-period">{credit.TimePeriod}</div>
+                                <div className="credit-description">{credit.Description}</div>
+                                {credit.Details && (
+                                    <div className="credit-details">{credit.Details}</div>
+                                )}
+                                {(credit.Category || credit.SubCategory) && (
+                                    <div className="credit-category">
+                                        {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+            
+            {cardDetails.Perks && cardDetails.Perks.length > 0 && (
+                <div className="card-section">
+                    <h3>Card Perks</h3>
+                    <div className="perks-list">
+                        {cardDetails.Perks.map((perk, index) => (
+                            <div key={index} className="perk-item">
+                                <div className="perk-title">{perk.Title}</div>
+                                <div className="perk-description">{perk.Description}</div>
+                                {perk.Details && (
+                                    <div className="perk-details">{perk.Details}</div>
+                                )}
+                                {(perk.Category || perk.SubCategory) && (
+                                    <div className="perk-category">
+                                        {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default CreditCardDetailView;

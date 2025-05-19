@@ -21,6 +21,7 @@ $background-color: #f8f9fa;
 @use './components/HistoryPanel/HistoryPanel.scss' as *;
 @use './components/PreferencesModule/PreferencesModule.scss' as *;
 @use './components/CreditCardManager/CreditCardManager.scss' as *;
+@use './components/CreditCardDetailView/CreditCardDetailView.scss' as *;
 
 // Pages Styles
 @use './pages/account/Account.scss' as *;
