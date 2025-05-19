@@ -31,6 +31,8 @@ import CreditCardSelector from './components/CreditCardSelector';
 import { Modal, useModal } from './components/Modal';
 import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
+import CreditCardPreviewList from './components/CreditCardPreviewList';
+import CreditCardDetailView from './components/CreditCardDetailView';
 
 // Context
 import { useAuth } from './context/AuthContext';
@@ -40,7 +42,6 @@ import {
   GLOBAL_QUICK_HISTORY_SIZE, 
   CHAT_HISTORY_PREFERENCE, 
   SUBSCRIPTION_PLAN,
-  CreditCard, 
   Conversation,  
   CardDetailsList, 
   ChatHistoryPreference, 
@@ -49,6 +50,12 @@ import {
   HistoryParams,
   SubscriptionPlan 
 } from './types';
+
+// Types
+import { 
+  CreditCard, 
+  CreditCardDetails 
+} from './types/CreditCardTypes';
 
 const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 
@@ -61,8 +68,14 @@ function AppContent({}: AppContentProps) {
 
   // State for managing credit cards in the application
   const [creditCards, setCreditCards] = useState<CreditCard[]>([]);
-  // State for storing user's card details
+  // State for storing user's basic card details (for PromptWindow)
   const [userCardDetails, setUserCardDetails] = useState<CardDetailsList>([]);
+  // State for storing user's detailed card details (for modal view)
+  const [userDetailedCardDetails, setUserDetailedCardDetails] = useState<CreditCardDetails[]>([]);
+  // State for storing selected card details for modal view
+  const [selectedCardDetails, setSelectedCardDetails] = useState<CreditCardDetails | null>(null);
+  // State for loading card details
+  const [isLoadingCardDetails, setIsLoadingCardDetails] = useState<boolean>(false);
   // State for storing chat history/conversations
   const [chatHistory, setChatHistory] = useState<Conversation[]>([]);
   // State for tracking the current active chat ID
@@ -82,7 +95,8 @@ function AppContent({}: AppContentProps) {
   // State for tracking user's subscription plan
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
 
-  const modal = useModal();
+  const cardSelectorModal = useModal();
+  const cardDetailsModal = useModal();
 
   // Effect to reset current chat ID when user changes
   useEffect(() => {
@@ -201,12 +215,19 @@ function AppContent({}: AppContentProps) {
     const fetchUserCardDetails = async () => {
       if (!user) {
         setUserCardDetails([]); // Clear details if no user
+        setUserDetailedCardDetails([]);
         return;
       }
       
       try {
-        const details = await UserCreditCardService.fetchUserCardDetails();
-        setUserCardDetails(details);
+        // Fetch both basic and detailed card information
+        const [basicDetails, detailedInfo] = await Promise.all([
+          UserCreditCardService.fetchUserCardDetails(),
+          UserCreditCardService.fetchUserCardsDetailedInfo()
+        ]);
+        
+        setUserCardDetails(basicDetails);
+        setUserDetailedCardDetails(detailedInfo);
       } catch (error) {
         console.error('Error fetching user card details:', error);
       }
@@ -222,8 +243,8 @@ function AppContent({}: AppContentProps) {
     // After updating credit cards, fetch fresh user card details
     if (user) {
       try {
-        const details = await UserCreditCardService.fetchUserCardDetails();
-        setUserCardDetails(details);
+        const details = await UserCreditCardService.fetchUserCardsDetailedInfo();
+        setUserDetailedCardDetails(details);
       } catch (error) {
         console.error('Error fetching updated user card details:', error);
       }
@@ -259,10 +280,12 @@ function AppContent({}: AppContentProps) {
   const handleLogout = async (): Promise<void> => {
     // Reset all states to their initial values
     setUserCardDetails([]);
+    setUserDetailedCardDetails([]);
     setCurrentChatId(null);
     setChatHistory([]);
     setCreditCards([]);
-    modal.close();
+    cardSelectorModal.close();
+    cardDetailsModal.close();
     setHistoryRefreshTrigger(0);
     setLastUpdateTimestamp(null);
     setClearChatCallback(0);
@@ -313,6 +336,22 @@ function AppContent({}: AppContentProps) {
     setClearChatCallback(prev => prev + 1);
   };
 
+  // Function to handle card selection for details view
+  const handleCardSelect = async (card: CreditCard) => {
+    setIsLoadingCardDetails(true);
+    try {
+      const details = userDetailedCardDetails.find(detail => detail.id === card.id);
+      if (details) {
+        setSelectedCardDetails(details);
+        cardDetailsModal.open();
+      }
+    } catch (error) {
+      console.error('Error loading card details:', error);
+    } finally {
+      setIsLoadingCardDetails(false);
+    }
+  };
+
   const createTitle = (suffix?: string) => {
     return suffix ? APP_NAME + ' - ' + suffix : APP_NAME;
   };
@@ -331,20 +370,43 @@ function AppContent({}: AppContentProps) {
   };
 
   const renderMainContent = () => {
+    const handleEditCards = () => {
+      navigate('/my-cards');
+    };
+    
     return (
       <div className="app-content">
-        <HistoryPanel 
-          existingHistoryList={chatHistory} 
-          fullListSize={false} 
-          listSize={quick_history_size}
-          currentChatId={currentChatId}
-          returnCurrentChatId={getCurrentChatId}
-          onHistoryUpdate={handleHistoryUpdate}
-          subscriptionPlan={subscriptionPlan}
-          creditCards={creditCards}
-          historyRefreshTrigger={historyRefreshTrigger}
-          showCompletedOnlyPreference={showCompletedOnlyPreference}
-        />
+        <div className="side-panels">
+          <HistoryPanel 
+            existingHistoryList={chatHistory} 
+            fullListSize={false} 
+            listSize={quick_history_size}
+            currentChatId={currentChatId}
+            returnCurrentChatId={getCurrentChatId}
+            onHistoryUpdate={handleHistoryUpdate}
+            subscriptionPlan={subscriptionPlan}
+            creditCards={creditCards}
+            historyRefreshTrigger={historyRefreshTrigger}
+            showCompletedOnlyPreference={showCompletedOnlyPreference}
+          />
+          <div className="my-cards-container">
+            <div className="my-cards-header">
+              <h3>My Cards</h3>
+              <button 
+                className="edit-cards-button"
+                onClick={handleEditCards}
+              >
+                Edit Cards
+              </button>
+            </div>
+            <CreditCardPreviewList 
+              cards={creditCards}
+              loading={!user}
+              showOnlySelected={true}
+              onCardSelect={handleCardSelect}
+            />
+          </div>
+        </div>
         <PromptWindow 
           creditCards={creditCards}
           userCardDetails={userCardDetails}
@@ -368,17 +430,28 @@ function AppContent({}: AppContentProps) {
       </Helmet>
       <AppHeader 
         user={user}
-        onModalOpen={modal.open}
+        onModalOpen={cardSelectorModal.open}
         onLogout={handleLogout}
       />
       
       <Modal 
-        isOpen={modal.isOpen} 
-        onClose={modal.close}
+        isOpen={cardSelectorModal.isOpen} 
+        onClose={cardSelectorModal.close}
       >
         <CreditCardSelector 
           returnCreditCards={getCreditCards} 
           existingCreditCards={creditCards}
+        />
+      </Modal>
+
+      <Modal 
+        isOpen={cardDetailsModal.isOpen} 
+        onClose={cardDetailsModal.close}
+        width="800px"
+      >
+        <CreditCardDetailView 
+          cardDetails={selectedCardDetails}
+          isLoading={isLoadingCardDetails}
         />
       </Modal>
       
@@ -396,7 +469,7 @@ function AppContent({}: AppContentProps) {
         <Route path="/preferences" element={
           <ProtectedRoute>
             <Preferences 
-              onModalOpen={modal.open}
+              onModalOpen={cardSelectorModal.open}
               preferencesInstructions={preferencesInstructions}
               setPreferencesInstructions={setPreferencesInstructions}
               chatHistoryPreference={chatHistoryPreference}
@@ -423,7 +496,7 @@ function AppContent({}: AppContentProps) {
         } />
         <Route path="/welcome" element={
           <ProtectedRoute>
-            <Welcome onModalOpen={modal.open} />
+            <Welcome onModalOpen={cardSelectorModal.open} />
           </ProtectedRoute>
         } />
         <Route path="/account" element={

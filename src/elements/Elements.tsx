@@ -83,6 +83,15 @@ export const Dropdown: React.FC<DropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const prevChildrenRef = useRef<React.ReactNode>(children);
+
+  // Close dropdown when children change (e.g. menu options change)
+  useEffect(() => {
+    if (prevChildrenRef.current !== children) {
+      setIsOpen(false);
+      prevChildrenRef.current = children;
+    }
+  }, [children]);
 
   // Position state for the dropdown
   const [position, setPosition] = useState({
@@ -134,31 +143,16 @@ export const Dropdown: React.FC<DropdownProps> = ({
       >
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child)) {
-            // Type assertion to let TypeScript know this element might have onClick
             const childElement = child as ReactElement & WithOnClick;
             
-            // If it's not already a DropdownItem and has a standard onClick
-            if (childElement.type !== DropdownItem) {
-              return React.cloneElement(childElement, {
-                onClick: (e: React.MouseEvent) => {
-                  if (childElement.props.onClick) {
-                    childElement.props.onClick(e);
-                  }
-                  setIsOpen(false);
+            return React.cloneElement(childElement, {
+              onClick: (e: React.MouseEvent) => {
+                if (childElement.props.onClick) {
+                  childElement.props.onClick(e);
                 }
-              });
-            } 
-            // If it's a DropdownItem, we need to handle the onClick differently
-            else {
-              return React.cloneElement(childElement, {
-                onClick: (e: React.MouseEvent) => {
-                  if (childElement.props.onClick) {
-                    childElement.props.onClick(e);
-                  }
-                  setIsOpen(false);
-                }
-              });
-            }
+                setIsOpen(false);
+              }
+            });
           }
           return child;
         })}
@@ -172,7 +166,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
       <div 
         ref={triggerRef}
         className="dropdown-trigger" 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
       >
         {trigger}
       </div>

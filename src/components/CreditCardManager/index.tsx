@@ -3,10 +3,10 @@ import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService } from '../../services';
-import { Dropdown, DropdownItem } from '../../elements/Elements';
-import { PLACEHOLDER_CARD_IMAGE } from '../../types';
+import { DropdownItem } from '../../elements/Elements';
 import { Modal, useModal } from '../Modal';
 import CreditCardDetailView from '../CreditCardDetailView';
+import CreditCardPreviewList from '../CreditCardPreviewList';
 
 const CreditCardManager = () => {
     const [userCards, setUserCards] = useState<CreditCard[]>([]);
@@ -244,9 +244,44 @@ const CreditCardManager = () => {
         closeSelector();
     };
 
+    // Render dropdown options for each card
+    const renderCardDropdownOptions = (card: CreditCard) => (
+        <>
+            {!card.isDefaultCard && (
+                <DropdownItem 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleSetPreferred(card);
+                    }}
+                >
+                    Set as Preferred Card
+                </DropdownItem>
+            )}
+            <DropdownItem 
+                onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveCard(card);
+                }}
+                className="remove-option"
+            >
+                Remove Card
+            </DropdownItem>
+        </>
+    );
+
+    // Get only the selected cards to display
+    const selectedCards = userCards.filter(card => card.selected)
+        .sort((a, b) => {
+            // Sort default card first, then alphabetically
+            if (a.isDefaultCard !== b.isDefaultCard) {
+                return a.isDefaultCard ? -1 : 1;
+            }
+            return a.CardName.localeCompare(b.CardName);
+        });
+
     return (
         <div className="credit-card-manager">
-            {/* Sidebar for card selection */}
+            {/* Sidebar for card selection using CreditCardPreviewList */}
             <div className="card-sidebar">
                 <div className="sidebar-header">
                     <h3>My Credit Cards</h3>
@@ -258,82 +293,14 @@ const CreditCardManager = () => {
                     </button>
                 </div>
                 
-                {isLoading ? (
-                    <div className="loading-cards">Loading your cards...</div>
-                ) : userCards.filter(card => card.selected).length === 0 ? (
-                    <div className="no-cards">
-                        <p>You haven't added any cards yet.</p>
-                        <button 
-                            className="add-first-card-button"
-                            onClick={handleAddCard}
-                        >
-                            Add Your First Card
-                        </button>
-                    </div>
-                ) : (
-                    <div className="cards-list">
-                        {userCards
-                            .filter(card => card.selected)
-                            .sort((a, b) => {
-                                // Sort default card first, then alphabetically
-                                if (a.isDefaultCard !== b.isDefaultCard) {
-                                    return a.isDefaultCard ? -1 : 1;
-                                }
-                                return a.CardName.localeCompare(b.CardName);
-                            })
-                            .map(card => (
-                                <div 
-                                    key={card.id} 
-                                    className={`sidebar-card ${selectedCard?.id === card.id ? 'selected' : ''}`}
-                                    onClick={() => handleCardSelect(card)}
-                                >
-                                    <div className="card-content">
-                                        <img 
-                                            src={card.CardImage || PLACEHOLDER_CARD_IMAGE} 
-                                            alt={`${card.CardName} card`} 
-                                            className="card-thumbnail"
-                                        />
-                                        <div className="card-info">
-                                            <div className="card-name">
-                                                {card.CardName}
-                                            </div>
-                                            <div className="card-issuer">{card.CardIssuer}</div>
-                                            {card.isDefaultCard && (
-                                                <span className="preferred-card-tag">Preferred Card</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    
-                                    <Dropdown 
-                                        trigger={<button className="card-menu-button">•••</button>}
-                                        align="right"
-                                        className="card-dropdown"
-                                    >
-                                        {!card.isDefaultCard && (
-                                            <DropdownItem 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    handleSetPreferred(card);
-                                                }}
-                                            >
-                                                Set as Preferred Card
-                                            </DropdownItem>
-                                        )}
-                                        <DropdownItem 
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleRemoveCard(card);
-                                            }}
-                                            className="remove-option"
-                                        >
-                                            Remove Card
-                                        </DropdownItem>
-                                    </Dropdown>
-                                </div>
-                            ))
-                        }
-                    </div>
-                )}
+                <CreditCardPreviewList
+                    cards={selectedCards}
+                    selectedCardId={selectedCard?.id}
+                    onCardSelect={handleCardSelect}
+                    showDropdown={true}
+                    renderDropdownOptions={renderCardDropdownOptions}
+                    loading={isLoading}
+                />
             </div>
             
             {/* Main content area for card details */}

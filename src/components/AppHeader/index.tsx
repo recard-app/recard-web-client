@@ -25,7 +25,8 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) =>
       </div>
       
       <nav className="nav-links">
-        {user && <button onClick={onModalOpen}>View your Credit Cards</button>}
+        {/*{user && <button onClick={onModalOpen}>Manage your Credit Cards</button>}*/}
+        {/* // Removed the button for now */}
         {user ? (
           <Dropdown 
             trigger={
