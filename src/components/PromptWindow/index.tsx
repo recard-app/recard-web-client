@@ -73,6 +73,8 @@ function PromptWindow({
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
+    const promptHistoryRef = useRef<HTMLDivElement>(null);
+    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     
     // Stores the current input value in the prompt field
     const [promptValue, setPromptValue] = useState<string>('');
@@ -271,6 +273,40 @@ function PromptWindow({
         }
     }, [chatId]);
 
+    // Modified auto-scroll effect
+    useEffect(() => {
+        if (promptHistoryRef.current && shouldAutoScroll) {
+            const scrollToBottom = () => {
+                const container = promptHistoryRef.current;
+                if (container) {
+                    container.scrollTo({
+                        top: container.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            };
+            
+            // Small delay to ensure content is rendered
+            setTimeout(scrollToBottom, 100);
+        }
+    }, [chatHistory, shouldAutoScroll]);
+
+    // Add scroll event listener to track when user is near bottom
+    useEffect(() => {
+        const container = promptHistoryRef.current;
+        if (!container) return;
+
+        const handleScroll = () => {
+            const { scrollTop, scrollHeight, clientHeight } = container;
+            // Consider "near bottom" to be within 100px of the bottom
+            const isNearBottom = scrollHeight - (scrollTop + clientHeight) < 400;
+            setShouldAutoScroll(isNearBottom);
+        };
+
+        container.addEventListener('scroll', handleScroll);
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
+
     const callServer = async (): Promise<void> => {
         setIsProcessing(true);
         setIsLoading(true);
@@ -401,9 +437,12 @@ function PromptWindow({
                 <PromptHelpModal />
             </Modal>
 
-            <PromptHistory chatHistory={chatHistory} />
-            {isLoading && <div className="loading-indicator">...</div>}
-            {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}
+            <div ref={promptHistoryRef} className="prompt-history-container">
+                <PromptHistory chatHistory={chatHistory} />
+                {isLoading && <div className="loading-indicator">...</div>}
+                {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}
+            </div>
+            
             <PromptSolution 
                 promptSolutions={promptSolutions} 
                 creditCards={creditCards} 
