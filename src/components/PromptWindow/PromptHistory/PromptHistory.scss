@@ -1,45 +1,48 @@
 .prompt-history {
-  margin: 12px 0;
-  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   
   .entry {
-    margin: 2px 0;
+    margin: 0;
     display: flex;
+    width: 100%;
     
     .entry-content {
       display: flex;
       align-items: flex-start;
-      max-width: 70%;  // Limit message width
+      width: 100%;
 
       .message-text {
         white-space: pre-line;
         word-wrap: break-word;
-        padding: 0 6px;
+        padding: 12px;
         margin: 0;
+        width: 100%;
         
         // Global reset for all elements
         * {
           margin: 0;
           padding: 0;
-          line-height: 1.2;
+          line-height: 1.4;
         }
 
         p {
-          margin: 6px 0;
+          margin: 8px 0;
         }
 
         ul p,
         ol p,
         li p {
-          margin: 2px 0;
+          margin: 4px 0;
         }
 
         li {
-          margin: 3px 0;
+          margin: 4px 0;
         }
 
         ul, ol {
-          margin: 6px 0;
+          margin: 8px 0;
         }
         
         // Typography
@@ -58,12 +61,19 @@
         
         // Code blocks
         pre {
-          padding: 0.3em;
+          padding: 8px;
           font-family: monospace;
+          background: #f5f5f5;
+          border-radius: 4px;
+          margin: 8px 0;
+          overflow-x: auto;
         }
         
         code {
           font-family: monospace;
+          background: #f5f5f5;
+          padding: 2px 4px;
+          border-radius: 2px;
         }
         
         // Line breaks
@@ -80,12 +90,24 @@
   .entry-user {
     color: black;
     justify-content: flex-end;  // Right align user messages
+    width: 100%;
     
     .entry-content {
-      background-color: #c2c2c2;
-      border-radius: 4px;
+      width: auto;     // Allow content to determine width
+      max-width: 80%;  // But don't let it get too wide
+      background-color: #007bff;
+      color: white;
+      border-radius: 12px 12px 0 12px;
       position: relative;
-      margin-left: auto;  // Push content to the right
+      margin-left: auto;  // Push to right side
+
+      code, pre {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .message-text {
+        width: auto;  // Allow content to determine width
+      }
     }
   }
   
@@ -93,12 +115,19 @@
   .entry-assistant {
     color: #2b2b2b;
     justify-content: flex-start;  // Left align AI messages
+    width: 100%;
     
+    .entry-content {
+      background-color: #f5f5f5;
+      border-radius: 12px 12px 12px 0;
+    }
+
     .assistant-avatar {
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       flex-shrink: 0;
+      margin-right: 8px;
     }
   }
 }

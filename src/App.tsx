@@ -407,18 +407,20 @@ function AppContent({}: AppContentProps) {
             />
           </div>
         </div>
-        <PromptWindow 
-          creditCards={creditCards}
-          userCardDetails={userCardDetails}
-          user={user} 
-          returnCurrentChatId={getCurrentChatId}
-          onHistoryUpdate={handleHistoryUpdate}
-          clearChatCallback={clearChatCallback}
-          setClearChatCallback={setClearChatCallback}
-          existingHistoryList={chatHistory}
-          preferencesInstructions={preferencesInstructions}
-          chatHistoryPreference={chatHistoryPreference}
-        />
+        <div className="prompt-window-container">
+          <PromptWindow 
+            creditCards={creditCards}
+            userCardDetails={userCardDetails}
+            user={user} 
+            returnCurrentChatId={getCurrentChatId}
+            onHistoryUpdate={handleHistoryUpdate}
+            clearChatCallback={clearChatCallback}
+            setClearChatCallback={setClearChatCallback}
+            existingHistoryList={chatHistory}
+            preferencesInstructions={preferencesInstructions}
+            chatHistoryPreference={chatHistoryPreference}
+          />
+        </div>
       </div>
     );
   };
