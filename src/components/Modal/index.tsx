@@ -12,6 +12,7 @@ interface ModalProps {
   modalId?: string; // Legacy support, will be deprecated
   width?: string; // Optional width parameter for the modal
   fullWidth?: boolean; // Optional prop to make modal take up 90% of screen width
+  disableEscapeClose?: boolean; // Optional prop to disable closing on escape key
 }
 
 const Modal: React.FC<ModalProps> = ({ 
@@ -22,7 +23,8 @@ const Modal: React.FC<ModalProps> = ({
   entityId,
   modalId: legacyModalId,
   width,
-  fullWidth 
+  fullWidth,
+  disableEscapeClose = false
 }) => {
   // Determine the modal ID to use - prefer new style, fall back to legacy
   const getModalId = (): string | undefined => {
@@ -36,6 +38,20 @@ const Modal: React.FC<ModalProps> = ({
   
   // Internal state that mirrors the external isOpen prop
   const [internalIsOpen, setInternalIsOpen] = useState(externalIsOpen);
+  
+  // Handle escape key press
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (!disableEscapeClose && event.key === 'Escape' && internalIsOpen) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [internalIsOpen, disableEscapeClose]);
   
   // Sync internal state with external prop
   useEffect(() => {

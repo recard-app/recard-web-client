@@ -68,6 +68,7 @@ function AppContent({}: AppContentProps) {
 
   // State for managing credit cards in the application
   const [creditCards, setCreditCards] = useState<CreditCard[]>([]);
+  const [isLoadingCreditCards, setIsLoadingCreditCards] = useState<boolean>(true);
   // State for storing user's basic card details (for PromptWindow)
   const [userCardDetails, setUserCardDetails] = useState<CardDetailsList>([]);
   // State for storing user's detailed card details (for modal view)
@@ -113,13 +114,20 @@ function AppContent({}: AppContentProps) {
   // Effect to fetch credit cards when user is authenticated
   useEffect(() => {
     const fetchCreditCards = async () => {
-      if (!user) return;
+      if (!user) {
+        setCreditCards([]);
+        setIsLoadingCreditCards(false);
+        return;
+      }
       
+      setIsLoadingCreditCards(true);
       try {
         const cards = await CardService.fetchCreditCards(true);
         setCreditCards(cards);
       } catch (error) {
         console.error('Error fetching credit cards:', error);
+      } finally {
+        setIsLoadingCreditCards(false);
       }
     };
 
@@ -412,7 +420,7 @@ function AppContent({}: AppContentProps) {
             </div>
             <CreditCardPreviewList 
               cards={creditCards}
-              loading={!user}
+              loading={isLoadingCreditCards}
               showOnlySelected={true}
               onCardSelect={handleCardSelect}
             />

@@ -7,11 +7,21 @@ interface UseModalReturn {
   toggle: () => void;
 }
 
-export const useModal = (
-  initialState: boolean = false, 
-  modalType?: string, 
-  entityId?: string
-): UseModalReturn => {
+interface UseModalOptions {
+  initialState?: boolean;
+  modalType?: string;
+  entityId?: string;
+  disableEscapeClose?: boolean;
+}
+
+export const useModal = (options: UseModalOptions = {}): UseModalReturn => {
+  const {
+    initialState = false,
+    modalType,
+    entityId,
+    disableEscapeClose = false
+  } = options;
+
   // Construct the full modal ID from type and entity ID
   const getModalId = (): string | undefined => {
     if (modalType && entityId) {
