@@ -161,7 +161,7 @@ function AppContent({}: AppContentProps) {
       
       try {
         const response = await UserPreferencesService.loadInstructionsPreferences();
-        setPreferencesInstructions(response.data || '');
+        setPreferencesInstructions(response.instructions || '');
       } catch (error) {
         console.error('Error fetching preferences instructions:', error);
       }
