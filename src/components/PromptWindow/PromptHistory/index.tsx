@@ -10,9 +10,12 @@ import { PLACEHOLDER_ASSISTANT_IMAGE } from '../../../types';
  */
 interface PromptHistoryProps {
   chatHistory: ChatMessage[];
+  isNewChat?: boolean;
+  isLoading?: boolean;
+  isLoadingSolutions?: boolean;
 }
 
-function PromptHistory({ chatHistory }: PromptHistoryProps): React.ReactElement {
+function PromptHistory({ chatHistory, isNewChat = false, isLoading = false, isLoadingSolutions = false }: PromptHistoryProps): React.ReactElement {
   const chatEntries = chatHistory;
   
   // Initialize the showdown converter with options to minimize whitespace
@@ -95,21 +98,38 @@ function PromptHistory({ chatHistory }: PromptHistoryProps): React.ReactElement 
   
   return (
     <div className='prompt-history'>
-      {chatEntries.map((chatEntry) => (
-        <div key={chatEntry.id} className={`${(chatEntry.chatSource === 'user') ? 'entry entry-user' : 'entry entry-assistant'}`}>
-          <div className="entry-content">
-            {chatEntry.chatSource === 'assistant' && (
-              <img src={PLACEHOLDER_ASSISTANT_IMAGE} alt="AI Assistant" className="assistant-avatar" />
-            )}
-            <div 
-              className="message-text" 
-              dangerouslySetInnerHTML={{ 
-                __html: processHtml(converter.makeHtml(chatEntry.chatMessage))
-              }} 
-            ></div>
+      {chatEntries.length === 0 ? (
+        isNewChat ? (
+          <div className="welcome-message">
+            <p>What are you looking to purchase today?</p>
+            <p className="subtitle">I'll help you find the best credit card to maximize your rewards.</p>
           </div>
-        </div>
-      ))}
+        ) : (
+          <div className="loading-message">
+            Loading transaction chat history...
+          </div>
+        )
+      ) : (
+        <>
+          {chatEntries.map((chatEntry) => (
+            <div key={chatEntry.id} className={`${(chatEntry.chatSource === 'user') ? 'entry entry-user' : 'entry entry-assistant'}`}>
+              <div className="entry-content">
+                {chatEntry.chatSource === 'assistant' && (
+                  <img src={PLACEHOLDER_ASSISTANT_IMAGE} alt="AI Assistant" className="assistant-avatar" />
+                )}
+                <div 
+                  className="message-text" 
+                  dangerouslySetInnerHTML={{ 
+                    __html: processHtml(converter.makeHtml(chatEntry.chatMessage))
+                  }} 
+                ></div>
+              </div>
+            </div>
+          ))}
+          {isLoading && <div className="loading-indicator">...</div>}
+          {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}
+        </>
+      )}
     </div>
   );
 }

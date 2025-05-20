@@ -111,15 +111,45 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
         return (
             <div className="solutions-container">
                 {chatHistory.length >= 2 && (
-                    <div className="select-purchase-card">
-                        <button 
-                            className="select-purchase-card-button"
-                            onClick={cardSelectorModal.open}
-                            disabled={isUpdating}
-                        >
-                            Select a Card for Purchase
-                        </button>
-                    </div>
+                    <>
+                        <div className="select-different-card">
+                            {activeCardId && creditCards && !solutions.some(solution => solution.id === activeCardId) ? (
+                                <>
+                                    <span className="selection-label">Selected card:</span>
+                                    <button 
+                                        className="selected-card-button"
+                                        onClick={cardSelectorModal.open}
+                                        disabled={isUpdating}
+                                    >
+                                        {(() => {
+                                            const selectedCard = creditCards.find(card => card.id === activeCardId);
+                                            return selectedCard ? (
+                                                <>
+                                                    <img 
+                                                        src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
+                                                        alt={selectedCard.CardName} 
+                                                        className="selected-card-image"
+                                                    />
+                                                    <span className="selected-card-name">{selectedCard.CardName}</span>
+                                                </>
+                                            ) : null;
+                                        })()}
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="selection-label">Select card for purchase:</span>
+                                    <button 
+                                        className="select-card-button"
+                                        onClick={cardSelectorModal.open}
+                                        disabled={isUpdating}
+                                    >
+                                        Select Card
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </>
                 )}
 
                 <Modal 

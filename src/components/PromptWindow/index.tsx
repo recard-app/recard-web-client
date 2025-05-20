@@ -87,7 +87,7 @@ function PromptWindow({
     // Unique identifier for the current chat conversation
     const [chatId, setChatId] = useState<string>('');
     // Tracks whether this is a new chat conversation (true) or loading an existing one (false)
-    const [isNewChat, setIsNewChat] = useState<boolean>(true);
+    const [isNewChat, setIsNewChat] = useState<boolean>(false);
     // Indicates whether the initial AI response is being loaded
     const [isLoading, setIsLoading] = useState<boolean>(false);
     // Indicates whether the AI is generating card recommendations/solutions
@@ -417,6 +417,18 @@ function PromptWindow({
         navigate('/');
     };
 
+    // Add effect to handle initial state
+    useEffect(() => {
+        // If we have a chatId in the URL, this is not a new chat
+        if (urlChatId) {
+            setIsNewChat(false);
+        }
+        // If we're at the root URL and have no chat history, this can be a new chat
+        else if (!urlChatId && chatHistory.length === 0) {
+            setIsNewChat(true);
+        }
+    }, [urlChatId, chatHistory.length]);
+
     const handleHelpModalOpen = helpModal.open;
     const handleHelpModalClose = helpModal.close;
 
@@ -438,9 +450,12 @@ function PromptWindow({
             </Modal>
 
             <div ref={promptHistoryRef} className="prompt-history-container">
-                <PromptHistory chatHistory={chatHistory} />
-                {isLoading && <div className="loading-indicator">...</div>}
-                {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}
+                <PromptHistory 
+                    chatHistory={chatHistory} 
+                    isNewChat={isNewChat} 
+                    isLoading={isLoading}
+                    isLoadingSolutions={isLoadingSolutions}
+                />
             </div>
             
             <PromptSolution 
