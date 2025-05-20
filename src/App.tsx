@@ -377,18 +377,29 @@ function AppContent({}: AppContentProps) {
     return (
       <div className="app-content">
         <div className="side-panels">
-          <HistoryPanel 
-            existingHistoryList={chatHistory} 
-            fullListSize={false} 
-            listSize={quick_history_size}
-            currentChatId={currentChatId}
-            returnCurrentChatId={getCurrentChatId}
-            onHistoryUpdate={handleHistoryUpdate}
-            subscriptionPlan={subscriptionPlan}
-            creditCards={creditCards}
-            historyRefreshTrigger={historyRefreshTrigger}
-            showCompletedOnlyPreference={showCompletedOnlyPreference}
-          />
+          <div className="panel-section">
+            <div className="panel-header">
+              <h3>Recent Transactions</h3>
+              <button 
+                className="view-all-button"
+                onClick={() => navigate('/history')}
+              >
+                View History
+              </button>
+            </div>
+            <HistoryPanel 
+              existingHistoryList={chatHistory} 
+              fullListSize={false} 
+              listSize={quick_history_size}
+              currentChatId={currentChatId}
+              returnCurrentChatId={getCurrentChatId}
+              onHistoryUpdate={handleHistoryUpdate}
+              subscriptionPlan={subscriptionPlan}
+              creditCards={creditCards}
+              historyRefreshTrigger={historyRefreshTrigger}
+              showCompletedOnlyPreference={showCompletedOnlyPreference}
+            />
+          </div>
           <div className="my-cards-container">
             <div className="my-cards-header">
               <h3>My Cards</h3>

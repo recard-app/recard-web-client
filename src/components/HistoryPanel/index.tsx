@@ -388,8 +388,7 @@ function HistoryPanel({
   };
 
   return (
-    <div className='history-panel'>
-      {!fullListSize && <h2>Recent Transactions</h2>}
+    <div className={`history-panel ${fullListSize ? 'full-history' : ''}`}>
       {fullListSize && renderDateFilter()}
       {fullListSize && renderCompletedToggle()}
       {isLoading && displayList.length === 0 ? (
@@ -450,14 +449,6 @@ function HistoryPanel({
                 creditCards={creditCards}
               />
             ))
-          )}
-          {!fullListSize && (
-            <button 
-              className="view-all-button"
-              onClick={() => navigate('/history')}
-            >
-              View All History
-            </button>
           )}
         </>
       )}

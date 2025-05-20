@@ -1,3 +1,16 @@
+// Add a container for the prompt window to handle centering
+.prompt-window-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    min-height: 0; // For nested flex scrolling
+  }
+  
+  .prompt-window {
+    width: 100%;
+    max-width: 800px;
+  }
+
 .prompt-window {
     background-color: #ffffff;
     flex: 1;

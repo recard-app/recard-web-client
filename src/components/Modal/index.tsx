@@ -11,6 +11,7 @@ interface ModalProps {
   entityId?: string; // ID of the entity the modal is related to
   modalId?: string; // Legacy support, will be deprecated
   width?: string; // Optional width parameter for the modal
+  fullWidth?: boolean; // Optional prop to make modal take up 90% of screen width
 }
 
 const Modal: React.FC<ModalProps> = ({ 
@@ -20,7 +21,8 @@ const Modal: React.FC<ModalProps> = ({
   modalType,
   entityId,
   modalId: legacyModalId,
-  width 
+  width,
+  fullWidth 
 }) => {
   // Determine the modal ID to use - prefer new style, fall back to legacy
   const getModalId = (): string | undefined => {
@@ -89,12 +91,14 @@ const Modal: React.FC<ModalProps> = ({
   return ReactDOM.createPortal(
     <div className="modal-overlay" onClick={handleClose}>
       <div 
-        className="modal-content" 
+        className={`modal-content${fullWidth ? ' full-width' : ''}`}
         onClick={(e: React.MouseEvent) => e.stopPropagation()}
-        style={width ? { width } : undefined}
+        style={!fullWidth && width ? { width } : undefined}
       >
         <button className="close-btn" onClick={handleClose}>X</button>
-        {children}
+        <div className="modal-scroll-content">
+          {children}
+        </div>
       </div>
     </div>,
     document.body

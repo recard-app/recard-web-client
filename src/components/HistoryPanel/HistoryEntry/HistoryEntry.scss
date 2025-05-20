@@ -26,10 +26,15 @@
         display: flex;
         flex-direction: column;
         flex-grow: 1;
+        padding-right: 32px;
+        min-width: 0;
 
         .entry-title {
             font-weight: bold;
             margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .selected-card-display {
@@ -41,10 +46,14 @@
             font-size: 0.9em;
             color: #666;
             font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
 
             .card-thumbnail {
                 width: 30px;
                 height: 24px;
+                flex-shrink: 0;
             }
         }
 
@@ -72,6 +81,7 @@
         right: 10px;
         top: 50%;
         transform: translateY(-50%);
+        z-index: 1;
         
         .action-icon {
             width: 20px;

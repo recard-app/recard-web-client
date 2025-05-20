@@ -12,13 +12,21 @@
     /* Modal content box */
     .modal-content {
       background-color: white;
-      padding: 20px;
       border-radius: 8px;
       width: 500px; /* Default width - can be overridden by width prop */
       max-width: 80%;
+      max-height: 90vh;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       text-align: center;
       position: relative;
+      display: flex;
+      flex-direction: column;
+
+      &.full-width {
+        width: 90vw;
+        max-width: 90vw;
+      }
+
       /* Close button for the modal */
       .close-btn {
         position: absolute;
@@ -28,6 +36,29 @@
         background: transparent;
         font-size: 20px;
         cursor: pointer;
+        z-index: 2;
+      }
+      /* Content wrapper to enable scrolling */
+      .modal-scroll-content {
+        padding: 20px;
+        overflow-y: auto;
+        /* Add padding to account for close button */
+        padding-top: 40px;
+        /* Ensure content doesn't get cut off at the bottom */
+        padding-bottom: 20px;
+        /* Enable smooth scrolling */
+        scroll-behavior: smooth;
+        /* Better scrolling on Safari */
+        -webkit-overflow-scrolling: touch;
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        &::-webkit-scrollbar {
+          display: none;
+        }
+        
+        /* Hide scrollbar for IE, Edge and Firefox */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
     }
   }
