@@ -26,6 +26,63 @@ interface PromptSolutionProps {
     chatHistory: ChatMessage[];
 }
 
+interface CardSelectionProps {
+    activeCardId: string;
+    creditCards?: CreditCard[];
+    solutions: ChatSolutionCard[];
+    isUpdating: boolean;
+    onCardSelectorOpen: () => void;
+    noSolutionsMode?: boolean;
+}
+
+const CardSelection: React.FC<CardSelectionProps> = ({
+    activeCardId,
+    creditCards,
+    solutions,
+    isUpdating,
+    onCardSelectorOpen,
+    noSolutionsMode
+}) => {
+    // Show selected card if there is an activeCardId and matching card in creditCards
+    const selectedCard = creditCards?.find(card => card.id === activeCardId);
+    const hasSelectedCard = activeCardId && selectedCard;
+    
+    return (
+        <div className="select-different-card">
+            {hasSelectedCard ? (
+                <>
+                    <span className="selection-label">Selected card:</span>
+                    <button 
+                        className="selected-card-button"
+                        onClick={onCardSelectorOpen}
+                        disabled={isUpdating}
+                    >
+                        <img 
+                            src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
+                            alt={selectedCard.CardName} 
+                            className="selected-card-image"
+                        />
+                        <span className="selected-card-name">{selectedCard.CardName}</span>
+                    </button>
+                </>
+            ) : (
+                <>
+                    <span className="selection-label">
+                        {noSolutionsMode ? 'Select card for purchase:' : 'Select a different card:'}
+                    </span>
+                    <button 
+                        className="select-card-button"
+                        onClick={onCardSelectorOpen}
+                        disabled={isUpdating}
+                    >
+                        Select Card
+                    </button>
+                </>
+            )}
+        </div>
+    );
+};
+
 function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, onHistoryUpdate, chatHistory }: PromptSolutionProps): React.ReactElement | null {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     // The list of solutions to display
@@ -113,45 +170,14 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
         return (
             <div className="solutions-container">
                 {chatHistory.length >= 2 && (
-                    <>
-                        <div className="select-different-card">
-                            {activeCardId && creditCards && !solutions.some(solution => solution.id === activeCardId) ? (
-                                <>
-                                    <span className="selection-label">Selected card:</span>
-                                    <button 
-                                        className="selected-card-button"
-                                        onClick={cardSelectorModal.open}
-                                        disabled={isUpdating}
-                                    >
-                                        {(() => {
-                                            const selectedCard = creditCards.find(card => card.id === activeCardId);
-                                            return selectedCard ? (
-                                                <>
-                                                    <img 
-                                                        src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
-                                                        alt={selectedCard.CardName} 
-                                                        className="selected-card-image"
-                                                    />
-                                                    <span className="selected-card-name">{selectedCard.CardName}</span>
-                                                </>
-                                            ) : null;
-                                        })()}
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="selection-label">Select card for purchase:</span>
-                                    <button 
-                                        className="select-card-button"
-                                        onClick={cardSelectorModal.open}
-                                        disabled={isUpdating}
-                                    >
-                                        Select Card
-                                    </button>
-                                </>
-                            )}
-                        </div>
-                    </>
+                    <CardSelection
+                        activeCardId={activeCardId}
+                        creditCards={creditCards}
+                        solutions={solutions}
+                        isUpdating={isUpdating}
+                        onCardSelectorOpen={cardSelectorModal.open}
+                        noSolutionsMode={true}
+                    />
                 )}
 
                 <Modal 
@@ -229,58 +255,28 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                             );
                         })}
                 </div>
-
-                <div className="select-different-card">
-                    {activeCardId && creditCards && !solutions.some(solution => solution.id === activeCardId) ? (
-                        <>
-                            <span className="selection-label">Selected card:</span>
-                            <button 
-                                className="selected-card-button"
-                                onClick={cardSelectorModal.open}
-                                disabled={isUpdating}
-                            >
-                                {(() => {
-                                    const selectedCard = creditCards.find(card => card.id === activeCardId);
-                                    return selectedCard ? (
-                                        <>
-                                            <img 
-                                                src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
-                                                alt={selectedCard.CardName} 
-                                                className="selected-card-image"
-                                            />
-                                            <span className="selected-card-name">{selectedCard.CardName}</span>
-                                        </>
-                                    ) : null;
-                                })()}
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <span className="selection-label">Select a different card:</span>
-                            <button 
-                                className="select-card-button"
-                                onClick={cardSelectorModal.open}
-                                disabled={isUpdating}
-                            >
-                                Select Card
-                            </button>
-                        </>
-                    )}
-                </div>
-
-                <Modal 
-                    isOpen={cardSelectorModal.isOpen} 
-                    onClose={cardSelectorModal.close}
-                >
-                    {creditCards && (
-                        <SingleCardSelector
-                            creditCards={creditCards}
-                            onSelectCard={handleCardSelectedFromModal}
-                            selectedCardId={activeCardId}
-                        />
-                    )}
-                </Modal>
             </div>
+
+            <CardSelection
+                activeCardId={activeCardId}
+                creditCards={creditCards}
+                solutions={solutions}
+                isUpdating={isUpdating}
+                onCardSelectorOpen={cardSelectorModal.open}
+            />
+
+            <Modal 
+                isOpen={cardSelectorModal.isOpen} 
+                onClose={cardSelectorModal.close}
+            >
+                {creditCards && (
+                    <SingleCardSelector
+                        creditCards={creditCards}
+                        onSelectCard={handleCardSelectedFromModal}
+                        selectedCardId={activeCardId}
+                    />
+                )}
+            </Modal>
         </div>
     );
 }
