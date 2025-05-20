@@ -1,12 +1,52 @@
 .solutions-container {
   padding: 8px 0;
 
-  h2 {
-    margin: 0;
-    margin-bottom: 2px;
-    font-size: 0.75em;
-    text-transform: uppercase;
-    color: #6a6a6a;
+  .solutions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 8px 8px;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    user-select: none;
+
+    &:hover {
+      background-color: #f0f0f0;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 0.75em;
+      text-transform: uppercase;
+      color: #6a6a6a;
+    }
+
+    .collapse-button {
+      background: none;
+      border: none;
+      padding: 0;
+      color: #6a6a6a;
+      font-size: 0.75em;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      
+      &.expanded {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  .collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    
+    &.expanded {
+      max-height: 2000px; // Adjust this value based on your content
+      transition: max-height 0.5s ease-in;
+    }
   }
 
   .solution-cards {

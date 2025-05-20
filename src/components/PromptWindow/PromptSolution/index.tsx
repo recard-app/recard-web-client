@@ -38,6 +38,8 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
     // Modal control using the pre-built useModal hook
     const cardSelectorModal = useModal();
+    // Flag to expand the solutions container
+    const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
     // Update active card when prop changes or when chatId changes
     useEffect(() => {
@@ -170,105 +172,115 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
 
     return (
         <div className="solutions-container">
-            <h2>Best Cards for Your Purchase</h2>
-            <div className="solution-cards">
-                {solutions
-                    .filter(solution => solution.cardName)
-                    .map((solution, index) => {
-                        // Find matching card details using the solution's id
-                        const cardDetails = creditCards?.find(card => card.id === solution.id);
-                        
-                        // If no matching card is found, use the solution's default values
-                        const cardName = cardDetails?.CardName || solution.cardName;
-                        const cardImage = cardDetails?.CardImage || PLACEHOLDER_CARD_IMAGE;
-                        
-                        // Card is selected if it matches the active card ID
-                        const isSelected = solution.id === activeCardId;
-                        
-                        // This specific card is being updated
-                        const isUpdatingThis = solution.id === updatingCardId;
-                        
-                        return (
-                            <div 
-                                key={solution.id || index} 
-                                className={`solution-card ${index === 0 ? 'primary-solution' : ''} ${isSelected ? 'selected-card' : ''}`}
-                            >
-                                <div className="card-header">
-                                    <img src={cardImage} alt={cardName} className="card-thumbnail" />
-                                    <h3>{cardName}</h3>
-                                </div>
-                                <div className="card-content">
-                                    <div className="card-details">
-                                        {solution.rewardCategory && (
-                                            <p><strong>Category:</strong> {solution.rewardCategory}</p>
-                                        )}
-                                        {solution.rewardRate && (
-                                            <p><strong>Reward Rate:</strong> {solution.rewardRate}</p>
-                                        )}
+            <div className="solutions-header" onClick={() => setIsExpanded(!isExpanded)}>
+                <h2>Best Cards for Your Purchase</h2>
+                <button 
+                    className={`collapse-button ${isExpanded ? 'expanded' : ''}`}
+                    aria-label={isExpanded ? 'Collapse solutions' : 'Expand solutions'}
+                >
+                    ▼
+                </button>
+            </div>
+            <div className={`collapsible-content ${isExpanded ? 'expanded' : ''}`}>
+                <div className="solution-cards">
+                    {solutions
+                        .filter(solution => solution.cardName)
+                        .map((solution, index) => {
+                            // Find matching card details using the solution's id
+                            const cardDetails = creditCards?.find(card => card.id === solution.id);
+                            
+                            // If no matching card is found, use the solution's default values
+                            const cardName = cardDetails?.CardName || solution.cardName;
+                            const cardImage = cardDetails?.CardImage || PLACEHOLDER_CARD_IMAGE;
+                            
+                            // Card is selected if it matches the active card ID
+                            const isSelected = solution.id === activeCardId;
+                            
+                            // This specific card is being updated
+                            const isUpdatingThis = solution.id === updatingCardId;
+                            
+                            return (
+                                <div 
+                                    key={solution.id || index} 
+                                    className={`solution-card ${index === 0 ? 'primary-solution' : ''} ${isSelected ? 'selected-card' : ''}`}
+                                >
+                                    <div className="card-header">
+                                        <img src={cardImage} alt={cardName} className="card-thumbnail" />
+                                        <h3>{cardName}</h3>
                                     </div>
-                                    <button 
-                                        className={`use-card-button ${isSelected ? 'selected' : ''}`}
-                                        onClick={() => handleCardSelection(solution.id)}
-                                        disabled={isUpdating}
-                                    >
-                                        {isUpdatingThis ? 'Updating...' : isSelected ? 'Used for Purchase' : 'Use this Card'}
-                                    </button>
+                                    <div className="card-content">
+                                        <div className="card-details">
+                                            {solution.rewardCategory && (
+                                                <p><strong>Category:</strong> {solution.rewardCategory}</p>
+                                            )}
+                                            {solution.rewardRate && (
+                                                <p><strong>Reward Rate:</strong> {solution.rewardRate}</p>
+                                            )}
+                                        </div>
+                                        <button 
+                                            className={`use-card-button ${isSelected ? 'selected' : ''}`}
+                                            onClick={() => handleCardSelection(solution.id)}
+                                            disabled={isUpdating}
+                                        >
+                                            {isUpdatingThis ? 'Updating...' : isSelected ? 'Used for Purchase' : 'Use this Card'}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-            </div>
+                            );
+                        })}
+                </div>
 
-            <div className="select-different-card">
-                {activeCardId && creditCards && !solutions.some(solution => solution.id === activeCardId) ? (
-                    <>
-                        <span className="selection-label">Selected card:</span>
-                        <button 
-                            className="selected-card-button"
-                            onClick={cardSelectorModal.open}
-                            disabled={isUpdating}
-                        >
-                            {(() => {
-                                const selectedCard = creditCards.find(card => card.id === activeCardId);
-                                return selectedCard ? (
-                                    <>
-                                        <img 
-                                            src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
-                                            alt={selectedCard.CardName} 
-                                            className="selected-card-image"
-                                        />
-                                        <span className="selected-card-name">{selectedCard.CardName}</span>
-                                    </>
-                                ) : null;
-                            })()}
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        <span className="selection-label">Select a different card:</span>
-                        <button 
-                            className="select-card-button"
-                            onClick={cardSelectorModal.open}
-                            disabled={isUpdating}
-                        >
-                            Select Card
-                        </button>
-                    </>
-                )}
-            </div>
+                <div className="select-different-card">
+                    {activeCardId && creditCards && !solutions.some(solution => solution.id === activeCardId) ? (
+                        <>
+                            <span className="selection-label">Selected card:</span>
+                            <button 
+                                className="selected-card-button"
+                                onClick={cardSelectorModal.open}
+                                disabled={isUpdating}
+                            >
+                                {(() => {
+                                    const selectedCard = creditCards.find(card => card.id === activeCardId);
+                                    return selectedCard ? (
+                                        <>
+                                            <img 
+                                                src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
+                                                alt={selectedCard.CardName} 
+                                                className="selected-card-image"
+                                            />
+                                            <span className="selected-card-name">{selectedCard.CardName}</span>
+                                        </>
+                                    ) : null;
+                                })()}
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <span className="selection-label">Select a different card:</span>
+                            <button 
+                                className="select-card-button"
+                                onClick={cardSelectorModal.open}
+                                disabled={isUpdating}
+                            >
+                                Select Card
+                            </button>
+                        </>
+                    )}
+                </div>
 
-            <Modal 
-                isOpen={cardSelectorModal.isOpen} 
-                onClose={cardSelectorModal.close}
-            >
-                {creditCards && (
-                    <SingleCardSelector
-                        creditCards={creditCards}
-                        onSelectCard={handleCardSelectedFromModal}
-                        selectedCardId={activeCardId}
-                    />
-                )}
-            </Modal>
+                <Modal 
+                    isOpen={cardSelectorModal.isOpen} 
+                    onClose={cardSelectorModal.close}
+                >
+                    {creditCards && (
+                        <SingleCardSelector
+                            creditCards={creditCards}
+                            onSelectCard={handleCardSelectedFromModal}
+                            selectedCardId={activeCardId}
+                        />
+                    )}
+                </Modal>
+            </div>
         </div>
     );
 }
