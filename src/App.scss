@@ -60,7 +60,7 @@ html, body {
 .side-panels {
   display: flex;
   flex-direction: column;
-  width: 300px;
+  width: 400px;
   gap: 20px;
   overflow-y: auto;
   min-height: 0; // This is crucial for nested flex scrolling
