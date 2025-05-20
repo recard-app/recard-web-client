@@ -84,6 +84,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   const triggerRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const prevChildrenRef = useRef<React.ReactNode>(children);
+  const clickTimeoutRef = useRef<number | null>(null);
 
   // Close dropdown when children change (e.g. menu options change)
   useEffect(() => {
@@ -113,21 +114,42 @@ export const Dropdown: React.FC<DropdownProps> = ({
     }
   }, [isOpen]);
 
+  // Cleanup timeout on unmount
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        triggerRef.current && 
-        !triggerRef.current.contains(event.target as Node) &&
-        dropdownRef.current && 
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
+    return () => {
+      if (clickTimeoutRef.current) {
+        window.clearTimeout(clickTimeoutRef.current);
       }
     };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      
+      // If clicking the trigger, let the onClick handler handle it
+      if (triggerRef.current?.contains(target)) {
+        return;
+      }
+      
+      // If clicking inside dropdown, don't close
+      if (dropdownRef.current?.contains(target)) {
+        return;
+      }
+      
+      // Otherwise, close the dropdown
+      setIsOpen(false);
+    };
+
+    if (isOpen) {
+      // Add the listener with a slight delay to avoid race conditions
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   // Create the dropdown menu component
   const dropdownMenu = isOpen ? (
@@ -147,6 +169,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
             
             return React.cloneElement(childElement, {
               onClick: (e: React.MouseEvent) => {
+                e.stopPropagation();
                 if (childElement.props.onClick) {
                   childElement.props.onClick(e);
                 }
@@ -161,15 +184,25 @@ export const Dropdown: React.FC<DropdownProps> = ({
     )
   ) : null;
 
+  const handleTriggerClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Clear any existing timeout
+    if (clickTimeoutRef.current) {
+      window.clearTimeout(clickTimeoutRef.current);
+    }
+    
+    // Toggle the dropdown state
+    setIsOpen(!isOpen);
+  };
+
   return (
     <div className={`dropdown-container ${className}`}>
       <div 
         ref={triggerRef}
         className="dropdown-trigger" 
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsOpen(!isOpen);
-        }}
+        onMouseDown={handleTriggerClick}
       >
         {trigger}
       </div>

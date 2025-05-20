@@ -17,11 +17,18 @@ const CreditCardManager = () => {
     const [cardToDelete, setCardToDelete] = useState<CreditCard | null>(null);
     
     // Use the useModal hook for the add card selector
-    const { isOpen: showSelector, open: openSelector, close: closeSelector } = useModal(false, 'add_card');
+    const { isOpen: showSelector, open: openSelector, close: closeSelector } = useModal({
+        initialState: false,
+        modalType: 'add_card'
+    });
     
     // Use the useModal hook for delete confirmation
     const { isOpen: showDeleteConfirm, open: openDeleteConfirm, close: closeDeleteConfirm } = 
-        useModal(false, 'delete_card', cardToDelete?.id);
+        useModal({
+            initialState: false,
+            modalType: 'delete_card',
+            entityId: cardToDelete?.id
+        });
     
     // Load user's credit cards on component mount
     useEffect(() => {
