@@ -28,7 +28,8 @@ export interface CardPerk {
     Category: string;
     SubCategory: string;
     Description: string;
-    Details: string;
+    Requirements: string;
+    Details?: string;
 }
 
 /**
@@ -41,7 +42,8 @@ export interface CardCredit {
     Description: string;
     Value: string;
     TimePeriod: string;
-    Details: string;
+    Requirements: string;
+    Details?: string;
 }
 
 /**
@@ -53,7 +55,8 @@ export interface CardMultiplier {
     SubCategory: string;
     Description: string;
     Multiplier: number | null;
-    Details: string;
+    Requirements: string;
+    Details?: string;
 }
 
 /**
