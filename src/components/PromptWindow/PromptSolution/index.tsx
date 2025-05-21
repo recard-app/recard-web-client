@@ -33,6 +33,7 @@ interface CardSelectionProps {
     isUpdating: boolean;
     onCardSelectorOpen: () => void;
     noSolutionsMode?: boolean;
+    handleCardSelection: (cardId: string) => Promise<void>;
 }
 
 const CardSelection: React.FC<CardSelectionProps> = ({
@@ -41,7 +42,8 @@ const CardSelection: React.FC<CardSelectionProps> = ({
     solutions,
     isUpdating,
     onCardSelectorOpen,
-    noSolutionsMode
+    noSolutionsMode,
+    handleCardSelection
 }) => {
     // Show selected card if there is an activeCardId and matching card in creditCards
     const selectedCard = creditCards?.find(card => card.id === activeCardId);
@@ -52,18 +54,28 @@ const CardSelection: React.FC<CardSelectionProps> = ({
             {hasSelectedCard ? (
                 <>
                     <span className="selection-label">Selected card:</span>
-                    <button 
-                        className="selected-card-button"
-                        onClick={onCardSelectorOpen}
-                        disabled={isUpdating}
-                    >
-                        <img 
-                            src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
-                            alt={selectedCard.CardName} 
-                            className="selected-card-image"
-                        />
-                        <span className="selected-card-name">{selectedCard.CardName}</span>
-                    </button>
+                    <div className="selected-card-container">
+                        <button 
+                            className="selected-card-button"
+                            onClick={onCardSelectorOpen}
+                            disabled={isUpdating}
+                        >
+                            <img 
+                                src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
+                                alt={selectedCard.CardName} 
+                                className="selected-card-image"
+                            />
+                            <span className="selected-card-name">{selectedCard.CardName}</span>
+                        </button>
+                        <button 
+                            className="deselect-button"
+                            onClick={() => handleCardSelection(activeCardId)}
+                            disabled={isUpdating}
+                            aria-label="Deselect card"
+                        >
+                            ✕
+                        </button>
+                    </div>
                 </>
             ) : (
                 <>
@@ -124,21 +136,24 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
             return;
         }
 
+        // Only allow deselection from the X button, not from the modal
+        const isDeselecting = cardId === activeCardId && cardSelectorModal.isOpen === false;
+        
+        // New card ID to send to server
+        const newCardId = isDeselecting ? '' : cardId;
+
+        // If we're not deselecting and the card is already selected, do nothing
+        if (!isDeselecting && cardId === activeCardId) {
+            cardSelectorModal.close();
+            return;
+        }
+
         // Set updating state
         setIsUpdating(true);
         setUpdatingCardId(cardId);
 
         try {
-            // Determine if we're selecting or deselecting
-            const isDeselecting = cardId === activeCardId;
-            
-            // New card ID to send to server
-            const newCardId = isDeselecting ? '' : cardId;
-            
-            // Update UI immediately for responsive feel
-            setActiveCardId(newCardId);
-
-            // Send update to server
+            // Send update to server first
             await UserHistoryService.updateTransactionCardSelection(effectiveChatId, newCardId);
             
             // Fetch updated chat history to ensure we have the latest state
@@ -148,6 +163,9 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
             if (updatedChat) {
                 onHistoryUpdate(updatedChat);
             }
+
+            // Update local state after successful server update
+            setActiveCardId(newCardId);
         } catch (error) {
             console.error('Error updating card selection:', error);
             // Reset UI to match server state on error
@@ -177,6 +195,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                         isUpdating={isUpdating}
                         onCardSelectorOpen={cardSelectorModal.open}
                         noSolutionsMode={true}
+                        handleCardSelection={handleCardSelection}
                     />
                 )}
 
@@ -263,6 +282,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                 solutions={solutions}
                 isUpdating={isUpdating}
                 onCardSelectorOpen={cardSelectorModal.open}
+                handleCardSelection={handleCardSelection}
             />
 
             <Modal 
