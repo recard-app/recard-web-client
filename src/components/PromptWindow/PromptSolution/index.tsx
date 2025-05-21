@@ -218,7 +218,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
     return (
         <div className="solutions-container">
             <div className="solutions-header" onClick={() => setIsExpanded(!isExpanded)}>
-                <h2>Best Cards for Your Purchase</h2>
+                <h2>Select Card for Purchase</h2>
                 <button 
                     className={`collapse-button ${isExpanded ? 'expanded' : ''}`}
                     aria-label={isExpanded ? 'Collapse solutions' : 'Expand solutions'}
@@ -274,16 +274,17 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                             );
                         })}
                 </div>
-            </div>
 
-            <CardSelection
-                activeCardId={activeCardId}
-                creditCards={creditCards}
-                solutions={solutions}
-                isUpdating={isUpdating}
-                onCardSelectorOpen={cardSelectorModal.open}
-                handleCardSelection={handleCardSelection}
-            />
+                <CardSelection
+                    activeCardId={activeCardId}
+                    creditCards={creditCards}
+                    solutions={solutions}
+                    isUpdating={isUpdating}
+                    onCardSelectorOpen={cardSelectorModal.open}
+                    handleCardSelection={handleCardSelection}
+                />
+
+            </div>
 
             <Modal 
                 isOpen={cardSelectorModal.isOpen} 
