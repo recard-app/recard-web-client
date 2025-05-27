@@ -76,9 +76,9 @@ button, .button {
   &.outline {
     @include button-outline;
   }
-  
-  &.ghost {
-    @include button-ghost;
+
+  &.mini {
+    @include button-mini;
   }
   
   &.small {

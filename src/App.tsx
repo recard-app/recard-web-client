@@ -389,7 +389,7 @@ function AppContent({}: AppContentProps) {
             <div className="panel-header">
               <h3>Recent Transactions</h3>
               <button 
-                className="view-all-button"
+                className="button outline"
                 onClick={() => navigate('/history')}
               >
                 View History
@@ -412,7 +412,7 @@ function AppContent({}: AppContentProps) {
             <div className="my-cards-header">
               <h3>My Cards</h3>
               <button 
-                className="edit-cards-button"
+                className="button outline"
                 onClick={handleEditCards}
               >
                 Edit Cards

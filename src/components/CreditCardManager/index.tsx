@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
@@ -34,6 +34,11 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             entityId: cardToDelete?.id
         });
     
+    // Memoized function to notify parent of card updates
+    const notifyCardUpdate = useCallback((cards: CreditCard[]) => {
+        onCardsUpdate?.(cards);
+    }, [onCardsUpdate]);
+    
     // Load user's credit cards on component mount
     useEffect(() => {
         const loadUserCards = async () => {
@@ -50,7 +55,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 setDetailedCards(detailedCardsData);
                 
                 // Notify parent component of card updates
-                onCardsUpdate?.(cards);
+                notifyCardUpdate(cards);
                 
                 // Select the default card if available, otherwise the first card
                 const defaultCard = cards.find(card => card.isDefaultCard);
@@ -73,7 +78,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
         };
 
         loadUserCards();
-    }, [onCardsUpdate]);
+    }, []); // Remove onCardsUpdate from dependency array
 
     // Load detailed information for a specific card
     const loadCardDetails = async (cardId: string) => {
@@ -135,7 +140,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             setUserCards(refreshedCards);
             
             // Notify parent component of card updates
-            onCardsUpdate?.(refreshedCards);
+            notifyCardUpdate(refreshedCards);
             
             // Update selected card with preferred status
             if (selectedCard && selectedCard.id === card.id) {
@@ -181,6 +186,9 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             // Refresh cards after update
             const refreshedCards = await CardService.fetchCreditCards(true);
             setUserCards(refreshedCards);
+            
+            // Notify parent component of card updates
+            notifyCardUpdate(refreshedCards);
             
             // Select a new card if the removed card was selected
             if (selectedCard && selectedCard.id === cardToDelete.id) {
@@ -245,6 +253,9 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 // Refresh cards after update
                 const refreshedCards = await CardService.fetchCreditCards(true);
                 setUserCards(refreshedCards);
+                
+                // Notify parent component of card updates
+                notifyCardUpdate(refreshedCards);
                 
                 // Set the newly added card as selected
                 const newlyAddedCard = refreshedCards.find(c => c.id === card.id);

@@ -48,7 +48,6 @@
   }
   
   .view-all-button {
-    @include button-ghost;
     @include button-small;
   }
 }
@@ -71,7 +70,6 @@
   }
   
   .edit-cards-button {
-    @include button-ghost;
     @include button-small;
   }
 }

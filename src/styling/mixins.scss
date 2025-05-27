@@ -96,20 +96,24 @@
   align-items: center;
   justify-content: center;
   font-family: $font-inter;
-  font-weight: $font-medium;
-  font-size: $font-base;
+  font-weight: $font-semibold;
+  font-size: $font-sm;
   line-height: 1;
-  border-radius: $radius-lg;
-  padding: $space-3 $space-6;
   cursor: pointer;
   transition: all $transition-base;
   border: none;
   outline: none;
   text-decoration: none;
+  padding: $space-2 $space-4;
+  border-radius: $radius-base;
   
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px $neutral-white, 0 0 0 4px $accent-color;
   }
 }
 
@@ -121,39 +125,32 @@
   
   &:hover:not(:disabled) {
     background-color: $primary-medium;
-    transform: translateY(-1px);
-    box-shadow: $shadow-sm;
   }
   
   &:active:not(:disabled) {
     background-color: $primary-dark;
-    transform: translateY(0);
-  }
-
-  &:focus-visible {
-    box-shadow: 0 0 0 2px $neutral-white, 0 0 0 4px $primary-color;
+    transform: translateY(1px);
   }
 }
 
 // Secondary button
 @mixin button-secondary {
   @include button-base;
-  background-color: $accent-color;
-  color: $neutral-white;
+  background-color: $primary-lightest;
+  color: $primary-color;
+  border: $border-half solid $primary-light;
   
   &:hover:not(:disabled) {
-    background-color: $accent-medium;
-    transform: translateY(-1px);
-    box-shadow: $shadow-sm;
+    background-color: $primary-light;
+    border-color: $primary-medium;
+    color: $primary-medium;
   }
   
   &:active:not(:disabled) {
-    background-color: $accent-dark;
-    transform: translateY(0);
-  }
-
-  &:focus-visible {
-    box-shadow: 0 0 0 2px $neutral-white, 0 0 0 4px $accent-color;
+    background-color: $primary-lightest;
+    border-color: $primary-medium;
+    color: $primary-medium;
+    transform: translateY(1px);
   }
 }
 
@@ -161,42 +158,16 @@
 @mixin button-outline {
   @include button-base;
   background-color: transparent;
-  border: $border-full solid $neutral-gray;
-  color: $neutral-dark-gray;
-  
-  &:hover:not(:disabled) {
-    border-color: $primary-color;
-    color: $primary-color;
-    transform: translateY(-1px);
-  }
-  
-  &:active:not(:disabled) {
-    background-color: $primary-lightest;
-    transform: translateY(0);
-  }
-
-  &:focus-visible {
-    box-shadow: 0 0 0 2px $neutral-white, 0 0 0 4px $primary-color;
-  }
-}
-
-// Ghost button
-@mixin button-ghost {
-  @include button-base;
-  background-color: transparent;
-  color: $primary-color;
-  padding: $space-2 $space-4;
+  border: $border-half solid $primary-light;
+  color: $primary-medium;
   
   &:hover:not(:disabled) {
     background-color: $primary-lightest;
   }
   
   &:active:not(:disabled) {
-    background-color: $primary-light;
-  }
-
-  &:focus-visible {
-    box-shadow: 0 0 0 2px $neutral-white, 0 0 0 4px $primary-color;
+    background-color: $primary-lightest;
+    transform: translateY(1px);
   }
 }
 
@@ -204,16 +175,19 @@
 @mixin button-mini {
   font-size: $font-xs;
   padding: $space-1 $space-2;
+  border-radius: $radius-sm;
 }
 
 @mixin button-small {
   font-size: $font-sm;
   padding: $space-1 $space-3;
+  border-radius: $radius-base;
 }
 
 @mixin button-large {
   font-size: $font-base;
   padding: $space-4 $space-8;
+  border-radius: $radius-lg;
 }
 
 // === FORM ELEMENTS ===
