@@ -1,0 +1,105 @@
+// Primary Color Palette
+$primary-lightest: #EBF6EE;
+$primary-light: #D9EDDF;
+$primary-color: #22CC9D;
+$primary-medium: #007B53;
+$primary-dark: #003E29;
+$primary-darkest: #003212;
+
+// Accent Color Palette
+$accent-lightest: #4E81F2;
+$accent-color: #2563EB;
+$accent-medium: #005DCF;
+$accent-dark: #0047B3;
+
+// Neutral Color Palette
+$neutral-white: #FFFFFF;
+$neutral-light-gray: #F2F4F6;
+$neutral-gray: #C9CED3;
+$neutral-medium-gray: #B5BBC2;
+$neutral-dark-gray: #5A5F66;
+$neutral-black: #0B0D0F;
+
+// Semantic Colors
+$success: $primary-color;
+$warning: #F59E0B;
+$error: #EF4444;
+$info: $accent-color;
+
+// Font Family Variables
+$font-cal-sans: "Cal Sans", sans-serif;
+$font-inter: "Inter", sans-serif;
+$font-manrope: "Manrope", sans-serif;
+
+// Font Weights
+$font-light: 300;
+$font-regular: 400;
+$font-medium: 500;
+$font-semibold: 600;
+$font-bold: 700;
+
+// Font Sizes
+$font-xs: 0.75rem;    // 12px
+$font-sm: 0.875rem;   // 14px
+$font-base: 1rem;     // 16px
+$font-h6: 1.125rem;   // 18px
+$font-h5: 1.25rem;    // 20px
+$font-h4: 1.5rem;    // 24px
+$font-h3: 1.875rem;  // 30px
+$font-h2: 2.25rem;   // 36px
+$font-h1: 3rem;      // 48px
+
+// Line Heights
+$leading-tight: 1.25;
+$leading-normal: 1.5;
+$leading-relaxed: 1.75;
+
+// Spacing Scale (based on 4px grid)
+$space-0: 0;
+$space-1: 0.25rem;    // 4px
+$space-2: 0.5rem;     // 8px
+$space-3: 0.75rem;    // 12px
+$space-4: 1rem;       // 16px
+$space-5: 1.25rem;    // 20px
+$space-6: 1.5rem;     // 24px
+$space-8: 2rem;       // 32px
+$space-10: 2.5rem;    // 40px
+$space-12: 3rem;      // 48px
+$space-16: 4rem;      // 64px
+$space-20: 5rem;      // 80px
+$space-24: 6rem;      // 96px
+
+// Border Radius
+$radius-none: 0;
+$radius-sm: 0.125rem;   // 2px
+$radius-base: 0.25rem;  // 4px
+$radius-md: 0.375rem;   // 6px
+$radius-lg: 0.5rem;     // 8px
+$radius-xl: 0.75rem;    // 12px
+$radius-2xl: 1rem;      // 16px
+$radius-full: 9999px;   // Fully rounded
+
+// Border Widths
+$border-0: 0;
+$border-half: 0.5px;
+$border-full: 1px;
+
+// Box Shadows
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+$shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+// Breakpoints
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;
+
+// Transitions
+$transition-fast: 150ms ease;
+$transition-base: 250ms ease;
+$transition-slow: 350ms ease;

@@ -1,2 +1,91 @@
 @forward './variables';
 @forward './mixins';
+
+// Import variables and mixins for use in this file
+@use './variables' as *;
+@use './mixins' as *;
+
+// Reset some basic elements
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: $font-inter;
+  font-size: 16px;
+  line-height: $leading-normal;
+  color: $neutral-black;
+  background-color: $neutral-light-gray;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+}
+
+// Typography
+h1 {
+  @include heading-1;
+}
+
+h2 {
+  @include heading-2;
+}
+
+h3 {
+  @include heading-3;
+}
+
+h4 {
+  @include heading-4;
+}
+
+h5 {
+  @include heading-5;
+}
+
+h6 {
+  @include heading-6;
+}
+
+// Body text defaults
+p {
+  @include body-regular;
+  margin-bottom: $space-4;
+}
+
+// Form elements
+input, textarea, select {
+  @include input-field;
+  margin-bottom: $space-4;
+}
+
+label {
+  @include form-label;
+}
+
+// Buttons
+button, .button {
+  @include button-primary;
+  
+  &.secondary {
+    @include button-secondary;
+  }
+  
+  &.outline {
+    @include button-outline;
+  }
+  
+  &.ghost {
+    @include button-ghost;
+  }
+  
+  &.small {
+    @include button-small;
+  }
+  
+  &.large {
+    @include button-large;
+  }
+}
