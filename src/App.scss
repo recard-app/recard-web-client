@@ -1,3 +1,5 @@
+@use './styling/globals' as *;
+
 // Global variables and mixins
 $primary-color: #007bff;
 $secondary-color: #6c757d;
@@ -8,28 +10,6 @@ $background-color: #f8f9fa;
 
 // Third-party imports (if any)
 // @use '~bootstrap/scss/bootstrap' as *;
-
-// Component styles
-@use './components/AppHeader/AppHeader.scss' as *;
-@use './components/PromptWindow/PromptWindow.scss' as *;
-@use './components/PromptWindow/PromptHistory/PromptHistory.scss' as *;
-@use './components/PromptWindow/PromptField/PromptField.scss' as *;
-@use './components/PromptWindow/PromptSolution/PromptSolution.scss' as *;
-@use './components/PromptWindow/PromptHelpModal/PromptHelpModal.scss' as *;
-@use './components/Modal/Modal.scss' as *;
-@use './components/CreditCardSelector/CreditCardSelector.scss' as *;
-@use './components/HistoryPanel/HistoryPanel.scss' as *;
-@use './components/PreferencesModule/PreferencesModule.scss' as *;
-@use './components/CreditCardManager/CreditCardManager.scss' as *;
-@use './components/CreditCardDetailView/CreditCardDetailView.scss' as *;
-@use './components/CreditCardPreviewList/CreditCardPreviewList.scss' as *;
-
-// Pages Styles
-@use './pages/account/Account.scss' as *;
-@use './pages/my-cards/MyCards.scss' as *;
-
-// Other Styles
-@use './elements/Elements.scss' as *;
 
 // Base app styles
 html, body {

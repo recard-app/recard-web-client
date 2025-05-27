@@ -543,7 +543,7 @@ function AppContent({}: AppContentProps) {
         } />
         <Route path="/my-cards" element={
           <ProtectedRoute>
-            <MyCards />
+            <MyCards onCardsUpdate={getCreditCards} />
           </ProtectedRoute>
         } />
       </Routes>

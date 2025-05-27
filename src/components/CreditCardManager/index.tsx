@@ -8,7 +8,11 @@ import { Modal, useModal } from '../Modal';
 import CreditCardDetailView from '../CreditCardDetailView';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 
-const CreditCardManager = () => {
+interface CreditCardManagerProps {
+    onCardsUpdate?: (cards: CreditCard[]) => void;
+}
+
+const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) => {
     const [userCards, setUserCards] = useState<CreditCard[]>([]);
     const [selectedCard, setSelectedCard] = useState<CreditCard | null>(null);
     const [cardDetails, setCardDetails] = useState<CreditCardDetails | null>(null);
@@ -45,6 +49,9 @@ const CreditCardManager = () => {
                 setUserCards(cards);
                 setDetailedCards(detailedCardsData);
                 
+                // Notify parent component of card updates
+                onCardsUpdate?.(cards);
+                
                 // Select the default card if available, otherwise the first card
                 const defaultCard = cards.find(card => card.isDefaultCard);
                 if (defaultCard) {
@@ -66,7 +73,7 @@ const CreditCardManager = () => {
         };
 
         loadUserCards();
-    }, []);
+    }, [onCardsUpdate]);
 
     // Load detailed information for a specific card
     const loadCardDetails = async (cardId: string) => {
@@ -126,6 +133,9 @@ const CreditCardManager = () => {
             // Refresh cards after update
             const refreshedCards = await CardService.fetchCreditCards(true);
             setUserCards(refreshedCards);
+            
+            // Notify parent component of card updates
+            onCardsUpdate?.(refreshedCards);
             
             // Update selected card with preferred status
             if (selectedCard && selectedCard.id === card.id) {
