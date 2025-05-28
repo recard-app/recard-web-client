@@ -91,9 +91,6 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
     });
   }
 
-  // Determine which cards to display based on the showOnlyUnselectedCards prop
-  const cardsToDisplay = showOnlyUnselectedCards ? otherCards : null;
-
   // Render a single card
   const renderCard = (card: CreditCard) => (
     <div 
