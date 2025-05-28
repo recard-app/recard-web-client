@@ -1,17 +1,24 @@
 import React from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
-import { PLACEHOLDER_CARD_IMAGE } from '../../types';
+import { PLACEHOLDER_CARD_IMAGE, TEMP_ICON, STAR_OUTLINE_ICON, STAR_FILLED_ICON } from '../../types';
 
 interface CreditCardDetailViewProps {
     cardDetails: CreditCardDetails | null;
     isLoading: boolean;
+    onSetPreferred?: () => void;
+    onRemoveCard?: () => void;
 }
 
-const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({ cardDetails, isLoading }) => {
+const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({ 
+    cardDetails, 
+    isLoading, 
+    onSetPreferred, 
+    onRemoveCard 
+}) => {
     // For initial load, show loading state
     if (isLoading) {
-        return <div className="card-details-loading">Loading cards details...</div>;
+        return <div className="card-details-loading">Loading card details...</div>;
     }
     
     if (!cardDetails) {
@@ -30,7 +37,34 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({ cardDetails
                     <h2>{cardDetails.CardName}</h2>
                     <p className="card-issuer">{cardDetails.CardIssuer}</p>
                     <p className="card-network">{cardDetails.CardNetwork}</p>
-                    {cardDetails.isDefaultCard && <span className="preferred-badge">Preferred Card</span>}
+                    
+                    {/* Preferred Card Button or Badge */}
+                    <div className="card-actions">
+                        <div className="card-action-buttons">
+                            {onSetPreferred && (
+                                <button 
+                                    className={`preferred-button ${cardDetails.isDefaultCard ? 'is-preferred' : ''}`}
+                                    onClick={onSetPreferred}
+                                >
+                                    <img 
+                                        src={cardDetails.isDefaultCard ? STAR_FILLED_ICON : STAR_OUTLINE_ICON} 
+                                        alt={cardDetails.isDefaultCard ? "Preferred" : "Not Preferred"} 
+                                        className="preferred-icon" 
+                                    />
+                                    {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set as Preferred Card'}
+                                </button>
+                            )}
+                            {onRemoveCard && (
+                                <button 
+                                    className="remove-card-button"
+                                    onClick={onRemoveCard}
+                                >
+                                    <img src={TEMP_ICON} alt="Delete" className="delete-icon" />
+                                    Remove Card
+                                </button>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
             

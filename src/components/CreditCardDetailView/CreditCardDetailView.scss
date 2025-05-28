@@ -45,14 +45,90 @@
         margin-bottom: 12px;
       }
       
-      .preferred-badge {
-        display: inline-block;
-        background-color: #0070f3;
-        color: white;
-        font-size: 12px;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-weight: 500;
+      .card-actions {
+        margin-top: 16px;
+        
+        .card-action-buttons {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          
+          .preferred-button {
+            background-color: #f5f5f5;
+            color: #333;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            
+            &:hover {
+              background-color: #e8e8e8;
+              border-color: #ccc;
+            }
+            
+            .preferred-icon {
+              width: 16px;
+              height: 16px;
+              opacity: 0.7;
+              transition: all 0.2s;
+            }
+            
+            &.is-preferred {
+              background-color: #0070f3;
+              color: white;
+              border-color: #0070f3;
+              
+              &:hover {
+                background-color: #0060df;
+                border-color: #0060df;
+              }
+              
+              .preferred-icon {
+                filter: brightness(0) invert(1);
+                opacity: 1;
+              }
+            }
+            
+            &:hover .preferred-icon {
+              opacity: 1;
+            }
+          }
+          
+          .remove-card-button {
+            background-color: #fff;
+            color: #e53935;
+            border: 2px solid #e53935;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            
+            &:hover {
+              background-color: #e53935;
+              color: white;
+            }
+            
+            .delete-icon {
+              width: 16px;
+              height: 16px;
+            }
+            
+            &:hover .delete-icon {
+              filter: brightness(0) invert(1);
+            }
+          }
+        }
       }
     }
   }

@@ -56,6 +56,8 @@ export const DEFAULT_CHAT_NAME_PLACEHOLDER = 'New Transaction Chat';
 
 export const TEMP_ICON = 'https://placehold.co/20x20';
 export const DROPDOWN_ICON = 'https://placehold.co/16x16';
+export const STAR_OUTLINE_ICON = 'https://placehold.co/16x16';
+export const STAR_FILLED_ICON = 'https://placehold.co/16x16';
 
 export interface MonthOption {
     value: number;

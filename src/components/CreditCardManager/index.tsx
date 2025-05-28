@@ -3,7 +3,6 @@ import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService } from '../../services';
-import { DropdownItem } from '../../elements/Elements';
 import { Modal, useModal } from '../Modal';
 import CreditCardDetailView from '../CreditCardDetailView';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -58,17 +57,21 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 notifyCardUpdate(cards);
                 
                 // Select the default card if available, otherwise the first card
-                const defaultCard = cards.find(card => card.isDefaultCard);
+                const defaultCard = cards.find(card => card.isDefaultCard && card.selected);
                 if (defaultCard) {
-                    setSelectedCard(defaultCard);
-                    // Find the details directly from the already loaded data
+                    // Find the details directly from the loaded data
                     const details = detailedCardsData.find(card => card.id === defaultCard.id);
+                    setSelectedCard(defaultCard);
                     setCardDetails(details || null);
-                } else if (cards.length > 0) {
-                    setSelectedCard(cards[0]);
-                    // Find the details directly from the already loaded data
-                    const details = detailedCardsData.find(card => card.id === cards[0].id);
-                    setCardDetails(details || null);
+                } else if (cards.length > 0 && cards.some(card => card.selected)) {
+                    // Get the first selected card
+                    const firstSelectedCard = cards.find(card => card.selected);
+                    if (firstSelectedCard) {
+                        // Find the details directly from the loaded data
+                        const details = detailedCardsData.find(card => card.id === firstSelectedCard.id);
+                        setSelectedCard(firstSelectedCard);
+                        setCardDetails(details || null);
+                    }
                 }
             } catch (error) {
                 console.error('Error loading cards:', error);
@@ -78,51 +81,66 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
         };
 
         loadUserCards();
-    }, []); // Remove onCardsUpdate from dependency array
+    }, []);
 
     // Load detailed information for a specific card
     const loadCardDetails = async (cardId: string) => {
         try {
-            // Only show loading state if we don't already have the card details
+            // If we already loaded cached details in handleCardSelect, don't show loading again
             const existingDetails = detailedCards.find(card => card.id === cardId);
-            if (!existingDetails) {
+            if (!existingDetails && !cardDetails) {
                 setIsLoading(true);
             }
             
-            // Check if we already have the details in our cached detailed cards
-            let details = detailedCards.find(card => card.id === cardId);
+            // Always fetch fresh detailed cards data to keep in sync with DB
+            const allDetailedCards = await UserCreditCardService.fetchUserCardsDetailedInfo();
+            setDetailedCards(allDetailedCards);
             
-            // If not found in cache, fetch the latest details
-            if (!details) {
-                // Fetch all detailed cards
-                const allDetailedCards = await UserCreditCardService.fetchUserCardsDetailedInfo();
-                setDetailedCards(allDetailedCards);
-                
-                // Find the specific card details
-                details = allDetailedCards.find(card => card.id === cardId);
+            // Find the specific card details from the fresh data
+            const details = allDetailedCards.find(card => card.id === cardId);
+            
+            // If the selected card hasn't changed while loading, update the details
+            if (selectedCard && selectedCard.id === cardId) {
+                setCardDetails(details || null);
             }
-            
-            setCardDetails(details || null);
         } catch (error) {
             console.error('Error loading card details:', error);
-            setCardDetails(null);
+            // Only reset details if we were explicitly loading this card
+            if (selectedCard && selectedCard.id === cardId) {
+                setCardDetails(null);
+            }
         } finally {
             setIsLoading(false);
         }
     };
 
     // Handle card selection from the sidebar
-    const handleCardSelect = (card: CreditCard) => {
+    const handleCardSelect = async (card: CreditCard) => {
+        // Update the selected card state immediately for a responsive UI
         setSelectedCard(card);
-        loadCardDetails(card.id);
+        
+        // Get the latest card details from our cache if available
+        const cachedDetails = detailedCards.find(detail => detail.id === card.id);
+        if (cachedDetails) {
+            setCardDetails(cachedDetails);
+        } else {
+            // Show loading state if we don't have cached details
+            setIsLoading(true);
+        }
+        
+        // Fetch fresh details for the selected card in the background
+        await loadCardDetails(card.id);
     };
 
     // Handle setting a card as the preferred/default card
     const handleSetPreferred = async (card: CreditCard) => {
         try {
+            // Toggle the preferred status
+            const newIsDefault = !card.isDefaultCard;
+            
             const updatedCards = userCards.map(c => ({
                 ...c,
-                isDefaultCard: c.id === card.id
+                isDefaultCard: newIsDefault && c.id === card.id
             }));
             
             // Format cards for API submission
@@ -142,12 +160,32 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             // Notify parent component of card updates
             notifyCardUpdate(refreshedCards);
             
-            // Update selected card with preferred status
+            // Immediately update local state for a responsive UI
             if (selectedCard && selectedCard.id === card.id) {
                 setSelectedCard({
                     ...selectedCard,
-                    isDefaultCard: true
+                    isDefaultCard: newIsDefault
                 });
+                
+                // Update card details as well
+                if (cardDetails) {
+                    setCardDetails({
+                        ...cardDetails,
+                        isDefaultCard: newIsDefault
+                    });
+                }
+            }
+            
+            // Refresh detailed cards data in the background
+            const refreshedDetailedCards = await UserCreditCardService.fetchUserCardsDetailedInfo();
+            setDetailedCards(refreshedDetailedCards);
+            
+            // If we're currently viewing a card, update its details
+            if (selectedCard) {
+                const updatedCardDetails = refreshedDetailedCards.find(detail => detail.id === selectedCard.id);
+                if (updatedCardDetails) {
+                    setCardDetails(updatedCardDetails);
+                }
             }
         } catch (error) {
             console.error('Error setting preferred card:', error);
@@ -207,6 +245,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 }
             }
             
+            // Refresh detailed cards data in the background
+            const refreshedDetailedCards = await UserCreditCardService.fetchUserCardsDetailedInfo();
+            setDetailedCards(refreshedDetailedCards);
+            
             // Close the confirmation modal
             closeDeleteConfirm();
         } catch (error) {
@@ -261,7 +303,19 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 const newlyAddedCard = refreshedCards.find(c => c.id === card.id);
                 if (newlyAddedCard) {
                     setSelectedCard(newlyAddedCard);
-                    await loadCardDetails(card.id);
+                    
+                    // Refresh detailed cards data in the background
+                    const refreshedDetailedCards = await UserCreditCardService.fetchUserCardsDetailedInfo();
+                    setDetailedCards(refreshedDetailedCards);
+                    
+                    // Find details for the newly selected card
+                    const newCardDetails = refreshedDetailedCards.find(detail => detail.id === card.id);
+                    if (newCardDetails) {
+                        setCardDetails(newCardDetails);
+                    } else {
+                        // If not found in the refreshed data, load details separately
+                        await loadCardDetails(card.id);
+                    }
                 }
             } catch (error) {
                 console.error('Error adding card:', error);
@@ -271,31 +325,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
         // Close the selector
         closeSelector();
     };
-
-    // Render dropdown options for each card
-    const renderCardDropdownOptions = (card: CreditCard) => (
-        <>
-            {!card.isDefaultCard && (
-                <DropdownItem 
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleSetPreferred(card);
-                    }}
-                >
-                    Set as Preferred Card
-                </DropdownItem>
-            )}
-            <DropdownItem 
-                onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveCard(card);
-                }}
-                className="remove-option"
-            >
-                Remove Card
-            </DropdownItem>
-        </>
-    );
 
     // Get only the selected cards to display
     const selectedCards = userCards.filter(card => card.selected)
@@ -325,8 +354,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     cards={selectedCards}
                     selectedCardId={selectedCard?.id}
                     onCardSelect={handleCardSelect}
-                    showDropdown={true}
-                    renderDropdownOptions={renderCardDropdownOptions}
+                    showDropdown={false}
                     loading={isLoading}
                 />
             </div>
@@ -336,6 +364,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 <CreditCardDetailView 
                     cardDetails={cardDetails}
                     isLoading={isLoading}
+                    onSetPreferred={selectedCard ? () => handleSetPreferred(selectedCard) : undefined}
+                    onRemoveCard={selectedCard ? () => handleRemoveCard(selectedCard) : undefined}
                 />
             </div>
             
