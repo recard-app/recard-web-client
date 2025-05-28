@@ -3,7 +3,6 @@ import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
 import { ToggleSwitch } from '../../elements';
-import { useNavigate } from 'react-router-dom';
 import {
   Conversation, 
   PaginationData,
@@ -57,7 +56,6 @@ function HistoryPanel({
   showCompletedOnlyPreference
 }: HistoryPanelProps) {
   const { user } = useAuth();
-  const navigate = useNavigate();
   // Current page number in pagination
   const [currentPage, setCurrentPage] = useState<number>(1);
   // Pagination metadata from the API
