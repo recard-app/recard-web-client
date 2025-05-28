@@ -73,34 +73,4 @@
       }
     }
   }
-  
-  .card-menu-button {
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    color: #666;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-    
-    &:hover {
-      background-color: #eeeeee;
-    }
-  }
-}
-
-/* Dropdown styles specific to this component */
-.card-dropdown {
-  .dropdown-item {
-    width: 100%;
-    
-    &.remove-option {
-      color: #e53935;
-    }
-  }
 }

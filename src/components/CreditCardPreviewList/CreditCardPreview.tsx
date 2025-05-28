@@ -1,6 +1,5 @@
 import React from 'react';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { Dropdown } from '../../elements/Elements';
 import { PLACEHOLDER_CARD_IMAGE } from '../../types';
 import './CreditCardPreviewList.scss';
 
@@ -8,16 +7,12 @@ interface CreditCardPreviewProps {
   card: CreditCard;
   isSelected?: boolean;
   onCardSelect?: (card: CreditCard) => void;
-  showDropdown?: boolean;
-  dropdownOptions?: React.ReactNode;
 }
 
 const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
   card,
   isSelected = false,
   onCardSelect,
-  showDropdown = false,
-  dropdownOptions,
 }) => {
   const handleClick = () => {
     if (onCardSelect) {
@@ -44,16 +39,6 @@ const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
           <div className="card-issuer">{card.CardIssuer}</div>
         </div>
       </div>
-      
-      {showDropdown && dropdownOptions && (
-        <Dropdown 
-          trigger={<button className="card-menu-button">•••</button>}
-          align="right"
-          className="card-dropdown"
-        >
-          {dropdownOptions}
-        </Dropdown>
-      )}
     </div>
   );
 };

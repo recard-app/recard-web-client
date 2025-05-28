@@ -354,7 +354,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     cards={selectedCards}
                     selectedCardId={selectedCard?.id}
                     onCardSelect={handleCardSelect}
-                    showDropdown={false}
                     loading={isLoading}
                 />
             </div>

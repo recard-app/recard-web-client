@@ -7,8 +7,6 @@ interface CreditCardPreviewListProps {
   cards: CreditCard[];
   selectedCardId?: string;
   onCardSelect?: (card: CreditCard) => void;
-  showDropdown?: boolean;
-  renderDropdownOptions?: (card: CreditCard) => React.ReactNode;
   loading?: boolean;
   showOnlySelected?: boolean;
 }
@@ -29,8 +27,6 @@ const CreditCardPreviewList: React.FC<CreditCardPreviewListProps> = ({
   cards,
   selectedCardId,
   onCardSelect,
-  showDropdown = false,
-  renderDropdownOptions,
   loading = false,
   showOnlySelected = false,
 }) => {
@@ -57,8 +53,6 @@ const CreditCardPreviewList: React.FC<CreditCardPreviewListProps> = ({
             card={card}
             isSelected={selectedCardId === card.id}
             onCardSelect={onCardSelect}
-            showDropdown={showDropdown}
-            dropdownOptions={renderDropdownOptions ? renderDropdownOptions(card) : undefined}
           />
         ))
       )}
