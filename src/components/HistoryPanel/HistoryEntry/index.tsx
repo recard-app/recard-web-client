@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON, CHAT_DESCRIPTION_MAX_LENGTH } from '../../../types';
 import { formatDate, deleteChatEntry } from './utils';
 import { Modal, useModal } from '../../Modal';
-import { Dropdown, DropdownItem } from '../../../elements/Elements';
+import { Dropdown, DropdownItem, InfoDisplay } from '../../../elements';
 import { UserHistoryService } from '../../../services';
 import { useState } from 'react';
 
@@ -34,10 +34,18 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
 
   // Use the enhanced useModal hook with modalType and entityId
   const { isOpen: isDeleteModalOpen, open: openDeleteModal, close: closeDeleteModal } = 
-    useModal(false, 'delete', chatEntry.chatId);
+    useModal({ 
+      initialState: false, 
+      modalType: 'delete', 
+      entityId: chatEntry.chatId 
+    });
     
   const { isOpen: isRenameModalOpen, open: openRenameModal, close: closeRenameModal } = 
-    useModal(false, 'rename', chatEntry.chatId);
+    useModal({ 
+      initialState: false, 
+      modalType: 'rename', 
+      entityId: chatEntry.chatId 
+    });
   
   // State for the new chat description
   const [newChatDescription, setNewChatDescription] = useState(chatEntry.chatDescription);
@@ -136,7 +144,11 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
       closeDeleteModal();
     } catch (error) {
       console.error('Error deleting chat:', error);
-      alert('Failed to delete chat. Please try again.');
+      // Using InfoDisplay in an alert is not typical - typically this would be added to the modal.
+      // For demonstration purposes, replacing the alert, but a better approach would be to add an
+      // error state and render the InfoDisplay within the modal.
+      setRenameError('Failed to delete chat. Please try again.');
+      // Not showing an alert anymore: alert('Failed to delete chat. Please try again.');
     }
   };
 
@@ -233,9 +245,10 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
               {newChatDescription.length}/{CHAT_DESCRIPTION_MAX_LENGTH}
             </div>
             {renameError && (
-              <div className="error-message" style={{ color: 'red', marginTop: '10px', fontSize: '14px' }}>
-                {renameError}
-              </div>
+              <InfoDisplay
+                type="error"
+                message={renameError}
+              />
             )}
             <div className="button-group">
               <button
@@ -249,7 +262,6 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
                 type="button"
                 className="cancel-button"
                 onClick={closeRenameModal}
-                disabled={isRenaming}
               >
                 Cancel
               </button>

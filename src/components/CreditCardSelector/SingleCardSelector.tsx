@@ -3,6 +3,7 @@ import './CreditCardSelector.scss';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, sortCards } from './utils';
 import { PLACEHOLDER_CARD_IMAGE } from '../../types';
+import { InfoDisplay } from '../../elements';
 
 /**
  * Props interface for the SingleCardSelector component
@@ -34,6 +35,9 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   const [searchTerm, setSearchTerm] = useState<string>('');
   // State for tracking if we're loading initial data
   const [isInitialLoad, setIsInitialLoad] = useState<boolean>(cards.length === 0);
+  // Error state
+  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [showError, setShowError] = useState<boolean>(false);
 
   /**
    * Fetch cards and organize them in the background
@@ -45,8 +49,12 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
         const fetchedCards = await fetchUserCards(cards);
         setCards(fetchedCards);
         setIsInitialLoad(false);
+        // Clear any previous errors on successful load
+        setShowError(false);
       } catch (error) {
         console.error('Error loading cards:', error);
+        setErrorMessage('Unable to load credit cards. Please try again later.');
+        setShowError(true);
         setIsInitialLoad(false);
       }
     };
@@ -114,6 +122,15 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
       <div className="selector-header">
         <h3>Select a Card</h3>
       </div>
+      
+      {showError && (
+        <div className="error-container">
+          <InfoDisplay
+            type="error"
+            message={errorMessage}
+          />
+        </div>
+      )}
       
       <div className="search-container">
         <input

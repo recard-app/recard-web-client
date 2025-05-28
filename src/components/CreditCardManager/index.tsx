@@ -6,6 +6,7 @@ import { CardService, UserCreditCardService } from '../../services';
 import { Modal, useModal } from '../Modal';
 import CreditCardDetailView from '../CreditCardDetailView';
 import CreditCardPreviewList from '../CreditCardPreviewList';
+import { InfoDisplay } from '../../elements';
 
 interface CreditCardManagerProps {
     onCardsUpdate?: (cards: CreditCard[]) => void;
@@ -32,6 +33,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             modalType: 'delete_card',
             entityId: cardToDelete?.id
         });
+    
+    // Error message state
+    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [showError, setShowError] = useState<boolean>(false);
     
     // Memoized function to notify parent of card updates
     const notifyCardUpdate = useCallback((cards: CreditCard[]) => {
@@ -75,6 +80,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 }
             } catch (error) {
                 console.error('Error loading cards:', error);
+                setErrorMessage('Unable to load your credit cards. Please try again later.');
+                setShowError(true);
             } finally {
                 setIsLoading(false);
             }
@@ -105,6 +112,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             }
         } catch (error) {
             console.error('Error loading card details:', error);
+            setErrorMessage('Unable to load card details. Please try again.');
+            setShowError(true);
             // Only reset details if we were explicitly loading this card
             if (selectedCard && selectedCard.id === cardId) {
                 setCardDetails(null);
@@ -116,6 +125,9 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
 
     // Handle card selection from the sidebar
     const handleCardSelect = async (card: CreditCard) => {
+        // Clear any previous errors
+        setShowError(false);
+        
         // Update the selected card state immediately for a responsive UI
         setSelectedCard(card);
         
@@ -135,6 +147,9 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
     // Handle setting a card as the preferred/default card
     const handleSetPreferred = async (card: CreditCard) => {
         try {
+            // Clear any previous errors
+            setShowError(false);
+            
             // Toggle the preferred status
             const newIsDefault = !card.isDefaultCard;
             
@@ -189,11 +204,16 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             }
         } catch (error) {
             console.error('Error setting preferred card:', error);
+            setErrorMessage('Unable to set this card as preferred. Please try again.');
+            setShowError(true);
         }
     };
 
     // Handle removing a card from the user's selected cards
     const handleRemoveCard = async (card: CreditCard) => {
+        // Clear any previous errors
+        setShowError(false);
+        
         // Set the card to delete and open the confirmation modal
         setCardToDelete(card);
         openDeleteConfirm();
@@ -253,6 +273,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             closeDeleteConfirm();
         } catch (error) {
             console.error('Error removing card:', error);
+            setErrorMessage('Unable to remove this card. Please try again.');
+            setShowError(true);
             // Close the modal even if there's an error
             closeDeleteConfirm();
         }
@@ -338,6 +360,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
 
     return (
         <div className="credit-card-manager">
+            
             {/* Sidebar for card selection using CreditCardPreviewList */}
             <div className="card-sidebar">
                 <div className="sidebar-header">
@@ -349,6 +372,14 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                         Add Card
                     </button>
                 </div>
+                {showError && (
+                    <div className="error-container">
+                        <InfoDisplay
+                            type="error"
+                            message={errorMessage}
+                        />
+                    </div>
+                )}
                 
                 <CreditCardPreviewList
                     cards={selectedCards}

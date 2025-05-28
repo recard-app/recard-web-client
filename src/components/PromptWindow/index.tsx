@@ -25,6 +25,7 @@ import { ChatHistoryPreference, InstructionsPreference } from '../../types';
 import { aiClient, userClient, MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER } from '../../types';
 import { UserHistoryService } from '../../services';
+import { InfoDisplay } from '../../elements';
 
 /**
  * Props for the PromptWindow component.
@@ -102,19 +103,11 @@ function PromptWindow({
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
     // Stores error messages to display to the user
     const [errorMessage, setErrorMessage] = useState<string>('');
+    // Controls whether to show the error message
+    const [showError, setShowError] = useState<boolean>(false);
 
-    // Modal for displaying error messages
-    const errorModal = useModal();
     // Modal for displaying help information
     const helpModal = useModal();
-
-    /**
-     * Handles closing the error modal and clearing the error message.
-     */
-    const handleErrorModalClose = () => {
-        errorModal.close();
-        setErrorMessage('');
-    };
 
     /**
      * Retrieves user prompt input and triggers the chat process.
@@ -123,6 +116,9 @@ function PromptWindow({
      * @param {string} returnPromptStr - The prompt text received from the input field
      */
     const getPrompt = (returnPromptStr: string) => {
+        // Clear any previous errors
+        setShowError(false);
+        
         if (isNewChat && isNewChatPending) {
             console.log('New chat creation in progress, please wait...');
             return;
@@ -240,7 +236,7 @@ function PromptWindow({
                 } catch (error) {
                     console.error('Error loading chat:', error);
                     setErrorMessage('Error loading chat history');
-                    errorModal.open();
+                    setShowError(true);
                 }
             };
             loadHistory();
@@ -365,6 +361,9 @@ function PromptWindow({
                 returnCurrentChatId,
                 setIsNewChat
             );
+            
+            // Clear any errors on success
+            setShowError(false);
         } catch (error) {
             if (axios.isCancel(error)) {
                 console.log('Request cancelled');
@@ -376,7 +375,7 @@ function PromptWindow({
             console.error(error);
             setIsNewChatPending(false);
             setErrorMessage('Error processing request, please try again.');
-            errorModal.open();
+            setShowError(true);
         } finally {
             resetLoading();
             abortControllerRef.current = null;
@@ -429,27 +428,19 @@ function PromptWindow({
         }
     }, [urlChatId, chatHistory.length]);
 
-    const handleHelpModalOpen = helpModal.open;
-    const handleHelpModalClose = helpModal.close;
-
     return (
         <div className='prompt-window'>
             <div className="prompt-window-header">
                 <button onClick={handleNewTransaction}>New Transaction Chat</button>
-                <button onClick={handleHelpModalOpen}>Help</button>
+                <button onClick={helpModal.open}>Help</button>
             </div>
-            
-            <Modal isOpen={errorModal.isOpen} onClose={handleErrorModalClose}>
-                <div className="error-content">
-                    {errorMessage}
-                </div>
-            </Modal>
 
-            <Modal isOpen={helpModal.isOpen} onClose={handleHelpModalClose}>
+            <Modal isOpen={helpModal.isOpen} onClose={helpModal.close}>
                 <PromptHelpModal />
             </Modal>
 
             <div ref={promptHistoryRef} className="prompt-history-container">
+
                 <PromptHistory 
                     chatHistory={chatHistory} 
                     isNewChat={isNewChat} 
@@ -457,7 +448,16 @@ function PromptWindow({
                     isLoadingSolutions={isLoadingSolutions}
                 />
             </div>
-            
+
+            {showError && (
+                <div className="error-container">
+                    <InfoDisplay
+                        type="error"
+                        message={errorMessage}
+                    />
+                </div>
+            )}
+        
             <PromptSolution 
                 promptSolutions={promptSolutions} 
                 creditCards={creditCards} 
@@ -466,11 +466,13 @@ function PromptWindow({
                 onHistoryUpdate={onHistoryUpdate}
                 chatHistory={chatHistory}
             />
+            
             <PromptField 
                 returnPrompt={getPrompt} 
                 isProcessing={isProcessing} 
                 onCancel={handleCancel} 
             />
+            
             {chatHistory.length >= MAX_CHAT_MESSAGES && (
                 <div className="below-prompt-field-text">
                     Remember to <button onClick={handleNewTransaction} className="inline-button">create a new transaction chat</button> for best results.

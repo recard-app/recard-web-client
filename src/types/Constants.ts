@@ -87,3 +87,25 @@ export const MONTH_ABBREVIATIONS = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ] as const;
+
+// Info component constants
+export const INFO_COLORS = {
+    ERROR: '#ff4444',
+    INFO: '#2196F3', 
+    WARNING: '#ff9800',
+    SUCCESS: '#4caf50'
+} as const;
+
+export const INFO_ICONS = {
+    ERROR: TEMP_ICON,
+    INFO: TEMP_ICON,
+    WARNING: TEMP_ICON,
+    SUCCESS: TEMP_ICON
+} as const;
+
+export const INFO_TITLES = {
+    ERROR: 'Error',
+    INFO: 'Info',
+    WARNING: 'Warning',
+    SUCCESS: 'Success'
+} as const;

@@ -1,0 +1,23 @@
+// InfoDisplay styles
+.info-component {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 12px;
+  border-radius: 2px;
+  font-size: 14px;
+  line-height: 1.4;
+  
+  .info-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+  
+  .info-title {
+    font-weight: 600;
+  }
+  
+  .info-message {
+    color: inherit;
+  }
+}

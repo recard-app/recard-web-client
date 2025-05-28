@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
-import '../../elements/Elements.scss';
-import { ToggleSwitch } from '../../elements/Elements';
+import { ToggleSwitch } from '../../elements';
 import { useNavigate } from 'react-router-dom';
 import {
   Conversation, 

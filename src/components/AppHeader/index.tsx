@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './AppHeader.scss';
 import { User as FirebaseUser } from 'firebase/auth';
 import { APP_NAME, DROPDOWN_ICON } from '../../types';
-import { Dropdown, DropdownItem } from '../../elements/Elements';
+import { Dropdown, DropdownItem } from '../../elements';
 
 /**
  * Props interface for AppHeader component

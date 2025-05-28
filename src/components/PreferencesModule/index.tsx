@@ -3,6 +3,7 @@ import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPrefere
 import { UserPreferencesService } from '../../services';
 import { CHAT_HISTORY_OPTIONS } from './utils';
 import './PreferencesModule.scss';
+import { InfoDisplay } from '../../elements';
 
 /**
  * Props interface for PreferencesModule component.
@@ -32,6 +33,7 @@ function PreferencesModule({
     const [instructions, setInstructions] = useState<string>(customInstructions || '');
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
+    const [messageType, setMessageType] = useState<'error' | 'success' | 'info' | 'warning'>('info');
 
     useEffect(() => {
         const loadAllPreferences = async () => {
@@ -57,6 +59,7 @@ function PreferencesModule({
             } catch (error) {
                 console.error('Error loading preferences:', error);
                 setMessage('Error loading preferences');
+                setMessageType('error');
             }
         };
 
@@ -73,10 +76,12 @@ function PreferencesModule({
         try {
             await UserPreferencesService.savePreferences(instructions, chatHistoryPreference, showCompletedOnlyPreference);
             setMessage('All preferences saved successfully!');
+            setMessageType('success');
             onInstructionsUpdate(instructions);
         } catch (error) {
             console.error('Error saving preferences:', error);
             setMessage('Error saving preferences');
+            setMessageType('error');
         } finally {
             setIsSaving(false);
         }
@@ -125,6 +130,13 @@ function PreferencesModule({
                     </select>
                 </div>
 
+                {message && (
+                    <InfoDisplay
+                        type={messageType}
+                        message={message}
+                    />
+                )}
+
                 <button 
                     onClick={handleSave}
                     disabled={isSaving}
@@ -132,11 +144,6 @@ function PreferencesModule({
                 >
                     {isSaving ? 'Saving...' : 'Save Preferences'}
                 </button>
-                {message && (
-                    <div className={`message ${message.includes('Error') ? 'error' : 'success'}`}>
-                        {message}
-                    </div>
-                )}
             </div>
         </div>
     );

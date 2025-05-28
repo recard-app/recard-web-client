@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections, sortCards } from './utils';
 import { PLACEHOLDER_CARD_IMAGE, APP_NAME } from '../../types';
+import { InfoDisplay } from '../../elements';
 
 /**
  * Props interface for the CreditCardSelector component
@@ -29,6 +30,7 @@ const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCar
     const [saveStatus, setSaveStatus] = useState<string>('');
     // State for tracking if we're loading initial data
     const [isInitialLoad, setIsInitialLoad] = useState<boolean>(creditCards.length === 0);
+    const [saveStatusType, setSaveStatusType] = useState<'success' | 'error' | 'info'>('info');
 
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -76,6 +78,7 @@ const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCar
     const handleSave = async (): Promise<void> => {
         const result = await saveUserCardSelections(creditCards);
         setSaveStatus(result.message);
+        setSaveStatusType(result.success ? 'success' : 'error');
         if (result.success && result.updatedCards) {
             setCreditCards(result.updatedCards);
         }
@@ -219,11 +222,19 @@ const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCar
                         <div className="no-results">No cards match your search</div>
                     )}
                     
+                    {saveStatus && (
+                        <div className="save-status-container">
+                            <InfoDisplay
+                                type={saveStatusType}
+                                message={saveStatus}
+                            />
+                        </div>
+                    )}
+                    
                     <div className="save-section">
                         <button onClick={handleSave} className="save-button">
                             Save
                         </button>
-                        {saveStatus && <p className="save-status">{saveStatus}</p>}
                     </div>
                 </div>
             )}
