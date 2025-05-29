@@ -25,13 +25,12 @@ import History from './pages/history/History';
 import MyCards from './pages/my-cards/MyCards';
 // Components
 import AppHeader from './components/AppHeader';
-import HistoryPanel from './components/HistoryPanel';
+import AppSidebar from './components/AppSidebar';
 import PromptWindow from './components/PromptWindow';
 import CreditCardSelector from './components/CreditCardSelector';
 import { Modal, useModal } from './components/Modal';
 import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
-import CreditCardPreviewList from './components/CreditCardPreviewList';
 import CreditCardDetailView from './components/CreditCardDetailView';
 
 // Context
@@ -393,54 +392,23 @@ function AppContent({}: AppContentProps) {
   };
 
   const renderMainContent = () => {
-    const handleEditCards = () => {
-      navigate('/my-cards');
-    };
-    
     return (
       <div className={`app-content ${isSidePanelOpen ? 'side-panel-open' : 'side-panel-closed'}`}>
-        <div className={`side-panel ${isSidePanelOpen ? 'open' : 'closed'}`}>
-          <div className="panel-section">
-            <div className="panel-header">
-              <h3>Recent Transactions</h3>
-              <button 
-                className="button outline small"
-                onClick={() => navigate('/history')}
-              >
-                View History
-              </button>
-            </div>
-            <HistoryPanel 
-              existingHistoryList={chatHistory} 
-              fullListSize={false} 
-              listSize={quick_history_size}
-              currentChatId={currentChatId}
-              returnCurrentChatId={getCurrentChatId}
-              onHistoryUpdate={handleHistoryUpdate}
-              subscriptionPlan={subscriptionPlan}
-              creditCards={creditCards}
-              historyRefreshTrigger={historyRefreshTrigger}
-              showCompletedOnlyPreference={showCompletedOnlyPreference}
-            />
-          </div>
-          <div className="panel-section">
-            <div className="panel-header">
-              <h3>My Cards</h3>
-              <button 
-                className="button outline small"
-                onClick={handleEditCards}
-              >
-                Edit Cards
-              </button>
-            </div>
-            <CreditCardPreviewList 
-              cards={creditCards}
-              loading={isLoadingCreditCards}
-              showOnlySelected={true}
-              onCardSelect={handleCardSelect}
-            />
-          </div>
-        </div>
+        <AppSidebar 
+          isOpen={isSidePanelOpen}
+          onToggle={toggleSidePanel}
+          chatHistory={chatHistory}
+          currentChatId={currentChatId}
+          onCurrentChatIdChange={getCurrentChatId}
+          onHistoryUpdate={handleHistoryUpdate}
+          subscriptionPlan={subscriptionPlan}
+          creditCards={creditCards}
+          historyRefreshTrigger={historyRefreshTrigger}
+          showCompletedOnlyPreference={showCompletedOnlyPreference}
+          isLoadingCreditCards={isLoadingCreditCards}
+          onCardSelect={handleCardSelect}
+          quickHistorySize={quick_history_size}
+        />
         <div className="prompt-window-container">
           <PromptWindow 
             creditCards={creditCards}

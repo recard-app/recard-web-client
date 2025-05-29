@@ -28,47 +28,6 @@
   }
 }
 
-.side-panel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  width: $side-panel-width;
-  gap: $space-5;
-  overflow-y: auto;
-  min-height: 0; // This is crucial for nested flex scrolling
-  background-color: $neutral-white;
-  padding: $space-4;
-  border-right: $border-half solid $neutral-light-gray;
-  transition: transform $side-panel-speed ease-in-out, opacity $side-panel-speed ease-in-out;
-  
-  &.closed {
-    transform: translateX(-100%);
-    opacity: 0;
-    pointer-events: none;
-  }
-  
-  &.open {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: all;
-  }
-}
-
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: $space-4;
-  
-  h3 {
-    margin: 0;
-  }
-}
-
 .prompt-window-container {
   flex: 1;
   display: flex;
