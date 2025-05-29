@@ -17,24 +17,45 @@
   display: flex;
   flex: 1;
   min-height: 0; // This is crucial for nested flex scrolling
-  padding: $space-5;
-  gap: $space-5;
+  position: relative; // For absolute positioning of side panel
+  
+  &.side-panel-open .prompt-window-container {
+    margin-left: $side-panel-width;
+  }
+  
+  &.side-panel-closed .prompt-window-container {
+    margin-left: 0;
+  }
 }
 
-.side-panels {
+.side-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 10;
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: $side-panel-width;
   gap: $space-5;
   overflow-y: auto;
   min-height: 0; // This is crucial for nested flex scrolling
-}
-
-.panel-section {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  padding: 15px;
+  background-color: $neutral-white;
+  padding: $space-4;
+  border-right: $border-half solid $neutral-light-gray;
+  transition: transform $side-panel-speed ease-in-out, opacity $side-panel-speed ease-in-out;
+  
+  &.closed {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  &.open {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: all;
+  }
 }
 
 .panel-header {
@@ -46,30 +67,14 @@
   h3 {
     margin: 0;
   }
-  
-  .view-all-button {
-    @include button-small;
-  }
 }
 
-.my-cards-container {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.my-cards-header {
+.prompt-window-container {
+  flex: 1;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: $space-4;
-  
-  h3 {
-    margin: 0;
-  }
-  
-  .edit-cards-button {
-    @include button-small;
-  }
+  justify-content: center;
+  min-height: 0;
+  transition: margin-left $side-panel-speed ease-in-out;
 }

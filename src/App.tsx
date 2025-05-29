@@ -95,6 +95,11 @@ function AppContent({}: AppContentProps) {
   const [showCompletedOnlyPreference, setShowCompletedOnlyPreference] = useState<ShowCompletedOnlyPreference>(false);
   // State for tracking user's subscription plan
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
+  // State for managing side panel visibility with localStorage persistence
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState<boolean>(() => {
+    const stored = localStorage.getItem('sidePanelOpen');
+    return stored !== null ? JSON.parse(stored) : true; // Default to open
+  });
 
   const cardSelectorModal = useModal();
   const cardDetailsModal = useModal();
@@ -377,19 +382,29 @@ function AppContent({}: AppContentProps) {
     return createTitle();
   };
 
+  // Effect to persist side panel state to localStorage
+  useEffect(() => {
+    localStorage.setItem('sidePanelOpen', JSON.stringify(isSidePanelOpen));
+  }, [isSidePanelOpen]);
+
+  // Function to toggle side panel
+  const toggleSidePanel = () => {
+    setIsSidePanelOpen(prev => !prev);
+  };
+
   const renderMainContent = () => {
     const handleEditCards = () => {
       navigate('/my-cards');
     };
     
     return (
-      <div className="app-content">
-        <div className="side-panels">
+      <div className={`app-content ${isSidePanelOpen ? 'side-panel-open' : 'side-panel-closed'}`}>
+        <div className={`side-panel ${isSidePanelOpen ? 'open' : 'closed'}`}>
           <div className="panel-section">
             <div className="panel-header">
               <h3>Recent Transactions</h3>
               <button 
-                className="button outline"
+                className="button outline small"
                 onClick={() => navigate('/history')}
               >
                 View History
@@ -408,11 +423,11 @@ function AppContent({}: AppContentProps) {
               showCompletedOnlyPreference={showCompletedOnlyPreference}
             />
           </div>
-          <div className="my-cards-container">
-            <div className="my-cards-header">
+          <div className="panel-section">
+            <div className="panel-header">
               <h3>My Cards</h3>
               <button 
-                className="button outline"
+                className="button outline small"
                 onClick={handleEditCards}
               >
                 Edit Cards
@@ -453,6 +468,8 @@ function AppContent({}: AppContentProps) {
         user={user}
         onModalOpen={cardSelectorModal.open}
         onLogout={handleLogout}
+        isSidePanelOpen={isSidePanelOpen}
+        toggleSidePanel={toggleSidePanel}
       />
       
       <Modal 
