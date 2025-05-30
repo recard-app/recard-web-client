@@ -10,7 +10,8 @@ import {
   Conversation, 
   SubscriptionPlan,
   ShowCompletedOnlyPreference,
-  DROPDOWN_ICON
+  DROPDOWN_ICON,
+  APP_NAME
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import './AppSidebar.scss';
@@ -101,6 +102,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     >
       {/* Sticky Top Section */}
       <div className="sidebar-top">
+        {isOpen && (
+          <h1 className="app-name">
+            <Link to="/">{APP_NAME}</Link>
+          </h1>
+        )}
         <div className="sidebar-toggle">
           <button 
             className="button outline small toggle-button"

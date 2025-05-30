@@ -422,15 +422,16 @@ function AppContent({}: AppContentProps) {
         <Helmet>
           <title>{getPageTitle()}</title>
         </Helmet>
-        {/* Commenting out for now as it's not needed for the new design until mobile is implemented
-        <AppHeader 
-          user={user}
-          onModalOpen={cardSelectorModal.open}
-          onLogout={handleLogout}
-          isSidePanelOpen={isSidePanelOpen}
-          toggleSidePanel={toggleSidePanel}
-        />
-        */}
+        
+        {/* AppHeader for unauthenticated pages */}
+        {!user && (
+          <AppHeader 
+            user={user}
+            onLogout={handleLogout}
+            isSidePanelOpen={false}
+            toggleSidePanel={toggleSidePanel}
+          />
+        )}
         
         {/* Universal Sidebar - shown on all pages when user is authenticated */}
         {user && (

@@ -40,7 +40,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onLogout, isSidePanelOpen, 
       <nav className="nav-links">
         {/*{user && <button onClick={onModalOpen}>Manage your Credit Cards</button>}*/}
         {/* // Removed the button for now */}
-        {user ? (
+        {user && (
           <Dropdown 
             trigger={
               user.photoURL && (
@@ -66,10 +66,6 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onLogout, isSidePanelOpen, 
             </Link>
             <DropdownItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICON}>Sign Out</DropdownItem>
           </Dropdown>
-        ) : (
-          <Link to="/signin">
-            <button>Sign In</button>
-          </Link>
         )}
       </nav>
     </header>

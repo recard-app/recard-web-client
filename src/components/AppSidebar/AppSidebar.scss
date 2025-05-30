@@ -28,6 +28,25 @@
     padding: $space-4;
     border-bottom: $border-half solid $neutral-light-gray;
     background-color: $neutral-white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .app-name {
+      margin: 0;
+      font-size: $font-h2;
+      font-weight: $font-base;
+      
+      a {
+        color: $neutral-black;
+        text-decoration: none;
+        
+        &:hover {
+          color: $primary-color;
+          transition: color $transition-base;
+        }
+      }
+    }
 
     .sidebar-toggle {
       display: flex;
