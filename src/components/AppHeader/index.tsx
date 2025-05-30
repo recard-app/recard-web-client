@@ -8,19 +8,30 @@ import { Dropdown, DropdownItem } from '../../elements';
 /**
  * Props interface for AppHeader component
  * @property {FirebaseUser | null} user - Current Firebase user or null if not authenticated
- * @property {() => void} onModalOpen - Callback to open credit card selection modal
  * @property {() => void} onLogout - Callback to handle user logout
+ * @property {boolean} isSidePanelOpen - Whether the sidebar is currently open
+ * @property {() => void} toggleSidePanel - Callback to toggle sidebar open/closed state
  */
 export interface AppHeaderProps {
   user: FirebaseUser | null;
-  onModalOpen: () => void;
   onLogout: () => void;
+  isSidePanelOpen: boolean;
+  toggleSidePanel: () => void;
 }
 
-const AppHeader: React.FC<AppHeaderProps> = ({ user, onModalOpen, onLogout }) => {
+const AppHeader: React.FC<AppHeaderProps> = ({ user, onLogout, isSidePanelOpen, toggleSidePanel }) => {
   return (
     <header className="app-header">
       <div className="header-left">
+        {user && (
+          <button 
+            className="sidebar-toggle-button"
+            onClick={toggleSidePanel}
+            aria-label={isSidePanelOpen ? 'Close sidebar' : 'Open sidebar'}
+          >
+            ☰
+          </button>
+        )}
         <div className="logo">
           <Link to="/"><h1>{APP_NAME}</h1></Link>
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
 import HistoryPanel from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -50,6 +50,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   user,
   onLogout
 }) => {
+  // Get current location for active state
+  const location = useLocation();
+  
   // Centralized tooltip state
   const [activeTooltip, setActiveTooltip] = React.useState<{
     name: string;
@@ -154,18 +157,21 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           <>
             {/* Collapsed mini-nav content - just icons */}
             <div className="mini-nav-icons">
-              {miniMiddleNavItems.map((item, index) => (
-                <Link 
-                  key={index}
-                  to={item.to} 
-                  className="mini-nav-icon"
-                  onMouseEnter={(e) => handleMiniNavHover(e, item.name)}
-                  onMouseLeave={() => hideTooltip()}
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-                >
-                  <img src={item.icon} alt={item.name} />
-                </Link>
-              ))}
+              {miniMiddleNavItems.map((item, index) => {
+                const isActive = location.pathname === item.to;
+                return (
+                  <Link 
+                    key={index}
+                    to={item.to} 
+                    className={`mini-nav-icon ${isActive ? 'active' : ''}`}
+                    onMouseEnter={(e) => handleMiniNavHover(e, item.name)}
+                    onMouseLeave={() => hideTooltip()}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <img src={item.icon} alt={item.name} />
+                  </Link>
+                );
+              })}
             </div>
           </>
         )}
@@ -208,7 +214,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 <>
                   <Link 
                     to="/preferences" 
-                    className="mini-nav-icon"
+                    className={`mini-nav-icon ${location.pathname === '/preferences' ? 'active' : ''}`}
                     onMouseEnter={(e) => handleMiniNavHover(e, "Preferences")}
                     onMouseLeave={() => hideTooltip()}
                     style={{ textDecoration: 'none', color: 'inherit', marginBottom: '12px' }}

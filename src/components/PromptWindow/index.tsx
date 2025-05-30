@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
+import { useFullHeight } from '../../hooks/useFullHeight';
 
 import PromptHistory from './PromptHistory';
 import PromptField from './PromptField';
@@ -108,6 +109,9 @@ function PromptWindow({
 
     // Modal for displaying help information
     const helpModal = useModal();
+    
+    // Declare that this component needs full height behavior
+    useFullHeight(true);
 
     /**
      * Retrieves user prompt input and triggers the chat process.

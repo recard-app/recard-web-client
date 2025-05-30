@@ -167,6 +167,14 @@
         background-color: $neutral-light-gray;
       }
 
+      &.active {
+        background-color: $primary-color;
+        
+        img {
+          filter: brightness(0) invert(1); // Make icon white
+        }
+      }
+
       img {
         width: 20px;
         height: 20px;
@@ -200,6 +208,14 @@
 
       &:hover {
         background-color: $neutral-light-gray;
+      }
+
+      &.active {
+        background-color: $primary-color;
+        
+        img {
+          filter: brightness(0) invert(1); // Make icon white
+        }
       }
 
       .mini-profile-image {
