@@ -398,17 +398,19 @@ function AppContent({}: AppContentProps) {
           isOpen={isSidePanelOpen}
           onToggle={toggleSidePanel}
           chatHistory={chatHistory}
-          currentChatId={currentChatId}
+              currentChatId={currentChatId}
           onCurrentChatIdChange={getCurrentChatId}
-          onHistoryUpdate={handleHistoryUpdate}
-          subscriptionPlan={subscriptionPlan}
-          creditCards={creditCards}
-          historyRefreshTrigger={historyRefreshTrigger}
-          showCompletedOnlyPreference={showCompletedOnlyPreference}
+              onHistoryUpdate={handleHistoryUpdate}
+              subscriptionPlan={subscriptionPlan}
+              creditCards={creditCards}
+              historyRefreshTrigger={historyRefreshTrigger}
+              showCompletedOnlyPreference={showCompletedOnlyPreference}
           isLoadingCreditCards={isLoadingCreditCards}
-          onCardSelect={handleCardSelect}
+              onCardSelect={handleCardSelect}
           quickHistorySize={quick_history_size}
-        />
+          user={user}
+          onLogout={handleLogout}
+            />
         <div className="prompt-window-container">
           <PromptWindow 
             creditCards={creditCards}

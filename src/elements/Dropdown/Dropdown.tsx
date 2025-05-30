@@ -62,18 +62,30 @@ export const Dropdown: React.FC<DropdownProps> = ({
   const [position, setPosition] = useState({
     top: 0,
     left: 0,
-    right: 0
+    right: 0,
+    shouldOpenUpward: false
   });
 
   // Update position when trigger is clicked
   useEffect(() => {
     if (isOpen && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const scrollY = window.scrollY;
+      
+      // Estimate dropdown height (you can adjust this value based on your typical dropdown content)
+      const estimatedDropdownHeight = 200;
+      const spaceBelow = viewportHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      
+      // Decide whether to open upward or downward
+      const shouldOpenUpward = spaceBelow < estimatedDropdownHeight && spaceAbove > estimatedDropdownHeight;
       
       setPosition({
-        top: rect.bottom + window.scrollY,
+        top: shouldOpenUpward ? rect.top + scrollY : rect.bottom + scrollY,
         left: rect.left + window.scrollX,
-        right: window.innerWidth - (rect.right + window.scrollX)
+        right: window.innerWidth - (rect.right + window.scrollX),
+        shouldOpenUpward
       });
     }
   }, [isOpen]);
@@ -120,10 +132,13 @@ export const Dropdown: React.FC<DropdownProps> = ({
     ReactDOM.createPortal(
       <div 
         ref={dropdownRef}
-        className={`dropdown-menu dropdown-align-${align}`}
+        className={`dropdown-menu dropdown-align-${align} ${position.shouldOpenUpward ? 'dropdown-upward' : 'dropdown-downward'}`}
         style={{
           position: 'absolute',
-          top: `${position.top}px`,
+          ...(position.shouldOpenUpward 
+            ? { bottom: `${window.innerHeight - position.top + window.scrollY}px` }
+            : { top: `${position.top}px` }
+          ),
           ...(align === 'right' ? { right: `${position.right}px` } : { left: `${position.left}px` }),
         }}
       >

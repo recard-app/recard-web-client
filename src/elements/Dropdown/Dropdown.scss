@@ -17,6 +17,15 @@
   min-width: 150px;
   z-index: 999999;
   
+  // Animation and transform origin for upward vs downward opening
+  &.dropdown-upward {
+    transform-origin: bottom center;
+  }
+  
+  &.dropdown-downward {
+    transform-origin: top center;
+  }
+  
   // Styles for standard dropdown items (buttons/links)
   a, button {
     display: block;

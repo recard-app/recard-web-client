@@ -1,4 +1,4 @@
-@import '../../styling/globals.scss';
+@use '../../styling/globals' as *;
 
 .app-header {
     width: 100%;
