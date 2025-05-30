@@ -24,7 +24,7 @@
   }
   
   &.side-panel-closed .prompt-window-container {
-    margin-left: 0;
+    margin-left: $mini-sidebar-width;
   }
 }
 

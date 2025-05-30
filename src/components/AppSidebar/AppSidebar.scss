@@ -8,22 +8,18 @@
   z-index: 10;
   display: flex;
   flex-direction: column;
-  width: $side-panel-width;
+  width: $side-panel-width; // Always keep full width
   overflow: hidden; // Prevent overall scroll, let middle section handle it
   background-color: $neutral-white;
   border-right: $border-half solid $neutral-light-gray;
-  transition: transform $side-panel-speed ease-in-out, opacity $side-panel-speed ease-in-out;
+  transition: transform $side-panel-speed ease-in-out;
   
-  &.closed {
-    transform: translateX(-100%);
-    opacity: 0;
-    pointer-events: none;
+  &.collapsed {
+    transform: translateX(calc(-#{$side-panel-width} + $mini-sidebar-width));
   }
   
   &.open {
     transform: translateX(0);
-    opacity: 1;
-    pointer-events: all;
   }
 
   // Sticky Top Section
@@ -50,11 +46,66 @@
     }
   }
 
+  // Collapsed state overrides
+  &.collapsed {
+    .sidebar-top {
+      justify-content: flex-end;
+      padding-right: $space-2;
+      
+      .sidebar-toggle {
+        justify-content: flex-end;
+      }
+    }
+
+    .sidebar-middle {
+      padding: $space-2;
+      align-items: flex-end;
+      padding-right: $space-2;
+    }
+
+    .sidebar-bottom {
+      justify-content: flex-end;
+      padding-right: $space-2;
+      padding-left: 0;
+      display: flex;
+    }
+
+    .mini-nav-icons {
+      align-items: flex-end;
+      margin-right: $space-1;
+    }
+
+    .mini-nav-profile {
+      justify-content: flex-end;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: $space-3;
+      
+      .mini-nav-icon {
+        margin-right: $space-1;
+        position: relative;
+        right: 0;
+      }
+    }
+  }
+
+  &.open {
+    .sidebar-middle {
+      padding: $space-4;
+      align-items: stretch;
+    }
+
+    .sidebar-bottom {
+      justify-content: flex-start;
+    }
+  }
+
   // Scrollable Middle Section
   .sidebar-middle {
     flex: 1;
     overflow-y: auto;
-    padding: $space-4;
     gap: $space-5;
     display: flex;
     flex-direction: column;
@@ -95,6 +146,35 @@
     }
   }
 
+  // Mini navigation icons for collapsed state
+  .mini-nav-icons {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    align-items: center;
+
+    .mini-nav-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: $radius-base;
+      transition: background-color $transition-base;
+      text-decoration: none;
+
+      &:hover {
+        background-color: $neutral-light-gray;
+      }
+
+      img {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+      }
+    }
+  }
+
   // Sticky Bottom Section
   .sidebar-bottom {
     flex-shrink: 0;
@@ -103,36 +183,35 @@
     background-color: $neutral-white;
   }
 
-  .panel-section {
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0; // Don't shrink sections
-    margin-bottom: $space-5;
+  // Mini profile for collapsed state
+  .mini-nav-profile {
+    justify-content: flex-end;
 
-    &:last-child {
-      margin-bottom: 0;
+    .mini-nav-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      transition: background-color $transition-base;
+      text-decoration: none;
+      cursor: pointer;
+
+      &:hover {
+        background-color: $neutral-light-gray;
+      }
+
+      .mini-profile-image {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
     }
 
-    &.user-profile-section {
-      margin-bottom: 0;
-      border-top: none;
-      padding-top: 0;
-    }
-
-    // Ensure panel content doesn't create its own scroll areas
-    > * {
-      flex-shrink: 0;
-    }
-  }
-
-  .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: $space-4;
-    
-    h3 {
-      margin: 0;
+    .mini-profile-dropdown {
+      position: relative;
     }
   }
 
@@ -183,6 +262,29 @@
       border-radius: $radius-base;
       transition: background-color $transition-base;
       cursor: pointer;
+      position: relative;
+
+      &.collapsed {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 32px;
+        height: 32px;
+        margin: 0 auto $space-2 auto;
+
+        .sidebar-item-main {
+          padding: $space-2;
+          width: 32px;
+          height: 32px;
+          justify-content: center;
+          gap: 0;
+        }
+
+        .sidebar-item-icon {
+          width: 20px;
+          height: 20px;
+        }
+      }
     }
 
     .sidebar-item-main {
@@ -193,6 +295,7 @@
       width: 100%;
       border-radius: $radius-base;
       transition: background-color $transition-base;
+      position: relative;
 
       &:hover {
         background-color: $neutral-light-gray;
@@ -241,4 +344,20 @@
       text-decoration: none;
     }
   }
+}
+
+// Global tooltip styles (rendered via portal)
+.global-tooltip {
+  position: fixed;
+  left: calc($mini-sidebar-width + $space-2);
+  transform: translateY(-50%);
+  background-color: black;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  z-index: 10000;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }

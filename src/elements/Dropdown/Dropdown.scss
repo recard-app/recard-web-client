@@ -26,6 +26,15 @@
     transform-origin: top center;
   }
   
+  // Animation and transform origin for rightward vs leftward opening
+  &.dropdown-rightward {
+    transform-origin: left center;
+  }
+  
+  &.dropdown-leftward {
+    transform-origin: right center;
+  }
+  
   // Styles for standard dropdown items (buttons/links)
   a, button {
     display: block;

@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate, Link } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
 import HistoryPanel from '../HistoryPanel';
@@ -49,10 +50,52 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   user,
   onLogout
 }) => {
-  const navigate = useNavigate();
+  // Centralized tooltip state
+  const [activeTooltip, setActiveTooltip] = React.useState<{
+    name: string;
+    position: { top: number };
+  } | null>(null);
+
+  const showTooltip = (name: string, position: { top: number }) => {
+    setActiveTooltip({ name, position });
+  };
+
+  const hideTooltip = () => {
+    setActiveTooltip(null);
+  };
+
+  // Mini navigation items for collapsed state
+  const miniMiddleNavItems = [
+    { to: "/history", name: "Recent Transactions", icon: DROPDOWN_ICON },
+    { to: "/my-cards", name: "My Cards", icon: DROPDOWN_ICON }
+  ];
+
+  const handleMiniNavHover = (e: React.MouseEvent, name: string) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    showTooltip(name, { top: rect.top + rect.height / 2 });
+  };
+
+  // Global tooltip component
+  const GlobalTooltip = () => {
+    if (!activeTooltip || isOpen) return null;
+
+    return ReactDOM.createPortal(
+      <div 
+        className="global-tooltip"
+        style={{
+          top: `${activeTooltip.position.top}px`
+        }}
+      >
+        {activeTooltip.name}
+      </div>,
+      document.body
+    );
+  };
 
   return (
-    <div className={`app-sidebar ${isOpen ? 'open' : 'closed'}`}>
+    <div 
+      className={`app-sidebar ${isOpen ? 'open' : 'collapsed'}`}
+    >
       {/* Sticky Top Section */}
       <div className="sidebar-top">
         <div className="sidebar-toggle">
@@ -68,133 +111,138 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
       {/* Scrollable Middle Section */}
       <div className="sidebar-middle">
-        {/* Recent Transactions as SidebarItem */}
-        <SidebarItem 
-          icon={DROPDOWN_ICON}
-          name="Recent Transactions" 
-          page="/history"
-          isDropdown={true}
-        >
-          <HistoryPanel 
-            existingHistoryList={chatHistory} 
-            fullListSize={false} 
-            listSize={quickHistorySize}
-            currentChatId={currentChatId}
-            returnCurrentChatId={onCurrentChatIdChange}
-            onHistoryUpdate={onHistoryUpdate}
-            subscriptionPlan={subscriptionPlan}
-            creditCards={creditCards}
-            historyRefreshTrigger={historyRefreshTrigger}
-            showCompletedOnlyPreference={showCompletedOnlyPreference}
-          />
-        </SidebarItem>
-
-        {/* My Cards as SidebarItem */}
-        <SidebarItem 
-          icon={DROPDOWN_ICON}
-          name="My Cards" 
-          page="/my-cards"
-          isDropdown={true}
-        >
-          <CreditCardPreviewList 
-            cards={creditCards}
-            loading={isLoadingCreditCards}
-            showOnlySelected={true}
-            onCardSelect={onCardSelect}
-          />
-        </SidebarItem>
-
-        <div className="panel-section">
-          <div className="panel-header">
-            <h3>Examples</h3>
-          </div>
-          
-          {/* Simple sidebar items */}
-          <SidebarItem 
-            icon={DROPDOWN_ICON}
-            name="Example 1" 
-            page="/example1" 
-          />
-          
-          <SidebarItem 
-            icon={DROPDOWN_ICON}
-            name="Example 2" 
-            page="/example2" 
-          />
-          
-          {/* Dropdown sidebar item with children */}
-          <SidebarItem 
-            icon={DROPDOWN_ICON}
-            name="Example 3" 
-            isDropdown={true}
-          >
-            <SidebarItem name="Sub Example 3.1" page="/example3/sub1" />
-            <SidebarItem name="Sub Example 3.2" page="/example3/sub2" />
-            <SidebarItem name="Sub Example 3.3" page="/example3/sub3" />
-          </SidebarItem>
-          
-          <SidebarItem 
-            icon={DROPDOWN_ICON}
-            name="Example 4" 
-            page="/example4" 
-          />
-          
-          {/* Another dropdown with nested items */}
-          <SidebarItem 
-            icon={DROPDOWN_ICON}
-            name="Example 5" 
-            isDropdown={true}
-          >
-            <SidebarItem name="Sub Example 5.1" page="/example5/sub1" />
+        {isOpen ? (
+          <>
+            {/* Full expanded content */}
+            {/* Recent Transactions as SidebarItem */}
             <SidebarItem 
-              name="Sub Example 5.2" 
+              icon={DROPDOWN_ICON}
+              name="Recent Transactions" 
+              page="/history"
               isDropdown={true}
             >
-              <SidebarItem name="Nested 5.2.1" page="/example5/sub2/nested1" />
-              <SidebarItem name="Nested 5.2.2" page="/example5/sub2/nested2" />
+              <HistoryPanel 
+                existingHistoryList={chatHistory} 
+                fullListSize={false} 
+                listSize={quickHistorySize}
+                currentChatId={currentChatId}
+                returnCurrentChatId={onCurrentChatIdChange}
+                onHistoryUpdate={onHistoryUpdate}
+                subscriptionPlan={subscriptionPlan}
+                creditCards={creditCards}
+                historyRefreshTrigger={historyRefreshTrigger}
+                showCompletedOnlyPreference={showCompletedOnlyPreference}
+              />
             </SidebarItem>
-          </SidebarItem>
-          
-          <SidebarItem 
-            icon={DROPDOWN_ICON}
-            name="Example 6" 
-            page="/example6" 
-          />
-        </div>
+
+            {/* My Cards as SidebarItem */}
+            <SidebarItem 
+              icon={DROPDOWN_ICON}
+              name="My Cards" 
+              page="/my-cards"
+              isDropdown={true}
+            >
+              <CreditCardPreviewList 
+                cards={creditCards}
+                loading={isLoadingCreditCards}
+                showOnlySelected={true}
+                onCardSelect={onCardSelect}
+              />
+            </SidebarItem>
+          </>
+        ) : (
+          <>
+            {/* Collapsed mini-nav content - just icons */}
+            <div className="mini-nav-icons">
+              {miniMiddleNavItems.map((item, index) => (
+                <Link 
+                  key={index}
+                  to={item.to} 
+                  className="mini-nav-icon"
+                  onMouseEnter={(e) => handleMiniNavHover(e, item.name)}
+                  onMouseLeave={() => hideTooltip()}
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
+                  <img src={item.icon} alt={item.name} />
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Sticky Bottom Section */}
       {user && (
         <div className="sidebar-bottom">
-          <div className="user-profile-section">
-            <Dropdown 
-              trigger={
-                <div className="profile-trigger">
-                  {user.photoURL && (
-                    <img 
-                      src={user.photoURL} 
-                      alt="Profile" 
-                      crossOrigin="anonymous"
-                      referrerPolicy="no-referrer"
-                      className="profile-image"
-                    />
-                  )}
-                  <span className="profile-name">{user.displayName || user.email}</span>
-                </div>
-              }
-              className="sidebar-profile-dropdown"
-            >
-              <Link to="/preferences">
-                <DropdownItem>Preferences</DropdownItem>
-              </Link>
-              <Link to="/account">
-                <DropdownItem icon={DROPDOWN_ICON}>My Account</DropdownItem>
-              </Link>
-              <DropdownItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICON}>Sign Out</DropdownItem>
-            </Dropdown>
-          </div>
+          {isOpen ? (
+            <div className="user-profile-section">
+              <Dropdown 
+                trigger={
+                  <div className="profile-trigger">
+                    {user.photoURL && (
+                      <img 
+                        src={user.photoURL} 
+                        alt="Profile" 
+                        crossOrigin="anonymous"
+                        referrerPolicy="no-referrer"
+                        className="profile-image"
+                      />
+                    )}
+                    <span className="profile-name">{user.displayName || user.email}</span>
+                  </div>
+                }
+                className="sidebar-profile-dropdown"
+              >
+                <Link to="/preferences">
+                  <DropdownItem>Preferences</DropdownItem>
+                </Link>
+                <Link to="/account">
+                  <DropdownItem icon={DROPDOWN_ICON}>My Account</DropdownItem>
+                </Link>
+                <DropdownItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICON}>Sign Out</DropdownItem>
+              </Dropdown>
+            </div>
+          ) : (
+            <div className="mini-nav-profile">
+              {user.photoURL && (
+                <>
+                  <Link 
+                    to="/preferences" 
+                    className="mini-nav-icon"
+                    onMouseEnter={(e) => handleMiniNavHover(e, "Preferences")}
+                    onMouseLeave={() => hideTooltip()}
+                    style={{ textDecoration: 'none', color: 'inherit', marginBottom: '12px' }}
+                  >
+                    <img src={DROPDOWN_ICON} alt="Preferences" />
+                  </Link>
+                  <Dropdown 
+                    trigger={
+                      <div className="mini-nav-icon" title={user.displayName || user.email || 'Profile'}>
+                        <img 
+                          src={user.photoURL} 
+                          alt="Profile" 
+                          crossOrigin="anonymous"
+                          referrerPolicy="no-referrer"
+                          className="mini-profile-image"
+                        />
+                      </div>
+                    }
+                    className="mini-profile-dropdown"
+                  >
+                    <Link to="/account">
+                      <DropdownItem icon={DROPDOWN_ICON}>My Account</DropdownItem>
+                    </Link>
+                    <DropdownItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICON}>Sign Out</DropdownItem>
+                  </Dropdown>
+                </>
+              )}
+            </div>
+          )}
         </div>
       )}
+      
+      {/* Global tooltip rendered outside sidebar */}
+      <GlobalTooltip />
     </div>
   );
 };
