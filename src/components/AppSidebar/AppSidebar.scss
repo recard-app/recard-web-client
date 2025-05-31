@@ -63,6 +63,29 @@
         justify-content: center;
       }
     }
+    
+    .sidebar-logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      .logo-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: $radius-base;
+        transition: background-color $transition-base;
+        text-decoration: none;
+
+        img {
+          width: 24px;
+          height: 24px;
+          object-fit: contain;
+        }
+      }
+    }
   }
 
   // Collapsed state overrides
@@ -70,6 +93,9 @@
     .sidebar-top {
       justify-content: flex-end;
       padding-right: $space-2;
+      flex-direction: column;
+      gap: $space-3;
+      align-items: flex-end;
       
       .sidebar-toggle {
         justify-content: flex-end;

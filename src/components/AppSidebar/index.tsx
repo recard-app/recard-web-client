@@ -11,7 +11,8 @@ import {
   SubscriptionPlan,
   ShowCompletedOnlyPreference,
   DROPDOWN_ICON,
-  APP_NAME
+  APP_NAME,
+  TEMP_ICON
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import './AppSidebar.scss';
@@ -118,6 +119,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           <h1 className="app-name">
             <Link to="/">{APP_NAME}</Link>
           </h1>
+        )}
+        {!isOpen && (
+          <div className="sidebar-logo">
+            <Link 
+              to="/" 
+              className="logo-icon"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <img src={TEMP_ICON} alt="Logo" />
+            </Link>
+          </div>
         )}
         <div className="sidebar-toggle">
           <button 
