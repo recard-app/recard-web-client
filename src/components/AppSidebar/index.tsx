@@ -54,6 +54,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   // Get current location for active state
   const location = useLocation();
   
+  // Helper function to determine if current path is home or chat route
+  const isHomeOrChatRoute = (pathname: string) => {
+    // Matches "/" route
+    if (pathname === '/') return true;
+    
+    // Matches "/:chatId" route using currentChatId state
+    if (currentChatId && pathname === `/${currentChatId}`) return true;
+    
+    return false;
+  };
+  
   // Centralized tooltip state
   const [activeTooltip, setActiveTooltip] = React.useState<{
     name: string;
@@ -70,6 +81,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
   // Mini navigation items for collapsed state
   const miniMiddleNavItems = [
+    { to: "/", name: "Home", icon: DROPDOWN_ICON },
     { to: "/history", name: "Recent Transactions", icon: DROPDOWN_ICON },
     { to: "/my-cards", name: "My Cards", icon: DROPDOWN_ICON }
   ];
@@ -164,7 +176,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             {/* Collapsed mini-nav content - just icons */}
             <div className="mini-nav-icons">
               {miniMiddleNavItems.map((item, index) => {
-                const isActive = location.pathname === item.to;
+                const isActive = item.to === '/' 
+                  ? isHomeOrChatRoute(location.pathname)
+                  : location.pathname === item.to;
                 return (
                   <Link 
                     key={index}
