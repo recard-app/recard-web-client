@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
 import HistoryPanel from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -33,6 +33,7 @@ interface AppSidebarProps {
   quickHistorySize: number;
   user: FirebaseUser | null;
   onLogout: () => void;
+  onNewChat: () => void;
 }
 
 const AppSidebar: React.FC<AppSidebarProps> = ({
@@ -50,10 +51,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   onCardSelect,
   quickHistorySize,
   user,
-  onLogout
+  onLogout,
+  onNewChat
 }) => {
   // Get current location for active state
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Helper function to determine if current path is home or chat route
   const isHomeOrChatRoute = (pathname: string) => {
@@ -90,6 +93,22 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const handleMiniNavHover = (e: React.MouseEvent, name: string) => {
     const rect = e.currentTarget.getBoundingClientRect();
     showTooltip(name, { top: rect.top + rect.height / 2 });
+  };
+
+  const handleNewChatHover = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    showTooltip("New Transaction Chat", { top: rect.top + rect.height / 2 });
+  };
+
+  const handleNewChat = () => {
+    // If we're on a home or chat route, use the callback to properly clear the chat
+    if (isHomeOrChatRoute(location.pathname)) {
+      onNewChat();
+    } else {
+      // For other pages, navigate to home
+      onCurrentChatIdChange(null);
+      navigate('/');
+    }
   };
 
   // Global tooltip component
@@ -146,6 +165,16 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <div className="sidebar-middle">
         {isOpen ? (
           <>
+            {/* New Transaction Chat Button */}
+            <button 
+              className="new-chat-button"
+              onClick={handleNewChat}
+              aria-label="Start new transaction chat"
+            >
+              <img src={DROPDOWN_ICON} alt="New Chat" />
+              <span>New Transaction Chat</span>
+            </button>
+
             {/* Full expanded content */}
             {/* Recent Transactions as SidebarItem */}
             <SidebarItem 
@@ -187,6 +216,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           <>
             {/* Collapsed mini-nav content - just icons */}
             <div className="mini-nav-icons">
+              {/* New Chat Plus Button */}
+              <button 
+                className="mini-nav-icon new-chat-mini"
+                onClick={handleNewChat}
+                onMouseEnter={handleNewChatHover}
+                onMouseLeave={() => hideTooltip()}
+                aria-label="Start new transaction chat"
+              >
+                +
+              </button>
+
               {miniMiddleNavItems.map((item, index) => {
                 const isActive = item.to === '/' 
                   ? isHomeOrChatRoute(location.pathname)

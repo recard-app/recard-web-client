@@ -151,6 +151,7 @@
   .sidebar-middle {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     gap: $space-5;
     display: flex;
     flex-direction: column;
@@ -207,6 +208,10 @@
       border-radius: $radius-base;
       transition: background-color $transition-base;
       text-decoration: none;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: inherit;
 
       &:hover {
         background-color: $neutral-light-gray;
@@ -217,6 +222,17 @@
         
         img {
           filter: brightness(0) invert(1); // Make icon white
+        }
+      }
+
+      &.new-chat-mini {
+        background-color: $primary-color;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+
+        &:hover {
+          background-color: $primary-medium;
         }
       }
 
@@ -403,6 +419,39 @@
   .sidebar-item-link {
     &:hover {
       text-decoration: none;
+    }
+  }
+
+  // New chat button for expanded state
+  .new-chat-button {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-3;
+    border: none;
+    border-radius: $radius-base;
+    background-color: $primary-color;
+    color: white;
+    cursor: pointer;
+    transition: background-color $transition-base;
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    width: 100%;
+
+    &:hover {
+      background-color: $primary-medium;
+    }
+
+    img {
+      width: 20px;
+      height: 20px;
+      object-fit: contain;
+      filter: brightness(0) invert(1); // Make icon white
+    }
+
+    span {
+      flex: 1;
+      text-align: left;
     }
   }
 }

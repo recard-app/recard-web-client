@@ -451,6 +451,7 @@ function AppContent({}: AppContentProps) {
             quickHistorySize={quick_history_size}
             user={user}
             onLogout={handleLogout}
+            onNewChat={handleClearChat}
           />
         )}
         
