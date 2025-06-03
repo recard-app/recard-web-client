@@ -1,5 +1,27 @@
 @use '../../styling/globals' as *;
 
+// Home page wrapper styles
+.home-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100vh;
+  box-sizing: border-box;
+
+  .app-content {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    height: 100%;
+    position: relative;
+    
+    &.side-panel-open .prompt-window-container,
+    &.side-panel-closed .prompt-window-container {
+      margin-left: 0;
+    }
+  }
+}
+
 // Add a container for the prompt window to handle centering
 .prompt-window-container {
     flex: 1;

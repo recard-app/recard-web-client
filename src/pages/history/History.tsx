@@ -1,7 +1,7 @@
 import React from 'react';
 import HistoryPanel from '../../components/HistoryPanel';
-import { Link } from 'react-router-dom';
-import { Conversation, CreditCard, ShowCompletedOnlyPreference, SubscriptionPlan } from '../../types';
+import { Conversation, CreditCard, ShowCompletedOnlyPreference, SubscriptionPlan, FREE_PLAN_HISTORY_DAYS } from '../../types';
+import PageHeader from '../../components/PageHeader';
 
 interface HistoryProps {
   existingHistoryList: Conversation[];
@@ -24,17 +24,19 @@ function History({
   historyRefreshTrigger,
   showCompletedOnlyPreference
 }: HistoryProps): React.ReactElement {
-  const getHistoryTitle = (): string => {
-    if (subscriptionPlan === 'premium') {
-      return 'Transaction History';
+  const getHistorySubtitle = (): string | undefined => {
+    if (subscriptionPlan === 'free') {
+      return `Last ${FREE_PLAN_HISTORY_DAYS} Days`;
     }
-    return 'Transaction History - Last 90 Days';
+    return undefined;
   };
 
   return (
     <div className="history-page">
-      <h1>{getHistoryTitle()}</h1>
-      <Link to="/">Back to Home</Link>
+      <PageHeader 
+        title="Transaction History" 
+        subtitle={getHistorySubtitle()}
+      />
       <div className="history-content">
         <HistoryPanel 
           fullListSize={true} 

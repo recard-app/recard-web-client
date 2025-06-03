@@ -364,7 +364,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             {/* Sidebar for card selection using CreditCardPreviewList */}
             <div className="card-sidebar">
                 <div className="sidebar-header">
-                    <h3>My Credit Cards</h3>
                     <button 
                         className="add-card-button"
                         onClick={handleAddCard}

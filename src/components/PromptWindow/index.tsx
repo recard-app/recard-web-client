@@ -6,8 +6,6 @@ import { useFullHeight } from '../../hooks/useFullHeight';
 import PromptHistory from './PromptHistory';
 import PromptField from './PromptField';
 import PromptSolution from './PromptSolution';
-import PromptHelpModal from './PromptHelpModal';
-import { Modal, useModal } from '../Modal';
 import './PromptWindow.scss';
 import {
     prepareRequestData,
@@ -107,9 +105,6 @@ function PromptWindow({
     // Controls whether to show the error message
     const [showError, setShowError] = useState<boolean>(false);
 
-    // Modal for displaying help information
-    const helpModal = useModal();
-    
     // Declare that this component needs full height behavior
     useFullHeight(true);
 
@@ -434,15 +429,6 @@ function PromptWindow({
 
     return (
         <div className='prompt-window'>
-            <div className="prompt-window-header">
-                <button onClick={handleNewTransaction}>New Transaction Chat</button>
-                <button onClick={helpModal.open}>Help</button>
-            </div>
-
-            <Modal isOpen={helpModal.isOpen} onClose={helpModal.close}>
-                <PromptHelpModal />
-            </Modal>
-
             <div ref={promptHistoryRef} className="prompt-history-container">
 
                 <PromptHistory 

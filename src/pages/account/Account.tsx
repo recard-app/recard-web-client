@@ -8,6 +8,7 @@ import {
   handleVerificationEmail as handleVerificationEmailUtil,
   handleDeleteAllChats as handleDeleteAllChatsUtil,
 } from './utils';
+import PageHeader from '../../components/PageHeader';
 import './Account.scss';
 
 /**
@@ -106,7 +107,7 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
 
   return (
     <div className="account-page">
-      <h1>My Account</h1>
+      <PageHeader title="My Account" />
       <div className="account-content">
         {user ? (
           <div className="user-info">

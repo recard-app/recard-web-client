@@ -13,6 +13,7 @@ import {
 
 // Styles
 import './App.scss';
+import './components/PromptWindow/PromptWindow.scss';
 
 // Pages
 import Account from './pages/account/Account';
@@ -33,6 +34,8 @@ import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 import CreditCardDetailView from './components/CreditCardDetailView';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
+import PromptHelpModal from './components/PromptWindow/PromptHelpModal';
+import PageHeader from './components/PageHeader';
 
 // Context
 import { useAuth } from './context/AuthContext';
@@ -42,6 +45,7 @@ import {
   GLOBAL_QUICK_HISTORY_SIZE, 
   CHAT_HISTORY_PREFERENCE, 
   SUBSCRIPTION_PLAN,
+  TEMP_ICON,
   Conversation,  
   CardDetailsList, 
   ChatHistoryPreference, 
@@ -106,6 +110,7 @@ function AppContent({}: AppContentProps) {
 
   const cardSelectorModal = useModal();
   const cardDetailsModal = useModal();
+  const helpModal = useModal();
 
   // Effect to reset current chat ID when user changes
   useEffect(() => {
@@ -396,22 +401,52 @@ function AppContent({}: AppContentProps) {
   };
 
   const renderMainContent = () => {
+    const headerActions = (
+      <>
+        <button 
+          className="new-transaction-button"
+          onClick={handleClearChat}
+          aria-label="Start new transaction chat"
+        >
+          New Transaction Chat
+        </button>
+        <button 
+          className="help-button"
+          onClick={helpModal.open}
+          aria-label="Open help"
+        >
+          Help
+        </button>
+      </>
+    );
+
     return (
-      <div className="app-content">
-        <div className="prompt-window-container">
-          <PromptWindow 
-            creditCards={creditCards}
-            userCardDetails={userCardDetails}
-            user={user} 
-            returnCurrentChatId={getCurrentChatId}
-            onHistoryUpdate={handleHistoryUpdate}
-            clearChatCallback={clearChatCallback}
-            setClearChatCallback={setClearChatCallback}
-            existingHistoryList={chatHistory}
-            preferencesInstructions={preferencesInstructions}
-            chatHistoryPreference={chatHistoryPreference}
-          />
+      <div className="home-wrapper">
+        <PageHeader 
+          title="Transaction Chat"
+          actions={headerActions}
+          withActions={true}
+        />
+        <div className="app-content">
+          <div className="prompt-window-container">
+            <PromptWindow 
+              creditCards={creditCards}
+              userCardDetails={userCardDetails}
+              user={user} 
+              returnCurrentChatId={getCurrentChatId}
+              onHistoryUpdate={handleHistoryUpdate}
+              clearChatCallback={clearChatCallback}
+              setClearChatCallback={setClearChatCallback}
+              existingHistoryList={chatHistory}
+              preferencesInstructions={preferencesInstructions}
+              chatHistoryPreference={chatHistoryPreference}
+            />
+          </div>
         </div>
+
+        <Modal isOpen={helpModal.isOpen} onClose={helpModal.close}>
+          <PromptHelpModal />
+        </Modal>
       </div>
     );
   };

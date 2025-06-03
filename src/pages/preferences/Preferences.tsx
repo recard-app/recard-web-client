@@ -1,6 +1,7 @@
 import React from 'react';
 import PreferencesModule from '../../components/PreferencesModule';
 import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPreference } from '../../types/UserTypes';
+import PageHeader from '../../components/PageHeader';
 
 interface PreferencesProps {
     onModalOpen: () => void;
@@ -24,7 +25,7 @@ const Preferences: React.FC<PreferencesProps> = ({
     return (
         <div className="preferences-page">
             <div className="preferences-page-container">
-                <h1>Preferences</h1>
+                <PageHeader title="Preferences" />
                 <button onClick={onModalOpen} className="credit-card-button">
                     Manage Credit Cards
                 </button>

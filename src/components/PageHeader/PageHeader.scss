@@ -1,0 +1,49 @@
+@use '../../styling/variables' as *;
+@use '../../styling/mixins' as *;
+
+.page-header {
+  flex-shrink: 0;
+  background-color: $neutral-white;
+  padding: $space-2;
+
+  h1 {
+    @include heading-3;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+
+    .header-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+  }
+
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 16px;
+  }
+}
+
+.page-header-with-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .header-actions {
+    display: flex;
+    gap: $space-3;
+    align-items: center;
+
+    .new-transaction-button,
+    .help-button {
+      @include button-primary;
+      
+      &.help-button {
+        @include button-secondary;
+      }
+    }
+  }
+}

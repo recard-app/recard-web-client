@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import CreditCardManager from '../../components/CreditCardManager';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { useFullHeight } from '../../hooks/useFullHeight';
+import PageHeader from '../../components/PageHeader';
 import './MyCards.scss';
 
 interface MyCardsProps {
@@ -18,13 +19,15 @@ const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate }) => {
     }, [onCardsUpdate]);
 
     return (
-        <div className="my-cards-page">
-            <div className="page-header">
-                <h1>My Cards</h1>
-                <p>Set your credit cards to be used for your account.</p>
-            </div>
-            <div className="credit-card-manager-container">
-                <CreditCardManager onCardsUpdate={handleCardsUpdate} />
+        <div className="my-cards-wrapper">
+            <PageHeader 
+                title="My Cards"
+                subtitle="Set your credit cards to be used for your account."
+            />
+            <div className="my-cards-page">
+                <div className="credit-card-manager-container">
+                    <CreditCardManager onCardsUpdate={handleCardsUpdate} />
+                </div>
             </div>
         </div>
     );
