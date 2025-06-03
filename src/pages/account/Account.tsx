@@ -9,6 +9,7 @@ import {
   handleDeleteAllChats as handleDeleteAllChatsUtil,
 } from './utils';
 import PageHeader from '../../components/PageHeader';
+import { useScrollHeight } from '../../hooks/useScrollHeight';
 import './Account.scss';
 
 /**
@@ -31,6 +32,9 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
   const [deleteStatus, setDeleteStatus] = useState<DeleteStatusType>({ type: 'confirm', message: '' });
 
   const deleteModal = useModal();
+
+  // Use the scroll height hook for this page
+  useScrollHeight(true);
 
   const handleVerificationEmailClick = async (): Promise<void> => {
     const result = await handleVerificationEmailUtil(sendVerificationEmail);
@@ -106,9 +110,9 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
   };
 
   return (
-    <div className="account-page">
+    <div className="full-page-layout">
       <PageHeader title="My Account" />
-      <div className="account-content">
+      <div className="full-page-content">
         {user ? (
           <div className="user-info">
             {user.photoURL && (

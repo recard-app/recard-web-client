@@ -2,6 +2,7 @@ import React from 'react';
 import PreferencesModule from '../../components/PreferencesModule';
 import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPreference } from '../../types/UserTypes';
 import PageHeader from '../../components/PageHeader';
+import { useScrollHeight } from '../../hooks/useScrollHeight';
 
 interface PreferencesProps {
     onModalOpen: () => void;
@@ -22,10 +23,13 @@ const Preferences: React.FC<PreferencesProps> = ({
     showCompletedOnlyPreference,
     setShowCompletedOnlyPreference
 }) => {
+    // Use the scroll height hook for this page
+    useScrollHeight(true);
+
     return (
-        <div className="preferences-page">
-            <div className="preferences-page-container">
-                <PageHeader title="Preferences" />
+        <div className="full-page-layout">
+            <PageHeader title="Preferences" />
+            <div className="full-page-content">
                 <button onClick={onModalOpen} className="credit-card-button">
                     Manage Credit Cards
                 </button>

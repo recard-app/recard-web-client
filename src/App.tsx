@@ -61,6 +61,7 @@ import {
   CreditCardDetails 
 } from './types/CreditCardTypes';
 import { FullHeightContext } from './hooks/useFullHeight';
+import { ScrollHeightContext } from './hooks/useScrollHeight';
 
 const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 
@@ -107,6 +108,8 @@ function AppContent({}: AppContentProps) {
   });
   // State for managing full height behavior
   const [needsFullHeight, setNeedsFullHeight] = useState<boolean>(false);
+  // State for managing scroll height behavior
+  const [needsScrollHeight, setNeedsScrollHeight] = useState<boolean>(false);
 
   const cardSelectorModal = useModal();
   const cardDetailsModal = useModal();
@@ -453,141 +456,143 @@ function AppContent({}: AppContentProps) {
 
   return (
     <FullHeightContext.Provider value={{ setFullHeight: setNeedsFullHeight }}>
-      <div className="app">
-        <Helmet>
-          <title>{getPageTitle()}</title>
-        </Helmet>
-        
-        {/* AppHeader for unauthenticated pages */}
-        {!user && (
-          <AppHeader 
-            user={user}
-            onLogout={handleLogout}
-            isSidePanelOpen={false}
-            toggleSidePanel={toggleSidePanel}
-          />
-        )}
-        
-        {/* Universal Sidebar - shown on all pages when user is authenticated */}
-        {user && (
-          <AppSidebar 
-            isOpen={isSidePanelOpen}
-            onToggle={toggleSidePanel}
-            chatHistory={chatHistory}
-            currentChatId={currentChatId}
-            onCurrentChatIdChange={getCurrentChatId}
-            onHistoryUpdate={handleHistoryUpdate}
-            subscriptionPlan={subscriptionPlan}
-            creditCards={creditCards}
-            historyRefreshTrigger={historyRefreshTrigger}
-            showCompletedOnlyPreference={showCompletedOnlyPreference}
-            isLoadingCreditCards={isLoadingCreditCards}
-            onCardSelect={handleCardSelect}
-            quickHistorySize={quick_history_size}
-            user={user}
-            onLogout={handleLogout}
-            onNewChat={handleClearChat}
-          />
-        )}
-        
-        <Modal 
-          isOpen={cardSelectorModal.isOpen} 
-          onClose={cardSelectorModal.close}
-        >
-          <CreditCardSelector 
-            returnCreditCards={getCreditCards} 
-            existingCreditCards={creditCards}
-          />
-        </Modal>
+      <ScrollHeightContext.Provider value={{ setScrollHeight: setNeedsScrollHeight }}>
+        <div className="app">
+          <Helmet>
+            <title>{getPageTitle()}</title>
+          </Helmet>
+          
+          {/* AppHeader for unauthenticated pages */}
+          {!user && (
+            <AppHeader 
+              user={user}
+              onLogout={handleLogout}
+              isSidePanelOpen={false}
+              toggleSidePanel={toggleSidePanel}
+            />
+          )}
+          
+          {/* Universal Sidebar - shown on all pages when user is authenticated */}
+          {user && (
+            <AppSidebar 
+              isOpen={isSidePanelOpen}
+              onToggle={toggleSidePanel}
+              chatHistory={chatHistory}
+              currentChatId={currentChatId}
+              onCurrentChatIdChange={getCurrentChatId}
+              onHistoryUpdate={handleHistoryUpdate}
+              subscriptionPlan={subscriptionPlan}
+              creditCards={creditCards}
+              historyRefreshTrigger={historyRefreshTrigger}
+              showCompletedOnlyPreference={showCompletedOnlyPreference}
+              isLoadingCreditCards={isLoadingCreditCards}
+              onCardSelect={handleCardSelect}
+              quickHistorySize={quick_history_size}
+              user={user}
+              onLogout={handleLogout}
+              onNewChat={handleClearChat}
+            />
+          )}
+          
+          <Modal 
+            isOpen={cardSelectorModal.isOpen} 
+            onClose={cardSelectorModal.close}
+          >
+            <CreditCardSelector 
+              returnCreditCards={getCreditCards} 
+              existingCreditCards={creditCards}
+            />
+          </Modal>
 
-        <Modal 
-          isOpen={cardDetailsModal.isOpen} 
-          onClose={cardDetailsModal.close}
-          width="800px"
-        >
-          <CreditCardDetailView 
-            cardDetails={selectedCardDetails}
-            isLoading={isLoadingCardDetails}
-          />
-        </Modal>
-        
-        <UniversalContentWrapper 
-          isSidePanelOpen={user ? isSidePanelOpen : false}
-          fullHeight={needsFullHeight}
-        >
-          <Routes>
-            <Route path="/" element={
-              <ProtectedRoute>
-                {renderMainContent()}
-              </ProtectedRoute>
-            } />
-            <Route path="/:chatId" element={
-              <ProtectedRoute>
-                {renderMainContent()}
-              </ProtectedRoute>
-            } />
-            <Route path="/preferences" element={
-              <ProtectedRoute>
-                <Preferences 
-                  onModalOpen={cardSelectorModal.open}
-                  preferencesInstructions={preferencesInstructions}
-                  setPreferencesInstructions={setPreferencesInstructions}
-                  chatHistoryPreference={chatHistoryPreference}
-                  setChatHistoryPreference={(preference: ChatHistoryPreference) => setChatHistoryPreference(preference)}
-                  showCompletedOnlyPreference={showCompletedOnlyPreference}
-                  setShowCompletedOnlyPreference={(preference: ShowCompletedOnlyPreference) => setShowCompletedOnlyPreference(preference)}
-                />
-              </ProtectedRoute>
-            } />
-            <Route path="/signin" element={
-              <RedirectIfAuthenticated>
-                <SignIn />
-              </RedirectIfAuthenticated>
-            } />
-            <Route path="/forgotpassword" element={
-              <RedirectIfAuthenticated>
-                <ForgotPassword />
-              </RedirectIfAuthenticated>
-            } />
-            <Route path="/signup" element={
-              <RedirectIfAuthenticated>
-                <SignUp />
-              </RedirectIfAuthenticated>
-            } />
-            <Route path="/welcome" element={
-              <ProtectedRoute>
-                <Welcome onModalOpen={cardSelectorModal.open} />
-              </ProtectedRoute>
-            } />
-            <Route path="/account" element={
-              <ProtectedRoute>
-                <Account 
-                  setChatHistory={setChatHistory}
-                  setHistoryRefreshTrigger={setHistoryRefreshTrigger}
+          <Modal 
+            isOpen={cardDetailsModal.isOpen} 
+            onClose={cardDetailsModal.close}
+            width="800px"
+          >
+            <CreditCardDetailView 
+              cardDetails={selectedCardDetails}
+              isLoading={isLoadingCardDetails}
+            />
+          </Modal>
+          
+          <UniversalContentWrapper 
+            isSidePanelOpen={user ? isSidePanelOpen : false}
+            fullHeight={needsFullHeight}
+          >
+            <Routes>
+              <Route path="/" element={
+                <ProtectedRoute>
+                  {renderMainContent()}
+                </ProtectedRoute>
+              } />
+              <Route path="/:chatId" element={
+                <ProtectedRoute>
+                  {renderMainContent()}
+                </ProtectedRoute>
+              } />
+              <Route path="/preferences" element={
+                <ProtectedRoute>
+                  <Preferences 
+                    onModalOpen={cardSelectorModal.open}
+                    preferencesInstructions={preferencesInstructions}
+                    setPreferencesInstructions={setPreferencesInstructions}
+                    chatHistoryPreference={chatHistoryPreference}
+                    setChatHistoryPreference={(preference: ChatHistoryPreference) => setChatHistoryPreference(preference)}
+                    showCompletedOnlyPreference={showCompletedOnlyPreference}
+                    setShowCompletedOnlyPreference={(preference: ShowCompletedOnlyPreference) => setShowCompletedOnlyPreference(preference)}
+                  />
+                </ProtectedRoute>
+              } />
+              <Route path="/signin" element={
+                <RedirectIfAuthenticated>
+                  <SignIn />
+                </RedirectIfAuthenticated>
+              } />
+              <Route path="/forgotpassword" element={
+                <RedirectIfAuthenticated>
+                  <ForgotPassword />
+                </RedirectIfAuthenticated>
+              } />
+              <Route path="/signup" element={
+                <RedirectIfAuthenticated>
+                  <SignUp />
+                </RedirectIfAuthenticated>
+              } />
+              <Route path="/welcome" element={
+                <ProtectedRoute>
+                  <Welcome onModalOpen={cardSelectorModal.open} />
+                </ProtectedRoute>
+              } />
+              <Route path="/account" element={
+                <ProtectedRoute>
+                  <Account 
+                    setChatHistory={setChatHistory}
+                    setHistoryRefreshTrigger={setHistoryRefreshTrigger}
+                    subscriptionPlan={subscriptionPlan}
+                  />
+                </ProtectedRoute>
+              } />
+              <Route path="/history" element={
+                <History 
+                  existingHistoryList={chatHistory}
+                  currentChatId={currentChatId}
+                  returnCurrentChatId={getCurrentChatId}
+                  onHistoryUpdate={handleHistoryUpdate}
                   subscriptionPlan={subscriptionPlan}
+                  creditCards={creditCards}
+                  historyRefreshTrigger={historyRefreshTrigger}
+                  showCompletedOnlyPreference={showCompletedOnlyPreference}
                 />
-              </ProtectedRoute>
-            } />
-            <Route path="/history" element={
-              <History 
-                existingHistoryList={chatHistory}
-                currentChatId={currentChatId}
-                returnCurrentChatId={getCurrentChatId}
-                onHistoryUpdate={handleHistoryUpdate}
-                subscriptionPlan={subscriptionPlan}
-                creditCards={creditCards}
-                historyRefreshTrigger={historyRefreshTrigger}
-                showCompletedOnlyPreference={showCompletedOnlyPreference}
-              />
-            } />
-            <Route path="/my-cards" element={
-              <ProtectedRoute>
-                <MyCards onCardsUpdate={getCreditCards} />
-              </ProtectedRoute>
-            } />
-          </Routes>
-        </UniversalContentWrapper>
-      </div>
+              } />
+              <Route path="/my-cards" element={
+                <ProtectedRoute>
+                  <MyCards onCardsUpdate={getCreditCards} />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </UniversalContentWrapper>
+        </div>
+      </ScrollHeightContext.Provider>
     </FullHeightContext.Provider>
   );
 }

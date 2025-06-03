@@ -2,6 +2,7 @@ import React from 'react';
 import HistoryPanel from '../../components/HistoryPanel';
 import { Conversation, CreditCard, ShowCompletedOnlyPreference, SubscriptionPlan, FREE_PLAN_HISTORY_DAYS } from '../../types';
 import PageHeader from '../../components/PageHeader';
+import { useScrollHeight } from '../../hooks/useScrollHeight';
 
 interface HistoryProps {
   existingHistoryList: Conversation[];
@@ -24,6 +25,9 @@ function History({
   historyRefreshTrigger,
   showCompletedOnlyPreference
 }: HistoryProps): React.ReactElement {
+  // Use the scroll height hook for this page
+  useScrollHeight(true);
+
   const getHistorySubtitle = (): string | undefined => {
     if (subscriptionPlan === 'free') {
       return `Last ${FREE_PLAN_HISTORY_DAYS} Days`;
@@ -32,12 +36,12 @@ function History({
   };
 
   return (
-    <div className="history-page">
+    <div className="full-page-layout">
       <PageHeader 
         title="Transaction History" 
         subtitle={getHistorySubtitle()}
       />
-      <div className="history-content">
+      <div className="full-page-content--no-padding">
         <HistoryPanel 
           fullListSize={true} 
           existingHistoryList={existingHistoryList}

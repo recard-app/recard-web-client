@@ -13,3 +13,60 @@
   height: 100vh;
   max-height: 100vh;
 }
+
+// Generic full-page layout system
+.full-page-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100vh;
+  box-sizing: border-box;
+}
+
+// Base content area styles (shared by all variants)
+%full-page-content-base {
+  flex: 1;
+  min-height: 0; // Crucial for flex children that need to scroll
+  overflow-y: auto;
+  box-sizing: border-box;
+  
+  // Ensure smooth scrolling
+  scroll-behavior: smooth;
+  
+  // Custom scrollbar styling for webkit browsers
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+}
+
+// Main scrollable content area (default padding)
+.full-page-content {
+  @extend %full-page-content-base;
+  padding: 24px;
+}
+
+// Compact padding variant
+.full-page-content--compact {
+  @extend %full-page-content-base;
+  padding: 16px;
+}
+
+// No padding variant
+.full-page-content--no-padding {
+  @extend %full-page-content-base;
+  padding: 0;
+}
