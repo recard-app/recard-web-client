@@ -3,6 +3,7 @@ import PreferencesModule from '../../components/PreferencesModule';
 import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPreference } from '../../types/UserTypes';
 import PageHeader from '../../components/PageHeader';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
+import { PAGE_NAMES } from '../../types';
 
 interface PreferencesProps {
     onModalOpen: () => void;
@@ -28,7 +29,7 @@ const Preferences: React.FC<PreferencesProps> = ({
 
     return (
         <div className="full-page-layout">
-            <PageHeader title="Preferences" />
+            <PageHeader title={PAGE_NAMES.PREFERENCES} />
             <div className="full-page-content">
                 <button onClick={onModalOpen} className="credit-card-button">
                     Manage Credit Cards

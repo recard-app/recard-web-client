@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
-import HistoryPanel from '../HistoryPanel';
+import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import { SidebarItem } from './SidebarItem';
 import { Dropdown, DropdownItem } from '../../elements';
@@ -13,7 +13,9 @@ import {
   DROPDOWN_ICON,
   APP_NAME,
   TEMP_ICON,
-  PLAN_DISPLAY_TEXT
+  PLAN_DISPLAY_TEXT,
+  PAGE_NAMES,
+  PAGE_ICONS
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import './AppSidebar.scss';
@@ -28,7 +30,6 @@ interface AppSidebarProps {
   subscriptionPlan: SubscriptionPlan;
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
-  showCompletedOnlyPreference: ShowCompletedOnlyPreference;
   isLoadingCreditCards: boolean;
   onCardSelect: (card: CreditCard) => void;
   quickHistorySize: number;
@@ -47,7 +48,6 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   subscriptionPlan,
   creditCards,
   historyRefreshTrigger,
-  showCompletedOnlyPreference,
   isLoadingCreditCards,
   onCardSelect,
   quickHistorySize,
@@ -86,9 +86,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
   // Mini navigation items for collapsed state
   const miniMiddleNavItems = [
-    { to: "/", name: "Home", icon: DROPDOWN_ICON },
-    { to: "/history", name: "Recent Transactions", icon: DROPDOWN_ICON },
-    { to: "/my-cards", name: "My Cards", icon: DROPDOWN_ICON }
+    { to: "/", name: PAGE_NAMES.HOME, icon: PAGE_ICONS.HOME },
+    { to: "/history", name: PAGE_NAMES.TRANSACTION_HISTORY, icon: PAGE_ICONS.TRANSACTION_HISTORY },
+    { to: "/my-cards", name: PAGE_NAMES.MY_CARDS, icon: PAGE_ICONS.MY_CARDS }
   ];
 
   const handleMiniNavHover = (e: React.MouseEvent, name: string) => {
@@ -98,7 +98,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
   const handleNewChatHover = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    showTooltip("New Transaction Chat", { top: rect.top + rect.height / 2 });
+    showTooltip(PAGE_NAMES.NEW_TRANSACTION_CHAT, { top: rect.top + rect.height / 2 });
   };
 
   const handleNewChat = () => {
@@ -147,7 +147,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               className="logo-icon"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              <img src={TEMP_ICON} alt="Logo" />
+              <img src={PAGE_ICONS.LOGO} alt="Logo" />
             </Link>
           </div>
         )}
@@ -172,36 +172,33 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               onClick={handleNewChat}
               aria-label="Start new transaction chat"
             >
-              <img src={DROPDOWN_ICON} alt="New Chat" />
-              <span>New Transaction Chat</span>
+              <img src={PAGE_ICONS.NEW_TRANSACTION_CHAT} alt="New Chat" />
+              <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
             </button>
 
             {/* Full expanded content */}
-            {/* Recent Transactions as SidebarItem */}
+            {/* Transaction History as SidebarItem */}
             <SidebarItem 
-              icon={DROPDOWN_ICON}
-              name="Recent Transactions" 
+              icon={PAGE_ICONS.TRANSACTION_HISTORY}
+              name={PAGE_NAMES.TRANSACTION_HISTORY} 
               page="/history"
               isDropdown={true}
             >
-              <HistoryPanel 
+              <HistoryPanelPreview 
                 existingHistoryList={chatHistory} 
-                fullListSize={false} 
                 listSize={quickHistorySize}
                 currentChatId={currentChatId}
                 returnCurrentChatId={onCurrentChatIdChange}
                 onHistoryUpdate={onHistoryUpdate}
-                subscriptionPlan={subscriptionPlan}
                 creditCards={creditCards}
                 historyRefreshTrigger={historyRefreshTrigger}
-                showCompletedOnlyPreference={showCompletedOnlyPreference}
               />
             </SidebarItem>
 
             {/* My Cards as SidebarItem */}
             <SidebarItem 
-              icon={DROPDOWN_ICON}
-              name="My Cards" 
+              icon={PAGE_ICONS.MY_CARDS}
+              name={PAGE_NAMES.MY_CARDS} 
               page="/my-cards"
               isDropdown={true}
             >
@@ -279,12 +276,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 className="sidebar-profile-dropdown"
               >
                 <Link to="/preferences">
-                  <DropdownItem>Preferences</DropdownItem>
+                  <DropdownItem>{PAGE_NAMES.PREFERENCES}</DropdownItem>
                 </Link>
                 <Link to="/account">
-                  <DropdownItem icon={DROPDOWN_ICON}>My Account</DropdownItem>
+                  <DropdownItem icon={PAGE_ICONS.MY_ACCOUNT}>{PAGE_NAMES.MY_ACCOUNT}</DropdownItem>
                 </Link>
-                <DropdownItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICON}>Sign Out</DropdownItem>
+                <DropdownItem onClick={onLogout} className="signout-action" icon={PAGE_ICONS.SIGN_OUT}>{PAGE_NAMES.SIGN_OUT}</DropdownItem>
               </Dropdown>
             </div>
           ) : (
@@ -294,11 +291,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   <Link 
                     to="/preferences" 
                     className={`mini-nav-icon ${location.pathname === '/preferences' ? 'active' : ''}`}
-                    onMouseEnter={(e) => handleMiniNavHover(e, "Preferences")}
+                    onMouseEnter={(e) => handleMiniNavHover(e, PAGE_NAMES.PREFERENCES)}
                     onMouseLeave={() => hideTooltip()}
                     style={{ textDecoration: 'none', color: 'inherit', marginBottom: '12px' }}
                   >
-                    <img src={DROPDOWN_ICON} alt="Preferences" />
+                    <img src={PAGE_ICONS.PREFERENCES} alt={PAGE_NAMES.PREFERENCES} />
                   </Link>
                   <Dropdown 
                     trigger={
@@ -315,9 +312,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     className="mini-profile-dropdown"
                   >
                     <Link to="/account">
-                      <DropdownItem icon={DROPDOWN_ICON}>My Account</DropdownItem>
+                      <DropdownItem icon={PAGE_ICONS.MY_ACCOUNT}>{PAGE_NAMES.MY_ACCOUNT}</DropdownItem>
                     </Link>
-                    <DropdownItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICON}>Sign Out</DropdownItem>
+                    <DropdownItem onClick={onLogout} className="signout-action" icon={PAGE_ICONS.SIGN_OUT}>{PAGE_NAMES.SIGN_OUT}</DropdownItem>
                   </Dropdown>
                 </>
               )}

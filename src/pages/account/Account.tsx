@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Modal, useModal } from '../../components/Modal';
-import { ChatHistory, SubscriptionPlan } from '../../types';
+import { ChatHistory, SubscriptionPlan, PAGE_NAMES } from '../../types';
 import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
 import { 
   DeleteStatusType, 
@@ -111,7 +111,7 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
 
   return (
     <div className="full-page-layout">
-      <PageHeader title="My Account" />
+      <PageHeader title={PAGE_NAMES.MY_ACCOUNT} />
       <div className="full-page-content">
         {user ? (
           <div className="user-info">

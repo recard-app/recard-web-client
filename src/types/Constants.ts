@@ -61,6 +61,31 @@ export const DROPDOWN_ICON = 'https://placehold.co/16x16';
 export const STAR_OUTLINE_ICON = 'https://placehold.co/16x16';
 export const STAR_FILLED_ICON = 'https://placehold.co/16x16';
 
+// Page names and navigation constants
+export const PAGE_NAMES = {
+    HOME: 'Home',
+    TRANSACTION_HISTORY: 'Transaction History',
+    MY_CARDS: 'My Cards',
+    NEW_TRANSACTION_CHAT: 'New Transaction Chat',
+    PREFERENCES: 'Preferences',
+    MY_ACCOUNT: 'My Account',
+    SIGN_OUT: 'Sign Out'
+} as const;
+export type PageNameType = typeof PAGE_NAMES[keyof typeof PAGE_NAMES];
+
+// Page icons - using TEMP_ICON for now, can be customized later
+export const PAGE_ICONS = {
+    HOME: TEMP_ICON,
+    TRANSACTION_HISTORY: TEMP_ICON,
+    MY_CARDS: TEMP_ICON,
+    NEW_TRANSACTION_CHAT: TEMP_ICON,
+    PREFERENCES: TEMP_ICON,
+    MY_ACCOUNT: TEMP_ICON,
+    SIGN_OUT: TEMP_ICON,
+    LOGO: TEMP_ICON
+} as const;
+export type PageIconType = typeof PAGE_ICONS[keyof typeof PAGE_ICONS];
+
 export interface MonthOption {
     value: number;
     label: string;

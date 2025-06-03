@@ -484,7 +484,6 @@ function AppContent({}: AppContentProps) {
               subscriptionPlan={subscriptionPlan}
               creditCards={creditCards}
               historyRefreshTrigger={historyRefreshTrigger}
-              showCompletedOnlyPreference={showCompletedOnlyPreference}
               isLoadingCreditCards={isLoadingCreditCards}
               onCardSelect={handleCardSelect}
               quickHistorySize={quick_history_size}
