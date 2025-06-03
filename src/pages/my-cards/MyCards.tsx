@@ -22,7 +22,6 @@ const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate }) => {
         <div className="my-cards-wrapper">
             <PageHeader 
                 title="My Cards"
-                subtitle="Set your credit cards to be used for your account."
             />
             <div className="my-cards-page">
                 <div className="credit-card-manager-container">

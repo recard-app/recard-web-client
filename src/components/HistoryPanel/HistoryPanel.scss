@@ -1,127 +1,209 @@
+@use '../../styling/globals' as *;
+
 .history-panel {
     .history-section {
-        margin-bottom: 1.5rem;
+        margin-bottom: $space-6;
 
         .section-title {
-            font-size: 1rem;
-            color: #666;
-            padding: 0.5rem 0;
-            margin: 0.5rem 0;
-            border-bottom: 1px solid #eee;
+            @include heading-6;
+            color: $neutral-dark-gray;
+            padding: $space-2 0;
+            margin: $space-2 0;
+            border-bottom: $border-full solid $neutral-gray;
         }
     }
 
     // Apply these styles only when viewing full history
     &.full-history {
-        background-color: #e9e9e9;
-        padding: 10px;
-        border-radius: 10px;
-        width: 800px;
-        max-width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 12px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        max-height: 100vh;
+        background-color: $neutral-light-gray;
+        box-sizing: border-box;
+        min-height: 0; // Critical for nested flex scrolling
+
+        .history-panel-header {
+            padding: $space-2;
+            background: $neutral-white;
+            border-bottom: $border-full solid $neutral-gray;
+            flex-shrink: 0;
+            z-index: 2;
+            display: flex;
+            flex-direction: row;
+            gap: $space-6;
+            width: 100%;
+            align-items: flex-start;
+            justify-content: flex-start;
+            
+            .toggle-container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 0;
+                
+                label {
+                    @include form-label;
+                    margin-bottom: $space-2;
+                }
+            }
+        }
+
+        .history-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: $space-4;
+            
+            // Center the content area
+            max-width: 1200px;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            
+            &::-webkit-scrollbar {
+                width: $space-2;
+            }
+            
+            &::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            
+            &::-webkit-scrollbar-thumb {
+                background-color: rgba($neutral-dark-gray, 0.3);
+                border-radius: $radius-base;
+            }
+
+            // Loading and empty state messages
+            > p {
+                @include body-regular;
+                text-align: center;
+                color: $neutral-dark-gray;
+                margin: $space-8 0;
+                flex-shrink: 0;
+            }
+        }
+
+        .history-panel-footer {
+            padding: $space-2;
+            background: $neutral-white;
+            border-top: $border-full solid $neutral-gray;
+            flex-shrink: 0;
+            z-index: 2;
+            width: 100%;
+            
+            // Center the footer content to align with content area
+            display: flex;
+            justify-content: center;
+            
+            .pagination-controls {
+                max-width: 1200px;
+                width: 90%;
+            }
+        }
     }
 }
 
+// Adjust pagination controls styling for the sticky footer
 .pagination-controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  margin-top: 1rem;
-  padding: 1rem;
+  gap: $space-2;
+  margin: 0;
+  padding: 0;
 
   .pagination-numbers {
     display: flex;
-    gap: 4px;
+    gap: $space-1;
   }
 
   button {
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    background: white;
-    border-radius: 4px;
-    cursor: pointer;
+    @include button-outline;
     min-width: 36px;
-    font-size: 14px;
+    padding: $space-2 $space-3 !important;
+    font-size: $font-sm;
+    border-width: $border-full !important;
+    box-sizing: border-box;
     
-    &:hover:not(:disabled) {
-      background: #f0f0f0;
-    }
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-
     &.pagination-number {
       &.active {
-        background: #007bff;
-        color: white;
-        border-color: #0056b3;
-        
-        &:hover {
-          background: #0056b3;
-        }
+        @include button-primary;
+        padding: $space-2 $space-3 !important;
+        border-width: $border-full !important;
       }
     }
 
     &.pagination-edge-button,
     &.pagination-nav-button {
-      font-weight: bold;
+      font-weight: $font-semibold;
+      padding: $space-2 $space-3 !important;
+    }
+    
+    &:focus,
+    &:active {
+      padding: $space-2 $space-3 !important;
+      border-width: $border-full !important;
     }
   }
 }
 
 .upgrade-message {
-  margin: 20px 0;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
+  margin: $space-5 0;
+  padding: $space-4;
+  background-color: $neutral-light-gray;
+  border: $border-full solid $neutral-gray;
+  border-radius: $radius-lg;
   text-align: center;
+  flex-shrink: 0;
 
   p {
+    @include body-regular;
     margin: 0;
-    color: #6c757d;
-    font-size: 0.9rem;
-    font-weight: 500;
+    color: $neutral-dark-gray;
   }
 }
 
 .date-filter {
-  display: inline-flex;
-  align-items: center;
-  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0;
 
   .filter-label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #666;
-    font-size: 14px;
+    @include form-label;
+    margin-bottom: $space-2;
   }
 
   .filter-wrapper {
     position: relative;
     display: inline-flex;
     align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: white;
+    border: $border-full solid $neutral-gray;
+    border-radius: $radius-base;
+    background-color: $neutral-white;
+    max-width: fit-content;
+    transition: all $transition-fast;
     
     &:hover {
-      border-color: #999;
+      border-color: $neutral-medium-gray;
     }
 
     select {
       appearance: none;
       border: none;
       background: transparent;
-      padding: 6px 12px;
-      font-size: 14px;
+      padding: $space-2 $space-3;
+      font-size: $font-sm;
       cursor: pointer;
+      color: $neutral-black;
+      font-family: $font-inter;
+      border-radius: 0;
+      margin-bottom: 0;
       
       &:focus {
         outline: none;
@@ -134,41 +216,42 @@
 
     .month-select {
       min-width: 140px;
-      border-right: 1px solid #ddd;
-      padding-right: 24px; // Space for dropdown arrow
+      border-right: $border-full solid $neutral-gray;
+      padding-right: $space-6;
     }
 
     .year-select {
       min-width: 90px;
-      padding-right: 32px; // Space for dropdown arrow and some padding before clear button
+      padding-right: $space-8;
     }
 
     .clear-filter {
       position: absolute;
-      right: 8px;
+      right: $space-2;
       top: 50%;
       transform: translateY(-50%);
       background: none;
       border: none;
       padding: 0;
-      width: 20px;
-      height: 20px;
+      width: $space-5;
+      height: $space-5;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 18px;
-      color: #666;
-      border-radius: 50%;
+      font-size: $font-h6;
+      color: $neutral-dark-gray;
+      border-radius: $radius-full;
+      transition: all $transition-fast;
       
       &:hover {
-        background-color: #f0f0f0;
-        color: #333;
+        background-color: $neutral-light-gray;
+        color: $neutral-black;
       }
 
       &:focus {
         outline: none;
-        box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+        box-shadow: 0 0 0 2px $accent-color;
       }
     }
 
@@ -180,45 +263,50 @@
       &::after {
         content: '';
         position: absolute;
-        right: 10px;
+        right: $space-3;
         top: 50%;
         transform: translateY(-50%);
         width: 0;
         height: 0;
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
-        border-top: 5px solid #666;
+        border-top: 5px solid $neutral-dark-gray;
         pointer-events: none;
       }
     }
 
     // When the filter has focus
     &:focus-within {
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.2);
     }
 
     // Active state styling (when filter is applied)
     &.active {
-      background-color: #333;
-      border-color: #333;
+      background-color: $neutral-black;
+      border-color: $neutral-black;
 
       select {
-        color: white;
+        color: $neutral-white;
         
         option {
-          color: black; // Keep dropdown options black text
-          background: white;
+          color: $neutral-black;
+          background: $neutral-white;
         }
       }
 
       .clear-filter {
-        color: white;
+        color: $neutral-white;
         
         &:hover {
-          background-color: rgba(255, 255, 255, 0.1);
-          color: white;
+          background-color: rgba($neutral-white, 0.1);
+          color: $neutral-white;
         }
+      }
+
+      .month-select::after,
+      .year-select::after {
+        border-top-color: $neutral-white;
       }
     }
   }

@@ -1,8 +1,9 @@
 import React from 'react';
 import FullHistoryPanel from '../../components/HistoryPanel/FullHistoryPanel';
-import { Conversation, CreditCard, ShowCompletedOnlyPreference, SubscriptionPlan, FREE_PLAN_HISTORY_DAYS, PAGE_NAMES } from '../../types';
+import { Conversation, CreditCard, FREE_PLAN_HISTORY_DAYS, PAGE_NAMES, ShowCompletedOnlyPreference, SubscriptionPlan } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
+import './History.scss';
 
 interface HistoryProps {
   existingHistoryList: Conversation[];
@@ -25,7 +26,7 @@ function History({
   historyRefreshTrigger,
   showCompletedOnlyPreference
 }: HistoryProps): React.ReactElement {
-  // Use the scroll height hook for this page
+  // Use the full height hook for this page
   useFullHeight(true);
 
   const getHistorySubtitle = (): string | undefined => {
@@ -36,12 +37,12 @@ function History({
   };
 
   return (
-    <div className="full-page-layout">
+    <div className="history-page-wrapper">
       <PageHeader 
         title={PAGE_NAMES.TRANSACTION_HISTORY} 
         subtitle={getHistorySubtitle()}
       />
-      <div className="full-page-content--no-padding">
+      <div className="history-page-content">
         <FullHistoryPanel 
           currentChatId={currentChatId}
           returnCurrentChatId={returnCurrentChatId}

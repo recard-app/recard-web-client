@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
 import { ToggleSwitch } from '../../elements';
+import { useScrollHeight } from '../../hooks/useScrollHeight';
 import {
   Conversation, 
   PaginationData,
@@ -50,6 +51,9 @@ function FullHistoryPanel({
   showCompletedOnlyPreference
 }: FullHistoryPanelProps) {
   const { user } = useAuth();
+  // Use scroll height for this component's scrollable area
+  useScrollHeight(true);
+  
   // Current page number in pagination
   const [currentPage, setCurrentPage] = useState<number>(1);
   // Pagination metadata from the API
@@ -365,35 +369,24 @@ function FullHistoryPanel({
 
   return (
     <div className="history-panel full-history">
-      {renderDateFilter()}
-      {renderCompletedToggle()}
-      {isLoading && paginatedList.length === 0 ? (
-        <p>Loading transaction history...</p>
-      ) : paginatedList.length === 0 ? (
-        <p>No transaction history available for this period</p>
-      ) : (
-        <>
-          {/* Show filtered results without categories */}
-          {(selectedMonth !== '') ? (
-            <div className="history-entries">
-              {paginatedList.map(entry => (
-                <HistoryEntry 
-                  key={entry.chatId} 
-                  chatEntry={entry}
-                  currentChatId={currentChatId}
-                  onDelete={handleDelete}
-                  refreshHistory={forceHistoryRefresh}
-                  returnCurrentChatId={returnCurrentChatId}
-                  creditCards={creditCards}
-                />
-              ))}
-            </div>
-          ) : (
-            // Show categorized view only when no filters are applied
-            organizeHistoryByDate(paginatedList).map(section => (
-              <div key={section.title} className="history-section">
-                <h3 className="section-title">{section.title}</h3>
-                {section.entries.map(entry => (
+      {/* Sticky header with filters and toggle */}
+      <div className="history-panel-header">
+        {renderDateFilter()}
+        {renderCompletedToggle()}
+      </div>
+
+      {/* Scrollable content area */}
+      <div className="history-panel-content">
+        {isLoading && paginatedList.length === 0 ? (
+          <p>Loading transaction history...</p>
+        ) : paginatedList.length === 0 ? (
+          <p>No transaction history available for this period</p>
+        ) : (
+          <>
+            {/* Show filtered results without categories */}
+            {(selectedMonth !== '') ? (
+              <div className="history-entries">
+                {paginatedList.map(entry => (
                   <HistoryEntry 
                     key={entry.chatId} 
                     chatEntry={entry}
@@ -405,11 +398,35 @@ function FullHistoryPanel({
                   />
                 ))}
               </div>
-            ))
-          )}
-          {renderUpgradeMessage()}
+            ) : (
+              // Show categorized view only when no filters are applied
+              organizeHistoryByDate(paginatedList).map(section => (
+                <div key={section.title} className="history-section">
+                  <h3 className="section-title">{section.title}</h3>
+                  {section.entries.map(entry => (
+                    <HistoryEntry 
+                      key={entry.chatId} 
+                      chatEntry={entry}
+                      currentChatId={currentChatId}
+                      onDelete={handleDelete}
+                      refreshHistory={forceHistoryRefresh}
+                      returnCurrentChatId={returnCurrentChatId}
+                      creditCards={creditCards}
+                    />
+                  ))}
+                </div>
+              ))
+            )}
+            {renderUpgradeMessage()}
+          </>
+        )}
+      </div>
+
+      {/* Sticky footer with pagination */}
+      {paginationData && (
+        <div className="history-panel-footer">
           {renderPagination()}
-        </>
+        </div>
       )}
     </div>
   );
