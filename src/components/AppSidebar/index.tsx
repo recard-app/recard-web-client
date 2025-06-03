@@ -12,7 +12,8 @@ import {
   ShowCompletedOnlyPreference,
   DROPDOWN_ICON,
   APP_NAME,
-  TEMP_ICON
+  TEMP_ICON,
+  PLAN_DISPLAY_TEXT
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import './AppSidebar.scss';
@@ -266,7 +267,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                         className="profile-image"
                       />
                     )}
-                    <span className="profile-name">{user.displayName || user.email}</span>
+                    <div className="profile-info">
+                      <span className="profile-name">{user.displayName || user.email}</span>
+                      <span className="profile-plan">
+                        {subscriptionPlan === 'free' ? PLAN_DISPLAY_TEXT.FREE : PLAN_DISPLAY_TEXT.PREMIUM}
+                      </span>
+                    </div>
+                    <img src={TEMP_ICON} alt="Options" className="profile-options-icon" />
                   </div>
                 }
                 className="sidebar-profile-dropdown"

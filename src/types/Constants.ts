@@ -109,3 +109,8 @@ export const INFO_TITLES = {
     WARNING: 'Warning',
     SUCCESS: 'Success'
 } as const;
+
+export const PLAN_DISPLAY_TEXT = {
+    FREE: 'Free Plan',
+    PREMIUM: 'Premium Plan'
+} as const;
