@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
-import { APP_NAME, ShowCompletedOnlyPreference } from './types';
+import { APP_NAME, PAGE_NAMES, ShowCompletedOnlyPreference } from './types';
 // Services
 import { 
   CardService, 
@@ -426,7 +426,7 @@ function AppContent({}: AppContentProps) {
     return (
       <div className="home-wrapper">
         <PageHeader 
-          title="Transaction Chat"
+          title={PAGE_NAMES.HOME}
           actions={headerActions}
           withActions={true}
         />
