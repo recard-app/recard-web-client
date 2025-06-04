@@ -8,6 +8,8 @@ interface PageHeaderProps {
   subtitle?: string;
   actions?: React.ReactNode;
   withActions?: boolean;
+  onHelpClick?: () => void;
+  showHelpButton?: boolean;
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({
@@ -15,22 +17,36 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   icon = TEMP_ICON,
   subtitle,
   actions,
-  withActions = false
+  withActions = false,
+  onHelpClick,
+  showHelpButton = false
 }) => {
-  const headerClasses = `page-header ${withActions ? 'page-header-with-actions' : ''}`;
+  const headerClasses = `page-header ${withActions || showHelpButton ? 'page-header-with-actions' : ''}`;
 
   return (
     <div className={headerClasses}>
-      <h1>
-        {SHOW_HEADER_ICONS && (
-          <img src={icon} alt="" className="header-icon" />
-        )}
-        {title}
-      </h1>
-      {subtitle && <p>{subtitle}</p>}
-      {actions && (
+      <div className="header-title-section">
+        <h1>
+          {SHOW_HEADER_ICONS && (
+            <img src={icon} alt="" className="header-icon" />
+          )}
+          {title}
+        </h1>
+        {subtitle && <p>{subtitle}</p>}
+      </div>
+      {(actions || showHelpButton) && (
         <div className="header-actions">
           {actions}
+          {showHelpButton && onHelpClick && (
+            <button 
+              className="help-icon-button"
+              onClick={onHelpClick}
+              aria-label="Open help"
+              title="Help"
+            >
+              <img src={TEMP_ICON} alt="?" className="help-icon" />
+            </button>
+          )}
         </div>
       )}
     </div>

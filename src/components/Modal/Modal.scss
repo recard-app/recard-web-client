@@ -1,64 +1,109 @@
+@use '../../styling/globals' as *;
+
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: $space-4;
+    box-sizing: border-box;
     /* Modal content box */
     .modal-content {
-      background-color: white;
-      border-radius: 8px;
-      width: 500px; /* Default width - can be overridden by width prop */
-      max-width: 80%;
+      background: $neutral-white;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-xl;
+      max-width: 600px;
+      width: 100%;
       max-height: 90vh;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      text-align: center;
       position: relative;
       display: flex;
       flex-direction: column;
 
       &.full-width {
-        width: 90vw;
         max-width: 90vw;
+        width: 90%;
       }
 
       /* Close button for the modal */
       .close-btn {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: $space-4;
+        right: $space-4;
+        background: none;
         border: none;
-        background: transparent;
-        font-size: 20px;
+        font-size: $font-h5;
         cursor: pointer;
-        z-index: 2;
+        padding: $space-1;
+        border-radius: $radius-base;
+        color: $neutral-dark-gray;
+        z-index: 1;
+        
+        &:hover {
+          background-color: $neutral-light-gray;
+          color: $neutral-black;
+        }
       }
       /* Content wrapper to enable scrolling */
       .modal-scroll-content {
-        padding: 20px;
+        padding: $space-6;
         overflow-y: auto;
-        /* Add padding to account for close button */
-        padding-top: 40px;
-        /* Ensure content doesn't get cut off at the bottom */
-        padding-bottom: 20px;
-        /* Enable smooth scrolling */
-        scroll-behavior: smooth;
-        /* Better scrolling on Safari */
-        -webkit-overflow-scrolling: touch;
-
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        &::-webkit-scrollbar {
-          display: none;
-        }
-        
-        /* Hide scrollbar for IE, Edge and Firefox */
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+        flex: 1;
       }
     }
   }
+
+// Help modal specific styles
+.help-modal-content {
+  h2 {
+    @include heading-2;
+    margin-bottom: $space-6;
+    color: $primary-color;
+    border-bottom: $border-full solid $neutral-gray;
+    padding-bottom: $space-3;
+  }
+
+  section {
+    margin-bottom: $space-6;
+
+    h3 {
+      @include heading-4;
+      margin-bottom: $space-3;
+      color: $neutral-black;
+    }
+
+    p {
+      @include body-regular;
+      margin-bottom: $space-3;
+      color: $neutral-dark-gray;
+      line-height: $leading-relaxed;
+    }
+
+    ul {
+      margin-left: $space-5;
+      margin-bottom: $space-3;
+
+      li {
+        @include body-regular;
+        margin-bottom: $space-2;
+        color: $neutral-dark-gray;
+        line-height: $leading-relaxed;
+
+        strong {
+          color: $neutral-black;
+          font-weight: $font-semibold;
+        }
+      }
+    }
+  }
+
+  // Last section doesn't need bottom margin
+  section:last-child {
+    margin-bottom: 0;
+  }
+}

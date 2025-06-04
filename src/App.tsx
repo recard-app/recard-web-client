@@ -413,13 +413,6 @@ function AppContent({}: AppContentProps) {
         >
           New Transaction Chat
         </button>
-        <button 
-          className="help-button"
-          onClick={helpModal.open}
-          aria-label="Open help"
-        >
-          Help
-        </button>
       </>
     );
 
@@ -429,6 +422,8 @@ function AppContent({}: AppContentProps) {
           title={PAGE_NAMES.HOME}
           actions={headerActions}
           withActions={true}
+          showHelpButton={true}
+          onHelpClick={helpModal.open}
         />
         <div className="app-content">
           <div className="prompt-window-container">

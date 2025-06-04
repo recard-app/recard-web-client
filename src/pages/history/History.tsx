@@ -3,6 +3,8 @@ import FullHistoryPanel from '../../components/HistoryPanel/FullHistoryPanel';
 import { Conversation, CreditCard, FREE_PLAN_HISTORY_DAYS, PAGE_NAMES, ShowCompletedOnlyPreference, SubscriptionPlan } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
+import { Modal, useModal } from '../../components/Modal';
+import HistoryHelpModal from './HistoryHelpModal';
 import './History.scss';
 
 interface HistoryProps {
@@ -29,6 +31,9 @@ function History({
   // Use the full height hook for this page
   useFullHeight(true);
 
+  // Help modal
+  const helpModal = useModal();
+
   const getHistorySubtitle = (): string | undefined => {
     if (subscriptionPlan === 'free') {
       return `Last ${FREE_PLAN_HISTORY_DAYS} Days`;
@@ -41,6 +46,8 @@ function History({
       <PageHeader 
         title={PAGE_NAMES.TRANSACTION_HISTORY} 
         subtitle={getHistorySubtitle()}
+        showHelpButton={true}
+        onHelpClick={helpModal.open}
       />
       <div className="history-page-content">
         <FullHistoryPanel 
@@ -53,6 +60,10 @@ function History({
           showCompletedOnlyPreference={showCompletedOnlyPreference}
         />
       </div>
+
+      <Modal isOpen={helpModal.isOpen} onClose={helpModal.close}>
+        <HistoryHelpModal />
+      </Modal>
     </div>
   );
 }
