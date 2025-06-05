@@ -77,6 +77,18 @@ button, .button {
     @include button-outline;
   }
 
+  &.ghost {
+    @include button-ghost;
+  }
+
+  &.destructive {
+    @include button-destructive;
+  }
+
+  &.loading {
+    @include button-loading;
+  }
+
   &.mini {
     @include button-mini;
   }
@@ -87,5 +99,38 @@ button, .button {
   
   &.large {
     @include button-large;
+  }
+  
+  &.icon {
+    @include button-icon-only;
+    
+    &.with-text {
+      @include button-icon-with-text;
+    }
+    
+    // Size combinations for icon-only buttons
+    &.mini {
+      @include button-icon-only(16px, $space-1, $space-1);
+      
+      &.with-text {
+        @include button-icon-with-text(16px, $space-1, $space-2);
+      }
+    }
+    
+    &.small {
+      @include button-icon-only(20px, $space-2, $space-2);
+      
+      &.with-text {
+        @include button-icon-with-text(20px, $space-2, $space-2);
+      }
+    }
+    
+    &.large {
+      @include button-icon-only(32px, $space-4, $space-4);
+      
+      &.with-text {
+        @include button-icon-with-text(32px, $space-4, $space-8);
+      }
+    }
   }
 }

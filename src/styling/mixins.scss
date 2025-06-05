@@ -133,6 +133,38 @@
   }
 }
 
+// Destructive button (like primary but with red colors)
+@mixin button-destructive {
+  @include button-primary;
+  background-color: #e7000b;
+  
+  &:hover:not(:disabled) {
+    background-color: rgba(231, 0, 11, 0.9);
+  }
+  
+  &:active:not(:disabled) {
+    background-color: rgba(231, 0, 11, 0.8);
+    transform: translateY(1px);
+  }
+}
+
+// Loading button (disabled with gray background)
+@mixin button-loading {
+  @include button-base;
+  background-color: $neutral-medium-gray;
+  color: $neutral-white;
+  opacity: 1; // Override the base disabled opacity
+  cursor: not-allowed;
+  pointer-events: none;
+  
+  // Spin icons in loading buttons
+  &.icon {
+    img, svg {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
 // Secondary button
 @mixin button-secondary {
   @include button-base;
@@ -169,6 +201,12 @@
     background-color: $primary-lightest;
     transform: translateY(1px);
   }
+}
+
+// Ghost button (like outline but no border)
+@mixin button-ghost {
+  @include button-outline;
+  border: none;
 }
 
 // Button sizes
@@ -230,4 +268,51 @@
   font-weight: $font-medium;
   color: $neutral-dark-gray;
   margin-bottom: $space-1;
+}
+
+// Icon button mixins
+@mixin button-icon-base {
+  @include button-base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  img, svg {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+}
+
+@mixin button-icon-only($img-size: 24px, $padding-v: $space-2, $padding-h: $space-2) {
+  @include button-icon-base;
+  padding: $padding-v;
+  
+  img, svg {
+    width: $img-size;
+    height: $img-size;
+  }
+}
+
+@mixin button-icon-with-text($img-size: 24px, $padding-v: $space-2, $padding-h: $space-4) {
+  @include button-icon-base;
+  padding: $padding-v $padding-h;
+  gap: $space-2;
+  
+  img, svg {
+    width: $img-size;
+    height: $img-size;
+    flex-shrink: 0;
+  }
+}
+
+// Keyframe animations
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
