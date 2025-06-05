@@ -7,6 +7,7 @@ import { Modal, useModal } from '../Modal';
 import CreditCardDetailView from '../CreditCardDetailView';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import { InfoDisplay } from '../../elements';
+import { Button } from '@/components/ui/button';
 
 interface CreditCardManagerProps {
     onCardsUpdate?: (cards: CreditCard[]) => void;
@@ -364,12 +365,9 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             {/* Sidebar for card selection using CreditCardPreviewList */}
             <div className="card-sidebar">
                 <div className="sidebar-header">
-                    <button 
-                        className="add-card-button"
-                        onClick={handleAddCard}
-                    >
+                    <Button onClick={handleAddCard}>
                         Add Card
-                    </button>
+                    </Button>
                 </div>
                 {showError && (
                     <div className="error-container">
