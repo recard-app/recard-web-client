@@ -38,12 +38,21 @@
       font-weight: $font-base;
       
       a {
+        display: flex;
+        align-items: center;
+        gap: $space-2;
         color: $neutral-black;
         text-decoration: none;
         
         &:hover {
           color: $primary-color;
           transition: color $transition-base;
+        }
+
+        img {
+          width: $icon-main-logo;
+          height: $icon-main-logo;
+          object-fit: contain;
         }
       }
     }
@@ -73,15 +82,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 32px;
-        height: 32px;
+        width: $icon-large;
+        height: $icon-large;
         border-radius: $radius-base;
         transition: background-color $transition-base;
         text-decoration: none;
 
         img {
-          width: 24px;
-          height: 24px;
+          width: $icon-medium;
+          height: $icon-medium;
           object-fit: contain;
         }
       }
@@ -203,8 +212,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: $icon-large;
+      height: $icon-large;
       border-radius: $radius-base;
       transition: background-color $transition-base;
       text-decoration: none;
@@ -237,8 +246,8 @@
       }
 
       img {
-        width: 20px;
-        height: 20px;
+        width: $icon-small;
+        height: $icon-small;
         object-fit: contain;
       }
     }
@@ -260,8 +269,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: $icon-large;
+      height: $icon-large;
       border-radius: 50%;
       transition: background-color $transition-base;
       text-decoration: none;
@@ -280,8 +289,8 @@
       }
 
       .mini-profile-image {
-        width: 32px;
-        height: 32px;
+        width: $icon-large;
+        height: $icon-large;
         border-radius: 50%;
         object-fit: cover;
       }
@@ -340,8 +349,8 @@
     }
 
     .profile-options-icon {
-      width: 16px;
-      height: 16px;
+      width: $icon-mini;
+      height: $icon-mini;
       object-fit: contain;
       flex-shrink: 0;
       opacity: 0.6;
@@ -371,21 +380,21 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 32px;
-        height: 32px;
+        width: $icon-large;
+        height: $icon-large;
         margin: 0 auto $space-2 auto;
 
         .sidebar-item-main {
           padding: $space-2;
-          width: 32px;
-          height: 32px;
+          width: $icon-large;
+          height: $icon-large;
           justify-content: center;
           gap: 0;
         }
 
         .sidebar-item-icon {
-          width: 20px;
-          height: 20px;
+          width: $icon-small;
+          height: $icon-small;
         }
       }
     }
@@ -406,8 +415,8 @@
     }
 
     .sidebar-item-icon {
-      width: 20px;
-      height: 20px;
+      width: $icon-small;
+      height: $icon-small;
       object-fit: contain;
       flex-shrink: 0;
     }
@@ -469,8 +478,8 @@
     }
 
     img {
-      width: 20px;
-      height: 20px;
+      width: $icon-small;
+      height: $icon-small;
       object-fit: contain;
       filter: brightness(0) invert(1); // Make icon white
     }

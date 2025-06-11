@@ -137,7 +137,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <div className="sidebar-top">
         {isOpen && (
           <h1 className="app-name">
-            <Link to="/">{APP_NAME}</Link>
+            <Link to="/">
+              <img src={PAGE_ICONS.LOGO} alt="Logo" />
+              {APP_NAME}
+            </Link>
           </h1>
         )}
         {!isOpen && (

@@ -25,8 +25,8 @@
       gap: $space-2;
 
       .header-icon {
-        width: 24px;
-        height: 24px;
+        width: $icon-medium;
+        height: $icon-medium;
         flex-shrink: 0;
       }
     }
@@ -74,8 +74,8 @@
         }
 
         .help-icon {
-          width: 20px;
-          height: 20px;
+          width: $icon-small;
+          height: $icon-small;
           flex-shrink: 0;
         }
       }

@@ -285,7 +285,7 @@
   }
 }
 
-@mixin button-icon-only($img-size: 24px, $padding-v: $space-2, $padding-h: $space-2) {
+@mixin button-icon-only($img-size: $icon-medium, $padding-v: $space-2, $padding-h: $space-2) {
   @include button-icon-base;
   padding: $padding-v;
   
@@ -295,7 +295,7 @@
   }
 }
 
-@mixin button-icon-with-text($img-size: 24px, $padding-v: $space-2, $padding-h: $space-4) {
+@mixin button-icon-with-text($img-size: $icon-medium, $padding-v: $space-2, $padding-h: $space-4) {
   @include button-icon-base;
   padding: $padding-v $padding-h;
   gap: $space-2;
