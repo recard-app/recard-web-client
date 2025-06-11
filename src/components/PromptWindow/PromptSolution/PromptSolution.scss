@@ -1,5 +1,5 @@
 .solutions-container {
-  padding: 8px 0;
+  padding: 0 0 8px 0;
 
   .solutions-header {
     display: flex;
@@ -39,19 +39,46 @@
   }
 
   .collapsible-content {
-    max-height: 0;
+    display: grid;
+    grid-template-rows: 0fr;
     overflow: hidden;
-    transition: max-height 0.3s ease-out;
-    margin-bottom: 0;
+    transition: grid-template-rows 0.3s ease-out;
+    margin: 0;
+    padding: 0;
+    min-height: 0;
     
     &.expanded {
-      max-height: 2000px;
+      grid-template-rows: 1fr;
       margin-bottom: 16px;
-      transition: max-height 0.5s ease-in;
+      padding: 0;
+      transition: grid-template-rows 0.3s ease-in;
+    }
+
+    > div {
+      min-height: 0;
+      margin: 0;
+      padding: 0;
     }
 
     .solution-cards {
+      min-height: 0;
       display: block;
+      opacity: 0;
+      transition: opacity 0.2s ease-out;
+      margin: 0;
+      padding: 0;
+    }
+
+    &.expanded .solution-cards {
+      opacity: 1;
+      transition: opacity 0.3s ease-in 0.1s;
+    }
+
+    &.expanded .select-different-card {
+      opacity: 1;
+      height: auto;
+      margin-top: 10px;
+      transition: opacity 0.3s ease-in 0.1s, height 0.3s ease-in, margin 0.3s ease-in;
     }
   }
 
@@ -169,11 +196,16 @@
 }
 
 .select-different-card {
-  margin-top: 10px;
+  margin: 0;
+  padding: 0;
+  height: 0;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   flex-wrap: wrap;
+  opacity: 0;
+  transition: opacity 0.2s ease-out, height 0.2s ease-out, margin 0.2s ease-out;
   
   .selection-label {
     font-size: 0.9em;
