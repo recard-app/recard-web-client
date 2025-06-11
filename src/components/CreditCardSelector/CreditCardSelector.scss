@@ -1,67 +1,151 @@
+@use '../../styling/variables' as *;
+@use '../../styling/mixins' as *;
+
 .credit-card-selector {
     text-align: left;
-    .card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-right: 10px;
-
-      .card-select {
-        flex-grow: 1;
-      }
-
-      .set-default-button {
-        padding: 4px 8px;
-        font-size: 0.8em;
-        background-color: #f8f8f8;
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-        cursor: pointer;
-        white-space: nowrap;
-        color: #666;
-
-        &:hover {
-            background-color: #f0f0f0;
-            color: #333;
-        }
-      }
+      .card {
+    display: flex;
+    align-items: center;
+    padding: $space-3;
+    margin-bottom: $space-2;
+    border-radius: $radius-lg;
+    border: $border-full solid $neutral-gray;
+    background-color: $neutral-white;
+    transition: all $transition-base;
+    
+    &:hover:not(.disabled) {
+      background-color: $neutral-light-gray;
+      border-color: $neutral-medium-gray;
+    }
+    
+    &.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
 
       .card-select {
         display: flex;
         align-items: center;
-        margin: 8px 0;
-        img {
-          height: 24px;
-          width: auto;
-          margin: 0;
-          margin-left: 6px;
-          margin-right: 8px;
-        }
-        .card-desc {
-          .card-name {
-            margin: 0;
-            font-size: 0.95em;
-            color: black;
+        flex: 1;
+        min-width: 0; // Prevents flex item from growing beyond container
+        cursor: pointer;
+        
+        input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          margin: 0 $space-3 0 0;
+          flex-shrink: 0;
+          cursor: pointer;
+          
+          &:disabled {
+            cursor: not-allowed;
           }
+        }
+
+        img {
+          height: 32px;
+          width: auto;
+          margin: 0 $space-3 0 0;
+          flex-shrink: 0;
+          border-radius: $radius-sm;
+        }
+        
+        .card-desc {
+          flex: 1;
+          min-width: 0;
+          
+          .card-name {
+            margin: 0 0 $space-1 0;
+            @include body-regular;
+            font-weight: $font-medium;
+            color: $neutral-black;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: $space-2;
+            
+            .default-tag {
+              background-color: $primary-lightest;
+              color: $primary-color;
+              padding: $space-1 $space-2;
+              border-radius: $radius-full;
+              @include caption;
+              font-weight: $font-semibold;
+              white-space: nowrap;
+              flex-shrink: 0;
+            }
+          }
+          
           .card-type {
             margin: 0;
-            font-size: 0.8em;
-            color: gray;
+            @include caption;
+            color: $neutral-dark-gray;
             font-style: italic;
           }
         }
       }
+
+      .set-default-button {
+        @include button-small;
+        @include button-outline;
+        margin-left: $space-3;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
     }
-    .default-tag {
-        background-color: #e3f2fd;
-        color: #1976d2;
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-size: 0.8em;
-        margin-left: 8px;
-        font-weight: bold;
-        display: inline-block;
-        vertical-align: middle;
+  
+    // Search container styles
+    .search-container {
+      margin-bottom: $space-5;
+      
+      .search-input {
+        @include input-field;
+        width: 100%;
+        margin-bottom: 0; // Override the global margin-bottom
+      }
+    }
+    
+    // Section styles
+    .cards-container {
+      .card-section {
+        margin-bottom: $space-6;
+        
+        .section-header {
+          @include label;
+          color: $neutral-dark-gray;
+          margin: 0 0 $space-3 0;
+          padding-bottom: $space-2;
+          border-bottom: $border-full solid $neutral-light-gray;
+          text-transform: uppercase;
+          font-weight: $font-semibold;
+          letter-spacing: 0.5px;
+        }
+      }
+      
+      .no-results {
+        text-align: center;
+        padding: $space-8 $space-5;
+        color: $neutral-medium-gray;
+        font-style: italic;
+      }
+    }
+    
+    .loading {
+      text-align: center;
+      padding: $space-8 $space-5;
+      color: $neutral-dark-gray;
+    }
+    
+    .save-section {
+      margin-top: $space-6;
+      padding-top: $space-5;
+      border-top: $border-full solid $neutral-light-gray;
+      
+      .save-button {
+        @include button-primary;
+        width: 100%;
+      }
     }
   }
 

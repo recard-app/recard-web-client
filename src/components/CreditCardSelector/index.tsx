@@ -16,6 +16,7 @@ interface CreditCardSelectorProps {
   existingCreditCards: CreditCard[];
   showSaveButton?: boolean;
   onSaveComplete?: (success: boolean, message: string) => void;
+  isSaving?: boolean;
 }
 
 export interface CreditCardSelectorRef {
@@ -26,7 +27,7 @@ export interface CreditCardSelectorRef {
  * Component for selecting and managing credit cards
  * Allows users to view, select, search, and set default cards
  */
-const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorProps>(({ returnCreditCards, existingCreditCards, showSaveButton = true, onSaveComplete }, ref) => {
+const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorProps>(({ returnCreditCards, existingCreditCards, showSaveButton = true, onSaveComplete, isSaving = false }, ref) => {
     // State for managing the list of all credit cards, initialized with existing cards
     const [creditCards, setCreditCards] = useState<CreditCard[]>(sortCards(existingCreditCards || []));
     // State for managing the search input value
@@ -142,6 +143,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="search-input"
+                    disabled={isSaving}
                 />
             </div>
             
@@ -154,7 +156,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                             <h4 className="section-header">My Cards</h4>
                             <div className="section-cards">
                                 {sortedUserCards.map((card) => (
-                                    <div key={card.id} className='card'>
+                                    <div key={card.id} className={`card ${isSaving ? 'disabled' : ''}`}>
                                         <label className='card-select' htmlFor={card.id}>
                                             <input 
                                                 type="checkbox" 
@@ -163,6 +165,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                                                 value={card.CardName} 
                                                 checked={card.selected || false} 
                                                 onChange={() => handleCheckboxChange(card.id)}
+                                                disabled={isSaving}
                                             />
                                             <img src={card.CardImage || PLACEHOLDER_CARD_IMAGE} alt='Credit Card Img' />
                                             <div className='card-desc'>
@@ -177,6 +180,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                                             <button 
                                                 className="set-default-button"
                                                 onClick={() => handleSetDefault(card.id)}
+                                                disabled={isSaving}
                                             >
                                                 Set as Preferred Card
                                             </button>
@@ -192,7 +196,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                             <h4 className="section-header">{otherCardsHeader}</h4>
                             <div className="section-cards">
                                 {otherCards.map((card) => (
-                                    <div key={card.id} className='card'>
+                                    <div key={card.id} className={`card ${isSaving ? 'disabled' : ''}`}>
                                         <label className='card-select' htmlFor={card.id}>
                                             <input 
                                                 type="checkbox" 
@@ -201,6 +205,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                                                 value={card.CardName} 
                                                 checked={card.selected || false} 
                                                 onChange={() => handleCheckboxChange(card.id)}
+                                                disabled={isSaving}
                                             />
                                             <img src={card.CardImage || PLACEHOLDER_CARD_IMAGE} alt='Credit Card Img' />
                                             <div className='card-desc'>
@@ -215,6 +220,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                                             <button 
                                                 className="set-default-button"
                                                 onClick={() => handleSetDefault(card.id)}
+                                                disabled={isSaving}
                                             >
                                                 Set as Preferred Card
                                             </button>

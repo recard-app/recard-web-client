@@ -556,6 +556,7 @@ function AppContent({}: AppContentProps) {
                   existingCreditCards={creditCards}
                   showSaveButton={false}
                   onSaveComplete={handleCardSelectorSaveComplete}
+                  isSaving={isSavingCards}
                 />
               </DialogBody>
               <DialogFooter>
