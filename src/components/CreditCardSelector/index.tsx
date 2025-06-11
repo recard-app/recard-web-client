@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections, sortCards } from './utils';
 import { PLACEHOLDER_CARD_IMAGE, APP_NAME } from '../../types';
-import { InfoDisplay } from '../../elements';
 
 /**
  * Props interface for the CreditCardSelector component
@@ -32,11 +31,8 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
     const [creditCards, setCreditCards] = useState<CreditCard[]>(sortCards(existingCreditCards || []));
     // State for managing the search input value
     const [searchTerm, setSearchTerm] = useState<string>('');
-    // State for displaying save operation status messages
-    const [saveStatus, setSaveStatus] = useState<string>('');
     // State for tracking if we're loading initial data
     const [isInitialLoad, setIsInitialLoad] = useState<boolean>(creditCards.length === 0);
-    const [saveStatusType, setSaveStatusType] = useState<'success' | 'error' | 'info'>('info');
 
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -83,8 +79,6 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
      */
     const handleSave = async (): Promise<void> => {
         const result = await saveUserCardSelections(creditCards);
-        setSaveStatus(result.message);
-        setSaveStatusType(result.success ? 'success' : 'error');
         if (result.success && result.updatedCards) {
             setCreditCards(result.updatedCards);
         }
@@ -233,15 +227,6 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                     
                     {filteredCards.length === 0 && (
                         <div className="no-results">No cards match your search</div>
-                    )}
-                    
-                    {saveStatus && (
-                        <div className="save-status-container">
-                            <InfoDisplay
-                                type={saveStatusType}
-                                message={saveStatus}
-                            />
-                        </div>
                     )}
                     
                     {showSaveButton && (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 interface WelcomeProps {
@@ -8,6 +8,7 @@ interface WelcomeProps {
 
 const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     
     return (
         <div className="welcome-page">
@@ -43,9 +44,9 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
                     </div>
                 </div>
 
-                <Link to="/" className="button">
+                <button onClick={() => navigate('/')}>
                     Get Started
-                </Link>
+                </button>
             </div>
         </div>
     );

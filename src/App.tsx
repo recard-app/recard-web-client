@@ -53,7 +53,8 @@ import {
   GLOBAL_QUICK_HISTORY_SIZE, 
   CHAT_HISTORY_PREFERENCE, 
   SUBSCRIPTION_PLAN,
-  TEMP_ICON,
+  LOADING_ICON,
+  LOADING_ICON_SIZE,
   Conversation,  
   CardDetailsList, 
   ChatHistoryPreference, 
@@ -421,14 +422,6 @@ function AppContent({}: AppContentProps) {
   const handleCardSelectorSaveComplete = (success: boolean, message: string) => {
     setCardSelectorSaveStatus(message);
     setCardSelectorSaveSuccess(success);
-    if (success) {
-      // Close the dialog after successful save
-      setTimeout(() => {
-        setIsCardSelectorOpen(false);
-        setCardSelectorSaveStatus('');
-        setCardSelectorSaveSuccess(false);
-      }, 1500);
-    }
   };
 
   const createTitle = (suffix?: string) => {
@@ -574,14 +567,15 @@ function AppContent({}: AppContentProps) {
                 )}
                 <div className="button-group">
                   <button
-                    className={`button ${isSavingCards ? 'loading' : ''}`}
+                    className={`button ${isSavingCards ? 'loading icon' : ''}`}
                     onClick={handleSaveCardSelections}
                     disabled={isSavingCards}
                   >
+                    {isSavingCards && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                     {isSavingCards ? 'Saving...' : 'Save'}
                   </button>
                   <button
-                    className="button outline"
+                    className={`button outline ${isSavingCards ? 'disabled' : ''}`}
                     onClick={() => setIsCardSelectorOpen(false)}
                     disabled={isSavingCards}
                   >

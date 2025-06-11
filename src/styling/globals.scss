@@ -65,6 +65,19 @@ label {
   @include form-label;
 }
 
+// Links
+a, .link {
+  @include link-text;
+  
+  &.subtle {
+    @include link-subtle;
+  }
+  
+  &.external {
+    @include link-external;
+  }
+}
+
 // Buttons
 button, .button {
   @include button-primary;

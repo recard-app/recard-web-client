@@ -325,6 +325,71 @@
   }
 }
 
+// === LINK MIXINS ===
+
+// Base link styles
+@mixin link-base {
+  color: $primary-color;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 2px;
+  transition: all $transition-fast;
+  cursor: pointer;
+  
+  &:hover {
+    color: $primary-medium;
+    text-decoration-color: currentColor;
+  }
+  
+  &:active {
+    color: $primary-dark;
+  }
+  
+  &:focus-visible {
+    outline: 2px solid $accent-color;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+// Text link (default link styling)
+@mixin link-text {
+  @include link-base;
+  font-weight: $font-medium;
+  
+  &:visited {
+    color: $primary-medium;
+  }
+}
+
+// Subtle link (less prominent)
+@mixin link-subtle {
+  @include link-base;
+  color: $neutral-dark-gray;
+  text-decoration: none;
+  
+  &:hover {
+    color: $primary-color;
+    text-decoration: underline;
+  }
+  
+  &:visited {
+    color: $neutral-dark-gray;
+  }
+}
+
+// External link (with external icon styling)
+@mixin link-external {
+  @include link-text;
+  
+  &::after {
+    content: "↗";
+    font-size: 0.8em;
+    margin-left: 2px;
+    vertical-align: super;
+  }
+}
+
 // Keyframe animations
 @keyframes spin {
   from {
