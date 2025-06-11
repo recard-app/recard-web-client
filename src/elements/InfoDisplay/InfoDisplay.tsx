@@ -1,6 +1,6 @@
 import React from 'react';
 import './InfoDisplay.scss';
-import { INFO_COLORS, INFO_ICONS, INFO_TITLES } from '../../types/Constants';
+import { INFO_COLORS, INFO_ICONS, INFO_TITLES, LOADING_ICON, LOADING_ICON_SIZE } from '../../types/Constants';
 
 interface InfoDisplayProps {
   type?: 'error' | 'info' | 'warning' | 'success' | 'loading';
@@ -91,11 +91,18 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
       }}
     >
       {displayIcon && (
-        <img 
-          src={displayIcon} 
-          alt="" 
-          className={`info-icon ${type === 'loading' ? 'spinning' : ''}`} 
-        />
+        displayIcon === 'loading-spinner' ? (
+          <LOADING_ICON 
+            size={LOADING_ICON_SIZE} 
+            className={`info-icon ${type === 'loading' ? 'spinning' : ''}`} 
+          />
+        ) : (
+          <img 
+            src={displayIcon} 
+            alt="" 
+            className={`info-icon ${type === 'loading' ? 'spinning' : ''}`} 
+          />
+        )
       )}
       <span className="info-message">
         {showTitle && displayTitle && (

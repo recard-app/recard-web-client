@@ -1,7 +1,7 @@
 import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON, CHAT_DESCRIPTION_MAX_LENGTH, TEMP_ICON, LOADING_ICON } from '../../../types';
+import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON, CHAT_DESCRIPTION_MAX_LENGTH, TEMP_ICON, LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
 import { formatDate, deleteChatEntry } from './utils';
 import { InfoDisplay } from '../../../elements';
 import {
@@ -272,7 +272,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
                 disabled={isRenaming || !newChatDescription.trim()}
                 onClick={handleRenameSubmit}
               >
-                {isRenaming && <img src={LOADING_ICON} alt="Loading" />}
+                {isRenaming && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                 {isRenaming ? 'Saving...' : 'Save'}
               </button>
               <button

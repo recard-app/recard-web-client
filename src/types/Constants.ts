@@ -60,7 +60,10 @@ export const TEMP_ICON = 'https://placehold.co/20x20';
 export const DROPDOWN_ICON = 'https://placehold.co/16x16';
 export const STAR_OUTLINE_ICON = 'https://placehold.co/16x16';
 export const STAR_FILLED_ICON = 'https://placehold.co/16x16';
-export const LOADING_ICON = 'https://placehold.co/12x12';
+
+import SpinnerIcon from '../elements/SpinnerIcon';
+export const LOADING_ICON = SpinnerIcon;
+export const LOADING_ICON_SIZE = 12;
 
 // Page names and navigation constants
 export const PAGE_NAMES = {
@@ -130,7 +133,7 @@ export const INFO_ICONS = {
     INFO: TEMP_ICON,
     WARNING: TEMP_ICON,
     SUCCESS: TEMP_ICON,
-    LOADING: LOADING_ICON
+    LOADING: 'loading-spinner' // Special marker for component
 } as const;
 
 export const INFO_TITLES = {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
 import { CHAT_HISTORY_OPTIONS } from './utils';
-import { LOADING_ICON } from '../../types/Constants';
+import { LOADING_ICON, LOADING_ICON_SIZE } from '../../types/Constants';
 import './PreferencesModule.scss';
 import { InfoDisplay } from '../../elements';
 
@@ -153,7 +153,7 @@ function PreferencesModule({
                     disabled={isSaving || isLoading}
                     className={`save-button ${isSaving ? 'loading icon' : ''}`}
                 >
-                    {isSaving && <img src={LOADING_ICON} alt="Loading" />}
+                    {isSaving && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                     {isSaving ? 'Saving...' : 'Save Preferences'}
                 </button>
 

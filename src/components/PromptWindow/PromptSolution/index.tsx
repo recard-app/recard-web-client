@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CreditCard } from '../../../types/CreditCardTypes';
 import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage } from '../../../types';
-import { PLACEHOLDER_CARD_IMAGE, LOADING_ICON } from '../../../types';
+import { PLACEHOLDER_CARD_IMAGE, LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
 import { UserHistoryService } from '../../../services';
 import SingleCardSelector from '../../CreditCardSelector/SingleCardSelector';
 import {
@@ -66,7 +66,7 @@ const CardSelection: React.FC<CardSelectionProps> = ({
                             disabled={isUpdating}
                         >
                             {isUpdating ? (
-                                <img src={LOADING_ICON} alt="Loading" />
+                                <LOADING_ICON size={LOADING_ICON_SIZE} />
                             ) : (
                                 <img 
                                     src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
@@ -96,7 +96,7 @@ const CardSelection: React.FC<CardSelectionProps> = ({
                         onClick={onCardSelectorOpen}
                         disabled={isUpdating}
                     >
-                        {isUpdating && <img src={LOADING_ICON} alt="Loading" />}
+                        {isUpdating && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                         {isUpdating ? 'Updating...' : 'Select Card'}
                     </button>
                 </>
@@ -279,7 +279,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                             onClick={() => handleCardSelection(solution.id)}
                                             disabled={isUpdating}
                                         >
-                                            {isUpdating && <img src={LOADING_ICON} alt="Loading" />}
+                                            {isUpdating && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                                             {isUpdatingThis ? 'Updating...' : isSelected ? 'Used for Purchase' : 'Use this Card'}
                                         </button>
                                     </div>
