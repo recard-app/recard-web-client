@@ -54,77 +54,29 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
   const handleDeleteAllChatsClick = async (): Promise<void> => {
     const result = await handleDeleteAllChatsUtil(setChatHistory, setHistoryRefreshTrigger);
     setDeleteStatus(result);
-    if (result.type === 'success') {
-      setIsDeleteDialogOpen(false);
-    }
+    setIsDeleteDialogOpen(false);
   };
 
   const renderAlertDialogContent = () => {
-    switch (deleteStatus.type) {
-      case 'success':
-        return (
-          <>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Success!</AlertDialogTitle>
-              <AlertDialogDescription>
-                {deleteStatus.message}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogAction onClick={() => setIsDeleteDialogOpen(false)}>
-                Close
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </>
-        );
-      case 'error':
-        return (
-          <>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Error</AlertDialogTitle>
-              <AlertDialogDescription>
-                {deleteStatus.message}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <div className="button-group">
-                <AlertDialogAction 
-                  destructive
-                  onClick={() => {
-                    setDeleteStatus({ type: 'confirm', message: '' });
-                    handleDeleteAllChatsClick();
-                  }}
-                >
-                  Try Again
-                </AlertDialogAction>
-                <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
-                  Close
-                </AlertDialogCancel>
-              </div>
-            </AlertDialogFooter>
-          </>
-        );
-      default:
-        return (
-          <>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete All Chat History</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to delete all chat history? 
-                This action cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <div className="button-group">
-                <AlertDialogAction destructive onClick={handleDeleteAllChatsClick}>
-                  Delete All
-                </AlertDialogAction>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-              </div>
-            </AlertDialogFooter>
-          </>
-        );
-    }
+    return (
+      <>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete All Chat History</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to delete all chat history? 
+            This action cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <div className="button-group">
+            <AlertDialogAction destructive onClick={handleDeleteAllChatsClick}>
+              Delete All
+            </AlertDialogAction>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          </div>
+        </AlertDialogFooter>
+      </>
+    );
   };
 
   return (
@@ -186,6 +138,20 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
               >
                 Delete All Chat History
               </button>
+              
+              {/* Show success/error messages below the delete button */}
+              {deleteStatus.type === 'success' && (
+                <InfoDisplay
+                  type="success"
+                  message={deleteStatus.message}
+                />
+              )}
+              {deleteStatus.type === 'error' && (
+                <InfoDisplay
+                  type="error"
+                  message={deleteStatus.message}
+                />
+              )}
             </div>
           </div>
         ) : (

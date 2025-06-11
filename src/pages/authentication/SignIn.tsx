@@ -78,7 +78,7 @@ const SignIn: React.FC = () => {
 
             <div className="divider">or</div>
 
-            <button className="google-btn" onClick={handleGoogleSignIn}>
+            <button onClick={handleGoogleSignIn}>
                 Continue with Google
             </button>
 

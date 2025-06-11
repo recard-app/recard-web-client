@@ -21,7 +21,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
                     <div className="step active">
                         <h3>1. Add Your Credit Cards</h3>
                         <p>Select which credit cards you own to get personalized recommendations.</p>
-                        <button onClick={onModalOpen} className="action-btn">
+                        <button onClick={onModalOpen}>
                             Select Your Credit Cards
                         </button>
                     </div>
@@ -43,7 +43,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
                     </div>
                 </div>
 
-                <Link to="/" className="get-started-btn">
+                <Link to="/" className="button">
                     Get Started
                 </Link>
             </div>

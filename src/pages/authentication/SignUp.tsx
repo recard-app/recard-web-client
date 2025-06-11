@@ -159,7 +159,7 @@ const SignUp: React.FC = () => {
                 Already have an account? <Link to="/signin">Sign In</Link>
             </p>
             <p>You can also sign up with Google</p>
-            <button className="google-btn" onClick={handleGoogleSignIn}>
+            <button onClick={handleGoogleSignIn}>
                 Sign Up with Google
             </button>
 
