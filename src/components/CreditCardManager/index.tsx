@@ -261,21 +261,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             // Notify parent component of card updates
             notifyCardUpdate(refreshedCards);
             
-            // Select a new card if the removed card was selected
+            // Clear the selection if the removed card was selected
             if (selectedCard && selectedCard.id === cardToDelete.id) {
-                const defaultCard = refreshedCards.find(c => c.isDefaultCard && c.selected);
-                const firstCard = refreshedCards.find(c => c.selected);
-                
-                if (defaultCard) {
-                    setSelectedCard(defaultCard);
-                    await loadCardDetails(defaultCard.id);
-                } else if (firstCard) {
-                    setSelectedCard(firstCard);
-                    await loadCardDetails(firstCard.id);
-                } else {
-                    setSelectedCard(null);
-                    setCardDetails(null);
-                }
+                setSelectedCard(null);
+                setCardDetails(null);
             }
             
             // Refresh detailed cards data in the background
@@ -435,6 +424,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                             onSelectCard={handleSelectorCardSelect}
                             selectedCardId={undefined}
                             showOnlyUnselectedCards={true}
+                            disabled={isAddingCard}
                         />
                     </DialogBody>
                     {isAddingCard && selectedCardForAdding && (

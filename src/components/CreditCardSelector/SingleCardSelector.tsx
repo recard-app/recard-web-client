@@ -11,12 +11,14 @@ import { InfoDisplay } from '../../elements';
  * @property onSelectCard - Callback function when a card is selected
  * @property selectedCardId - Currently selected card ID (if any)
  * @property showOnlyUnselectedCards - When true, only shows cards that aren't in the user's collection and hides section headers
+ * @property disabled - When true, prevents card selection and applies disabled styling
  */
 interface SingleCardSelectorProps {
   creditCards: CreditCard[];
   onSelectCard: (card: CreditCard) => void;
   selectedCardId?: string;
   showOnlyUnselectedCards?: boolean;
+  disabled?: boolean;
 }
 
 /**
@@ -27,7 +29,8 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   creditCards,
   onSelectCard,
   selectedCardId,
-  showOnlyUnselectedCards = false
+  showOnlyUnselectedCards = false,
+  disabled = false
 }) => {
   // State for managing the list of all credit cards, initialized with sorted existing cards
   const [cards, setCards] = useState<CreditCard[]>(sortCards(creditCards || []));
@@ -66,6 +69,7 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
    * Handle card selection
    */
   const handleCardClick = (card: CreditCard): void => {
+    if (disabled) return;
     onSelectCard(card);
   };
 
@@ -95,7 +99,7 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   const renderCard = (card: CreditCard) => (
     <div 
       key={card.id} 
-      className={`card selectable-card ${card.id === selectedCardId ? 'selected-card' : ''}`}
+      className={`card selectable-card ${card.id === selectedCardId ? 'selected-card' : ''} ${disabled ? 'disabled' : ''}`}
       onClick={() => handleCardClick(card)}
     >
       <div className='card-content'>
@@ -115,7 +119,7 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   );
 
   return (
-    <div className='credit-card-selector single-card-selector'>
+    <div className={`credit-card-selector single-card-selector ${disabled ? 'disabled' : ''}`}>
       
       {showError && (
         <div className="error-container">
@@ -133,6 +137,7 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
+          disabled={disabled}
         />
       </div>
       

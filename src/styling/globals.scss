@@ -89,6 +89,10 @@ button, .button {
     @include button-loading;
   }
 
+  &.disabled {
+    @include button-disabled;
+  }
+
   &.mini {
     @include button-mini;
   }

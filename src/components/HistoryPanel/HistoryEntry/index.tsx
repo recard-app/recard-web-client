@@ -277,8 +277,9 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
               </button>
               <button
                 type="button"
-                className="button outline"
+                className={`button outline ${isRenaming ? 'disabled' : ''}`}
                 onClick={() => setIsRenameModalOpen(false)}
+                disabled={isRenaming}
               >
                 Cancel
               </button>
