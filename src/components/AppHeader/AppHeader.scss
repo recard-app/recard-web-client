@@ -30,6 +30,29 @@
     }
 
     .nav-links {
+        
+        .profile-dropdown-trigger {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+            &:hover {
+                opacity: 0.8;
+            }
+            
+            .profile-image {
+                margin: 0;
+                padding: 0;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: block;
+            }
+        }
 
         .profile-dropdown {
             position: relative;

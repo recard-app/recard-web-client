@@ -2,8 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './AppHeader.scss';
 import { User as FirebaseUser } from 'firebase/auth';
-import { APP_NAME, DROPDOWN_ICON } from '../../types';
-import { Dropdown, DropdownItem } from '../../elements';
+import { APP_NAME, TEMP_ICON } from '../../types';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu/dropdown-menu';
 
 /**
  * Props interface for AppHeader component
@@ -41,31 +46,33 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onLogout, isSidePanelOpen, 
         {/*{user && <button onClick={onModalOpen}>Manage your Credit Cards</button>}*/}
         {/* // Removed the button for now */}
         {user && (
-          <Dropdown 
-            trigger={
-              user.photoURL && (
-                <img 
-                  src={user.photoURL} 
-                  alt="Profile" 
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                  className="profile-image"
-                />
-              )
-            }
-            className="profile-dropdown"
-          >
-            <Link to="/my-cards">
-              <DropdownItem icon={DROPDOWN_ICON}>My Cards</DropdownItem>
-            </Link>
-            <Link to="/preferences">
-              <DropdownItem>Preferences</DropdownItem>
-            </Link>
-            <Link to="/account">
-              <DropdownItem icon={DROPDOWN_ICON}>My Account</DropdownItem>
-            </Link>
-            <DropdownItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICON}>Sign Out</DropdownItem>
-          </Dropdown>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="profile-dropdown-trigger">
+                {user.photoURL && (
+                  <img 
+                    src={user.photoURL} 
+                    alt="Profile" 
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                    className="profile-image"
+                  />
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="profile-dropdown">
+              <Link to="/my-cards">
+                <DropdownMenuItem icon={TEMP_ICON}>My Cards</DropdownMenuItem>
+              </Link>
+              <Link to="/preferences">
+                <DropdownMenuItem>Preferences</DropdownMenuItem>
+              </Link>
+              <Link to="/account">
+                <DropdownMenuItem icon={TEMP_ICON}>My Account</DropdownMenuItem>
+              </Link>
+              <DropdownMenuItem onClick={onLogout} className="signout-action" icon={TEMP_ICON}>Sign Out</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </nav>
     </header>

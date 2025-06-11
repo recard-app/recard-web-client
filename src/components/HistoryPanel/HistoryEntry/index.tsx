@@ -1,10 +1,16 @@
 import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON, CHAT_DESCRIPTION_MAX_LENGTH } from '../../../types';
+import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON, CHAT_DESCRIPTION_MAX_LENGTH, TEMP_ICON } from '../../../types';
 import { formatDate, deleteChatEntry } from './utils';
 import { Modal, useModal } from '../../Modal';
-import { Dropdown, DropdownItem, InfoDisplay } from '../../../elements';
+import { InfoDisplay } from '../../../elements';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../ui/dropdown-menu/dropdown-menu';
 import { UserHistoryService } from '../../../services';
 import { useState } from 'react';
 
@@ -183,13 +189,25 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
         </div>
         
         <div className="actions-dropdown">
-          <Dropdown
-            trigger={<img src={DROPDOWN_ICON} alt="Actions" className="action-icon" />}
-            align="right"
-          >
-            <DropdownItem onClick={handleRenameClick}>Rename</DropdownItem>
-            <DropdownItem onClick={handleDeleteClick} className="delete-action" icon={DROPDOWN_ICON}>Delete</DropdownItem>
-          </Dropdown>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="action-icon-button">
+                <img src={DROPDOWN_ICON} alt="Actions" className="action-icon1" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleRenameClick}>
+                Rename
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={handleDeleteClick} 
+                variant="destructive"
+                icon={TEMP_ICON}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

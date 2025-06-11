@@ -5,14 +5,18 @@ import { User as FirebaseUser } from 'firebase/auth';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import { SidebarItem } from './SidebarItem';
-import { Dropdown, DropdownItem } from '../../elements';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu/dropdown-menu';
 import { 
   Conversation, 
   SubscriptionPlan,
   ShowCompletedOnlyPreference,
   DROPDOWN_ICON,
   APP_NAME,
-  TEMP_ICON,
   PLAN_DISPLAY_TEXT,
   PAGE_NAMES,
   PAGE_ICONS
@@ -255,37 +259,39 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         <div className="sidebar-bottom">
           {isOpen ? (
             <div className="user-profile-section">
-              <Dropdown 
-                trigger={
-                  <div className="profile-trigger">
-                    {user.photoURL && (
-                      <img 
-                        src={user.photoURL} 
-                        alt="Profile" 
-                        crossOrigin="anonymous"
-                        referrerPolicy="no-referrer"
-                        className="profile-image"
-                      />
-                    )}
-                    <div className="profile-info">
-                      <span className="profile-name">{user.displayName || user.email}</span>
-                      <span className="profile-plan">
-                        {subscriptionPlan === 'free' ? PLAN_DISPLAY_TEXT.FREE : PLAN_DISPLAY_TEXT.PREMIUM}
-                      </span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="profile-trigger-button">
+                    <div className="profile-trigger">
+                      {user.photoURL && (
+                        <img 
+                          src={user.photoURL} 
+                          alt="Profile" 
+                          crossOrigin="anonymous"
+                          referrerPolicy="no-referrer"
+                          className="profile-image"
+                        />
+                      )}
+                      <div className="profile-info">
+                        <span className="profile-name">{user.displayName || user.email}</span>
+                        <span className="profile-plan">
+                          {subscriptionPlan === 'free' ? PLAN_DISPLAY_TEXT.FREE : PLAN_DISPLAY_TEXT.PREMIUM}
+                        </span>
+                      </div>
+                      <img src={DROPDOWN_ICON} alt="Options" className="profile-options-icon" />
                     </div>
-                    <img src={TEMP_ICON} alt="Options" className="profile-options-icon" />
-                  </div>
-                }
-                className="sidebar-profile-dropdown"
-              >
-                <Link to="/preferences">
-                  <DropdownItem>{PAGE_NAMES.PREFERENCES}</DropdownItem>
-                </Link>
-                <Link to="/account">
-                  <DropdownItem icon={PAGE_ICONS.MY_ACCOUNT}>{PAGE_NAMES.MY_ACCOUNT}</DropdownItem>
-                </Link>
-                <DropdownItem onClick={onLogout} className="signout-action" icon={PAGE_ICONS.SIGN_OUT}>{PAGE_NAMES.SIGN_OUT}</DropdownItem>
-              </Dropdown>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" side="right" sideOffset={20} className="sidebar-profile-dropdown">
+                  <Link to="/preferences">
+                    <DropdownMenuItem>{PAGE_NAMES.PREFERENCES}</DropdownMenuItem>
+                  </Link>
+                  <Link to="/account">
+                    <DropdownMenuItem icon={PAGE_ICONS.MY_ACCOUNT}>{PAGE_NAMES.MY_ACCOUNT}</DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuItem onClick={onLogout} className="signout-action" icon={PAGE_ICONS.SIGN_OUT}>{PAGE_NAMES.SIGN_OUT}</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           ) : (
             <div className="mini-nav-profile">
@@ -300,9 +306,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   >
                     <img src={PAGE_ICONS.PREFERENCES} alt={PAGE_NAMES.PREFERENCES} />
                   </Link>
-                  <Dropdown 
-                    trigger={
-                      <div className="mini-nav-icon" title={user.displayName || user.email || 'Profile'}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="mini-nav-icon mini-profile-trigger" title={user.displayName || user.email || 'Profile'}>
                         <img 
                           src={user.photoURL} 
                           alt="Profile" 
@@ -310,15 +316,15 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                           referrerPolicy="no-referrer"
                           className="mini-profile-image"
                         />
-                      </div>
-                    }
-                    className="mini-profile-dropdown"
-                  >
-                    <Link to="/account">
-                      <DropdownItem icon={PAGE_ICONS.MY_ACCOUNT}>{PAGE_NAMES.MY_ACCOUNT}</DropdownItem>
-                    </Link>
-                    <DropdownItem onClick={onLogout} className="signout-action" icon={PAGE_ICONS.SIGN_OUT}>{PAGE_NAMES.SIGN_OUT}</DropdownItem>
-                  </Dropdown>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" side="right" sideOffset={16} className="mini-profile-dropdown">
+                      <Link to="/account">
+                        <DropdownMenuItem icon={PAGE_ICONS.MY_ACCOUNT}>{PAGE_NAMES.MY_ACCOUNT}</DropdownMenuItem>
+                      </Link>
+                      <DropdownMenuItem onClick={onLogout} className="signout-action" icon={PAGE_ICONS.SIGN_OUT}>{PAGE_NAMES.SIGN_OUT}</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               )}
             </div>
