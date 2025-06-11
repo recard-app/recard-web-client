@@ -5,7 +5,12 @@ import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage
 import { PLACEHOLDER_CARD_IMAGE, LOADING_ICON } from '../../../types';
 import { UserHistoryService } from '../../../services';
 import SingleCardSelector from '../../CreditCardSelector/SingleCardSelector';
-import { Modal, useModal } from '../../Modal';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '../../ui/dialog/dialog';
 import './PromptSolution.scss';
 
 /**
@@ -110,8 +115,8 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
     const [updatingCardId, setUpdatingCardId] = useState<string | null>(null);
     // Flag to disable all buttons during updates
     const [isUpdating, setIsUpdating] = useState<boolean>(false);
-    // Modal control using the pre-built useModal hook
-    const cardSelectorModal = useModal();
+    // Dialog state management
+    const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
     // Flag to expand the solutions container
     const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
@@ -142,14 +147,14 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
         }
 
         // Only allow deselection from the X button, not from the modal
-        const isDeselecting = cardId === activeCardId && cardSelectorModal.isOpen === false;
+        const isDeselecting = cardId === activeCardId && !isCardSelectorOpen;
         
         // New card ID to send to server
         const newCardId = isDeselecting ? '' : cardId;
 
         // If we're not deselecting and the card is already selected, do nothing
         if (!isDeselecting && cardId === activeCardId) {
-            cardSelectorModal.close();
+            setIsCardSelectorOpen(false);
             return;
         }
 
@@ -185,7 +190,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
     // Handle selection from the SingleCardSelector
     const handleCardSelectedFromModal = (card: CreditCard) => {
         handleCardSelection(card.id);
-        cardSelectorModal.close();
+        setIsCardSelectorOpen(false);
     };
 
     // Don't render anything if there are no solutions or if all solutions lack card names
@@ -198,24 +203,26 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                         creditCards={creditCards}
                         solutions={solutions}
                         isUpdating={isUpdating}
-                        onCardSelectorOpen={cardSelectorModal.open}
+                        onCardSelectorOpen={() => setIsCardSelectorOpen(true)}
                         noSolutionsMode={true}
                         handleCardSelection={handleCardSelection}
                     />
                 )}
 
-                <Modal 
-                    isOpen={cardSelectorModal.isOpen} 
-                    onClose={cardSelectorModal.close}
-                >
-                    {creditCards && (
-                        <SingleCardSelector
-                            creditCards={creditCards}
-                            onSelectCard={handleCardSelectedFromModal}
-                            selectedCardId={activeCardId}
-                        />
-                    )}
-                </Modal>
+                <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Select a Credit Card</DialogTitle>
+                        </DialogHeader>
+                        {creditCards && (
+                            <SingleCardSelector
+                                creditCards={creditCards}
+                                onSelectCard={handleCardSelectedFromModal}
+                                selectedCardId={activeCardId}
+                            />
+                        )}
+                    </DialogContent>
+                </Dialog>
             </div>
         );
     }
@@ -286,24 +293,26 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                     creditCards={creditCards}
                     solutions={solutions}
                     isUpdating={isUpdating}
-                    onCardSelectorOpen={cardSelectorModal.open}
+                    onCardSelectorOpen={() => setIsCardSelectorOpen(true)}
                     handleCardSelection={handleCardSelection}
                 />
 
             </div>
 
-            <Modal 
-                isOpen={cardSelectorModal.isOpen} 
-                onClose={cardSelectorModal.close}
-            >
-                {creditCards && (
-                    <SingleCardSelector
-                        creditCards={creditCards}
-                        onSelectCard={handleCardSelectedFromModal}
-                        selectedCardId={activeCardId}
-                    />
-                )}
-            </Modal>
+            <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Select a Credit Card</DialogTitle>
+                    </DialogHeader>
+                    {creditCards && (
+                        <SingleCardSelector
+                            creditCards={creditCards}
+                            onSelectCard={handleCardSelectedFromModal}
+                            selectedCardId={activeCardId}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

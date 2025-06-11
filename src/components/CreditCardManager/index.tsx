@@ -3,10 +3,27 @@ import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService } from '../../services';
-import { Modal, useModal } from '../Modal';
 import CreditCardDetailView from '../CreditCardDetailView';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import { InfoDisplay } from '../../elements';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+  DialogFooter,
+} from '../ui/dialog/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../ui/dialog/alert-dialog';
 
 
 
@@ -22,19 +39,13 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
     const [detailedCards, setDetailedCards] = useState<CreditCardDetails[]>([]);
     const [cardToDelete, setCardToDelete] = useState<CreditCard | null>(null);
     
-    // Use the useModal hook for the add card selector
-    const { isOpen: showSelector, open: openSelector, close: closeSelector } = useModal({
-        initialState: false,
-        modalType: 'add_card'
-    });
+    // Dialog state management
+    const [showSelector, setShowSelector] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     
-    // Use the useModal hook for delete confirmation
-    const { isOpen: showDeleteConfirm, open: openDeleteConfirm, close: closeDeleteConfirm } = 
-        useModal({
-            initialState: false,
-            modalType: 'delete_card',
-            entityId: cardToDelete?.id
-        });
+    // Add card loading state
+    const [isAddingCard, setIsAddingCard] = useState(false);
+    const [selectedCardForAdding, setSelectedCardForAdding] = useState<CreditCard | null>(null);
     
     // Error message state
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -218,7 +229,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
         
         // Set the card to delete and open the confirmation modal
         setCardToDelete(card);
-        openDeleteConfirm();
+        setShowDeleteConfirm(true);
     };
 
     // Handle confirmation of card deletion
@@ -272,23 +283,36 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             setDetailedCards(refreshedDetailedCards);
             
             // Close the confirmation modal
-            closeDeleteConfirm();
+            setShowDeleteConfirm(false);
         } catch (error) {
             console.error('Error removing card:', error);
             setErrorMessage('Unable to remove this card. Please try again.');
             setShowError(true);
             // Close the modal even if there's an error
-            closeDeleteConfirm();
+            setShowDeleteConfirm(false);
         }
     };
 
     // Handle adding a new card via the CreditCardSelector
     const handleAddCard = () => {
-        openSelector();
+        setShowSelector(true);
+    };
+
+    // Handle dialog close - clear loading state
+    const handleSelectorDialogChange = (open: boolean) => {
+        if (!open) {
+            setIsAddingCard(false);
+            setSelectedCardForAdding(null);
+        }
+        setShowSelector(open);
     };
 
     // Handle card selection from the SingleCardSelector
     const handleSelectorCardSelect = async (card: CreditCard) => {
+        // Set loading state
+        setIsAddingCard(true);
+        setSelectedCardForAdding(card);
+        
         // Add the card to user's cards if not already present
         const isCardAlreadyAdded = userCards.some(c => c.id === card.id && c.selected);
         
@@ -346,8 +370,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             }
         }
         
-        // Close the selector
-        closeSelector();
+        // Clear loading state and close the selector
+        setIsAddingCard(false);
+        setSelectedCardForAdding(null);
+        setShowSelector(false);
     };
 
     // Get only the selected cards to display
@@ -398,51 +424,51 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             </div>
             
             {/* Card selector modal */}
-            <Modal 
-                isOpen={showSelector} 
-                onClose={closeSelector}
-                modalType="add_card"
-            >
-                <div className="modal-header-content">
-                    <h3>Add a Credit Card</h3>
-                </div>
-                <SingleCardSelector 
-                    creditCards={userCards.filter(card => !card.selected)}
-                    onSelectCard={handleSelectorCardSelect}
-                    selectedCardId={undefined}
-                    showOnlyUnselectedCards={true}
-                />
-            </Modal>
+            <Dialog open={showSelector} onOpenChange={handleSelectorDialogChange}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Add a Credit Card</DialogTitle>
+                    </DialogHeader>
+                    <DialogBody>
+                        <SingleCardSelector 
+                            creditCards={userCards.filter(card => !card.selected)}
+                            onSelectCard={handleSelectorCardSelect}
+                            selectedCardId={undefined}
+                            showOnlyUnselectedCards={true}
+                        />
+                    </DialogBody>
+                    {isAddingCard && selectedCardForAdding && (
+                        <DialogFooter>
+                            <InfoDisplay
+                                type="loading"
+                                message={`Adding ${selectedCardForAdding.CardName}...`}
+                                showTitle={false}
+                            />
+                        </DialogFooter>
+                    )}
+                </DialogContent>
+            </Dialog>
             
             {/* Delete confirmation modal */}
-            <Modal
-                isOpen={showDeleteConfirm}
-                onClose={closeDeleteConfirm}
-                modalType="delete_card"
-                entityId={cardToDelete?.id}
-            >
-                <div className="delete-confirmation">
-                    <h3>Remove Credit Card</h3>
-                    <p>
-                        Are you sure you want to remove <strong>{cardToDelete?.CardName}</strong> from your cards? 
-                        You can add it back later if needed.
-                    </p>
-                    <div className="button-group">
-                        <button 
-                            className="confirm-button"
-                            onClick={handleDeleteConfirm}
-                        >
-                            Remove
-                        </button>
-                        <button 
-                            className="cancel-button"
-                            onClick={closeDeleteConfirm}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </Modal>
+            <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Remove Credit Card</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to remove <strong>{cardToDelete?.CardName}</strong> from your cards? 
+                            You can add it back later if needed.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <div className="button-group">
+                            <AlertDialogAction destructive onClick={handleDeleteConfirm}>
+                                Remove
+                            </AlertDialogAction>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        </div>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 };

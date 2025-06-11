@@ -1,0 +1,269 @@
+@use '../../../styling/globals' as *;
+
+// === SHARED BASE STYLES ===
+
+// Base overlay styling for both dialog types
+%dialog-overlay-base {
+  padding: $space-4;
+  box-sizing: border-box;
+}
+
+// Base content styling for both dialog types
+%dialog-content-base {
+  background: $neutral-white !important;
+  border-color: $neutral-gray !important;
+  box-shadow: $shadow-xl !important;
+  max-width: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; // Prevent outer scroll, inner will handle it
+  padding: 0 !important; // Remove default padding
+
+  &.full-width {
+    max-width: 90vw !important;
+    width: 90% !important;
+  }
+}
+
+// Base inner container styling for both dialog types
+%dialog-inner-base {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+// Base header styling for both dialog types
+%dialog-header-base {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: $neutral-white;
+  border-bottom: 1px solid $neutral-light-gray;
+  padding: $space-6 $space-6 $space-4 $space-6;
+  margin-bottom: 0;
+  text-align: center;
+  flex-shrink: 0; // Prevent header from shrinking
+  
+  @media (min-width: 640px) {
+    text-align: left;
+  }
+
+  /* Close button styling */
+  .dialog-close-btn {
+    position: absolute;
+    top: $space-4;
+    right: $space-4;
+    background: none;
+    border: none;
+    font-size: $font-h5;
+    cursor: pointer;
+    padding: $space-1;
+    border-radius: $radius-base;
+    color: $neutral-dark-gray;
+    z-index: 1;
+    
+    &:hover {
+      background-color: $neutral-light-gray;
+      color: $neutral-black;
+    }
+  }
+}
+
+// Base footer styling for both dialog types
+%dialog-footer-base {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: $neutral-white;
+  border-top: 1px solid $neutral-light-gray;
+  padding: $space-4 $space-6 $space-6 $space-6;
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  flex-shrink: 0; // Prevent footer from shrinking
+  
+  // InfoDisplay styling - appears first (above buttons)
+  .info-component {
+    width: 100%;
+    margin-bottom: $space-2;
+    order: -1; // Ensure InfoDisplay appears first
+  }
+  
+  // Button group for custom button ordering
+  .button-group {
+    display: flex;
+    gap: $space-3;
+    align-self: flex-end; // Align buttons to the right
+    
+    // Mobile responsive layout - stack buttons
+    @media (max-width: 640px) {
+      flex-direction: column-reverse;
+      gap: $space-2;
+      align-self: stretch; // Full width on mobile
+    }
+    
+    // Desktop layout - left to right
+    @media (min-width: 640px) {
+      flex-direction: row;
+    }
+  }
+  
+  // Direct button children (fallback when not using button-group)
+  > button {
+    align-self: flex-end;
+    
+    @media (max-width: 640px) {
+      align-self: stretch;
+    }
+  }
+  
+  // If there's no button-group, arrange direct buttons properly
+  &:not(:has(.button-group)) {
+    @media (max-width: 640px) {
+      > button {
+        order: 1;
+      }
+      
+      > button:first-of-type {
+        order: 2;
+      }
+    }
+    
+    @media (min-width: 640px) {
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: flex-start;
+      
+      .info-component {
+        flex: 1;
+        margin-right: $space-3;
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// Base scrollable content styling for both dialog types
+%dialog-scrollable-content-base {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 $space-6 $space-4 $space-6;
+  
+  // Ensure proper scrolling behavior
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $neutral-gray;
+    border-radius: $radius-base;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: $neutral-dark-gray;
+  }
+}
+
+// Base title styling for both dialog types
+%dialog-title-base {
+  @include heading-4;
+  margin: 0;
+  color: $neutral-black;
+  font-weight: $font-semibold;
+}
+
+// Base description styling for both dialog types
+%dialog-description-base {
+  @include body-regular;
+  margin-top: $space-2;
+  color: $neutral-dark-gray;
+  line-height: $leading-relaxed;
+}
+
+// === DIALOG SPECIFIC STYLES ===
+
+.dialog-overlay {
+  @extend %dialog-overlay-base;
+}
+
+.dialog-content {
+  @extend %dialog-content-base;
+}
+
+.dialog-inner {
+  @extend %dialog-inner-base;
+}
+
+.dialog-header {
+  @extend %dialog-header-base;
+}
+
+.dialog-title {
+  @extend %dialog-title-base;
+}
+
+.dialog-description {
+  @extend %dialog-description-base;
+}
+
+.dialog-footer {
+  @extend %dialog-footer-base;
+}
+
+// Scrollable content area for dialog body
+.dialog-body {
+  @extend %dialog-scrollable-content-base;
+}
+
+// Auto-apply scrollable content to children that are not header/footer
+.dialog-inner > *:not(.dialog-header):not(.dialog-footer):not(.dialog-body) {
+  @extend %dialog-scrollable-content-base;
+}
+
+// === ALERT DIALOG SPECIFIC STYLES ===
+
+.alert-dialog-overlay {
+  @extend %dialog-overlay-base;
+}
+
+.alert-dialog-content {
+  @extend %dialog-content-base;
+  max-width: 500px; // Slightly smaller for alert dialogs
+}
+
+.alert-dialog-inner {
+  @extend %dialog-inner-base;
+}
+
+.alert-dialog-header {
+  @extend %dialog-header-base;
+}
+
+.alert-dialog-title {
+  @extend %dialog-title-base;
+}
+
+.alert-dialog-description {
+  @extend %dialog-description-base;
+}
+
+.alert-dialog-footer {
+  @extend %dialog-footer-base;
+}
+
+// Scrollable content area for alert dialog body
+.alert-dialog-body {
+  @extend %dialog-scrollable-content-base;
+}
+
+// Auto-apply scrollable content to children that are not header/footer
+.alert-dialog-inner > *:not(.alert-dialog-header):not(.alert-dialog-footer):not(.alert-dialog-body) {
+  @extend %dialog-scrollable-content-base;
+}

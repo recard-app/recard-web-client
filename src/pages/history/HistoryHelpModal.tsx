@@ -3,8 +3,6 @@ import React from 'react';
 const HistoryHelpModal: React.FC = () => {
   return (
     <div className="help-modal-content">
-      <h2>Transaction History Help</h2>
-      
       <section>
         <h3>View Monthly Statement</h3>
         <p>

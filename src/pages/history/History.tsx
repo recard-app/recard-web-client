@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FullHistoryPanel from '../../components/HistoryPanel/FullHistoryPanel';
 import { Conversation, CreditCard, FREE_PLAN_HISTORY_DAYS, PAGE_NAMES, ShowCompletedOnlyPreference, SubscriptionPlan } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
-import { Modal, useModal } from '../../components/Modal';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+} from '../../components/ui/dialog/dialog';
 import HistoryHelpModal from './HistoryHelpModal';
 import './History.scss';
 
@@ -31,8 +37,8 @@ function History({
   // Use the full height hook for this page
   useFullHeight(true);
 
-  // Help modal
-  const helpModal = useModal();
+  // Help modal state
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   const getHistorySubtitle = (): string | undefined => {
     if (subscriptionPlan === 'free') {
@@ -47,7 +53,7 @@ function History({
         title={PAGE_NAMES.TRANSACTION_HISTORY} 
         subtitle={getHistorySubtitle()}
         showHelpButton={true}
-        onHelpClick={helpModal.open}
+        onHelpClick={() => setIsHelpOpen(true)}
       />
       <div className="history-page-content">
         <FullHistoryPanel 
@@ -61,9 +67,16 @@ function History({
         />
       </div>
 
-      <Modal isOpen={helpModal.isOpen} onClose={helpModal.close}>
-        <HistoryHelpModal />
-      </Modal>
+      <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Transaction History Help</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <HistoryHelpModal />
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

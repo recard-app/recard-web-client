@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import showdown from 'showdown';
 import { ChatMessage } from '../../../types/ChatTypes';
+import { InfoDisplay } from '../../../elements';
 import './PromptHistory.scss';
 import { PLACEHOLDER_ASSISTANT_IMAGE } from '../../../types';
 
@@ -106,7 +107,12 @@ function PromptHistory({ chatHistory, isNewChat = false, isLoading = false, isLo
           </div>
         ) : (
           <div className="loading-message">
-            Loading transaction chat history...
+            <InfoDisplay
+              type="loading"
+              message="Loading transaction chat history..."
+              showTitle={false}
+              transparent={true}
+            />
           </div>
         )
       ) : (
@@ -126,8 +132,26 @@ function PromptHistory({ chatHistory, isNewChat = false, isLoading = false, isLo
               </div>
             </div>
           ))}
-          {isLoading && <div className="loading-indicator">...</div>}
-          {isLoadingSolutions && <div className="loading-indicator">Looking for Card Recommendations...</div>}
+          {isLoading && (
+            <div className="loading-indicator">
+              <InfoDisplay
+                type="loading"
+                message="Thinking..."
+                showTitle={false}
+                transparent={true}
+              />
+            </div>
+          )}
+          {isLoadingSolutions && (
+            <div className="loading-indicator">
+              <InfoDisplay
+                type="loading"
+                message="Looking for Card Recommendations..."
+                showTitle={false}
+                transparent={true}
+              />
+            </div>
+          )}
         </>
       )}
     </div>

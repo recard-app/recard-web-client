@@ -3,11 +3,13 @@ import './InfoDisplay.scss';
 import { INFO_COLORS, INFO_ICONS, INFO_TITLES } from '../../types/Constants';
 
 interface InfoDisplayProps {
-  type?: 'error' | 'info' | 'warning' | 'success';
+  type?: 'error' | 'info' | 'warning' | 'success' | 'loading';
   icon?: string;
   title?: string;
   message: string;
   color?: string;
+  showTitle?: boolean;
+  transparent?: boolean;
 }
 
 export const InfoDisplay: React.FC<InfoDisplayProps> = ({
@@ -15,7 +17,9 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
   icon,
   title,
   message,
-  color
+  color,
+  showTitle = true,
+  transparent = false
 }) => {
   // Default values based on type
   const getDefaultValues = () => {
@@ -38,6 +42,12 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
           defaultColor: INFO_COLORS.SUCCESS,
           defaultIcon: INFO_ICONS.SUCCESS
         };
+      case 'loading':
+        return {
+          defaultTitle: INFO_TITLES.LOADING,
+          defaultColor: INFO_COLORS.LOADING,
+          defaultIcon: INFO_ICONS.LOADING
+        };
       case 'info':
       default:
         return {
@@ -57,6 +67,11 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
   
   // Create background color with 0.1 opacity
   const getBackgroundColor = (hexColor: string) => {
+    // If transparent is true, return transparent background
+    if (transparent) {
+      return 'transparent';
+    }
+    
     // Convert hex to rgba with 0.1 opacity
     if (hexColor.startsWith('#')) {
       const r = parseInt(hexColor.slice(1, 3), 16);
@@ -76,10 +91,14 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
       }}
     >
       {displayIcon && (
-        <img src={displayIcon} alt="" className="info-icon" />
+        <img 
+          src={displayIcon} 
+          alt="" 
+          className={`info-icon ${type === 'loading' ? 'spinning' : ''}`} 
+        />
       )}
       <span className="info-message">
-        {displayTitle && (
+        {showTitle && displayTitle && (
           <span className="info-title">{displayTitle}: </span>
         )}
         {message}

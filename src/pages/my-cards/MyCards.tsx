@@ -1,9 +1,15 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import CreditCardManager from '../../components/CreditCardManager';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import PageHeader from '../../components/PageHeader';
-import { Modal, useModal } from '../../components/Modal';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+} from '../../components/ui/dialog/dialog';
 import MyCardsHelpModal from './MyCardsHelpModal';
 import './MyCards.scss';
 
@@ -15,8 +21,8 @@ const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate }) => {
     // Declare that this component needs full height behavior
     useFullHeight(true);
     
-    // Help modal
-    const helpModal = useModal();
+    // Help modal state
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
     
     // Wrap the onCardsUpdate callback with useCallback to prevent unnecessary re-renders
     const handleCardsUpdate = useCallback((cards: CreditCard[]) => {
@@ -28,7 +34,7 @@ const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate }) => {
             <PageHeader 
                 title="My Cards"
                 showHelpButton={true}
-                onHelpClick={helpModal.open}
+                onHelpClick={() => setIsHelpOpen(true)}
             />
             <div className="my-cards-page">
                 <div className="credit-card-manager-container">
@@ -36,9 +42,16 @@ const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate }) => {
                 </div>
             </div>
 
-            <Modal isOpen={helpModal.isOpen} onClose={helpModal.close}>
-                <MyCardsHelpModal />
-            </Modal>
+            <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>My Cards Help</DialogTitle>
+                    </DialogHeader>
+                    <DialogBody>
+                        <MyCardsHelpModal />
+                    </DialogBody>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

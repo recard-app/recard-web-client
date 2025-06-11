@@ -3,8 +3,6 @@ import React from 'react';
 const PreferencesHelpModal: React.FC = () => {
   return (
     <div className="help-modal-content">
-      <h2>Preferences Help</h2>
-      
       <section>
         <h3>Custom Instructions</h3>
         <p>

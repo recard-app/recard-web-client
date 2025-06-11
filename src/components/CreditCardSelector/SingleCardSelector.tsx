@@ -116,9 +116,6 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
 
   return (
     <div className='credit-card-selector single-card-selector'>
-      <div className="selector-header">
-        <h3>Select a Card</h3>
-      </div>
       
       {showError && (
         <div className="error-container">

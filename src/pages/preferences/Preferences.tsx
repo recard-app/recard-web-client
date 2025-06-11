@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PreferencesModule from '../../components/PreferencesModule';
 import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPreference } from '../../types/UserTypes';
 import PageHeader from '../../components/PageHeader';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
 import { PAGE_NAMES } from '../../types';
-import { Modal, useModal } from '../../components/Modal';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+} from '../../components/ui/dialog/dialog';
 import PreferencesHelpModal from './PreferencesHelpModal';
 
 interface PreferencesProps {
@@ -27,15 +33,15 @@ const Preferences: React.FC<PreferencesProps> = ({
     // Use the scroll height hook for this page
     useScrollHeight(true);
 
-    // Help modal
-    const helpModal = useModal();
+    // Help modal state
+    const [isHelpOpen, setIsHelpOpen] = useState(false);
 
     return (
         <div className="full-page-layout">
             <PageHeader 
                 title={PAGE_NAMES.PREFERENCES} 
                 showHelpButton={true}
-                onHelpClick={helpModal.open}
+                onHelpClick={() => setIsHelpOpen(true)}
             />
             <div className="full-page-content">
                 <PreferencesModule 
@@ -48,9 +54,16 @@ const Preferences: React.FC<PreferencesProps> = ({
                 />
             </div>
 
-            <Modal isOpen={helpModal.isOpen} onClose={helpModal.close}>
-                <PreferencesHelpModal />
-            </Modal>
+            <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Preferences Help</DialogTitle>
+                    </DialogHeader>
+                    <DialogBody>
+                        <PreferencesHelpModal />
+                    </DialogBody>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

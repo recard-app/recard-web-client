@@ -35,6 +35,7 @@ interface AppSidebarProps {
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
   isLoadingCreditCards: boolean;
+  isLoadingHistory: boolean;
   onCardSelect: (card: CreditCard) => void;
   quickHistorySize: number;
   user: FirebaseUser | null;
@@ -53,6 +54,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   creditCards,
   historyRefreshTrigger,
   isLoadingCreditCards,
+  isLoadingHistory,
   onCardSelect,
   quickHistorySize,
   user,
@@ -199,6 +201,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 onHistoryUpdate={onHistoryUpdate}
                 creditCards={creditCards}
                 historyRefreshTrigger={historyRefreshTrigger}
+                loading={isLoadingHistory}
               />
             </SidebarItem>
 

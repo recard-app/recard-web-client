@@ -1,3 +1,10 @@
+/* ========================================================================
+   LEGACY DROPDOWN COMPONENT
+   ========================================================================
+   This is a legacy dropdown component that is no longer used.
+   It is kept here for reference only.
+   ======================================================================== */
+
 import React, { useState, useRef, useEffect, ReactElement } from 'react';
 import ReactDOM from 'react-dom';
 import './Dropdown.scss';

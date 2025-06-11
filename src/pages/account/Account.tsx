@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Modal, useModal } from '../../components/Modal';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../../components/ui/dialog/alert-dialog';
 import { ChatHistory, SubscriptionPlan, PAGE_NAMES } from '../../types';
 import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
 import { 
@@ -10,6 +19,7 @@ import {
 } from './utils';
 import PageHeader from '../../components/PageHeader';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
+import { InfoDisplay } from '../../elements';
 import './Account.scss';
 
 /**
@@ -30,8 +40,7 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
   const [message, setMessage] = useState<string>('');
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
   const [deleteStatus, setDeleteStatus] = useState<DeleteStatusType>({ type: 'confirm', message: '' });
-
-  const deleteModal = useModal();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Use the scroll height hook for this page
   useScrollHeight(true);
@@ -45,66 +54,75 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
   const handleDeleteAllChatsClick = async (): Promise<void> => {
     const result = await handleDeleteAllChatsUtil(setChatHistory, setHistoryRefreshTrigger);
     setDeleteStatus(result);
+    if (result.type === 'success') {
+      setIsDeleteDialogOpen(false);
+    }
   };
 
-  const handleCloseModal = (): void => {
-    deleteModal.close();
-    setDeleteStatus({ type: 'confirm', message: '' });
-  };
-
-  const renderModalContent = () => {
+  const renderAlertDialogContent = () => {
     switch (deleteStatus.type) {
       case 'success':
         return (
-          <div className="modal-container">
-            <h2 className="modal-heading--success">Success!</h2>
-            <p className="modal-message">{deleteStatus.message}</p>
-            <button onClick={handleCloseModal} className="modal-button modal-button--success">
-              Close
-            </button>
-          </div>
+          <>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Success!</AlertDialogTitle>
+              <AlertDialogDescription>
+                {deleteStatus.message}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction onClick={() => setIsDeleteDialogOpen(false)}>
+                Close
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </>
         );
       case 'error':
         return (
-          <div className="modal-container">
-            <h2 className="modal-heading--error">Error</h2>
-            <p className="modal-message">{deleteStatus.message}</p>
-            <div className="modal-button-container">
-              <button onClick={handleCloseModal} className="modal-button modal-button--close">
-                Close
-              </button>
-              <button
-                onClick={() => {
-                  setDeleteStatus({ type: 'confirm', message: '' });
-                  handleDeleteAllChatsClick();
-                }}
-                className="modal-button modal-button--error"
-              >
-                Try Again
-              </button>
-            </div>
-          </div>
+          <>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Error</AlertDialogTitle>
+              <AlertDialogDescription>
+                {deleteStatus.message}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <div className="button-group">
+                <AlertDialogAction 
+                  destructive
+                  onClick={() => {
+                    setDeleteStatus({ type: 'confirm', message: '' });
+                    handleDeleteAllChatsClick();
+                  }}
+                >
+                  Try Again
+                </AlertDialogAction>
+                <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>
+                  Close
+                </AlertDialogCancel>
+              </div>
+            </AlertDialogFooter>
+          </>
         );
       default:
         return (
-          <div className="modal-container">
-            <h2>Delete All Chat History</h2>
-            <p className="modal-message">
-              Are you sure you want to delete all chat history? 
-              This action cannot be undone.
-            </p>
-            <div className="modal-button-container">
-              <button onClick={handleCloseModal} className="modal-button modal-button--close">
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteAllChatsClick}
-                className="modal-button modal-button--error"
-              >
-                Delete All
-              </button>
-            </div>
-          </div>
+          <>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete All Chat History</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete all chat history? 
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <div className="button-group">
+                <AlertDialogAction destructive onClick={handleDeleteAllChatsClick}>
+                  Delete All
+                </AlertDialogAction>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+              </div>
+            </AlertDialogFooter>
+          </>
         );
     }
   };
@@ -151,9 +169,10 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
                   Send Verification Email
                 </button>
                 {message && (
-                  <p className={`message ${messageType}`}>
-                    {message}
-                  </p>
+                  <InfoDisplay
+                    type={messageType || 'info'}
+                    message={message}
+                  />
                 )}
               </>
             )}
@@ -162,8 +181,8 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
               <h2 className="danger-zone__title">Danger Zone</h2>
               <p>Once you delete your chat history, there is no going back. Please be certain.</p>
               <button 
-                onClick={deleteModal.open}
-                className="danger-zone__button"
+                onClick={() => setIsDeleteDialogOpen(true)}
+                className="button destructive"
               >
                 Delete All Chat History
               </button>
@@ -174,12 +193,11 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
         )}
       </div>
 
-      <Modal 
-        isOpen={deleteModal.isOpen} 
-        onClose={handleCloseModal}
-      >
-        {renderModalContent()}
-      </Modal>
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          {renderAlertDialogContent()}
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

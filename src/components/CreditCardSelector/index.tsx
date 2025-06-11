@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import './CreditCardSelector.scss';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -15,13 +15,19 @@ import { InfoDisplay } from '../../elements';
 interface CreditCardSelectorProps {
   returnCreditCards: (cards: CreditCard[]) => void;
   existingCreditCards: CreditCard[];
+  showSaveButton?: boolean;
+  onSaveComplete?: (success: boolean, message: string) => void;
+}
+
+export interface CreditCardSelectorRef {
+  handleSave: () => Promise<void>;
 }
 
 /**
  * Component for selecting and managing credit cards
  * Allows users to view, select, search, and set default cards
  */
-const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCards, existingCreditCards }) => {
+const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorProps>(({ returnCreditCards, existingCreditCards, showSaveButton = true, onSaveComplete }, ref) => {
     // State for managing the list of all credit cards, initialized with existing cards
     const [creditCards, setCreditCards] = useState<CreditCard[]>(sortCards(existingCreditCards || []));
     // State for managing the search input value
@@ -82,7 +88,17 @@ const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCar
         if (result.success && result.updatedCards) {
             setCreditCards(result.updatedCards);
         }
+        
+        // Notify parent component of save completion
+        if (onSaveComplete) {
+            onSaveComplete(result.success, result.message);
+        }
     };
+
+    // Expose handleSave to parent component via ref
+    useImperativeHandle(ref, () => ({
+        handleSave
+    }));
 
     // Use the filterCards utility function
     const filteredCards = filterCards(creditCards, searchTerm);
@@ -124,9 +140,6 @@ const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCar
 
     return (
         <div className='credit-card-selector'>
-            <div className="selector-header">
-                <h3>Select your Credit Cards</h3>
-            </div>
             
             <div className="search-container">
                 <input
@@ -231,15 +244,17 @@ const CreditCardSelector: React.FC<CreditCardSelectorProps> = ({ returnCreditCar
                         </div>
                     )}
                     
-                    <div className="save-section">
-                        <button onClick={handleSave} className="save-button">
-                            Save
-                        </button>
-                    </div>
+                    {showSaveButton && (
+                        <div className="save-section">
+                            <button onClick={handleSave} className="save-button">
+                                Save
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
     );
-};
+});
 
 export default CreditCardSelector;

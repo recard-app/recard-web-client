@@ -33,11 +33,13 @@ function PreferencesModule({
 }: PreferencesModuleProps) {
     const [instructions, setInstructions] = useState<string>(customInstructions || '');
     const [isSaving, setIsSaving] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [message, setMessage] = useState<string>('');
     const [messageType, setMessageType] = useState<'error' | 'success' | 'info' | 'warning'>('info');
 
     useEffect(() => {
         const loadAllPreferences = async () => {
+            setIsLoading(true);
             try {
                 const { instructionsResponse, chatHistoryResponse, showCompletedOnlyResponse } = 
                     await UserPreferencesService.loadAllPreferences();
@@ -61,6 +63,8 @@ function PreferencesModule({
                 console.error('Error loading preferences:', error);
                 setMessage('Error loading preferences');
                 setMessageType('error');
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -91,13 +95,24 @@ function PreferencesModule({
     return (
         <div className="preferences-module">
             <h2>Special Instructions</h2>
+            {isLoading && (
+                <div className="loading-overlay">
+                    <InfoDisplay
+                        type="loading"
+                        message="Loading preferences..."
+                        showTitle={false}
+                        transparent={true}
+                    />
+                </div>
+            )}
             <div className="preferences-content">
                 <textarea
                     value={instructions}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
-                    placeholder="Enter your special instructions for the ReCard AI assistant..."
+                    placeholder={isLoading ? "Loading instructions..." : "Enter your special instructions for the ReCard AI assistant..."}
                     rows={6}
-                    className="preferences-textarea"
+                    className={`preferences-textarea ${isLoading ? 'loading' : ''}`}
+                    disabled={isLoading}
                 />
                 
                 <div className="chat-history-preference">
@@ -107,7 +122,8 @@ function PreferencesModule({
                         value={chatHistoryPreference || 'keep_history'}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
                             setChatHistoryPreference(e.target.value as ChatHistoryPreference)}
-                        className="chat-history-select"
+                        className={`chat-history-select ${isLoading ? 'loading' : ''}`}
+                        disabled={isLoading}
                     >
                         {CHAT_HISTORY_OPTIONS.map(option => (
                             <option key={option.value} value={option.value}>
@@ -124,7 +140,8 @@ function PreferencesModule({
                         value={showCompletedOnlyPreference.toString()}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
                             setShowCompletedOnlyPreference(e.target.value === 'true')}
-                        className="show-completed-select"
+                        className={`show-completed-select ${isLoading ? 'loading' : ''}`}
+                        disabled={isLoading}
                     >
                         <option value="false">Show all transactions</option>
                         <option value="true">Only show completed transactions</option>
@@ -133,7 +150,7 @@ function PreferencesModule({
 
                 <button 
                     onClick={handleSave}
-                    disabled={isSaving}
+                    disabled={isSaving || isLoading}
                     className={`save-button ${isSaving ? 'loading icon' : ''}`}
                 >
                     {isSaving && <img src={LOADING_ICON} alt="Loading" />}

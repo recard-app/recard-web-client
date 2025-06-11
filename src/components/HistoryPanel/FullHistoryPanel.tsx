@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
-import { ToggleSwitch } from '../../elements';
+import { ToggleSwitch, InfoDisplay } from '../../elements';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
 import {
   Conversation, 
@@ -378,7 +378,14 @@ function FullHistoryPanel({
       {/* Scrollable content area */}
       <div className="history-panel-content">
         {isLoading && paginatedList.length === 0 ? (
-          <p>Loading transaction history...</p>
+          <div className="loading-history">
+            <InfoDisplay
+              type="loading"
+              message="Loading transaction history..."
+              showTitle={false}
+              transparent={true}
+            />
+          </div>
         ) : paginatedList.length === 0 ? (
           <p>No transaction history available for this period</p>
         ) : (

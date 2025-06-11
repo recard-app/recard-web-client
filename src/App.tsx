@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { APP_NAME, PAGE_NAMES, ShowCompletedOnlyPreference } from './types';
@@ -28,14 +28,22 @@ import MyCards from './pages/my-cards/MyCards';
 import AppHeader from './components/AppHeader';
 import AppSidebar from './components/AppSidebar';
 import PromptWindow from './components/PromptWindow';
-import CreditCardSelector from './components/CreditCardSelector';
-import { Modal, useModal } from './components/Modal';
+import CreditCardSelector, { CreditCardSelectorRef } from './components/CreditCardSelector';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+  DialogFooter,
+} from './components/ui/dialog/dialog';
 import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 import CreditCardDetailView from './components/CreditCardDetailView';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
 import PromptHelpModal from './components/PromptWindow/PromptHelpModal';
 import PageHeader from './components/PageHeader';
+import { InfoDisplay } from './elements';
 
 // Context
 import { useAuth } from './context/AuthContext';
@@ -75,6 +83,8 @@ function AppContent({}: AppContentProps) {
   // State for managing credit cards in the application
   const [creditCards, setCreditCards] = useState<CreditCard[]>([]);
   const [isLoadingCreditCards, setIsLoadingCreditCards] = useState<boolean>(true);
+  // State for loading transaction history
+  const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(true);
   // State for storing user's basic card details (for PromptWindow)
   const [userCardDetails, setUserCardDetails] = useState<CardDetailsList>([]);
   // State for storing user's detailed card details (for modal view)
@@ -111,9 +121,14 @@ function AppContent({}: AppContentProps) {
   // State for managing scroll height behavior
   const [needsScrollHeight, setNeedsScrollHeight] = useState<boolean>(false);
 
-  const cardSelectorModal = useModal();
-  const cardDetailsModal = useModal();
-  const helpModal = useModal();
+  const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
+  const [isCardDetailsOpen, setIsCardDetailsOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [cardSelectorSaveStatus, setCardSelectorSaveStatus] = useState<string>('');
+  const [cardSelectorSaveSuccess, setCardSelectorSaveSuccess] = useState<boolean>(false);
+  const [isSavingCards, setIsSavingCards] = useState(false);
+  
+  const creditCardSelectorRef = useRef<CreditCardSelectorRef>(null);
 
   // Effect to reset current chat ID when user changes
   useEffect(() => {
@@ -207,8 +222,13 @@ function AppContent({}: AppContentProps) {
   // Effect to fetch full chat history with updates
   useEffect(() => {
     const fetchFullHistory = async () => {
-      if (!user) return;  // Only check for user authentication
+      if (!user) {
+        setChatHistory([]);
+        setIsLoadingHistory(false);
+        return;
+      }
       
+      setIsLoadingHistory(true);
       try {
         const params: HistoryParams = {
           lastUpdate: lastUpdateTimestamp || undefined,
@@ -228,6 +248,8 @@ function AppContent({}: AppContentProps) {
         }
       } catch (error) {
         console.error('Error fetching chat history:', error);
+      } finally {
+        setIsLoadingHistory(false);
       }
     };
 
@@ -308,8 +330,10 @@ function AppContent({}: AppContentProps) {
     setCurrentChatId(null);
     setChatHistory([]);
     setCreditCards([]);
-    cardSelectorModal.close();
-    cardDetailsModal.close();
+    setIsLoadingCreditCards(false);
+    setIsLoadingHistory(false);
+    setIsCardSelectorOpen(false);
+    setIsCardDetailsOpen(false);
     setHistoryRefreshTrigger(0);
     setLastUpdateTimestamp(null);
     setClearChatCallback(0);
@@ -367,12 +391,43 @@ function AppContent({}: AppContentProps) {
       const details = userDetailedCardDetails.find(detail => detail.id === card.id);
       if (details) {
         setSelectedCardDetails(details);
-        cardDetailsModal.open();
+        setIsCardDetailsOpen(true);
       }
     } catch (error) {
       console.error('Error loading card details:', error);
     } finally {
       setIsLoadingCardDetails(false);
+    }
+  };
+
+  // Function to handle saving credit card selections
+  const handleSaveCardSelections = async () => {
+    if (!creditCardSelectorRef.current) return;
+    
+    setIsSavingCards(true);
+    setCardSelectorSaveStatus('');
+    setCardSelectorSaveSuccess(false);
+    
+    try {
+      await creditCardSelectorRef.current.handleSave();
+    } catch (error) {
+      console.error('Error saving card selections:', error);
+    } finally {
+      setIsSavingCards(false);
+    }
+  };
+
+  // Function to handle save completion from CreditCardSelector
+  const handleCardSelectorSaveComplete = (success: boolean, message: string) => {
+    setCardSelectorSaveStatus(message);
+    setCardSelectorSaveSuccess(success);
+    if (success) {
+      // Close the dialog after successful save
+      setTimeout(() => {
+        setIsCardSelectorOpen(false);
+        setCardSelectorSaveStatus('');
+        setCardSelectorSaveSuccess(false);
+      }, 1500);
     }
   };
 
@@ -423,7 +478,7 @@ function AppContent({}: AppContentProps) {
           actions={headerActions}
           withActions={true}
           showHelpButton={true}
-          onHelpClick={helpModal.open}
+          onHelpClick={() => setIsHelpOpen(true)}
         />
         <div className="app-content">
           <div className="prompt-window-container">
@@ -442,9 +497,16 @@ function AppContent({}: AppContentProps) {
           </div>
         </div>
 
-        <Modal isOpen={helpModal.isOpen} onClose={helpModal.close}>
-          <PromptHelpModal />
-        </Modal>
+        <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Help</DialogTitle>
+            </DialogHeader>
+            <DialogBody>
+              <PromptHelpModal />
+            </DialogBody>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   };
@@ -480,6 +542,7 @@ function AppContent({}: AppContentProps) {
               creditCards={creditCards}
               historyRefreshTrigger={historyRefreshTrigger}
               isLoadingCreditCards={isLoadingCreditCards}
+              isLoadingHistory={isLoadingHistory}
               onCardSelect={handleCardSelect}
               quickHistorySize={quick_history_size}
               user={user}
@@ -488,26 +551,62 @@ function AppContent({}: AppContentProps) {
             />
           )}
           
-          <Modal 
-            isOpen={cardSelectorModal.isOpen} 
-            onClose={cardSelectorModal.close}
-          >
-            <CreditCardSelector 
-              returnCreditCards={getCreditCards} 
-              existingCreditCards={creditCards}
-            />
-          </Modal>
+          <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Select Your Credit Cards</DialogTitle>
+              </DialogHeader>
+              <DialogBody>
+                <CreditCardSelector 
+                  ref={creditCardSelectorRef}
+                  returnCreditCards={getCreditCards} 
+                  existingCreditCards={creditCards}
+                  showSaveButton={false}
+                  onSaveComplete={handleCardSelectorSaveComplete}
+                />
+              </DialogBody>
+              <DialogFooter>
+                {cardSelectorSaveStatus && (
+                  <InfoDisplay
+                    type={cardSelectorSaveSuccess ? 'success' : 'error'}
+                    message={cardSelectorSaveStatus}
+                  />
+                )}
+                <div className="button-group">
+                  <button
+                    className={`button ${isSavingCards ? 'loading' : ''}`}
+                    onClick={handleSaveCardSelections}
+                    disabled={isSavingCards}
+                  >
+                    {isSavingCards ? 'Saving...' : 'Save'}
+                  </button>
+                  <button
+                    className="button outline"
+                    onClick={() => setIsCardSelectorOpen(false)}
+                    disabled={isSavingCards}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-          <Modal 
-            isOpen={cardDetailsModal.isOpen} 
-            onClose={cardDetailsModal.close}
-            width="800px"
-          >
-            <CreditCardDetailView 
-              cardDetails={selectedCardDetails}
-              isLoading={isLoadingCardDetails}
-            />
-          </Modal>
+          <Dialog open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen}>
+            <DialogContent width="800px">
+              <DialogHeader>
+                <DialogTitle>
+                  {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
+                </DialogTitle>
+              </DialogHeader>
+              <DialogBody>
+                <CreditCardDetailView 
+                  cardDetails={selectedCardDetails}
+                  isLoading={isLoadingCardDetails}
+                />
+              </DialogBody>
+            </DialogContent>
+          </Dialog>
           
           <UniversalContentWrapper 
             isSidePanelOpen={user ? isSidePanelOpen : false}
@@ -553,7 +652,7 @@ function AppContent({}: AppContentProps) {
               } />
               <Route path="/welcome" element={
                 <ProtectedRoute>
-                  <Welcome onModalOpen={cardSelectorModal.open} />
+                  <Welcome onModalOpen={() => setIsCardSelectorOpen(true)} />
                 </ProtectedRoute>
               } />
               <Route path="/account" element={

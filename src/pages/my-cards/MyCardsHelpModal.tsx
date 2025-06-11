@@ -3,8 +3,6 @@ import React from 'react';
 const MyCardsHelpModal: React.FC = () => {
   return (
     <div className="help-modal-content">
-      <h2>My Cards Help</h2>
-      
       <section>
         <h3>Adding Credit Cards</h3>
         <p>

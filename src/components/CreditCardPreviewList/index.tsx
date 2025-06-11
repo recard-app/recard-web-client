@@ -1,6 +1,7 @@
 import React from 'react';
 import { CreditCard } from '../../types/CreditCardTypes';
 import CreditCardPreview from './CreditCardPreview';
+import { InfoDisplay } from '../../elements';
 import './CreditCardPreviewList.scss';
 
 interface CreditCardPreviewListProps {
@@ -41,7 +42,14 @@ const CreditCardPreviewList: React.FC<CreditCardPreviewListProps> = ({
   return (
     <div className="cards-list">
       {loading ? (
-        <div className="loading-cards">Loading cards...</div>
+        <div className="loading-cards">
+          <InfoDisplay
+            type="loading"
+            message="Loading cards..."
+            showTitle={false}
+            transparent={true}
+          />
+        </div>
       ) : sortedCards.length === 0 ? (
         <div className="no-cards">
           <p>You haven't added any cards yet.</p>

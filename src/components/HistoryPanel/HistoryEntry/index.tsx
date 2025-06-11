@@ -1,9 +1,8 @@
 import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON, CHAT_DESCRIPTION_MAX_LENGTH, TEMP_ICON } from '../../../types';
+import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON, CHAT_DESCRIPTION_MAX_LENGTH, TEMP_ICON, LOADING_ICON } from '../../../types';
 import { formatDate, deleteChatEntry } from './utils';
-import { Modal, useModal } from '../../Modal';
 import { InfoDisplay } from '../../../elements';
 import {
   DropdownMenu,
@@ -11,6 +10,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../ui/dialog/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../../ui/dialog/alert-dialog';
 import { UserHistoryService } from '../../../services';
 import { useState } from 'react';
 
@@ -38,20 +54,9 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
   // Tracks whether this entry is the currently selected chat
   const isCurrent = chatEntry.chatId === currentChatId;
 
-  // Use the enhanced useModal hook with modalType and entityId
-  const { isOpen: isDeleteModalOpen, open: openDeleteModal, close: closeDeleteModal } = 
-    useModal({ 
-      initialState: false, 
-      modalType: 'delete', 
-      entityId: chatEntry.chatId 
-    });
-    
-  const { isOpen: isRenameModalOpen, open: openRenameModal, close: closeRenameModal } = 
-    useModal({ 
-      initialState: false, 
-      modalType: 'rename', 
-      entityId: chatEntry.chatId 
-    });
+  // Dialog state management
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
   
   // State for the new chat description
   const [newChatDescription, setNewChatDescription] = useState(chatEntry.chatDescription);
@@ -77,7 +82,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
    */
   const handleDeleteClick = (e: React.MouseEvent): void => {
     e.stopPropagation(); // Prevent event bubbling
-    openDeleteModal();
+    setIsDeleteModalOpen(true);
   };
 
   /**
@@ -87,7 +92,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
     e.stopPropagation(); // Prevent event bubbling
     setNewChatDescription(chatEntry.chatDescription);
     setRenameError(null); // Clear any previous errors
-    openRenameModal();
+    setIsRenameModalOpen(true);
   };
 
   /**
@@ -115,7 +120,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
       );
       
       // 2. First, close the modal - This is the key change
-      closeRenameModal();
+      setIsRenameModalOpen(false);
       
       // 3. Then refresh history if available (don't wait for it)
       if (refreshHistory) {
@@ -147,7 +152,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
         currentPath: location.pathname
       });
       
-      closeDeleteModal();
+      setIsDeleteModalOpen(false);
     } catch (error) {
       console.error('Error deleting chat:', error);
       // Using InfoDisplay in an alert is not typical - typically this would be added to the modal.
@@ -212,41 +217,31 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
       </div>
 
       {/* Delete Modal */}
-      <Modal 
-        isOpen={isDeleteModalOpen} 
-        onClose={closeDeleteModal}
-        modalType="delete"
-        entityId={chatEntry.chatId}
-      >
-        <div className="delete-confirmation">
-          <h3>Delete Chat History</h3>
-          <p>Are you sure you want to delete this chat? This action cannot be undone.</p>
-          <div className="button-group">
-            <button 
-              className="confirm-button"
-              onClick={handleDeleteConfirm}
-            >
-              Delete
-            </button>
-            <button 
-              className="cancel-button"
-              onClick={closeDeleteModal}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      </Modal>
+      <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Chat History</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this chat? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <div className="button-group">
+              <AlertDialogAction destructive onClick={handleDeleteConfirm}>
+                Delete
+              </AlertDialogAction>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+            </div>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Rename Modal */}
-      <Modal
-        isOpen={isRenameModalOpen}
-        onClose={closeRenameModal}
-        modalType="rename"
-        entityId={chatEntry.chatId}
-      >
-        <div className="rename-dialog">
-          <h3>Rename Chat</h3>
+      <Dialog open={isRenameModalOpen} onOpenChange={setIsRenameModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename Chat</DialogTitle>
+          </DialogHeader>
           <form onSubmit={handleRenameSubmit}>
             <input
               type="text"
@@ -268,25 +263,29 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
                 message={renameError}
               />
             )}
+          </form>
+          <DialogFooter>
             <div className="button-group">
               <button
                 type="submit"
-                className="confirm-button"
+                className={`button ${isRenaming ? 'loading icon' : ''}`}
                 disabled={isRenaming || !newChatDescription.trim()}
+                onClick={handleRenameSubmit}
               >
+                {isRenaming && <img src={LOADING_ICON} alt="Loading" />}
                 {isRenaming ? 'Saving...' : 'Save'}
               </button>
               <button
                 type="button"
-                className="cancel-button"
-                onClick={closeRenameModal}
+                className="button outline"
+                onClick={() => setIsRenameModalOpen(false)}
               >
                 Cancel
               </button>
             </div>
-          </form>
-        </div>
-      </Modal>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

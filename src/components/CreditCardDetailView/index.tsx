@@ -2,6 +2,7 @@ import React from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
 import { PLACEHOLDER_CARD_IMAGE, TEMP_ICON, STAR_OUTLINE_ICON, STAR_FILLED_ICON } from '../../types';
+import { InfoDisplay } from '../../elements';
 
 interface CreditCardDetailViewProps {
     cardDetails: CreditCardDetails | null;
@@ -18,7 +19,16 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
 }) => {
     // For initial load, show loading state
     if (isLoading) {
-        return <div className="card-details-loading">Loading card details...</div>;
+        return (
+            <div className="card-details-loading">
+                <InfoDisplay
+                    type="loading"
+                    message="Loading card details..."
+                    showTitle={false}
+                    transparent={true}
+                />
+            </div>
+        );
     }
     
     if (!cardDetails) {

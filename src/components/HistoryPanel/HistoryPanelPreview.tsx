@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import HistoryEntry from './HistoryEntry';
+import { InfoDisplay } from '../../elements';
 import './HistoryPanel.scss';
 import {
   Conversation, 
@@ -17,6 +18,7 @@ export interface HistoryPanelPreviewProps {
   onHistoryUpdate: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
+  loading?: boolean;
 }
 
 function HistoryPanelPreview({ 
@@ -26,7 +28,8 @@ function HistoryPanelPreview({
   returnCurrentChatId,
   onHistoryUpdate,
   creditCards,
-  historyRefreshTrigger
+  historyRefreshTrigger,
+  loading = false
 }: HistoryPanelPreviewProps) {
 
   // Effect to handle history refresh triggers
@@ -72,7 +75,16 @@ function HistoryPanelPreview({
 
   return (
     <div className="history-panel">
-      {displayList.length === 0 ? (
+      {loading && displayList.length === 0 ? (
+        <div className="loading-history">
+          <InfoDisplay
+            type="loading"
+            message="Loading transaction history..."
+            showTitle={false}
+            transparent={true}
+          />
+        </div>
+      ) : displayList.length === 0 ? (
         <p>No transaction history available</p>
       ) : (
         displayList.map(entry => (
