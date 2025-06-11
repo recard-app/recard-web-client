@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthService } from '../../services';
 import { AuthResponse } from '../../types';
+import { InfoDisplay } from '../../elements';
 
 const SignIn: React.FC = () => {
     const { login, loginWithEmail } = useAuth(); // Destructure login methods from AuthContext
@@ -85,7 +86,12 @@ const SignIn: React.FC = () => {
                 Need an account? <Link to="/signup">Sign Up</Link>
             </p>
 
-            {error && <div className="error-message">{error}</div>}
+            {error && (
+                <InfoDisplay
+                    type="error"
+                    message={error}
+                />
+            )}
         </div>
     );
 };

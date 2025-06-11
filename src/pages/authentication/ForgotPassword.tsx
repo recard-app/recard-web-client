@@ -1,6 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { InfoDisplay } from '../../elements';
 
 const ForgotPassword: React.FC = () => {
     const { sendPasswordResetEmail } = useAuth();
@@ -39,8 +40,18 @@ const ForgotPassword: React.FC = () => {
                 Remember your password? <Link to="/signin">Sign In</Link>
             </p>
 
-            {error && <div className="error-message">{error}</div>}
-            {message && <div className="success-message">{message}</div>}
+            {error && (
+                <InfoDisplay
+                    type="error"
+                    message={error}
+                />
+            )}
+            {message && (
+                <InfoDisplay
+                    type="success"
+                    message={message}
+                />
+            )}
         </div>
     );
 };

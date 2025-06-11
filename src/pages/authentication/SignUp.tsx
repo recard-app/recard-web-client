@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthService } from '../../services';
 import { AuthResponse } from '../../types';
+import { InfoDisplay } from '../../elements';
 
 /**
  * Interface representing the structure of an error response.
@@ -162,7 +163,12 @@ const SignUp: React.FC = () => {
                 Sign Up with Google
             </button>
 
-            {error && <div className="error-message">{error}</div>}
+            {error && (
+                <InfoDisplay
+                    type="error"
+                    message={error}
+                />
+            )}
         </div>
     );
 };
