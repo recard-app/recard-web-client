@@ -42,7 +42,7 @@
     display: grid;
     grid-template-rows: 0fr;
     overflow: hidden;
-    transition: grid-template-rows 0.3s ease-out;
+    transition: grid-template-rows 0.2s ease-out;
     margin: 0;
     padding: 0;
     min-height: 0;
@@ -51,7 +51,7 @@
       grid-template-rows: 1fr;
       margin-bottom: 16px;
       padding: 0;
-      transition: grid-template-rows 0.3s ease-in;
+      transition: grid-template-rows 0.2s ease-in;
     }
 
     > div {
@@ -71,14 +71,14 @@
 
     &.expanded .solution-cards {
       opacity: 1;
-      transition: opacity 0.3s ease-in 0.1s;
+      transition: opacity 0.2s ease-in 0.1s;
     }
 
     &.expanded .select-different-card {
       opacity: 1;
       height: auto;
       margin-top: 10px;
-      transition: opacity 0.3s ease-in 0.1s, height 0.3s ease-in, margin 0.3s ease-in;
+      transition: opacity 0.2s ease-in 0.1s, height 0.2s ease-in, margin 0.2s ease-in;
     }
   }
 
