@@ -40,9 +40,6 @@ const Preferences: React.FC<PreferencesProps> = ({
                 onHelpClick={helpModal.open}
             />
             <div className="full-page-content">
-                <button onClick={onModalOpen} className="credit-card-button">
-                    Manage Credit Cards
-                </button>
                 <PreferencesModule 
                     customInstructions={preferencesInstructions}
                     onInstructionsUpdate={setPreferencesInstructions}

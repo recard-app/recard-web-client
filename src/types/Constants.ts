@@ -60,6 +60,7 @@ export const TEMP_ICON = 'https://placehold.co/20x20';
 export const DROPDOWN_ICON = 'https://placehold.co/16x16';
 export const STAR_OUTLINE_ICON = 'https://placehold.co/16x16';
 export const STAR_FILLED_ICON = 'https://placehold.co/16x16';
+export const LOADING_ICON = 'https://placehold.co/12x12';
 
 // Page names and navigation constants
 export const PAGE_NAMES = {

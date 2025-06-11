@@ -6,14 +6,6 @@ const PreferencesHelpModal: React.FC = () => {
       <h2>Preferences Help</h2>
       
       <section>
-        <h3>Manage Credit Cards</h3>
-        <p>
-          Click the "Manage Credit Cards" button to add, edit, or remove your credit cards. 
-          These cards will be used for generating personalized recommendations.
-        </p>
-      </section>
-
-      <section>
         <h3>Custom Instructions</h3>
         <p>
           Use this field to provide specific instructions about your spending preferences, 

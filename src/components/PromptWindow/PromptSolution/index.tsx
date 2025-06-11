@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CreditCard } from '../../../types/CreditCardTypes';
 import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage } from '../../../types';
-import { PLACEHOLDER_CARD_IMAGE } from '../../../types';
+import { PLACEHOLDER_CARD_IMAGE, LOADING_ICON } from '../../../types';
 import { UserHistoryService } from '../../../services';
 import SingleCardSelector from '../../CreditCardSelector/SingleCardSelector';
 import { Modal, useModal } from '../../Modal';
@@ -56,15 +56,19 @@ const CardSelection: React.FC<CardSelectionProps> = ({
                     <span className="selection-label">Selected card:</span>
                     <div className="selected-card-container">
                         <button 
-                            className="selected-card-button"
+                            className={`selected-card-button ${isUpdating ? 'loading icon' : ''}`}
                             onClick={onCardSelectorOpen}
                             disabled={isUpdating}
                         >
-                            <img 
-                                src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
-                                alt={selectedCard.CardName} 
-                                className="selected-card-image"
-                            />
+                            {isUpdating ? (
+                                <img src={LOADING_ICON} alt="Loading" />
+                            ) : (
+                                <img 
+                                    src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
+                                    alt={selectedCard.CardName} 
+                                    className="selected-card-image"
+                                />
+                            )}
                             <span className="selected-card-name">{selectedCard.CardName}</span>
                         </button>
                         <button 
@@ -83,11 +87,12 @@ const CardSelection: React.FC<CardSelectionProps> = ({
                         {noSolutionsMode ? 'Select card for purchase:' : 'Select a different card:'}
                     </span>
                     <button 
-                        className="select-card-button"
+                        className={`select-card-button ${isUpdating ? 'loading icon' : ''}`}
                         onClick={onCardSelectorOpen}
                         disabled={isUpdating}
                     >
-                        Select Card
+                        {isUpdating && <img src={LOADING_ICON} alt="Loading" />}
+                        {isUpdating ? 'Updating...' : 'Select Card'}
                     </button>
                 </>
             )}
@@ -263,10 +268,11 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                             )}
                                         </div>
                                         <button 
-                                            className={`use-card-button ${isSelected ? 'selected' : ''}`}
+                                            className={`use-card-button ${isSelected ? 'selected' : ''} ${isUpdating ? 'loading icon' : ''}`}
                                             onClick={() => handleCardSelection(solution.id)}
                                             disabled={isUpdating}
                                         >
+                                            {isUpdating && <img src={LOADING_ICON} alt="Loading" />}
                                             {isUpdatingThis ? 'Updating...' : isSelected ? 'Used for Purchase' : 'Use this Card'}
                                         </button>
                                     </div>
