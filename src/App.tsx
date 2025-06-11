@@ -527,7 +527,6 @@ function AppContent({}: AppContentProps) {
               <Route path="/preferences" element={
                 <ProtectedRoute>
                   <Preferences 
-                    onModalOpen={cardSelectorModal.open}
                     preferencesInstructions={preferencesInstructions}
                     setPreferencesInstructions={setPreferencesInstructions}
                     chatHistoryPreference={chatHistoryPreference}

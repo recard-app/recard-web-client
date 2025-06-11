@@ -8,7 +8,6 @@ import { Modal, useModal } from '../../components/Modal';
 import PreferencesHelpModal from './PreferencesHelpModal';
 
 interface PreferencesProps {
-    onModalOpen: () => void;
     preferencesInstructions: InstructionsPreference;
     setPreferencesInstructions: (instructions: InstructionsPreference) => void;
     chatHistoryPreference: ChatHistoryPreference;
@@ -18,7 +17,6 @@ interface PreferencesProps {
 }
 
 const Preferences: React.FC<PreferencesProps> = ({ 
-    onModalOpen, 
     preferencesInstructions, 
     setPreferencesInstructions,
     chatHistoryPreference,
