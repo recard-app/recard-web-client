@@ -61,7 +61,7 @@ export const DROPDOWN_ICON = 'https://placehold.co/16x16';
 export const STAR_OUTLINE_ICON = 'https://placehold.co/16x16';
 export const STAR_FILLED_ICON = 'https://placehold.co/16x16';
 
-import { SpinnerIcon, HomeIcon, HistoryIcon, createIconVariants } from '../icons';
+import { SpinnerIcon, HomeIcon, HistoryIcon, CardIcon, SignOutIcon, AccountIcon, PreferencesIcon, createIconVariants } from '../icons';
 export const LOADING_ICON = SpinnerIcon;
 export const LOADING_ICON_SIZE = 12;
 
@@ -90,15 +90,48 @@ export const PAGE_ICONS = {
         ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
         INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
     }),
-    MY_CARDS: TEMP_ICON,
+    MY_CARDS: createIconVariants(CardIcon, {
+        ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
+        INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
+    }),
     NEW_TRANSACTION_CHAT: TEMP_ICON,
-    PREFERENCES: TEMP_ICON,
-    MY_ACCOUNT: TEMP_ICON,
-    SIGN_OUT: TEMP_ICON,
+    PREFERENCES: createIconVariants(PreferencesIcon, {
+        ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
+        INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
+    }),
+    MY_ACCOUNT: createIconVariants(AccountIcon, {
+        ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
+        INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
+    }),
+    SIGN_OUT: createIconVariants(SignOutIcon, {
+        ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
+        INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
+    }),
     LOGO: TEMP_ICON
 } as const;
 
 export type PageIconType = typeof PAGE_ICONS[keyof typeof PAGE_ICONS];
+
+export const DROPDOWN_NORMAL_ICON_COLOR = '#5A5F66';
+export const DROPDOWN_RED_ICON_COLOR = '#EF4444';
+
+// Dropdown icons with normal and red variants
+export const DROPDOWN_ICONS = {
+    PREFERENCES: createIconVariants(PreferencesIcon, {
+        NORMAL: { variant: 'mini', color: DROPDOWN_NORMAL_ICON_COLOR },
+        RED: { variant: 'mini', color: DROPDOWN_RED_ICON_COLOR }
+    }),
+    MY_ACCOUNT: createIconVariants(AccountIcon, {
+        NORMAL: { variant: 'mini', color: DROPDOWN_NORMAL_ICON_COLOR },
+        RED: { variant: 'mini', color: DROPDOWN_RED_ICON_COLOR }
+    }),
+    SIGN_OUT: createIconVariants(SignOutIcon, {
+        NORMAL: { variant: 'mini', color: DROPDOWN_NORMAL_ICON_COLOR },
+        RED: { variant: 'mini', color: DROPDOWN_RED_ICON_COLOR }
+    })
+} as const;
+
+export type DropdownIconType = typeof DROPDOWN_ICONS[keyof typeof DROPDOWN_ICONS];
 
 export interface MonthOption {
     value: number;

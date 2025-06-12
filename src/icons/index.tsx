@@ -1,13 +1,15 @@
 import React from 'react';
 import { IconVariant } from './types';
 import HomeIcon from './HomeIcon';
-import SpinnerIcon from './SpinnerIcon';
-import HistoryIcon from './HistoryIcon';
 
 // Icon components
 export { default as HomeIcon } from './HomeIcon';
 export { default as SpinnerIcon } from './SpinnerIcon';
 export { default as HistoryIcon } from './HistoryIcon';
+export { default as CardIcon } from './CardIcon';
+export { default as SignOutIcon } from './SignOutIcon';
+export { default as AccountIcon } from './AccountIcon';
+export { default as PreferencesIcon } from './PreferencesIcon';
 
 // Types
 export type { BaseIconProps, IconVariant, IconComponentProps } from './types';
@@ -93,3 +95,7 @@ export const IconRenderer: React.FC<{
 export * from './HomeIcon';
 export * from './SpinnerIcon';
 export * from './HistoryIcon';
+export * from './CardIcon';
+export * from './SignOutIcon';
+export * from './AccountIcon';
+export * from './PreferencesIcon';

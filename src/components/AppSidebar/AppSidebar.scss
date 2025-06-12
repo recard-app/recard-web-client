@@ -442,6 +442,25 @@
       }
     }
 
+    // Active state styling for expanded sidebar items
+    .sidebar-item-content.active {
+      .sidebar-item-main {
+        background-color: $primary-color;
+        
+        &:hover {
+          background-color: $primary-medium;
+        }
+      }
+
+      .sidebar-item-name {
+        color: white;
+      }
+
+      .sidebar-item-arrow {
+        color: white;
+      }
+    }
+
     .sidebar-item-icon {
       width: $icon-small;
       height: $icon-small;
@@ -489,28 +508,7 @@
   .new-chat-button {
     display: flex;
     align-items: center;
-    gap: $space-3;
-    padding: $space-3;
-    border: none;
-    border-radius: $radius-base;
-    background-color: $primary-color;
-    color: white;
-    cursor: pointer;
-    transition: background-color $transition-base;
-    font-size: $font-sm;
-    font-weight: $font-medium;
     width: 100%;
-
-    &:hover {
-      background-color: $primary-medium;
-    }
-
-    img {
-      width: $icon-small;
-      height: $icon-small;
-      object-fit: contain;
-      filter: brightness(0) invert(1); // Make icon white
-    }
 
     span {
       flex: 1;

@@ -19,7 +19,8 @@ import {
   APP_NAME,
   PLAN_DISPLAY_TEXT,
   PAGE_NAMES,
-  PAGE_ICONS
+  PAGE_ICONS,
+  DROPDOWN_ICONS
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { IconRenderer } from '../../icons';
@@ -116,7 +117,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       name: PAGE_NAMES.TRANSACTION_HISTORY, 
       icon: getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, "/history")
     },
-    { to: "/my-cards", name: PAGE_NAMES.MY_CARDS, icon: PAGE_ICONS.MY_CARDS }
+    { 
+      to: "/my-cards", 
+      name: PAGE_NAMES.MY_CARDS, 
+      icon: getIconVariant(PAGE_ICONS.MY_CARDS, "/my-cards")
+    }
   ];
 
   const handleMiniNavHover = (e: React.MouseEvent, name: string) => {
@@ -199,7 +204,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           <>
             {/* New Transaction Chat Button */}
             <button 
-              className="new-chat-button"
+              className="new-chat-button secondary icon with-text"
               onClick={handleNewChat}
               aria-label="Start new transaction chat"
             >
@@ -214,6 +219,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               name={PAGE_NAMES.TRANSACTION_HISTORY} 
               page="/history"
               isDropdown={true}
+              className={isRouteActive("/history") ? "active" : ""}
             >
               <HistoryPanelPreview 
                 existingHistoryList={chatHistory} 
@@ -229,10 +235,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
             {/* My Cards as SidebarItem */}
             <SidebarItem 
-              icon={PAGE_ICONS.MY_CARDS}
+              icon={getIconVariant(PAGE_ICONS.MY_CARDS, "/my-cards")}
               name={PAGE_NAMES.MY_CARDS} 
               page="/my-cards"
               isDropdown={true}
+              className={isRouteActive("/my-cards") ? "active" : ""}
             >
               <CreditCardPreviewList 
                 cards={creditCards}
@@ -307,12 +314,18 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" side="right" sideOffset={20} className="sidebar-profile-dropdown">
                   <Link to="/preferences">
-                    <DropdownMenuItem>{PAGE_NAMES.PREFERENCES}</DropdownMenuItem>
+                    <DropdownMenuItem icon={DROPDOWN_ICONS.PREFERENCES.NORMAL}>
+                      {PAGE_NAMES.PREFERENCES}
+                    </DropdownMenuItem>
                   </Link>
                   <Link to="/account">
-                    <DropdownMenuItem icon={PAGE_ICONS.MY_ACCOUNT}>{PAGE_NAMES.MY_ACCOUNT}</DropdownMenuItem>
+                    <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
+                      {PAGE_NAMES.MY_ACCOUNT}
+                    </DropdownMenuItem>
                   </Link>
-                  <DropdownMenuItem onClick={onLogout} className="signout-action" icon={PAGE_ICONS.SIGN_OUT}>{PAGE_NAMES.SIGN_OUT}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICONS.SIGN_OUT.RED}>
+                    {PAGE_NAMES.SIGN_OUT}
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -327,7 +340,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     onMouseLeave={() => hideTooltip()}
                     style={{ textDecoration: 'none', color: 'inherit', marginBottom: '12px' }}
                   >
-                    <img src={PAGE_ICONS.PREFERENCES} alt={PAGE_NAMES.PREFERENCES} />
+                    <IconRenderer icon={getIconVariant(PAGE_ICONS.PREFERENCES, "/preferences")} alt={PAGE_NAMES.PREFERENCES} size={20} />
                   </Link>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -343,9 +356,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" side="right" sideOffset={16} className="mini-profile-dropdown">
                       <Link to="/account">
-                        <DropdownMenuItem icon={PAGE_ICONS.MY_ACCOUNT}>{PAGE_NAMES.MY_ACCOUNT}</DropdownMenuItem>
+                        <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
+                          {PAGE_NAMES.MY_ACCOUNT}
+                        </DropdownMenuItem>
                       </Link>
-                      <DropdownMenuItem onClick={onLogout} className="signout-action" icon={PAGE_ICONS.SIGN_OUT}>{PAGE_NAMES.SIGN_OUT}</DropdownMenuItem>
+                      <DropdownMenuItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICONS.SIGN_OUT.RED}>
+                        {PAGE_NAMES.SIGN_OUT}
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </>

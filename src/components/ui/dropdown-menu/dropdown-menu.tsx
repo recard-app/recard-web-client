@@ -68,8 +68,24 @@ function DropdownMenuItem({
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Item> & {
   inset?: boolean
   variant?: "default" | "destructive"
-  icon?: string
+  icon?: string | React.ComponentType<any> | ((...args: any[]) => React.ReactElement)
 }) {
+  // Helper function to render icon - either string URL or React component
+  const renderIcon = () => {
+    if (!icon) return null;
+    
+    if (typeof icon === 'string') {
+      return <img src={icon} alt="" className="dropdown-item-icon" />;
+    } else {
+      // Handle React component (including function components that return elements)
+      return React.createElement(icon, { 
+        className: "dropdown-item-icon",
+        size: 16,
+        'aria-hidden': true
+      });
+    }
+  };
+
   return (
     <DropdownMenuPrimitive.Item
       data-slot="dropdown-menu-item"
@@ -82,7 +98,7 @@ function DropdownMenuItem({
       )}
       {...props}
     >
-      {icon && <img src={icon} alt="" className="dropdown-item-icon" />}
+      {renderIcon()}
       <span className="dropdown-item-text">{children}</span>
     </DropdownMenuPrimitive.Item>
   )
