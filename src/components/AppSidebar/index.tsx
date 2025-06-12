@@ -23,7 +23,7 @@ import {
   DROPDOWN_ICONS
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { IconRenderer } from '../../icons';
+import { IconRenderer, SidebarIcon } from '../../icons';
 import './AppSidebar.scss';
 
 interface AppSidebarProps {
@@ -193,7 +193,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             onClick={onToggle}
             aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
           >
-            {isOpen ? '←' : '→'}
+            <SidebarIcon variant={isOpen ? 'close' : 'open'} size={20} />
           </button>
         </div>
       </div>

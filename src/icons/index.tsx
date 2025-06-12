@@ -10,6 +10,7 @@ export { default as CardIcon } from './CardIcon';
 export { default as SignOutIcon } from './SignOutIcon';
 export { default as AccountIcon } from './AccountIcon';
 export { default as PreferencesIcon } from './PreferencesIcon';
+export { default as SidebarIcon } from './SidebarIcon';
 
 // Types
 export type { BaseIconProps, IconVariant, IconComponentProps } from './types';
@@ -99,3 +100,4 @@ export * from './CardIcon';
 export * from './SignOutIcon';
 export * from './AccountIcon';
 export * from './PreferencesIcon';
+export * from './SidebarIcon';
