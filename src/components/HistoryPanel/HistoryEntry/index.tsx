@@ -268,7 +268,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
             <div className="button-group">
               <button
                 type="submit"
-                className={`button ${isRenaming ? 'loading icon' : ''}`}
+                className={`button ${isRenaming ? 'loading icon with-text' : ''}`}
                 disabled={isRenaming || !newChatDescription.trim()}
                 onClick={handleRenameSubmit}
               >

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import FullHistoryPanel from '../../components/HistoryPanel/FullHistoryPanel';
-import { Conversation, CreditCard, FREE_PLAN_HISTORY_DAYS, PAGE_NAMES, ShowCompletedOnlyPreference, SubscriptionPlan } from '../../types';
+import { Conversation, CreditCard, FREE_PLAN_HISTORY_DAYS, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, SubscriptionPlan } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import {
@@ -51,6 +51,7 @@ function History({
     <div className="history-page-wrapper">
       <PageHeader 
         title={PAGE_NAMES.TRANSACTION_HISTORY} 
+        icon={PAGE_ICONS.TRANSACTION_HISTORY.MINI}
         subtitle={getHistorySubtitle()}
         showHelpButton={true}
         onHelpClick={() => setIsHelpOpen(true)}

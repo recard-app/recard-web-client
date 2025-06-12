@@ -127,26 +127,26 @@ button, .button {
     
     // Size combinations for icon-only buttons
     &.mini {
-      @include button-icon-only($icon-mini, $space-1, $space-1);
+      @include button-icon-only($icon-micro, $space-1, $space-1);
       
       &.with-text {
-        @include button-icon-with-text($icon-mini, $space-1, $space-2);
+        @include button-icon-with-text($icon-micro, $space-1, $space-2);
       }
     }
     
     &.small {
-      @include button-icon-only($icon-small, $space-2, $space-2);
+      @include button-icon-only($icon-mini, $space-2, $space-2);
       
       &.with-text {
-        @include button-icon-with-text($icon-small, $space-2, $space-2);
+        @include button-icon-with-text($icon-mini, $space-2, $space-2);
       }
     }
     
     &.large {
-      @include button-icon-only($icon-large, $space-4, $space-4);
+      @include button-icon-only($icon-small, $space-4, $space-4);
       
       &.with-text {
-        @include button-icon-with-text($icon-large, $space-4, $space-8);
+        @include button-icon-with-text($icon-small, $space-4, $space-8);
       }
     }
   }

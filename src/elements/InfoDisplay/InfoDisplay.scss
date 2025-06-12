@@ -3,16 +3,16 @@
 // InfoDisplay styles
 .info-component {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   padding: 8px 12px;
   border-radius: 2px;
   font-size: 14px;
   line-height: 1.4;
   
   .info-icon {
-    width: $icon-small;
-    height: $icon-small;
-    margin-right: 8px;
+    width: $icon-mini;
+    height: $icon-mini;
+    margin-right: $space-1;
     
     &.spinning {
       animation: spin 1s linear infinite;

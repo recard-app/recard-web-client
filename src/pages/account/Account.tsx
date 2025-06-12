@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../../components/ui/dialog/alert-dialog';
-import { ChatHistory, SubscriptionPlan, PAGE_NAMES } from '../../types';
+import { ChatHistory, SubscriptionPlan, PAGE_NAMES, PAGE_ICONS } from '../../types';
 import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
 import { 
   DeleteStatusType, 
@@ -81,7 +81,7 @@ const Account: React.FC<AccountProps> = ({ setChatHistory, setHistoryRefreshTrig
 
   return (
     <div className="full-page-layout">
-      <PageHeader title={PAGE_NAMES.MY_ACCOUNT} />
+      <PageHeader title={PAGE_NAMES.MY_ACCOUNT} icon={PAGE_ICONS.MY_ACCOUNT.MINI} />
       <div className="full-page-content">
         {user ? (
           <div className="user-info">

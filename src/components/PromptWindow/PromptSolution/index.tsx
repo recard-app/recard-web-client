@@ -61,7 +61,7 @@ const CardSelection: React.FC<CardSelectionProps> = ({
                     <span className="selection-label">Selected card:</span>
                     <div className="selected-card-container">
                         <button 
-                            className={`selected-card-button ${isUpdating ? 'loading icon' : ''}`}
+                            className={`selected-card-button ${isUpdating ? 'loading icon with-text' : ''}`}
                             onClick={onCardSelectorOpen}
                             disabled={isUpdating}
                         >
@@ -92,7 +92,7 @@ const CardSelection: React.FC<CardSelectionProps> = ({
                         {noSolutionsMode ? 'Select card for purchase:' : 'Select a different card:'}
                     </span>
                     <button 
-                        className={`select-card-button ${isUpdating ? 'loading icon' : ''}`}
+                        className={`select-card-button ${isUpdating ? 'loading icon with-text' : ''}`}
                         onClick={onCardSelectorOpen}
                         disabled={isUpdating}
                     >

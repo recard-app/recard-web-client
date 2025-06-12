@@ -151,7 +151,7 @@ function PreferencesModule({
                 <button 
                     onClick={handleSave}
                     disabled={isSaving || isLoading}
-                    className={`save-button ${isSaving ? 'loading icon' : ''}`}
+                    className={`save-button ${isSaving ? 'loading icon with-text' : ''}`}
                 >
                     {isSaving && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                     {isSaving ? 'Saving...' : 'Save Preferences'}

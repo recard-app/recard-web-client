@@ -167,7 +167,12 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
         onClick={handleMainClick}
       >
         {icon && (
-          <IconRenderer icon={icon} alt={`${name} icon`} className="sidebar-item-icon" size={20} />
+          <IconRenderer 
+            icon={icon}
+            alt={`${name} icon`}
+            className="sidebar-item-icon"
+            size={20}
+          />
         )}
 
         {!isCollapsed && (

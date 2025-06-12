@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import CreditCardManager from '../../components/CreditCardManager';
 import { CreditCard } from '../../types/CreditCardTypes';
+import { PAGE_NAMES, PAGE_ICONS } from '../../types';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import PageHeader from '../../components/PageHeader';
 import {
@@ -32,7 +33,8 @@ const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate }) => {
     return (
         <div className="my-cards-wrapper">
             <PageHeader 
-                title="My Cards"
+                title={PAGE_NAMES.MY_CARDS}
+                icon={PAGE_ICONS.MY_CARDS.MINI}
                 showHelpButton={true}
                 onHelpClick={() => setIsHelpOpen(true)}
             />

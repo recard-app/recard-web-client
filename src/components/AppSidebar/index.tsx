@@ -23,7 +23,7 @@ import {
   DROPDOWN_ICONS
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { IconRenderer, SidebarIcon } from '../../icons';
+import Icon, { IconRenderer } from '../../icons';
 import './AppSidebar.scss';
 
 interface AppSidebarProps {
@@ -171,7 +171,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         {isOpen && (
           <h1 className="app-name">
             <Link to="/">
-              <IconRenderer icon={PAGE_ICONS.LOGO} alt="Logo" />
+              <img src={PAGE_ICONS.LOGO} alt="Logo" />
               {APP_NAME}
             </Link>
           </h1>
@@ -183,7 +183,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               className="logo-icon"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              <IconRenderer icon={PAGE_ICONS.LOGO} alt="Logo" />
+              <img src={PAGE_ICONS.LOGO} alt="Logo" />
             </Link>
           </div>
         )}
@@ -193,7 +193,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             onClick={onToggle}
             aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
           >
-            <SidebarIcon variant={isOpen ? 'close' : 'open'} size={20} />
+            <Icon name="sidebar" variant={isOpen ? 'close' : 'open'} size={20} />
           </button>
         </div>
       </div>
@@ -208,7 +208,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               onClick={handleNewChat}
               aria-label="Start new transaction chat"
             >
-              <IconRenderer icon={PAGE_ICONS.NEW_TRANSACTION_CHAT} alt="New Chat" />
+              <img src={PAGE_ICONS.NEW_TRANSACTION_CHAT} alt="New Chat" />
               <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
             </button>
 
@@ -275,7 +275,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     onMouseLeave={() => hideTooltip()}
                     style={{ textDecoration: 'none', color: 'inherit' }}
                   >
-                    <IconRenderer icon={item.icon} alt={item.name} size={20} />
+                    {item.icon()}
                   </Link>
                 );
               })}
@@ -340,7 +340,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     onMouseLeave={() => hideTooltip()}
                     style={{ textDecoration: 'none', color: 'inherit', marginBottom: '12px' }}
                   >
-                    <IconRenderer icon={getIconVariant(PAGE_ICONS.PREFERENCES, "/preferences")} alt={PAGE_NAMES.PREFERENCES} size={20} />
+                    {getIconVariant(PAGE_ICONS.PREFERENCES, "/preferences")()}
                   </Link>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

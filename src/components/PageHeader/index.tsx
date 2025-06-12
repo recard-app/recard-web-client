@@ -1,10 +1,11 @@
 import React from 'react';
 import { TEMP_ICON, SHOW_HEADER_ICONS } from '../../types';
+import { IconRenderer } from '../../icons';
 import './PageHeader.scss';
 
 interface PageHeaderProps {
   title: string;
-  icon?: string;
+  icon?: string | React.ComponentType<any> | ((...args: any[]) => React.ReactElement);
   subtitle?: string;
   actions?: React.ReactNode;
   withActions?: boolean;
@@ -28,7 +29,12 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       <div className="header-title-section">
         <h1>
           {SHOW_HEADER_ICONS && (
-            <img src={icon} alt="" className="header-icon" />
+            <IconRenderer 
+              icon={icon}
+              alt=""
+              className="header-icon"
+              size={20}
+            />
           )}
           {title}
         </h1>

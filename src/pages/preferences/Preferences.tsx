@@ -3,7 +3,7 @@ import PreferencesModule from '../../components/PreferencesModule';
 import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPreference } from '../../types/UserTypes';
 import PageHeader from '../../components/PageHeader';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
-import { PAGE_NAMES } from '../../types';
+import { PAGE_NAMES, PAGE_ICONS } from '../../types';
 import {
   Dialog,
   DialogContent,
@@ -40,6 +40,7 @@ const Preferences: React.FC<PreferencesProps> = ({
         <div className="full-page-layout">
             <PageHeader 
                 title={PAGE_NAMES.PREFERENCES} 
+                icon={PAGE_ICONS.PREFERENCES.MINI}
                 showHelpButton={true}
                 onHelpClick={() => setIsHelpOpen(true)}
             />

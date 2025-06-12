@@ -1,3 +1,10 @@
+/* ========================================================================
+   LEGACY MODAL COMPONENT
+   ========================================================================
+   This is a legacy modal component that is no longer used.
+   It is kept here for reference only.
+   ======================================================================== */
+
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import './Modal.scss';

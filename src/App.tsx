@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
-import { APP_NAME, PAGE_NAMES, ShowCompletedOnlyPreference } from './types';
+import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference } from './types';
 // Services
 import { 
   CardService, 
@@ -468,6 +468,7 @@ function AppContent({}: AppContentProps) {
       <div className="home-wrapper">
         <PageHeader 
           title={PAGE_NAMES.HOME}
+          icon={PAGE_ICONS.HOME.MINI}
           actions={headerActions}
           withActions={true}
           showHelpButton={true}
@@ -568,7 +569,7 @@ function AppContent({}: AppContentProps) {
                 )}
                 <div className="button-group">
                   <button
-                    className={`button ${isSavingCards ? 'loading icon' : ''}`}
+                    className={`button ${isSavingCards ? 'loading icon with-text' : ''}`}
                     onClick={handleSaveCardSelections}
                     disabled={isSavingCards}
                   >

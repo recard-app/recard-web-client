@@ -61,15 +61,18 @@ export const DROPDOWN_ICON = 'https://placehold.co/16x16';
 export const STAR_OUTLINE_ICON = 'https://placehold.co/16x16';
 export const STAR_FILLED_ICON = 'https://placehold.co/16x16';
 
-import { SpinnerIcon, HomeIcon, HistoryIcon, CardIcon, SignOutIcon, AccountIcon, PreferencesIcon, createIconVariants } from '../icons';
-export const LOADING_ICON = SpinnerIcon;
+import { createIconVariant, Icon } from '../icons';
+import React from 'react';
+
+// Loading icon configuration
+export const LOADING_ICON = (props: any = {}) => React.createElement(Icon, { name: 'spinner', variant: 'default', size: 12, ...props });
 export const LOADING_ICON_SIZE = 12;
 
 // Page names and navigation constants
 export const PAGE_NAMES = {
     HOME: 'Home',
     TRANSACTION_HISTORY: 'Transaction History',
-    MY_CARDS: 'My Cards',
+    MY_CARDS: 'My Cards', 
     NEW_TRANSACTION_CHAT: 'New Transaction Chat',
     PREFERENCES: 'Preferences',
     MY_ACCOUNT: 'My Account',
@@ -82,31 +85,37 @@ export const SIDEBAR_INACTIVE_ICON_COLOR = '#22CC9D';
 
 // Page icons with variant and color support
 export const PAGE_ICONS = {
-    HOME: createIconVariants(HomeIcon, {
-        ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
-        INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
-    }),
-    TRANSACTION_HISTORY: createIconVariants(HistoryIcon, {
-        ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
-        INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
-    }),
-    MY_CARDS: createIconVariants(CardIcon, {
-        ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
-        INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
-    }),
+    HOME: {
+        ACTIVE: (props: any = {}) => createIconVariant('home', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('home', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('home', 'mini', SIDEBAR_INACTIVE_ICON_COLOR, props.size)
+    },
+    TRANSACTION_HISTORY: {
+        ACTIVE: (props: any = {}) => createIconVariant('history', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('history', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('history', 'mini', SIDEBAR_INACTIVE_ICON_COLOR, props.size)
+    },
+    MY_CARDS: {
+        ACTIVE: (props: any = {}) => createIconVariant('card', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('card', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('card', 'mini', SIDEBAR_INACTIVE_ICON_COLOR, props.size)
+    },
     NEW_TRANSACTION_CHAT: TEMP_ICON,
-    PREFERENCES: createIconVariants(PreferencesIcon, {
-        ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
-        INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
-    }),
-    MY_ACCOUNT: createIconVariants(AccountIcon, {
-        ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
-        INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
-    }),
-    SIGN_OUT: createIconVariants(SignOutIcon, {
-        ACTIVE: { variant: 'solid', color: SIDEBAR_ACTIVE_ICON_COLOR },
-        INACTIVE: { variant: 'outline', color: SIDEBAR_INACTIVE_ICON_COLOR }
-    }),
+    PREFERENCES: {
+        ACTIVE: (props: any = {}) => createIconVariant('preferences', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('preferences', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('preferences', 'mini', SIDEBAR_INACTIVE_ICON_COLOR, props.size)
+    },
+    MY_ACCOUNT: {
+        ACTIVE: (props: any = {}) => createIconVariant('account', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('account', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('account', 'mini', SIDEBAR_INACTIVE_ICON_COLOR, props.size)
+    },
+    SIGN_OUT: {
+        ACTIVE: (props: any = {}) => createIconVariant('sign-out', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('sign-out', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('sign-out', 'mini', SIDEBAR_INACTIVE_ICON_COLOR, props.size)
+    },
     LOGO: TEMP_ICON
 } as const;
 
@@ -117,18 +126,18 @@ export const DROPDOWN_RED_ICON_COLOR = '#EF4444';
 
 // Dropdown icons with normal and red variants
 export const DROPDOWN_ICONS = {
-    PREFERENCES: createIconVariants(PreferencesIcon, {
-        NORMAL: { variant: 'mini', color: DROPDOWN_NORMAL_ICON_COLOR },
-        RED: { variant: 'mini', color: DROPDOWN_RED_ICON_COLOR }
-    }),
-    MY_ACCOUNT: createIconVariants(AccountIcon, {
-        NORMAL: { variant: 'mini', color: DROPDOWN_NORMAL_ICON_COLOR },
-        RED: { variant: 'mini', color: DROPDOWN_RED_ICON_COLOR }
-    }),
-    SIGN_OUT: createIconVariants(SignOutIcon, {
-        NORMAL: { variant: 'mini', color: DROPDOWN_NORMAL_ICON_COLOR },
-        RED: { variant: 'mini', color: DROPDOWN_RED_ICON_COLOR }
-    })
+    PREFERENCES: {
+        NORMAL: (props: any = {}) => createIconVariant('preferences', 'mini', DROPDOWN_NORMAL_ICON_COLOR, props.size),
+        RED: (props: any = {}) => createIconVariant('preferences', 'mini', DROPDOWN_RED_ICON_COLOR, props.size)
+    },
+    MY_ACCOUNT: {
+        NORMAL: (props: any = {}) => createIconVariant('account', 'mini', DROPDOWN_NORMAL_ICON_COLOR, props.size),
+        RED: (props: any = {}) => createIconVariant('account', 'mini', DROPDOWN_RED_ICON_COLOR, props.size)
+    },
+    SIGN_OUT: {
+        NORMAL: (props: any = {}) => createIconVariant('sign-out', 'mini', DROPDOWN_NORMAL_ICON_COLOR, props.size),
+        RED: (props: any = {}) => createIconVariant('sign-out', 'mini', DROPDOWN_RED_ICON_COLOR, props.size)
+    }
 } as const;
 
 export type DropdownIconType = typeof DROPDOWN_ICONS[keyof typeof DROPDOWN_ICONS];
