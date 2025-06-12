@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
+import { IconRenderer } from '../../icons';
 
 export interface SidebarItemProps {
-  icon?: string;
+  icon?: string | React.ComponentType<any> | ((...args: any[]) => React.ReactElement);
   name: string;
   page?: string;
   isDropdown?: boolean;
@@ -166,13 +167,9 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
         onClick={handleMainClick}
       >
         {icon && (
-          <img 
-            src={icon} 
-            alt={`${name} icon`} 
-            className="sidebar-item-icon"
-            style={{ pointerEvents: 'none' }}
-          />
+          <IconRenderer icon={icon} alt={`${name} icon`} className="sidebar-item-icon" size={20} />
         )}
+
         {!isCollapsed && (
           <>
             <span className="sidebar-item-name" onClick={isDropdown && page ? handleNavigationClick : undefined}>
@@ -186,6 +183,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
           </>
         )}
       </div>
+      
       {isDropdown && isExpanded && children && !isCollapsed && (
         <div className="sidebar-item-dropdown">
           {children}

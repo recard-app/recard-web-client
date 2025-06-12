@@ -22,6 +22,7 @@ import {
   PAGE_ICONS
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
+import { IconRenderer } from '../../icons';
 import './AppSidebar.scss';
 
 interface AppSidebarProps {
@@ -75,6 +76,19 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     
     return false;
   };
+
+  // Helper function to check if a route is active
+  const isRouteActive = (routePath: string) => {
+    if (routePath === '/') {
+      return isHomeOrChatRoute(location.pathname);
+    }
+    return location.pathname === routePath;
+  };
+
+  // Helper function to get the appropriate icon variant based on active state
+  const getIconVariant = (iconVariants: any, routePath: string) => {
+    return isRouteActive(routePath) ? iconVariants.ACTIVE : iconVariants.INACTIVE;
+  };
   
   // Centralized tooltip state
   const [activeTooltip, setActiveTooltip] = React.useState<{
@@ -92,8 +106,16 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
   // Mini navigation items for collapsed state
   const miniMiddleNavItems = [
-    { to: "/", name: PAGE_NAMES.HOME, icon: PAGE_ICONS.HOME },
-    { to: "/history", name: PAGE_NAMES.TRANSACTION_HISTORY, icon: PAGE_ICONS.TRANSACTION_HISTORY },
+    { 
+      to: "/", 
+      name: PAGE_NAMES.HOME, 
+      icon: getIconVariant(PAGE_ICONS.HOME, "/")
+    },
+    { 
+      to: "/history", 
+      name: PAGE_NAMES.TRANSACTION_HISTORY, 
+      icon: getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, "/history")
+    },
     { to: "/my-cards", name: PAGE_NAMES.MY_CARDS, icon: PAGE_ICONS.MY_CARDS }
   ];
 
@@ -144,7 +166,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         {isOpen && (
           <h1 className="app-name">
             <Link to="/">
-              <img src={PAGE_ICONS.LOGO} alt="Logo" />
+              <IconRenderer icon={PAGE_ICONS.LOGO} alt="Logo" />
               {APP_NAME}
             </Link>
           </h1>
@@ -156,7 +178,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               className="logo-icon"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              <img src={PAGE_ICONS.LOGO} alt="Logo" />
+              <IconRenderer icon={PAGE_ICONS.LOGO} alt="Logo" />
             </Link>
           </div>
         )}
@@ -181,14 +203,14 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               onClick={handleNewChat}
               aria-label="Start new transaction chat"
             >
-              <img src={PAGE_ICONS.NEW_TRANSACTION_CHAT} alt="New Chat" />
+              <IconRenderer icon={PAGE_ICONS.NEW_TRANSACTION_CHAT} alt="New Chat" />
               <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
             </button>
 
             {/* Full expanded content */}
             {/* Transaction History as SidebarItem */}
             <SidebarItem 
-              icon={PAGE_ICONS.TRANSACTION_HISTORY}
+              icon={getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, "/history")}
               name={PAGE_NAMES.TRANSACTION_HISTORY} 
               page="/history"
               isDropdown={true}
@@ -236,9 +258,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               </button>
 
               {miniMiddleNavItems.map((item, index) => {
-                const isActive = item.to === '/' 
-                  ? isHomeOrChatRoute(location.pathname)
-                  : location.pathname === item.to;
+                const isActive = isRouteActive(item.to);
                 return (
                   <Link 
                     key={index}
@@ -248,7 +268,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     onMouseLeave={() => hideTooltip()}
                     style={{ textDecoration: 'none', color: 'inherit' }}
                   >
-                    <img src={item.icon} alt={item.name} />
+                    <IconRenderer icon={item.icon} alt={item.name} size={20} />
                   </Link>
                 );
               })}
