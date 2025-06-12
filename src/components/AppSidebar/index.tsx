@@ -20,7 +20,8 @@ import {
   PLAN_DISPLAY_TEXT,
   PAGE_NAMES,
   PAGE_ICONS,
-  DROPDOWN_ICONS
+  DROPDOWN_ICONS,
+  SIDEBAR_TOGGLE_ICON_COLOR
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import Icon, { IconRenderer } from '../../icons';
@@ -193,7 +194,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             onClick={onToggle}
             aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
           >
-            <Icon name="sidebar" variant={isOpen ? 'close' : 'open'} size={20} />
+            <Icon name="sidebar" variant={isOpen ? 'close' : 'open'} color={SIDEBAR_TOGGLE_ICON_COLOR} size={20} />
           </button>
         </div>
       </div>

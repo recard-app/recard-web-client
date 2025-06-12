@@ -80,6 +80,9 @@ export const PAGE_NAMES = {
 } as const;
 export type PageNameType = typeof PAGE_NAMES[keyof typeof PAGE_NAMES];
 
+export const SIDEBAR_TOGGLE_ICON_COLOR = '#B5BBC2';
+export const SIDEBAR_TOGGLE_ICON_COLOR_HOVER = '#5A5F66';
+
 export const SIDEBAR_ACTIVE_ICON_COLOR = '#FFFFFF';
 export const SIDEBAR_INACTIVE_ICON_COLOR = '#22CC9D';
 
