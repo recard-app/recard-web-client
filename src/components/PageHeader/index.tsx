@@ -1,6 +1,6 @@
 import React from 'react';
-import { TEMP_ICON, SHOW_HEADER_ICONS } from '../../types';
-import { IconRenderer } from '../../icons';
+import { TEMP_ICON, SHOW_HEADER_ICONS, SIDEBAR_TOGGLE_ICON_COLOR } from '../../types';
+import { IconRenderer, Icon } from '../../icons';
 import './PageHeader.scss';
 
 interface PageHeaderProps {
@@ -50,7 +50,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
               aria-label="Open help"
               title="Help"
             >
-              <img src={TEMP_ICON} alt="?" className="help-icon" />
+              <Icon name="help" variant="outline" color={SIDEBAR_TOGGLE_ICON_COLOR} size={20} />
             </button>
           )}
         </div>
