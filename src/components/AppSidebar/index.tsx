@@ -190,7 +190,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         )}
         <div className="sidebar-toggle">
           <button 
-            className="button outline small toggle-button"
+            className="button outline small toggle-button icon-gray-hover"
             onClick={onToggle}
             aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
           >

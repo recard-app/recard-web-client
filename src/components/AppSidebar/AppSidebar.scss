@@ -315,6 +315,13 @@
         background-color: $neutral-light-gray;
       }
     }
+    
+    &:focus,
+    &:focus-visible,
+    &:active {
+      outline: none !important;
+      box-shadow: none !important;
+    }
   }
 
   .profile-trigger {
@@ -329,6 +336,10 @@
 
     &:hover {
       background-color: $neutral-light-gray;
+    }
+    
+    &:focus {
+      outline: none;
     }
 
     .profile-image {

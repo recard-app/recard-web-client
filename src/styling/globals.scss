@@ -151,3 +151,13 @@ button, .button {
     }
   }
 }
+
+// Icon utility classes
+.icon-gray-hover {
+  &:hover {
+    svg {
+      color: #5A5F66 !important;
+      stroke: #5A5F66 !important;
+    }
+  }
+}

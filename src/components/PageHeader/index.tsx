@@ -45,7 +45,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
           {actions}
           {showHelpButton && onHelpClick && (
             <button 
-              className="help-icon-button"
+              className="help-icon-button icon-gray-hover"
               onClick={onHelpClick}
               aria-label="Open help"
               title="Help"
