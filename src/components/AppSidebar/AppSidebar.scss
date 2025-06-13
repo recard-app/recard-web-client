@@ -128,6 +128,11 @@
       align-items: flex-end;
       margin-right: $space-1;
     }
+    .mini-nav-icon {
+      margin-right: $space-1;
+      position: relative;
+      right: 0;
+    }
 
     .mini-nav-profile {
       justify-content: flex-end;
@@ -136,12 +141,6 @@
       flex-direction: column;
       align-items: flex-end;
       gap: $space-3;
-      
-      .mini-nav-icon {
-        margin-right: $space-1;
-        position: relative;
-        right: 0;
-      }
     }
   }
 
@@ -207,49 +206,47 @@
     flex-direction: column;
     gap: $space-3;
     align-items: center;
+  }
 
-    .mini-nav-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: $icon-large;
-      height: $icon-large;
-      border-radius: $radius-base;
-      transition: background-color $transition-base;
-      text-decoration: none;
-      border: none;
-      background: none;
-      cursor: pointer;
-      color: inherit;
+  .mini-nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: $icon-large;
+    height: $icon-large;
+    min-height: $icon-large;
+    min-width: $icon-large;
+    border-radius: $radius-base;
+    transition: background-color $transition-base;
+    text-decoration: none;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: inherit;
+
+    &:hover {
+      background-color: $neutral-light-gray;
+    }
+
+    &.active {
+      background-color: $primary-light;
+    }
+
+    &.new-chat-mini {
+      background-color: $primary-color;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
 
       &:hover {
-        background-color: $neutral-light-gray;
+        background-color: $primary-medium;
       }
+    }
 
-      &.active {
-        background-color: $primary-color;
-        
-        img {
-          filter: brightness(0) invert(1); // Make icon white
-        }
-      }
-
-      &.new-chat-mini {
-        background-color: $primary-color;
-        color: white;
-        font-size: 1.2rem;
-        font-weight: bold;
-
-        &:hover {
-          background-color: $primary-medium;
-        }
-      }
-
-      img {
-        width: $icon-small;
-        height: $icon-small;
-        object-fit: contain;
-      }
+    img {
+      width: $icon-small;
+      height: $icon-small;
+      object-fit: contain;
     }
   }
 
@@ -269,9 +266,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: $icon-large;
-      height: $icon-large;
-      border-radius: 50%;
       transition: background-color $transition-base;
       text-decoration: none;
       cursor: pointer;
@@ -281,7 +275,7 @@
       }
 
       &.active {
-        background-color: $primary-color;
+        background-color: $primary-light;
         
         img {
           filter: brightness(0) invert(1); // Make icon white
