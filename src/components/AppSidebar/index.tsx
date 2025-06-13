@@ -206,7 +206,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           <>
             {/* New Transaction Chat Button */}
             <button 
-              className="new-chat-button secondary icon with-text"
+              className="new-chat-button small secondary icon with-text"
               onClick={handleNewChat}
               aria-label="Start new transaction chat"
             >
