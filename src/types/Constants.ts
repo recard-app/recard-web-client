@@ -80,11 +80,17 @@ export const PAGE_NAMES = {
 } as const;
 export type PageNameType = typeof PAGE_NAMES[keyof typeof PAGE_NAMES];
 
-export const SIDEBAR_TOGGLE_ICON_COLOR = '#B5BBC2';
-export const SIDEBAR_TOGGLE_ICON_COLOR_HOVER = '#5A5F66';
+export const ICON_WHITE = '#FFFFFF';
+export const ICON_GRAY = '#B5BBC2';
+export const ICON_GRAY_DARK = '#5A5F66';
+export const ICON_PRIMARY = '#22CC9D';
+export const ICON_RED = '#EF4444';
 
-export const SIDEBAR_ACTIVE_ICON_COLOR = '#FFFFFF';
-export const SIDEBAR_INACTIVE_ICON_COLOR = '#22CC9D';
+export const SIDEBAR_TOGGLE_ICON_COLOR = ICON_GRAY;
+export const SIDEBAR_TOGGLE_ICON_COLOR_HOVER = ICON_GRAY_DARK;
+
+export const SIDEBAR_ACTIVE_ICON_COLOR = ICON_WHITE;
+export const SIDEBAR_INACTIVE_ICON_COLOR = ICON_PRIMARY;
 
 // Page icons with variant and color support
 export const PAGE_ICONS = {
@@ -124,8 +130,8 @@ export const PAGE_ICONS = {
 
 export type PageIconType = typeof PAGE_ICONS[keyof typeof PAGE_ICONS];
 
-export const DROPDOWN_NORMAL_ICON_COLOR = '#5A5F66';
-export const DROPDOWN_RED_ICON_COLOR = '#EF4444';
+export const DROPDOWN_NORMAL_ICON_COLOR = ICON_GRAY;
+export const DROPDOWN_RED_ICON_COLOR = ICON_RED;
 
 // Dropdown icons with normal and red variants
 export const DROPDOWN_ICONS = {

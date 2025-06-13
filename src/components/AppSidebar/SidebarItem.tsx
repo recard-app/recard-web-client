@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import ReactDOM from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
-import { IconRenderer } from '../../icons';
+import { IconRenderer, Icon } from '../../icons';
+import { ICON_GRAY_DARK, ICON_WHITE } from '../../types';
 
 export interface SidebarItemProps {
   icon?: string | React.ComponentType<any> | ((...args: any[]) => React.ReactElement);
@@ -113,19 +113,27 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
   };
 
   const handleMainClick = (e: React.MouseEvent) => {
-    if (isDropdown) {
-      e.preventDefault();
-      toggleDropdown();
-    } else if (page) {
+    // This will now only handle navigation for non-dropdown items
+    if (!isDropdown && page) {
       navigate(page);
     }
   };
 
   const handleNavigationClick = (e: React.MouseEvent) => {
+    // Handle navigation for dropdown items
     if (isDropdown && page) {
       e.preventDefault();
       e.stopPropagation();
       navigate(page);
+    }
+  };
+
+  const handleDropdownToggle = (e: React.MouseEvent) => {
+    // Handle dropdown toggle
+    if (isDropdown) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleDropdown();
     }
   };
 
@@ -152,6 +160,11 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
     }
   };
 
+  // Helper function to get the appropriate chevron color based on active state
+  const getChevronColor = () => {
+    return className.includes('active') ? ICON_WHITE : ICON_GRAY_DARK;
+  };
+
   const ItemContent = () => (
     <div 
       className={`sidebar-item-content ${className} ${isCollapsed ? 'collapsed' : ''}`}
@@ -166,24 +179,66 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
         className="sidebar-item-main" 
         onClick={handleMainClick}
       >
-        {icon && (
-          <IconRenderer 
-            icon={icon}
-            alt={`${name} icon`}
-            className="sidebar-item-icon"
-            size={20}
-          />
-        )}
-
-        {!isCollapsed && (
+        {!isCollapsed && isDropdown && page ? (
+          // For dropdown items with pages, create two separate clickable areas
           <>
-            <span className="sidebar-item-name" onClick={isDropdown && page ? handleNavigationClick : undefined}>
-              {name}
-            </span>
-            {isDropdown && (
-              <span className={`sidebar-item-arrow ${isExpanded ? 'expanded' : ''}`}>
-                ▼
-              </span>
+            <div 
+              className="sidebar-item-navigation-area"
+              onClick={handleNavigationClick}
+            >
+              {icon && (
+                <IconRenderer 
+                  icon={icon}
+                  alt={`${name} icon`}
+                  className="sidebar-item-icon"
+                  size={20}
+                />
+              )}
+              <span className="sidebar-item-name">{name}</span>
+            </div>
+            <div 
+              className="sidebar-item-arrow-area"
+              onClick={handleDropdownToggle}
+            >
+              <Icon 
+                name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                variant="mini"
+                size={20}
+                color={getChevronColor()}
+                className="sidebar-item-arrow"
+              />
+            </div>
+          </>
+        ) : (
+          // For regular items, dropdown-only items, or collapsed state
+          <>
+            {icon && (
+              <IconRenderer 
+                icon={icon}
+                alt={`${name} icon`}
+                className="sidebar-item-icon"
+                size={20}
+              />
+            )}
+
+            {!isCollapsed && (
+              <>
+                <span className="sidebar-item-name">{name}</span>
+                {isDropdown && (
+                  <div 
+                    className="sidebar-item-arrow-area"
+                    onClick={handleDropdownToggle}
+                  >
+                    <Icon 
+                      name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                      variant="solid"
+                      size={16}
+                      color={getChevronColor()}
+                      className="sidebar-item-arrow"
+                    />
+                  </div>
+                )}
+              </>
             )}
           </>
         )}

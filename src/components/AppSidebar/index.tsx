@@ -15,13 +15,13 @@ import {
   Conversation, 
   SubscriptionPlan,
   ShowCompletedOnlyPreference,
-  DROPDOWN_ICON,
   APP_NAME,
   PLAN_DISPLAY_TEXT,
   PAGE_NAMES,
   PAGE_ICONS,
   DROPDOWN_ICONS,
-  SIDEBAR_TOGGLE_ICON_COLOR
+  SIDEBAR_TOGGLE_ICON_COLOR,
+  ICON_GRAY
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import Icon, { IconRenderer } from '../../icons';
@@ -309,7 +309,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                           {subscriptionPlan === 'free' ? PLAN_DISPLAY_TEXT.FREE : PLAN_DISPLAY_TEXT.PREMIUM}
                         </span>
                       </div>
-                      <img src={DROPDOWN_ICON} alt="Options" className="profile-options-icon" />
+                      <Icon 
+                        name="ellipsis-vertical" 
+                        variant="mini" 
+                        size={20} 
+                        color={ICON_GRAY} 
+                        className="profile-options-icon"
+                      />
                     </div>
                   </button>
                 </DropdownMenuTrigger>

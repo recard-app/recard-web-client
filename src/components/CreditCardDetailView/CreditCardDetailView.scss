@@ -1,3 +1,5 @@
+@import '../../styling/Variables.scss';
+
 /* Card details panel styles */
 .no-card-details, .card-details-loading {
   display: flex;
@@ -72,21 +74,14 @@
               border-color: #ccc;
             }
             
-            .preferred-icon {
-              width: 16px;
-              height: 16px;
-              opacity: 0.7;
-              transition: all 0.2s;
-            }
-            
             &.is-preferred {
-              background-color: #0070f3;
+              background-color: $primary-color;
               color: white;
-              border-color: #0070f3;
+              border-color: $primary-color;
               
               &:hover {
-                background-color: #0060df;
-                border-color: #0060df;
+                background-color: $primary-color;
+                border-color: $primary-color;
               }
               
               .preferred-icon {
@@ -97,35 +92,6 @@
             
             &:hover .preferred-icon {
               opacity: 1;
-            }
-          }
-          
-          .remove-card-button {
-            background-color: #fff;
-            color: #e53935;
-            border: 2px solid #e53935;
-            border-radius: 6px;
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            
-            &:hover {
-              background-color: #e53935;
-              color: white;
-            }
-            
-            .delete-icon {
-              width: 16px;
-              height: 16px;
-            }
-            
-            &:hover .delete-icon {
-              filter: brightness(0) invert(1);
             }
           }
         }

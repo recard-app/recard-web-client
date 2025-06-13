@@ -1,7 +1,8 @@
 import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, DROPDOWN_ICON, CHAT_DESCRIPTION_MAX_LENGTH, TEMP_ICON, LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
+import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_RED } from '../../../types';
+import { Icon, createIconVariant } from '../../../icons';
 import { formatDate, deleteChatEntry } from './utils';
 import { InfoDisplay } from '../../../elements';
 import {
@@ -47,6 +48,12 @@ interface HistoryEntryProps {
   returnCurrentChatId: (chatId: string | null) => void;
   creditCards?: CreditCard[];
 }
+
+// Create icon functions for dropdown items
+const HISTORY_DROPDOWN_ICONS = {
+  RENAME: (props: any = {}) => createIconVariant('pencil', 'mini', ICON_GRAY, props.size),
+  DELETE: (props: any = {}) => createIconVariant('delete', 'mini', ICON_RED, props.size)
+};
 
 function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, returnCurrentChatId, creditCards }: HistoryEntryProps): React.ReactElement {
   const navigate = useNavigate();
@@ -196,18 +203,25 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
         <div className="actions-dropdown">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="action-icon-button">
-                <img src={DROPDOWN_ICON} alt="Actions" className="action-icon1" />
+              <button className="action-icon-button icon-gray-hover-fill">
+                <Icon 
+                  name="ellipsis-vertical" 
+                  variant="mini" 
+                  size={20} 
+                  color={ICON_GRAY} 
+                  className="action-icon"
+                />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleRenameClick}>
+              <DropdownMenuItem onClick={handleRenameClick} icon={HISTORY_DROPDOWN_ICONS.RENAME}>
                 Rename
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={handleDeleteClick} 
                 variant="destructive"
-                icon={TEMP_ICON}
+                icon={HISTORY_DROPDOWN_ICONS.DELETE}
+                className="delete-action"
               >
                 Delete
               </DropdownMenuItem>

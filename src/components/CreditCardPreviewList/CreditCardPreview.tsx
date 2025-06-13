@@ -1,6 +1,7 @@
 import React from 'react';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { PLACEHOLDER_CARD_IMAGE } from '../../types';
+import { PLACEHOLDER_CARD_IMAGE, ICON_PRIMARY } from '../../types';
+import { Icon } from '../../icons';
 import './CreditCardPreviewList.scss';
 
 interface CreditCardPreviewProps {
@@ -33,8 +34,16 @@ const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
         />
         <div className="card-info">
           <div className="card-name">
+            {card.isDefaultCard && (
+              <Icon 
+                name="star" 
+                variant="mini" 
+                size={16} 
+                color={ICON_PRIMARY} 
+                className="preferred-star-icon"
+              />
+            )}
             {card.CardName}
-            {card.isDefaultCard && <span className="preferred-card-tag">Preferred Card</span>}
           </div>
           <div className="card-issuer">{card.CardIssuer}</div>
         </div>

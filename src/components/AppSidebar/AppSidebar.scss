@@ -302,25 +302,40 @@
   }
 
   .profile-trigger-button {
-    background: none;
-    border: none;
-    padding: 0;
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
     cursor: pointer;
     width: 100%;
     text-align: left;
     display: flex;
     
     &:hover {
+      background: none !important;
+      background-color: transparent !important;
+      transform: none !important;
+      
       .profile-trigger {
         background-color: $neutral-light-gray;
       }
     }
     
     &:focus,
-    &:focus-visible,
-    &:active {
+    &:focus-visible {
       outline: none !important;
       box-shadow: none !important;
+      background: none !important;
+      background-color: transparent !important;
+    }
+    
+    &:active {
+      background: none !important;
+      background-color: transparent !important;
+      transform: none !important;
+      
+      .profile-trigger {
+        background-color: $neutral-light-gray !important;
+      }
     }
   }
 
@@ -376,11 +391,8 @@
     }
 
     .profile-options-icon {
-      width: $icon-mini;
-      height: $icon-mini;
       object-fit: contain;
       flex-shrink: 0;
-      opacity: 0.6;
       transition: opacity $transition-base;
     }
   }
@@ -441,16 +453,11 @@
     .sidebar-item-main {
       display: flex;
       align-items: center;
-      gap: $space-3;
-      padding: $space-3;
       width: 100%;
       border-radius: $radius-base;
+      background-color: $neutral-light-gray;
       transition: background-color $transition-base;
       position: relative;
-
-      &:hover {
-        background-color: $neutral-light-gray;
-      }
     }
 
     // Active state styling for expanded sidebar items
@@ -497,6 +504,42 @@
 
       &.expanded {
         transform: rotate(180deg);
+      }
+    }
+
+    // New clickable areas for dropdown items with navigation
+    .sidebar-item-navigation-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+      cursor: pointer;
+      padding: $space-2;
+      border-radius: $radius-sm;
+      transition: background-color $transition-fast;
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+      }
+      
+      .sidebar-item-name {
+        flex: 1;
+        margin: 0;
+      }
+    }
+
+    .sidebar-item-arrow-area {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: $space-2 0;
+      border-radius: $radius-sm;
+      transition: background-color $transition-fast;
+      min-width: 32px;
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.05);
       }
     }
 

@@ -161,3 +161,11 @@ button, .button {
     }
   }
 }
+.icon-gray-hover-fill {
+  &:hover {
+    svg {
+      color: #5A5F66 !important;
+      fill: #5A5F66 !important;
+    }
+  }
+}

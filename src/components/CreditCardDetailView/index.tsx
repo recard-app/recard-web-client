@@ -1,8 +1,9 @@
 import React from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
-import { PLACEHOLDER_CARD_IMAGE, TEMP_ICON, STAR_OUTLINE_ICON, STAR_FILLED_ICON } from '../../types';
+import { PLACEHOLDER_CARD_IMAGE, ICON_WHITE, ICON_GRAY } from '../../types';
 import { InfoDisplay } from '../../elements';
+import { Icon } from '../../icons';
 
 interface CreditCardDetailViewProps {
     cardDetails: CreditCardDetails | null;
@@ -56,20 +57,28 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                     className={`preferred-button ${cardDetails.isDefaultCard ? 'is-preferred' : ''}`}
                                     onClick={onSetPreferred}
                                 >
-                                    <img 
-                                        src={cardDetails.isDefaultCard ? STAR_FILLED_ICON : STAR_OUTLINE_ICON} 
-                                        alt={cardDetails.isDefaultCard ? "Preferred" : "Not Preferred"} 
-                                        className="preferred-icon" 
+                                    <Icon 
+                                        name="star"
+                                        variant={cardDetails.isDefaultCard ? 'solid' : 'outline'}
+                                        size={16}
+                                        color={cardDetails.isDefaultCard ? ICON_WHITE : ICON_GRAY}
+                                        className="preferred-icon"
                                     />
                                     {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set as Preferred Card'}
                                 </button>
                             )}
                             {onRemoveCard && (
                                 <button 
-                                    className="remove-card-button"
+                                    className="button destructive icon with-text"
                                     onClick={onRemoveCard}
                                 >
-                                    <img src={TEMP_ICON} alt="Delete" className="delete-icon" />
+                                    <Icon 
+                                        name="delete"
+                                        variant="mini"
+                                        size={16}
+                                        color={ICON_WHITE}
+                                        className="delete-icon"
+                                    />
                                     Remove Card
                                 </button>
                             )}
