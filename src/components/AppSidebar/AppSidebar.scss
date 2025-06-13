@@ -457,15 +457,11 @@
     // Active state styling for expanded sidebar items
     .sidebar-item-content.active {
       .sidebar-item-main {
-        background-color: $primary-color;
-        
-        &:hover {
-          background-color: $primary-medium;
-        }
+        background-color: $primary-light;
       }
 
       .sidebar-item-name {
-        color: white;
+        color: $primary-medium;
       }
 
       .sidebar-item-arrow {

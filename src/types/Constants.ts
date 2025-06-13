@@ -84,6 +84,8 @@ export const ICON_WHITE = '#FFFFFF';
 export const ICON_GRAY = '#B5BBC2';
 export const ICON_GRAY_DARK = '#5A5F66';
 export const ICON_PRIMARY = '#22CC9D';
+export const ICON_PRIMARY_MEDIUM = '#007B53';
+export const ICON_PRIMARY_DARK = '#003E29';
 export const ICON_RED = '#EF4444';
 
 export const SIDEBAR_TOGGLE_ICON_COLOR = ICON_GRAY;

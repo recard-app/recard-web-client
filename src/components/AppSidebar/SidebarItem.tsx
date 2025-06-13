@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { IconRenderer, Icon } from '../../icons';
-import { ICON_GRAY_DARK, ICON_WHITE } from '../../types';
+import { ICON_GRAY_DARK, ICON_PRIMARY_MEDIUM } from '../../types';
 
 export interface SidebarItemProps {
   icon?: string | React.ComponentType<any> | ((...args: any[]) => React.ReactElement);
@@ -162,7 +162,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
 
   // Helper function to get the appropriate chevron color based on active state
   const getChevronColor = () => {
-    return className.includes('active') ? ICON_WHITE : ICON_GRAY_DARK;
+    return className.includes('active') ? ICON_PRIMARY_MEDIUM : ICON_GRAY_DARK;
   };
 
   const ItemContent = () => (

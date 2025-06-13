@@ -21,7 +21,8 @@ import {
   PAGE_ICONS,
   DROPDOWN_ICONS,
   SIDEBAR_TOGGLE_ICON_COLOR,
-  ICON_GRAY
+  ICON_GRAY,
+  ICON_PRIMARY
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import Icon, { IconRenderer } from '../../icons';
@@ -209,7 +210,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               onClick={handleNewChat}
               aria-label="Start new transaction chat"
             >
-              <img src={PAGE_ICONS.NEW_TRANSACTION_CHAT} alt="New Chat" />
+              <Icon name="plus-circle" variant="mini" size={20} color={ICON_PRIMARY} />
               <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
             </button>
 
