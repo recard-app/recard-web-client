@@ -34,7 +34,7 @@
 
     .app-name {
       margin: 0;
-      font-size: $font-h2;
+      font-size: 1.5rem;
       font-weight: $font-base;
       
       a {
@@ -265,14 +265,21 @@
       background-color: $primary-light;
     }
 
-    &.new-chat-mini {
-      background-color: $primary-color;
-      color: white;
-      font-size: 1.2rem;
-      font-weight: bold;
-
+    &.new-chat-plus {
+      background-color: rgba(34, 204, 157, 0.1); // Light green background to help visibility
+      border: 1px solid rgba(34, 204, 157, 0.3); // Light border
+      
+      svg {
+        fill: #22CC9D !important; // Force the icon color
+      }
+      
       &:hover {
-        background-color: $primary-medium;
+        background-color: $neutral-light-gray;
+        
+        // Change icon color on hover
+        svg {
+          fill: $primary-medium !important;
+        }
       }
     }
 
@@ -280,6 +287,46 @@
       width: $icon-small;
       height: $icon-small;
       object-fit: contain;
+    }
+  }
+
+  // Custom new chat button styling
+  .new-chat-button {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    padding: 0 !important;
+    border: none !important;
+    background: none !important;
+    background-color: transparent !important;
+    
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    
+    &:hover {
+      background: none !important;
+      background-color: transparent !important;
+      border: none !important;
+      
+      svg {
+        color: $primary-medium !important;
+      }
+    }
+    
+    &:active {
+      background: none !important;
+      background-color: transparent !important;
+      border: none !important;
+    }
+    
+    &:focus {
+      background: none !important;
+      background-color: transparent !important;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
     }
   }
 

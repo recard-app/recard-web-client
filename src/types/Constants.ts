@@ -97,37 +97,41 @@ export const SIDEBAR_INACTIVE_ICON_COLOR = ICON_GRAY;
 // Page icons with variant and color support
 export const PAGE_ICONS = {
     HOME: {
-        ACTIVE: (props: any = {}) => createIconVariant('home', 'outline', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        ACTIVE: (props: any = {}) => createIconVariant('home', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('home', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('home', 'mini', ICON_GRAY, props.size)
     },
     TRANSACTION_HISTORY: {
-        ACTIVE: (props: any = {}) => createIconVariant('history', 'outline', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        ACTIVE: (props: any = {}) => createIconVariant('history', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('history', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('history', 'mini', ICON_GRAY, props.size)
     },
     MY_CARDS: {
-        ACTIVE: (props: any = {}) => createIconVariant('card', 'outline', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        ACTIVE: (props: any = {}) => createIconVariant('card', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('card', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('card', 'mini', ICON_GRAY, props.size)
     },
     NEW_TRANSACTION_CHAT: TEMP_ICON,
     PREFERENCES: {
-        ACTIVE: (props: any = {}) => createIconVariant('preferences', 'outline', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        ACTIVE: (props: any = {}) => createIconVariant('preferences', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('preferences', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('preferences', 'mini', ICON_GRAY, props.size)
     },
     MY_ACCOUNT: {
-        ACTIVE: (props: any = {}) => createIconVariant('account', 'outline', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        ACTIVE: (props: any = {}) => createIconVariant('account', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('account', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('account', 'mini', ICON_GRAY, props.size)
     },
     SIGN_OUT: {
-        ACTIVE: (props: any = {}) => createIconVariant('sign-out', 'outline', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        ACTIVE: (props: any = {}) => createIconVariant('sign-out', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('sign-out', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('sign-out', 'mini', ICON_GRAY, props.size)
     },
-    LOGO: TEMP_ICON
+    LOGO: TEMP_ICON,
+    NEW_CHAT_PLUS: {
+        NORMAL: (props: any = {}) => createIconVariant('plus-circle', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        HOVERED: (props: any = {}) => createIconVariant('plus-circle', 'solid', ICON_PRIMARY_MEDIUM, props.size)
+    }
 } as const;
 
 export type PageIconType = typeof PAGE_ICONS[keyof typeof PAGE_ICONS];
