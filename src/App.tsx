@@ -452,25 +452,11 @@ function AppContent({}: AppContentProps) {
   };
 
   const renderMainContent = () => {
-    const headerActions = (
-      <>
-        <button 
-          className="new-transaction-button"
-          onClick={handleClearChat}
-          aria-label="Start new transaction chat"
-        >
-          New Transaction Chat
-        </button>
-      </>
-    );
-
     return (
       <div className="home-wrapper">
         <PageHeader 
           title={PAGE_NAMES.HOME}
           icon={PAGE_ICONS.HOME.MINI}
-          actions={headerActions}
-          withActions={true}
           showHelpButton={true}
           onHelpClick={() => setIsHelpOpen(true)}
         />

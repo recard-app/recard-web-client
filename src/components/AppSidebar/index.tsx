@@ -204,52 +204,84 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <div className="sidebar-middle">
         {isOpen ? (
           <>
-            {/* New Transaction Chat Button */}
-            <button 
-              className="new-chat-button small secondary icon with-text"
-              onClick={handleNewChat}
-              aria-label="Start new transaction chat"
-            >
-              <Icon name="plus-circle" variant="mini" size={20} color={ICON_PRIMARY} />
-              <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
-            </button>
+            {/* Left column - Mini nav icons (always visible and fixed) */}
+            <div className="mini-nav-column">
+              {/* New Chat Plus Button */}
+              <button 
+                className="mini-nav-icon new-chat-mini"
+                onClick={handleNewChat}
+                onMouseEnter={handleNewChatHover}
+                onMouseLeave={() => hideTooltip()}
+                aria-label="Start new transaction chat"
+              >
+                +
+              </button>
 
-            {/* Full expanded content */}
-            {/* Transaction History as SidebarItem */}
-            <SidebarItem 
-              icon={getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, "/history")}
-              name={PAGE_NAMES.TRANSACTION_HISTORY} 
-              page="/history"
-              isDropdown={true}
-              className={isRouteActive("/history") ? "active" : ""}
-            >
-              <HistoryPanelPreview 
-                existingHistoryList={chatHistory} 
-                listSize={quickHistorySize}
-                currentChatId={currentChatId}
-                returnCurrentChatId={onCurrentChatIdChange}
-                onHistoryUpdate={onHistoryUpdate}
-                creditCards={creditCards}
-                historyRefreshTrigger={historyRefreshTrigger}
-                loading={isLoadingHistory}
-              />
-            </SidebarItem>
+              {miniMiddleNavItems.map((item, index) => {
+                const isActive = isRouteActive(item.to);
+                return (
+                  <Link 
+                    key={index}
+                    to={item.to} 
+                    className={`mini-nav-icon ${isActive ? 'active' : ''}`}
+                    onMouseEnter={(e) => handleMiniNavHover(e, item.name)}
+                    onMouseLeave={() => hideTooltip()}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    {item.icon()}
+                  </Link>
+                );
+              })}
+            </div>
 
-            {/* My Cards as SidebarItem */}
-            <SidebarItem 
-              icon={getIconVariant(PAGE_ICONS.MY_CARDS, "/my-cards")}
-              name={PAGE_NAMES.MY_CARDS} 
-              page="/my-cards"
-              isDropdown={true}
-              className={isRouteActive("/my-cards") ? "active" : ""}
-            >
-              <CreditCardPreviewList 
-                cards={creditCards}
-                loading={isLoadingCreditCards}
-                showOnlySelected={true}
-                onCardSelect={onCardSelect}
-              />
-            </SidebarItem>
+            {/* Right column - Expanded content (scrollable) */}
+            <div className="expanded-content-column">
+              {/* New Transaction Chat Button */}
+              <button 
+                className="new-chat-button small secondary icon with-text"
+                onClick={handleNewChat}
+                aria-label="Start new transaction chat"
+              >
+                <Icon name="plus-circle" variant="mini" size={20} color={ICON_PRIMARY} />
+                <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
+              </button>
+
+              {/* Transaction History as SidebarItem */}
+              <SidebarItem 
+                icon={getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, "/history")}
+                name={PAGE_NAMES.TRANSACTION_HISTORY} 
+                page="/history"
+                isDropdown={true}
+                className={isRouteActive("/history") ? "active" : ""}
+              >
+                <HistoryPanelPreview 
+                  existingHistoryList={chatHistory} 
+                  listSize={quickHistorySize}
+                  currentChatId={currentChatId}
+                  returnCurrentChatId={onCurrentChatIdChange}
+                  onHistoryUpdate={onHistoryUpdate}
+                  creditCards={creditCards}
+                  historyRefreshTrigger={historyRefreshTrigger}
+                  loading={isLoadingHistory}
+                />
+              </SidebarItem>
+
+              {/* My Cards as SidebarItem */}
+              <SidebarItem 
+                icon={getIconVariant(PAGE_ICONS.MY_CARDS, "/my-cards")}
+                name={PAGE_NAMES.MY_CARDS} 
+                page="/my-cards"
+                isDropdown={true}
+                className={isRouteActive("/my-cards") ? "active" : ""}
+              >
+                <CreditCardPreviewList 
+                  cards={creditCards}
+                  loading={isLoadingCreditCards}
+                  showOnlySelected={true}
+                  onCardSelect={onCardSelect}
+                />
+              </SidebarItem>
+            </div>
           </>
         ) : (
           <>

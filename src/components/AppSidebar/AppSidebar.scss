@@ -146,8 +146,9 @@
 
   &.open {
     .sidebar-middle {
-      padding: $space-4;
+      padding: 0; // Remove padding since columns handle their own
       align-items: stretch;
+      position: relative; // For absolute positioning of mini nav
     }
 
     .sidebar-bottom {
@@ -158,12 +159,44 @@
   // Scrollable Middle Section
   .sidebar-middle {
     flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    gap: $space-5;
+    overflow: hidden; // Prevent any overflow on the container
     display: flex;
     flex-direction: column;
     min-height: 0; // This is crucial for nested flex scrolling
+    position: relative;
+  }
+
+  // Mini nav column - fixed position in expanded mode
+  .mini-nav-column {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: $mini-sidebar-width;
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    align-items: center;
+    justify-content: flex-start;
+    padding: $space-4 $space-2;
+    border-right: $border-half solid $neutral-light-gray;
+    background-color: $neutral-white;
+    z-index: 2;
+    overflow: hidden; // Prevent any scrolling on mini nav
+  }
+
+  // Expanded content column - scrollable
+  .expanded-content-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+    min-width: 0; // Prevent flex item from overflowing
+    min-height: 0; // This is crucial for nested flex scrolling
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: $space-4;
+    padding-left: calc($mini-sidebar-width + $space-4); // Leave space for mini nav column
 
     // Scrollbar styling
     &::-webkit-scrollbar {
