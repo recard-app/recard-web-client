@@ -94,6 +94,10 @@ button, .button {
     @include button-ghost;
   }
 
+  &.no-outline {
+    @include button-no-outline;
+  }
+
   &.destructive {
     @include button-destructive;
   }

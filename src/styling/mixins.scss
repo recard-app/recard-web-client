@@ -227,6 +227,28 @@
   border: none;
 }
 
+// No-outline button (completely transparent with no background or border)
+@mixin button-no-outline {
+  @include button-base;
+  background-color: transparent;
+  border: none;
+  color: inherit;
+  
+  &:hover:not(:disabled) {
+    background-color: transparent;
+  }
+  
+  &:active:not(:disabled) {
+    background-color: transparent;
+    transform: none;
+  }
+  
+  &:focus-visible {
+    box-shadow: none;
+    outline: none;
+  }
+}
+
 // Button sizes
 @mixin button-mini {
   font-size: $font-xs;

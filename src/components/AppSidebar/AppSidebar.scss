@@ -306,27 +306,9 @@
     justify-content: center !important;
     
     &:hover {
-      background: none !important;
-      background-color: transparent !important;
-      border: none !important;
-      
       svg {
-        color: $primary-medium !important;
+        color: $primary-medium;
       }
-    }
-    
-    &:active {
-      background: none !important;
-      background-color: transparent !important;
-      border: none !important;
-    }
-    
-    &:focus {
-      background: none !important;
-      background-color: transparent !important;
-      border: none !important;
-      outline: none !important;
-      box-shadow: none !important;
     }
   }
 

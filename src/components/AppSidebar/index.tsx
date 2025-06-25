@@ -191,7 +191,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         )}
         <div className="sidebar-toggle">
           <button 
-            className="button outline small toggle-button icon-gray-hover"
+            className="button no-outline small icon-gray-hover"
             onClick={onToggle}
             aria-label={isOpen ? 'Close sidebar' : 'Open sidebar'}
           >
@@ -208,13 +208,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             <div className="mini-nav-column">
               {/* New Chat Plus Button */}
               <button 
-                className="button outline new-chat-button"
+                className="button no-outline new-chat-button"
                 onClick={handleNewChat}
                 onMouseEnter={handleNewChatHover}
                 onMouseLeave={() => hideTooltip()}
                 aria-label="Start new transaction chat"
               >
-                <Icon name="plus-circle" variant="solid" color="#22CC9D" size={36} />
+                <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
               </button>
 
               {miniMiddleNavItems.map((item, index) => {
@@ -275,13 +275,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             <div className="mini-nav-icons">
               {/* New Chat Plus Button */}
               <button 
-                className="button outline new-chat-button"
+                className="button no-outline new-chat-button"
                 onClick={handleNewChat}
                 onMouseEnter={handleNewChatHover}
                 onMouseLeave={() => hideTooltip()}
                 aria-label="Start new transaction chat"
               >
-                <Icon name="plus-circle" variant="solid" color="#22CC9D" size={36} />
+                <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
               </button>
 
               {miniMiddleNavItems.map((item, index) => {
