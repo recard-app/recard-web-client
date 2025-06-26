@@ -493,7 +493,7 @@ export const iconRegistry: IconDefinition = {
       paths: [
         <rect key="1" width="18" height="18" x="3" y="3" rx="2"/>,
         <path key="2" d="M9 3v18"/>,
-        <path key="3" d="m14 9 3 3-3 3"/>
+        //<path key="3" d="m14 9 3 3-3 3"/>
       ]
     },
     close: {
@@ -503,7 +503,7 @@ export const iconRegistry: IconDefinition = {
       paths: [
         <rect key="1" width="18" height="18" x="3" y="3" rx="2"/>,
         <path key="2" d="M9 3v18"/>,
-        <path key="3" d="m16 15-3-3 3-3"/>
+        //<path key="3" d="m16 15-3-3 3-3"/>
       ]
     }
   },

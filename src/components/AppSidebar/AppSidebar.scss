@@ -78,6 +78,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-right: 1.5px;
       
       .logo-icon {
         display: flex;
@@ -191,13 +192,13 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: $space-5;
+    gap: 0;
     min-width: 0; // Prevent flex item from overflowing
     min-height: 0; // This is crucial for nested flex scrolling
     overflow-y: auto;
     overflow-x: hidden;
-    padding: $space-4;
-    padding-left: calc($mini-sidebar-width + $space-4); // Leave space for mini nav column
+    padding: 0;
+    padding-left: calc($mini-sidebar-width); // Leave space for mini nav column
 
     // Scrollbar styling
     &::-webkit-scrollbar {
@@ -483,10 +484,8 @@
     display: block;
     text-decoration: none;
     color: inherit;
-    margin-bottom: $space-1;
 
     .sidebar-item-content {
-      border-radius: $radius-base;
       transition: background-color $transition-base;
       cursor: pointer;
       position: relative;
@@ -517,26 +516,14 @@
     .sidebar-item-main {
       display: flex;
       align-items: center;
+      gap: $space-1-5;
       width: 100%;
-      border-radius: $radius-base;
-      background-color: $neutral-light-gray;
-      transition: background-color $transition-base;
       position: relative;
-    }
-
-    // Active state styling for expanded sidebar items
-    .sidebar-item-content.active {
-      .sidebar-item-main {
-        background-color: $primary-light;
-      }
-
-      .sidebar-item-name {
-        color: $primary-medium;
-      }
-
-      .sidebar-item-arrow {
-        color: white;
-      }
+      padding: $space-2;
+      border: $border-full solid $neutral-light-gray;
+      border-right: none;
+      border-left: none;
+      background-color: $neutral-lightest-gray;
     }
 
     .sidebar-item-icon {
@@ -548,8 +535,9 @@
 
     .sidebar-item-name {
       flex: 1;
-      font-size: $font-sm;
-      font-weight: $font-medium;
+      text-transform: uppercase;
+      font-size: $font-xs;
+      font-weight: $font-bold;
       color: $neutral-dark-gray;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -567,54 +555,8 @@
       }
     }
 
-    // New clickable areas for dropdown items with navigation
-    .sidebar-item-navigation-area {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      gap: $space-3;
-      cursor: pointer;
-      padding: $space-2;
-      border-radius: $radius-sm;
-      transition: background-color $transition-fast;
-      
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-      }
-      
-      .sidebar-item-name {
-        flex: 1;
-        margin: 0;
-      }
-    }
-
-    .sidebar-item-arrow-area {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      padding: $space-2 0;
-      border-radius: $radius-sm;
-      transition: background-color $transition-fast;
-      min-width: 32px;
-      
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.05);
-      }
-    }
-
     .sidebar-item-dropdown {
-      padding-left: $space-8; // Indent dropdown content
-      padding-bottom: $space-2;
-      border-left: 2px solid $neutral-light-gray;
-      margin-left: $space-6; // Align with icon area
-    }
-  }
-
-  // Remove link styling for sidebar items
-  .sidebar-item-link {
-    &:hover {
-      text-decoration: none;
+      padding: $space-3 $space-2;
     }
   }
 
