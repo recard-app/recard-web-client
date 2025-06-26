@@ -3,7 +3,7 @@
 .history-entry {
     // Base styles - common to all variants
     background-color: $neutral-white;
-    padding: 4px;
+    padding: $space-1;
     margin-bottom: $space-half;
     border-radius: $radius-base;
     position: relative;
@@ -16,24 +16,16 @@
         margin: 0;
     }
 
-    // Base hover state
-    &:hover {
-        background-color: $neutral-light-gray;
-        border-color: transparent;
-    }
-
     // Base states that apply to all variants
     &.has-selected-card {
-        //background-color: rgba(46, 204, 113, 0.05);
-        //border-color: #2ecc71; 
         &:hover {
-            //background-color: rgba(46, 204, 113, 0.1);
-            //border-color: #27ae60;
+          // to add if needed
         }
     }
 
+    // Base hover state
     // Current state takes precedence over has-selected-card
-    &.current {
+    &.current, &:hover {
         background-color: $neutral-light-gray;
 
         .entry-content .selected-card-display {
