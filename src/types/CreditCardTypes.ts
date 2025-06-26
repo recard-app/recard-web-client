@@ -16,6 +16,8 @@ export interface CreditCard {
     CardNetwork: string;
     CardDetails: string;
     CardImage?: string;
+    CardPrimaryColor?: string;
+    CardSecondaryColor?: string;
     selected?: boolean;      // Whether the card is selected by the user (optional, for user context)
     isDefaultCard?: boolean; // Whether this is the user's default card (optional, for user context)
 }
