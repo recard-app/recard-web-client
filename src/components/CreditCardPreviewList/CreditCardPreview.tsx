@@ -8,12 +8,14 @@ interface CreditCardPreviewProps {
   card: CreditCard;
   isSelected?: boolean;
   onCardSelect?: (card: CreditCard) => void;
+  variant?: 'sidebar' | 'my-cards';
 }
 
 const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
   card,
   isSelected = false,
   onCardSelect,
+  variant,
 }) => {
   const handleClick = () => {
     if (onCardSelect) {
@@ -21,9 +23,15 @@ const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
     }
   };
 
+  const getVariantClass = () => {
+    if (variant === 'sidebar') return 'sidebar-variant';
+    if (variant === 'my-cards') return 'my-cards-variant';
+    return '';
+  };
+
   return (
     <div 
-      className={`credit-card-preview ${isSelected ? 'selected' : ''}`}
+      className={`credit-card-preview ${isSelected ? 'selected' : ''} ${getVariantClass()}`}
       onClick={handleClick}
     >
       <div className="card-content">

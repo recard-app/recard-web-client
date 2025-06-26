@@ -399,6 +399,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     selectedCardId={selectedCard?.id}
                     onCardSelect={handleCardSelect}
                     loading={isLoading}
+                    variant="my-cards"
                 />
             </div>
             

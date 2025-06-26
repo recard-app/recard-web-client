@@ -10,6 +10,7 @@ interface CreditCardPreviewListProps {
   onCardSelect?: (card: CreditCard) => void;
   loading?: boolean;
   showOnlySelected?: boolean;
+  variant?: 'sidebar' | 'my-cards';
 }
 
 // Helper function to sort credit cards (default card first, then alphabetically)
@@ -30,6 +31,7 @@ const CreditCardPreviewList: React.FC<CreditCardPreviewListProps> = ({
   onCardSelect,
   loading = false,
   showOnlySelected = false,
+  variant,
 }) => {
   // Filter cards if showOnlySelected is true
   const displayCards = showOnlySelected 
@@ -61,6 +63,7 @@ const CreditCardPreviewList: React.FC<CreditCardPreviewListProps> = ({
             card={card}
             isSelected={selectedCardId === card.id}
             onCardSelect={onCardSelect}
+            variant={variant}
           />
         ))
       )}

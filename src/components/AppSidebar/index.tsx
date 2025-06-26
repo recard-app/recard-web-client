@@ -265,6 +265,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   loading={isLoadingCreditCards}
                   showOnlySelected={true}
                   onCardSelect={onCardSelect}
+                  variant="sidebar"
                 />
               </SidebarItem>
             </div>
