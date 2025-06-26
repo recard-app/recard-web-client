@@ -3,9 +3,9 @@
 .history-entry {
     // Base styles - common to all variants
     background-color: $neutral-white;
-    padding: $space-1;
-    margin-bottom: $space-half;
-    border-radius: $radius-base;
+    padding: $space-1-5;
+    margin-bottom: 1px;
+    border-radius: $radius-md;
     position: relative;
     display: flex;
     align-items: center;
@@ -42,7 +42,6 @@
         min-width: 0;
 
         .entry-info {
-          margin-bottom: $space-1-5;
             .entry-title {
                 font-weight: $font-semibold;
                 font-size: $font-sm;
@@ -59,6 +58,7 @@
             align-items: center;
             gap: $space-1;
             margin: 0;
+            margin-top: $space-1-5;
             font-size: $font-xs;
             color: $neutral-dark-gray;
             font-weight: $font-regular;
