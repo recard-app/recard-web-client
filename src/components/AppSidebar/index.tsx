@@ -364,7 +364,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     className={`mini-nav-icon ${location.pathname === '/preferences' ? 'active' : ''}`}
                     onMouseEnter={(e) => handleMiniNavHover(e, PAGE_NAMES.PREFERENCES)}
                     onMouseLeave={() => hideTooltip()}
-                    style={{ textDecoration: 'none', color: 'inherit', marginBottom: '12px' }}
+                    style={{ textDecoration: 'none', color: 'inherit'}}
                   >
                     {getIconVariant(PAGE_ICONS.PREFERENCES, "/preferences")({ size: 20 })}
                   </Link>

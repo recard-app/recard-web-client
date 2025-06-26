@@ -488,7 +488,7 @@ export const iconRegistry: IconDefinition = {
   'sidebar': {
     open: {
       viewBox: VIEWBOX.DEFAULT,
-      strokeWidth: 2,
+      strokeWidth: 1.5,
       noFill: true,
       paths: [
         <rect key="1" width="18" height="18" x="3" y="3" rx="2"/>,
@@ -498,7 +498,7 @@ export const iconRegistry: IconDefinition = {
     },
     close: {
       viewBox: VIEWBOX.DEFAULT,
-      strokeWidth: 2,
+      strokeWidth: 1.5,
       noFill: true,
       paths: [
         <rect key="1" width="18" height="18" x="3" y="3" rx="2"/>,
