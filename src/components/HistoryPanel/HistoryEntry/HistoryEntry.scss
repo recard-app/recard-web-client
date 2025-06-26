@@ -24,12 +24,21 @@
     }
 
     // Base hover state
+    &:hover {
+      background-color: $neutral-light-gray;
+
+      .entry-content .selected-card-display {
+          border-color: $neutral-gray;
+      }
+    }
+
     // Current state takes precedence over has-selected-card
-    &.current, &:hover {
-        background-color: $neutral-light-gray;
+    &.current {
+        background-color: $primary-lightest;
 
         .entry-content .selected-card-display {
-            border-color: $neutral-gray;
+            //background-color: $primary-lightest;
+            border-color: $primary-light;
         }
     }
 
@@ -62,7 +71,7 @@
             font-size: $font-xs;
             color: $neutral-dark-gray;
             font-weight: $font-regular;
-            background-color: $neutral-light-gray;
+            //background-color: $neutral-light-gray;
             width: fit-content;
             align-self: flex-start;
             padding: $space-half $space-2;
