@@ -25,12 +25,13 @@
   // Sticky Top Section
   .sidebar-top {
     flex-shrink: 0;
-    padding: $space-4;
+    padding: $space-3;
     border-bottom: $border-half solid $neutral-light-gray;
     background-color: $neutral-white;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 52px;
 
     .app-name {
       margin: 0;
@@ -104,6 +105,7 @@
       padding-right: $space-2;
       flex-direction: column;
       gap: $space-3;
+      height: auto;
       align-items: flex-end;
       
       .sidebar-toggle {
@@ -126,10 +128,8 @@
 
     .mini-nav-icons {
       align-items: flex-end;
-      margin-right: $space-1;
     }
     .mini-nav-icon {
-      margin-right: $space-1;
       position: relative;
       right: 0;
     }
@@ -178,7 +178,7 @@
     gap: $space-3;
     align-items: center;
     justify-content: flex-start;
-    padding: $space-4 $space-2;
+    padding: $space-3 $space-2;
     border-right: $border-half solid $neutral-light-gray;
     background-color: $neutral-white;
     z-index: 2;
@@ -237,7 +237,7 @@
   .mini-nav-icons {
     display: flex;
     flex-direction: column;
-    gap: $space-3;
+    gap: $space-2;
     align-items: center;
   }
 
@@ -315,7 +315,7 @@
   // Sticky Bottom Section
   .sidebar-bottom {
     flex-shrink: 0;
-    padding: $space-4;
+    padding: $space-3;
     border-top: $border-half solid $neutral-light-gray;
     background-color: $neutral-white;
   }
@@ -399,7 +399,7 @@
     display: flex;
     align-items: center;
     gap: $space-3;
-    padding: $space-3;
+    padding: $space-2;
     border-radius: $radius-base;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -462,6 +462,13 @@
     
     &:hover {
       opacity: 0.8;
+      background-color: transparent !important;
+    }
+    &:active {
+      background-color: transparent !important;
+    }
+    &:focus {
+      background-color: transparent !important;
     }
   }
 

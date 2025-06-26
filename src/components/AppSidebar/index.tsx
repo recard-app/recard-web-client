@@ -112,17 +112,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     { 
       to: "/", 
       name: PAGE_NAMES.HOME, 
-      icon: getIconVariant(PAGE_ICONS.HOME, "/")
+      icon: () => getIconVariant(PAGE_ICONS.HOME, "/")({ size: 20 })
     },
     { 
       to: "/history", 
       name: PAGE_NAMES.TRANSACTION_HISTORY, 
-      icon: getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, "/history")
+      icon: () => getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, "/history")({ size: 20 })
     },
     { 
       to: "/my-cards", 
       name: PAGE_NAMES.MY_CARDS, 
-      icon: getIconVariant(PAGE_ICONS.MY_CARDS, "/my-cards")
+      icon: () => getIconVariant(PAGE_ICONS.MY_CARDS, "/my-cards")({ size: 20 })
     }
   ];
 
@@ -366,7 +366,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     onMouseLeave={() => hideTooltip()}
                     style={{ textDecoration: 'none', color: 'inherit', marginBottom: '12px' }}
                   >
-                    {getIconVariant(PAGE_ICONS.PREFERENCES, "/preferences")()}
+                    {getIconVariant(PAGE_ICONS.PREFERENCES, "/preferences")({ size: 20 })}
                   </Link>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
