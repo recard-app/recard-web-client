@@ -2,7 +2,7 @@ import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_RED } from '../../../types';
-import { Icon, createIconVariant } from '../../../icons';
+import { Icon, createIconVariant, CardIcon } from '../../../icons';
 import { formatDate, deleteChatEntry } from './utils';
 import { InfoDisplay } from '../../../elements';
 import {
@@ -197,7 +197,11 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
           </div>
           {displayCard && (
             <p className="selected-card-display">
-              <img src={displayCard.image} alt={displayCard.name} className="card-thumbnail" />
+              <CardIcon 
+                title={displayCard.name} 
+                size={12} 
+                className="card-thumbnail" 
+              />
               {displayCard.name}
             </p>
           )}

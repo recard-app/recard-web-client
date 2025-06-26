@@ -638,3 +638,4 @@ export const registerIcons = (icons: IconDefinition) => {
 // ===================== EXPORTS =====================
 export default Icon;
 export { Icon };
+export { CardIcon } from './cards';

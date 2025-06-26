@@ -1,7 +1,7 @@
 import React from 'react';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { PLACEHOLDER_CARD_IMAGE, ICON_PRIMARY } from '../../types';
-import { Icon } from '../../icons';
+import { ICON_PRIMARY } from '../../types';
+import { Icon, CardIcon } from '../../icons';
 import './CreditCardPreviewList.scss';
 
 interface CreditCardPreviewProps {
@@ -35,9 +35,9 @@ const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
       onClick={handleClick}
     >
       <div className="card-content">
-        <img 
-          src={card.CardImage || PLACEHOLDER_CARD_IMAGE} 
-          alt={`${card.CardName} card`} 
+        <CardIcon 
+          title={`${card.CardName} card`} 
+          size={36} 
           className="card-thumbnail"
         />
         <div className="card-info">
