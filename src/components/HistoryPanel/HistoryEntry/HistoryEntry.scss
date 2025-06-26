@@ -6,7 +6,6 @@
     padding: 4px;
     margin-bottom: $space-half;
     border-radius: $radius-base;
-    border: $border-half solid transparent;
     position: relative;
     display: flex;
     align-items: center;
@@ -19,7 +18,7 @@
 
     // Base hover state
     &:hover {
-        background-color: #f8f9fa;
+        background-color: $neutral-light-gray;
         border-color: transparent;
     }
 
@@ -36,7 +35,6 @@
     // Current state takes precedence over has-selected-card
     &.current {
         background-color: $neutral-light-gray;
-        border-color: $neutral-gray;
 
         .entry-content .selected-card-display {
             border-color: $neutral-gray;
