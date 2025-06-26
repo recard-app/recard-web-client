@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
-import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference } from './types';
+import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, ICON_PRIMARY_MEDIUM } from './types';
+import { Icon } from './icons';
 // Services
 import { 
   CardService, 
@@ -455,10 +456,11 @@ function AppContent({}: AppContentProps) {
     const headerActions = (
       <>
         <button 
-          className="new-transaction-button"
+          className="button ghost icon with-text"
           onClick={handleClearChat}
           aria-label="Start new transaction chat"
         >
+          <Icon name="chat-bubble" variant="micro" color={ICON_PRIMARY_MEDIUM} size={16} />
           New Transaction Chat
         </button>
       </>

@@ -47,10 +47,6 @@
       align-items: center;
       flex-shrink: 0; // Prevent actions from shrinking
 
-      .new-transaction-button {
-        @include button-primary;
-      }
-
       .help-icon-button {
         background: none;
         border: none;

@@ -96,6 +96,7 @@ function HistoryPanelPreview({
             refreshHistory={forceHistoryRefresh}
             returnCurrentChatId={returnCurrentChatId}
             creditCards={creditCards}
+            variant="sidebar"
           />
         ))
       )}

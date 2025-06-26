@@ -1,4 +1,5 @@
 .history-entry {
+    // Base styles - common to all variants
     background-color: #ffffff;
     margin-bottom: 4px;
     padding: 4px;
@@ -7,21 +8,50 @@
     position: relative;
     display: flex;
     align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
     
     p {
         margin: 0;
     }
 
+    // Base hover state
+    &:hover {
+        background-color: #f8f9fa;
+        border-color: #e9ecef;
+    }
+
+    // Base states that apply to all variants
     &.has-selected-card {
         background-color: rgba(46, 204, 113, 0.05);
         border-color: #2ecc71;
+        
+        &:hover {
+            background-color: rgba(46, 204, 113, 0.1);
+            border-color: #27ae60;
+        }
     }
 
     &.current {
         background-color: rgba(0, 123, 255, 0.1);
         border-left: 3px solid #007bff;
+        
+        &:hover {
+            background-color: rgba(0, 123, 255, 0.15);
+        }
+        
+        &.has-selected-card {
+            background-color: rgba(46, 204, 113, 0.1);
+            border-left: 3px solid #007bff;
+            border-color: #2ecc71;
+            
+            &:hover {
+                background-color: rgba(46, 204, 113, 0.15);
+            }
+        }
     }
 
+    // Base entry content styles
     .entry-content {
         display: flex;
         flex-direction: column;
@@ -76,6 +106,7 @@
         }
     }
     
+    // Base actions dropdown styles
     .actions-dropdown {
         position: absolute;
         right: 10px;
@@ -95,6 +126,176 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+    }
+
+    // SIDEBAR VARIANT - More compact styling
+    &.sidebar-variant {
+        padding: 6px 8px;
+        margin-bottom: 2px;
+        border-radius: 4px;
+        
+        &:hover {
+            background-color: #f1f3f4;
+            transform: translateX(2px);
+        }
+
+        &.current {
+            background-color: rgba(0, 123, 255, 0.12);
+            border-left: 2px solid #007bff;
+            
+            &:hover {
+                background-color: rgba(0, 123, 255, 0.18);
+            }
+        }
+
+        &.has-selected-card {
+            background-color: rgba(46, 204, 113, 0.08);
+            border-color: rgba(46, 204, 113, 0.3);
+            
+            &:hover {
+                background-color: rgba(46, 204, 113, 0.12);
+            }
+            
+            &.current {
+                background-color: rgba(46, 204, 113, 0.12);
+                border-left: 2px solid #007bff;
+                
+                &:hover {
+                    background-color: rgba(46, 204, 113, 0.18);
+                }
+            }
+        }
+
+        .entry-content {
+            padding-right: 28px;
+
+            .entry-title {
+                font-size: 0.85em;
+                margin-bottom: 2px;
+                line-height: 1.3;
+            }
+
+            .selected-card-display {
+                margin-bottom: 2px;
+                font-size: 0.75em;
+                gap: 6px;
+
+                .card-thumbnail {
+                    width: 24px;
+                    height: 18px;
+                }
+            }
+
+            .timestamp {
+                font-size: 0.7em;
+                color: #999;
+            }
+            
+            .current-indicator {
+                font-size: 0.7em;
+                padding: 1px 4px;
+                margin-top: 2px;
+            }
+        }
+
+        .actions-dropdown {
+            right: 6px;
+            
+            .action-icon-button {
+                padding: 2px;
+            }
+        }
+    }
+
+    // FULL-PAGE VARIANT - More detailed styling
+    &.full-page-variant {
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        border-radius: 6px;
+        
+        &:hover {
+            background-color: #f8f9fa;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        &.current {
+            background-color: rgba(0, 123, 255, 0.08);
+            border-left: 4px solid #007bff;
+            box-shadow: 0 1px 3px rgba(0, 123, 255, 0.2);
+            
+            &:hover {
+                background-color: rgba(0, 123, 255, 0.12);
+                box-shadow: 0 2px 6px rgba(0, 123, 255, 0.25);
+            }
+        }
+
+        &.has-selected-card {
+            background-color: rgba(46, 204, 113, 0.06);
+            border-color: rgba(46, 204, 113, 0.4);
+            
+            &:hover {
+                background-color: rgba(46, 204, 113, 0.1);
+                border-color: rgba(46, 204, 113, 0.6);
+            }
+            
+            &.current {
+                background-color: rgba(46, 204, 113, 0.08);
+                border-left: 4px solid #007bff;
+                border-color: rgba(46, 204, 113, 0.4);
+                
+                &:hover {
+                    background-color: rgba(46, 204, 113, 0.12);
+                    border-color: rgba(46, 204, 113, 0.6);
+                }
+            }
+        }
+
+        .entry-content {
+            padding-right: 36px;
+
+            .entry-title {
+                font-size: 0.95em;
+                margin-bottom: 6px;
+                line-height: 1.4;
+            }
+
+            .selected-card-display {
+                margin-bottom: 6px;
+                font-size: 0.85em;
+                gap: 10px;
+
+                .card-thumbnail {
+                    width: 32px;
+                    height: 24px;
+                }
+            }
+
+            .timestamp {
+                font-size: 0.8em;
+                color: #777;
+            }
+            
+            .current-indicator {
+                font-size: 0.75em;
+                padding: 3px 8px;
+                margin-top: 6px;
+                border-radius: 6px;
+            }
+        }
+
+        .actions-dropdown {
+            right: 12px;
+            
+            .action-icon-button {
+                padding: 4px;
+                border-radius: 4px;
+                transition: background-color 0.2s ease;
+                
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.05);
+                }
+            }
         }
     }
 }

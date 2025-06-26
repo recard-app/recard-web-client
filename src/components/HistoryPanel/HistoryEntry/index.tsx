@@ -39,6 +39,7 @@ import { useState } from 'react';
  * @property refreshHistory - Optional callback to force history refresh
  * @property returnCurrentChatId - Callback to update the current chat ID
  * @property creditCards - Optional array of available credit cards
+ * @property variant - Optional variant for different styling contexts ('sidebar' | 'full-page')
  */
 interface HistoryEntryProps {
   chatEntry: Conversation;
@@ -47,6 +48,7 @@ interface HistoryEntryProps {
   refreshHistory?: () => Promise<boolean>;
   returnCurrentChatId: (chatId: string | null) => void;
   creditCards?: CreditCard[];
+  variant?: 'sidebar' | 'full-page';
 }
 
 // Create icon functions for dropdown items
@@ -55,7 +57,7 @@ const HISTORY_DROPDOWN_ICONS = {
   DELETE: (props: any = {}) => createIconVariant('delete', 'mini', ICON_RED, props.size)
 };
 
-function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, returnCurrentChatId, creditCards }: HistoryEntryProps): React.ReactElement {
+function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, returnCurrentChatId, creditCards, variant = 'full-page' }: HistoryEntryProps): React.ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   // Tracks whether this entry is the currently selected chat
@@ -182,7 +184,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
   return (
     <>
       <div 
-        className={`history-entry ${isCurrent ? 'current' : ''} ${displayCard ? 'has-selected-card' : ''}`}
+        className={`history-entry ${variant === 'sidebar' ? 'sidebar-variant' : 'full-page-variant'} ${isCurrent ? 'current' : ''} ${displayCard ? 'has-selected-card' : ''}`}
         id={chatEntry.chatId}
         onClick={handleClick}
         style={{ cursor: 'pointer' }}

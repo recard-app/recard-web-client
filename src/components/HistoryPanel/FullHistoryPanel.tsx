@@ -402,6 +402,7 @@ function FullHistoryPanel({
                     refreshHistory={forceHistoryRefresh}
                     returnCurrentChatId={returnCurrentChatId}
                     creditCards={creditCards}
+                    variant="full-page"
                   />
                 ))}
               </div>
@@ -419,6 +420,7 @@ function FullHistoryPanel({
                       refreshHistory={forceHistoryRefresh}
                       returnCurrentChatId={returnCurrentChatId}
                       creditCards={creditCards}
+                      variant="full-page"
                     />
                   ))}
                 </div>

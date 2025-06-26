@@ -312,7 +312,6 @@
 
 // Icon button mixins
 @mixin button-icon-base {
-  @include button-base;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -328,6 +327,7 @@
 }
 
 @mixin button-icon-only($img-size: $icon-mini, $padding-v: $space-2, $padding-h: $space-2) {
+  @include button-base;
   @include button-icon-base;
   padding: $padding-v;
   
@@ -338,6 +338,7 @@
 }
 
 @mixin button-icon-with-text($img-size: $icon-mini, $padding-v: $space-2, $padding-h: $space-4) {
+  @include button-base;
   @include button-icon-base;
   padding: $padding-v $padding-h;
   gap: $space-2;
