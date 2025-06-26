@@ -1,10 +1,12 @@
+@import '../../../styling/variables.scss';
+
 .history-entry {
     // Base styles - common to all variants
-    background-color: #ffffff;
-    margin-bottom: 4px;
+    background-color: $neutral-white;
     padding: 4px;
-    border-radius: 2px;
-    border: 1px solid transparent;
+    margin-bottom: $space-half;
+    border-radius: $radius-base;
+    border: $border-half solid transparent;
     position: relative;
     display: flex;
     align-items: center;
@@ -18,36 +20,26 @@
     // Base hover state
     &:hover {
         background-color: #f8f9fa;
-        border-color: #e9ecef;
+        border-color: transparent;
     }
 
     // Base states that apply to all variants
     &.has-selected-card {
-        background-color: rgba(46, 204, 113, 0.05);
-        border-color: #2ecc71;
-        
+        //background-color: rgba(46, 204, 113, 0.05);
+        //border-color: #2ecc71; 
         &:hover {
-            background-color: rgba(46, 204, 113, 0.1);
-            border-color: #27ae60;
+            //background-color: rgba(46, 204, 113, 0.1);
+            //border-color: #27ae60;
         }
     }
 
+    // Current state takes precedence over has-selected-card
     &.current {
-        background-color: rgba(0, 123, 255, 0.1);
-        border-left: 3px solid #007bff;
-        
-        &:hover {
-            background-color: rgba(0, 123, 255, 0.15);
-        }
-        
-        &.has-selected-card {
-            background-color: rgba(46, 204, 113, 0.1);
-            border-left: 3px solid #007bff;
-            border-color: #2ecc71;
-            
-            &:hover {
-                background-color: rgba(46, 204, 113, 0.15);
-            }
+        background-color: $neutral-light-gray;
+        border-color: $neutral-gray;
+
+        .entry-content .selected-card-display {
+            border-color: $neutral-gray;
         }
     }
 
@@ -59,50 +51,39 @@
         padding-right: 32px;
         min-width: 0;
 
-        .entry-title {
-            font-weight: bold;
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .entry-info {
+          margin-bottom: $space-1-5;
+            .entry-title {
+                font-weight: $font-semibold;
+                font-size: $font-sm;
+            }
+
+            .timestamp {
+                font-size: $font-xs;
+                color: $neutral-dark-gray;
+            }
         }
 
         .selected-card-display {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: $space-1;
             margin: 0;
-            margin-bottom: 4px;
-            font-size: 0.9em;
-            color: #666;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: $font-xs;
+            color: $neutral-dark-gray;
+            font-weight: $font-regular;
+            background-color: $neutral-light-gray;
+            width: fit-content;
+            align-self: flex-start;
+            padding: $space-half $space-2;
+            border-radius: $radius-full;
+            border: $border-half solid $neutral-light-gray;
 
             .card-thumbnail {
-                width: 30px;
-                height: 24px;
+                width: auto;
+                height: $icon-micro;
                 flex-shrink: 0;
             }
-        }
-
-        .timestamp {
-            font-size: 0.8em;
-            color: #888;
-        }
-        
-        .current-indicator {
-            font-size: 0.8em;
-            color: #007bff;
-            font-weight: bold;
-            display: inline;
-            width: fit-content;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background-color: rgba(0, 123, 255, 0.1);
-            margin-top: 4px;
-            align-self: flex-start;
         }
     }
     
@@ -131,169 +112,73 @@
 
     // SIDEBAR VARIANT - More compact styling
     &.sidebar-variant {
-        padding: 6px 8px;
-        margin-bottom: 2px;
-        border-radius: 4px;
-        
         &:hover {
-            background-color: #f1f3f4;
-            transform: translateX(2px);
-        }
-
-        &.current {
-            background-color: rgba(0, 123, 255, 0.12);
-            border-left: 2px solid #007bff;
-            
-            &:hover {
-                background-color: rgba(0, 123, 255, 0.18);
-            }
         }
 
         &.has-selected-card {
-            background-color: rgba(46, 204, 113, 0.08);
-            border-color: rgba(46, 204, 113, 0.3);
-            
             &:hover {
-                background-color: rgba(46, 204, 113, 0.12);
             }
-            
-            &.current {
-                background-color: rgba(46, 204, 113, 0.12);
-                border-left: 2px solid #007bff;
-                
-                &:hover {
-                    background-color: rgba(46, 204, 113, 0.18);
-                }
+        }
+
+        &.current {
+            &:hover {
             }
         }
 
         .entry-content {
-            padding-right: 28px;
+            .entry-info {
+                .entry-title {
+                }
 
-            .entry-title {
-                font-size: 0.85em;
-                margin-bottom: 2px;
-                line-height: 1.3;
-            }
-
-            .selected-card-display {
-                margin-bottom: 2px;
-                font-size: 0.75em;
-                gap: 6px;
-
-                .card-thumbnail {
-                    width: 24px;
-                    height: 18px;
+                .timestamp {
                 }
             }
 
-            .timestamp {
-                font-size: 0.7em;
-                color: #999;
-            }
-            
-            .current-indicator {
-                font-size: 0.7em;
-                padding: 1px 4px;
-                margin-top: 2px;
+            .selected-card-display {
+                .card-thumbnail {
+                }
             }
         }
 
         .actions-dropdown {
-            right: 6px;
-            
             .action-icon-button {
-                padding: 2px;
             }
         }
     }
 
     // FULL-PAGE VARIANT - More detailed styling
     &.full-page-variant {
-        padding: 8px 12px;
-        margin-bottom: 6px;
-        border-radius: 6px;
-        
         &:hover {
-            background-color: #f8f9fa;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        &.current {
-            background-color: rgba(0, 123, 255, 0.08);
-            border-left: 4px solid #007bff;
-            box-shadow: 0 1px 3px rgba(0, 123, 255, 0.2);
-            
-            &:hover {
-                background-color: rgba(0, 123, 255, 0.12);
-                box-shadow: 0 2px 6px rgba(0, 123, 255, 0.25);
-            }
         }
 
         &.has-selected-card {
-            background-color: rgba(46, 204, 113, 0.06);
-            border-color: rgba(46, 204, 113, 0.4);
-            
             &:hover {
-                background-color: rgba(46, 204, 113, 0.1);
-                border-color: rgba(46, 204, 113, 0.6);
             }
-            
-            &.current {
-                background-color: rgba(46, 204, 113, 0.08);
-                border-left: 4px solid #007bff;
-                border-color: rgba(46, 204, 113, 0.4);
-                
-                &:hover {
-                    background-color: rgba(46, 204, 113, 0.12);
-                    border-color: rgba(46, 204, 113, 0.6);
-                }
+        }
+
+        &.current {
+            &:hover {
             }
         }
 
         .entry-content {
-            padding-right: 36px;
+            .entry-info {
+                .entry-title {
+                }
 
-            .entry-title {
-                font-size: 0.95em;
-                margin-bottom: 6px;
-                line-height: 1.4;
-            }
-
-            .selected-card-display {
-                margin-bottom: 6px;
-                font-size: 0.85em;
-                gap: 10px;
-
-                .card-thumbnail {
-                    width: 32px;
-                    height: 24px;
+                .timestamp {
                 }
             }
 
-            .timestamp {
-                font-size: 0.8em;
-                color: #777;
-            }
-            
-            .current-indicator {
-                font-size: 0.75em;
-                padding: 3px 8px;
-                margin-top: 6px;
-                border-radius: 6px;
+            .selected-card-display {
+                .card-thumbnail {
+                }
             }
         }
 
         .actions-dropdown {
-            right: 12px;
-            
             .action-icon-button {
-                padding: 4px;
-                border-radius: 4px;
-                transition: background-color 0.2s ease;
-                
                 &:hover {
-                    background-color: rgba(0, 0, 0, 0.05);
                 }
             }
         }

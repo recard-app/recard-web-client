@@ -456,7 +456,7 @@ function AppContent({}: AppContentProps) {
     const headerActions = (
       <>
         <button 
-          className="button ghost icon with-text"
+          className="button ghost small icon with-text"
           onClick={handleClearChat}
           aria-label="Start new transaction chat"
         >

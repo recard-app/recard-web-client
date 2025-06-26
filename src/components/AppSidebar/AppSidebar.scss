@@ -219,13 +219,6 @@
       background: $neutral-dark-gray;
     }
 
-    // Override any child component scrolling
-    * {
-      overflow: visible !important;
-      max-height: none !important;
-      height: auto !important;
-    }
-
     // Specifically for HistoryPanel and other components that might have their own scrolling
     .history-panel,
     .credit-card-preview-list,

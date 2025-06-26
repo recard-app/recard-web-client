@@ -191,15 +191,16 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
         title={chatEntry.chatDescription}
       >
         <div className="entry-content">
-          <p className="entry-title">{chatEntry.chatDescription}</p>
+          <div className="entry-info">
+            <p className="entry-title">{chatEntry.chatDescription}</p>
+            <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
+          </div>
           {displayCard && (
             <p className="selected-card-display">
               <img src={displayCard.image} alt={displayCard.name} className="card-thumbnail" />
               {displayCard.name}
             </p>
           )}
-          <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
-          {isCurrent && <span className="current-indicator">Current</span>}
         </div>
         
         <div className="actions-dropdown">
@@ -207,7 +208,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
             <DropdownMenuTrigger asChild>
               <button className="action-icon-button icon-gray-hover-fill">
                 <Icon 
-                  name="ellipsis-vertical" 
+                  name="ellipsis-horizontal" 
                   variant="mini" 
                   size={20} 
                   color={ICON_GRAY} 
