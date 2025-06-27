@@ -50,7 +50,7 @@
   // Base card content styles
   .card-content {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     flex: 1;
     gap: $space-2;
     
@@ -58,16 +58,17 @@
       width: $icon-large;
       height: auto;
       flex-shrink: 0;
+      margin-top: 5px;
     }
     
     .card-info {
       .card-name {
         font-weight: $font-semibold;
-        margin-bottom: $space-half;
+        margin-bottom: 0;
         font-size: $font-sm;
       }
       
-      .card-issuer {
+      .card-network {
         font-size: $font-xs;
         color: $neutral-dark-gray;
       }
@@ -101,8 +102,8 @@
           // Custom card name styles for sidebar if needed
         }
         
-        .card-issuer {
-          // Custom card issuer styles for sidebar if needed
+        .card-network {
+          // Custom card network styles for sidebar if needed
         }
         
         .preferred-star-icon {
@@ -114,7 +115,7 @@
 
   // MY-CARDS VARIANT - Detailed styling for my-cards page view
   &.my-cards-variant {
-    padding: $space-3;
+    padding: $space-4 $space-2;
     &:hover {
       // Custom hover styles for my-cards page if needed
     }
@@ -130,11 +131,9 @@
       
       .card-info {
         .card-name {
-          font-size: $font-base;
         }
         
-        .card-issuer {
-          font-size: $font-sm;
+        .card-network {
         }
         
         .preferred-star-icon {

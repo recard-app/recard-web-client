@@ -55,7 +55,7 @@ const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
             )}
             {card.CardName}
           </div>
-          <div className="card-issuer">{card.CardIssuer}</div>
+          <div className="card-network">{card.CardNetwork}</div>
         </div>
       </div>
     </div>
