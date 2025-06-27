@@ -2,6 +2,7 @@ import React from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
 import { PLACEHOLDER_CARD_IMAGE, ICON_WHITE, ICON_GRAY } from '../../types';
+import { CardIcon } from '../../icons';
 import { InfoDisplay } from '../../elements';
 import { Icon } from '../../icons';
 
@@ -39,9 +40,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     return (
         <div className="card-details">
             <div className="card-header">
-                <img 
-                    src={cardDetails.CardImage || PLACEHOLDER_CARD_IMAGE} 
-                    alt={`${cardDetails.CardName} card`} 
+                <CardIcon 
+                    title={`${cardDetails.CardName} card`} 
+                    size={36} 
+                    primary={cardDetails.CardPrimaryColor}
+                    secondary={cardDetails.CardSecondaryColor}
                     className="card-image"
                 />
                 <div className="card-header-info">

@@ -200,6 +200,8 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
               <CardIcon 
                 title={displayCard.name} 
                 size={12} 
+                primary={selectedCard?.CardPrimaryColor}
+                secondary={selectedCard?.CardSecondaryColor}
                 className="card-thumbnail" 
               />
               {displayCard.name}

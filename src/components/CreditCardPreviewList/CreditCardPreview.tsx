@@ -38,6 +38,8 @@ const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
         <CardIcon 
           title={`${card.CardName} card`} 
           size={36} 
+          primary={card.CardPrimaryColor}
+          secondary={card.CardSecondaryColor}
           className="card-thumbnail"
         />
         <div className="card-info">

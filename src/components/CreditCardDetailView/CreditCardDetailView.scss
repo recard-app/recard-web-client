@@ -19,12 +19,10 @@
     margin-bottom: 24px;
     
     .card-image {
-      width: 220px;
-      height: 140px;
-      object-fit: contain;
-      margin-right: 24px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 72px;
+      height: auto;
+      margin-right: $space-2;
+      flex-shrink: 0;
     }
     
     .card-header-info {

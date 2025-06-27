@@ -4,7 +4,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections, sortCards } from './utils';
-import { PLACEHOLDER_CARD_IMAGE, APP_NAME } from '../../types';
+import { APP_NAME } from '../../types';
+import { CardIcon } from '../../icons';
 
 /**
  * Props interface for the CreditCardSelector component
@@ -167,7 +168,12 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                                                 onChange={() => handleCheckboxChange(card.id)}
                                                 disabled={isSaving}
                                             />
-                                            <img src={card.CardImage || PLACEHOLDER_CARD_IMAGE} alt='Credit Card Img' />
+                                            <CardIcon 
+                                                title={`${card.CardName} card`} 
+                                                size={32} 
+                                                primary={card.CardPrimaryColor}
+                                                secondary={card.CardSecondaryColor}
+                                            />
                                             <div className='card-desc'>
                                                 <p className='card-name'>
                                                     {card.CardName}
@@ -207,7 +213,12 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                                                 onChange={() => handleCheckboxChange(card.id)}
                                                 disabled={isSaving}
                                             />
-                                            <img src={card.CardImage || PLACEHOLDER_CARD_IMAGE} alt='Credit Card Img' />
+                                            <CardIcon 
+                                                title={`${card.CardName} card`} 
+                                                size={32} 
+                                                primary={card.CardPrimaryColor}
+                                                secondary={card.CardSecondaryColor}
+                                            />
                                             <div className='card-desc'>
                                                 <p className='card-name'>
                                                     {card.CardName}

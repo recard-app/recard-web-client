@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './CreditCardSelector.scss';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, sortCards } from './utils';
-import { PLACEHOLDER_CARD_IMAGE } from '../../types';
+import { CardIcon } from '../../icons';
 import { InfoDisplay } from '../../elements';
 
 /**
@@ -103,9 +103,11 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
       onClick={() => handleCardClick(card)}
     >
       <div className='card-content'>
-        <img 
-          src={card.CardImage || PLACEHOLDER_CARD_IMAGE} 
-          alt={`${card.CardName} card`} 
+        <CardIcon 
+          title={`${card.CardName} card`} 
+          size={32} 
+          primary={card.CardPrimaryColor}
+          secondary={card.CardSecondaryColor}
         />
         <div className='card-desc'>
           <p className='card-name'>

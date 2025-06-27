@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { CreditCard } from '../../../types/CreditCardTypes';
 import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage } from '../../../types';
 import { PLACEHOLDER_CARD_IMAGE, LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
+import { CardIcon } from '../../../icons';
 import { UserHistoryService } from '../../../services';
 import SingleCardSelector from '../../CreditCardSelector/SingleCardSelector';
 import {
@@ -68,9 +69,11 @@ const CardSelection: React.FC<CardSelectionProps> = ({
                             {isUpdating ? (
                                 <LOADING_ICON size={LOADING_ICON_SIZE} />
                             ) : (
-                                <img 
-                                    src={selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE} 
-                                    alt={selectedCard.CardName} 
+                                <CardIcon 
+                                    title={selectedCard.CardName} 
+                                    size={24} 
+                                    primary={selectedCard.CardPrimaryColor}
+                                    secondary={selectedCard.CardSecondaryColor}
                                     className="selected-card-image"
                                 />
                             )}
@@ -262,7 +265,12 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                     className={`solution-card ${index === 0 ? 'primary-solution' : ''} ${isSelected ? 'selected-card' : ''}`}
                                 >
                                     <div className="card-header">
-                                        <img src={cardImage} alt={cardName} className="card-thumbnail" />
+                                        <CardIcon 
+                                            title={cardName} 
+                                            size={24} 
+                                            primary={cardDetails?.CardPrimaryColor}
+                                            secondary={cardDetails?.CardSecondaryColor}
+                                        />
                                         <h3>{cardName}</h3>
                                     </div>
                                     <div className="card-content">
