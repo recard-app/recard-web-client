@@ -102,7 +102,7 @@ function PromptHistory({ chatHistory, isNewChat = false, isLoading = false, isLo
       {chatEntries.length === 0 ? (
         isNewChat ? (
           <div className="welcome-message">
-            <p>What are you looking to purchase today?</p>
+            <p className="title">What are you looking to purchase today?</p>
             <p className="subtitle">I'll help you find the best credit card to maximize your rewards.</p>
           </div>
         ) : (

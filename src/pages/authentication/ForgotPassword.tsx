@@ -1,6 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
+import { PAGES } from '../../types';
 import { InfoDisplay } from '../../elements';
 
 const ForgotPassword: React.FC = () => {
@@ -37,7 +38,7 @@ const ForgotPassword: React.FC = () => {
             </form>
 
             <p className="auth-redirect">
-                Remember your password? <Link to="/signin">Sign In</Link>
+                Remember your password? <Link to={PAGES.SIGN_IN.PATH}>Sign In</Link>
             </p>
 
             {error && (

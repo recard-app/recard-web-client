@@ -2,7 +2,7 @@ import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthService } from '../../services';
-import { AuthResponse } from '../../types';
+import { AuthResponse, PAGES } from '../../types';
 import { InfoDisplay } from '../../elements';
 
 /**
@@ -80,7 +80,7 @@ const SignUp: React.FC = () => {
             await AuthService.emailSignUp(firstName, lastName);
             
             console.log('Registration successful');
-            navigate('/welcome');
+            navigate(PAGES.WELCOME.PATH);
         } catch (error) {
             const err = error as SignUpError;
             setError(err.message);
@@ -101,9 +101,9 @@ const SignUp: React.FC = () => {
             
             console.log('Authentication successful');
             if (isNewUser) {
-                navigate('/welcome');
+                navigate(PAGES.WELCOME.PATH);
             } else {
-                navigate('/');
+                navigate(PAGES.HOME.PATH);
             }
         } catch (error) {
             const err = error as SignUpError;
@@ -156,7 +156,7 @@ const SignUp: React.FC = () => {
             </form>
 
             <p className="auth-redirect">
-                Already have an account? <Link to="/signin">Sign In</Link>
+                Already have an account? <Link to={PAGES.SIGN_IN.PATH}>Sign In</Link>
             </p>
             <p>You can also sign up with Google</p>
             <button onClick={handleGoogleSignIn}>

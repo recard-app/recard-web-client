@@ -32,23 +32,16 @@
     margin: auto;
     flex: 1;
 
-    h1 {
+    .title {
       font-size: $font-h3;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: #2b2b2b;
-    }
+      color: $primary-medium;
+      margin-bottom: $space-1;
+      font-weight: $font-bold;
 
-    p {
-      font-size: $font-h6;
-      color: #2b2b2b;
-      line-height: 1.4;
-      margin-bottom: 8px;
-
-      &.subtitle {
-        font-size: $font-h6;
-        color: #666;
-        margin-top: 8px;
+      .subtitle {
+        font-size: $font-base;
+        color: $neutral-dark-gray;
+        margin-top: $space-1;
       }
     }
   }

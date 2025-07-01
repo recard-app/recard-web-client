@@ -15,13 +15,30 @@
 html, body {
   height: 100%;
   font-family: $font-inter;
-  font-size: 16px;
+  font-size: $font-base;
   line-height: $leading-normal;
   color: $neutral-black;
   background-color: $neutral-light-gray;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-optical-sizing: auto;
+}
+
+// Dynamic background color classes for different pages
+body.bg-white {
+  background-color: $neutral-white;
+}
+
+body.bg-light {
+  background-color: $neutral-light-gray;
+}
+
+body.bg-dark {
+  background-color: $neutral-dark-gray;
+}
+
+body.bg-primary {
+  background-color: $primary-lightest;
 }
 
 // Typography
@@ -160,16 +177,16 @@ button, .button {
 .icon-gray-hover {
   &:hover {
     svg {
-      color: #5A5F66 !important;
-      stroke: #5A5F66 !important;
+      color: $neutral-dark-gray !important;
+      stroke: $neutral-dark-gray !important;
     }
   }
 }
 .icon-gray-hover-fill {
   &:hover {
     svg {
-      color: #5A5F66 !important;
-      fill: #5A5F66 !important;
+      color: $neutral-dark-gray !important;
+      fill: $neutral-dark-gray !important;
     }
   }
 }

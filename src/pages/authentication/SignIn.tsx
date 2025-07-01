@@ -2,7 +2,7 @@ import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthService } from '../../services';
-import { AuthResponse } from '../../types';
+import { AuthResponse, PAGES } from '../../types';
 import { InfoDisplay } from '../../elements';
 
 const SignIn: React.FC = () => {
@@ -24,7 +24,7 @@ const SignIn: React.FC = () => {
             await loginWithEmail(email, password); // Attempt to log in with email and password
             await AuthService.emailSignIn();
             console.log('Authentication successful');
-            navigate('/');
+            navigate(PAGES.HOME.PATH);
         } catch (error: any) {
             setError(error.message);
             console.error('Authentication failed:', error);
@@ -41,9 +41,9 @@ const SignIn: React.FC = () => {
             await AuthService.googleSignIn(isNewUser); // Call the Google sign-in service
             console.log('Authentication successful');
             if (isNewUser) {
-                navigate('/welcome');
+                navigate(PAGES.WELCOME.PATH);
             } else {
-                navigate('/');
+                navigate(PAGES.HOME.PATH);
             }
         } catch (error: any) {
             setError(error.message);
@@ -71,7 +71,7 @@ const SignIn: React.FC = () => {
                     required
                 />
                 <button type="submit">Sign In with Email</button>
-                <Link to="/forgotpassword" className="forgot-password-btn">
+                <Link to={PAGES.FORGOT_PASSWORD.PATH} className="forgot-password-btn">
                     Forgot Password?
                 </Link>
             </form>
@@ -83,7 +83,7 @@ const SignIn: React.FC = () => {
             </button>
 
             <p className="auth-redirect">
-                Need an account? <Link to="/signup">Sign Up</Link>
+                Need an account? <Link to={PAGES.SIGN_UP.PATH}>Sign Up</Link>
             </p>
 
             {error && (

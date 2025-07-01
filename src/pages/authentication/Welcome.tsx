@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { PAGES } from '../../types';
 
 interface WelcomeProps {
     onModalOpen: () => void;
@@ -30,7 +31,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
                     <div className="step">
                         <h3>2. Verify Your Email</h3>
                         <p>Please verify your email address to ensure account security and unlock more features.</p>
-                        <p>You can see the status and send a verification email from your <Link to="/account">account page.</Link></p>
+                        <p>You can see the status and send a verification email from your <Link to={PAGES.ACCOUNT.PATH}>account page.</Link></p>
                     </div>
 
                     <div className="step">
@@ -44,7 +45,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
                     </div>
                 </div>
 
-                <button onClick={() => navigate('/')}>
+                <button onClick={() => navigate(PAGES.HOME.PATH)}>
                     Get Started
                 </button>
             </div>

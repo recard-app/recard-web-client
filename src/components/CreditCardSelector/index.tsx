@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections, sortCards } from './utils';
-import { APP_NAME } from '../../types';
+import { APP_NAME, PAGES } from '../../types';
 import { CardIcon } from '../../icons';
 
 /**
@@ -127,8 +127,8 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                 <h2>Sign In Required</h2>
                 <p>Log in to unlock full features, manage your credit cards, and get the most out of {APP_NAME}!</p>
                 <div className="auth-buttons">
-                    <button onClick={() => handleAuthRedirect('/signin')}>Sign In</button>
-                    <button onClick={() => handleAuthRedirect('/signup')}>Sign Up</button>
+                    <button onClick={() => handleAuthRedirect(PAGES.SIGN_IN.PATH)}>Sign In</button>
+                    <button onClick={() => handleAuthRedirect(PAGES.SIGN_UP.PATH)}>Sign Up</button>
                 </div>
             </div>
         );

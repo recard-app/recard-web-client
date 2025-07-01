@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './AppHeader.scss';
 import { User as FirebaseUser } from 'firebase/auth';
-import { APP_NAME, TEMP_ICON } from '../../types';
+import { APP_NAME, TEMP_ICON, PAGES } from '../../types';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +38,7 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onLogout, isSidePanelOpen, 
           </button>
         )}
         <div className="logo">
-          <Link to="/"><h1>{APP_NAME}</h1></Link>
+          <Link to={PAGES.HOME.PATH}><h1>{APP_NAME}</h1></Link>
         </div>
       </div>
       
@@ -61,13 +61,13 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onLogout, isSidePanelOpen, 
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="profile-dropdown">
-              <Link to="/my-cards">
+              <Link to={PAGES.MY_CARDS.PATH}>
                 <DropdownMenuItem icon={TEMP_ICON}>My Cards</DropdownMenuItem>
               </Link>
-              <Link to="/preferences">
+              <Link to={PAGES.PREFERENCES.PATH}>
                 <DropdownMenuItem>Preferences</DropdownMenuItem>
               </Link>
-              <Link to="/account">
+              <Link to={PAGES.ACCOUNT.PATH}>
                 <DropdownMenuItem icon={TEMP_ICON}>My Account</DropdownMenuItem>
               </Link>
               <DropdownMenuItem onClick={onLogout} className="signout-action" icon={TEMP_ICON}>Sign Out</DropdownMenuItem>

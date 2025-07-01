@@ -18,7 +18,7 @@ import {
 import axios from 'axios';
 
 // Import types
-import { CreditCard } from '../../types';
+import { CreditCard, PAGES } from '../../types';
 import { ChatMessage, ChatSolution, ChatSolutionSelectedCardId, Conversation } from '../../types';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types';
 import { aiClient, userClient, MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
@@ -412,7 +412,7 @@ function PromptWindow({
         setIsNewChatPending(false);
         setChatId('');
         returnCurrentChatId('');
-        navigate('/');
+        navigate(PAGES.HOME.PATH);
     };
 
     // Add effect to handle initial state

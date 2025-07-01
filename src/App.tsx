@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
-import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, ICON_PRIMARY_MEDIUM } from './types';
+import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, ICON_PRIMARY_MEDIUM, PAGES, PageUtils } from './types';
 import { Icon } from './icons';
 // Services
 import { 
@@ -49,6 +49,9 @@ import { InfoDisplay } from './elements';
 // Context
 import { useAuth } from './context/AuthContext';
 
+// Hooks
+import { usePageBackground } from './hooks/usePageBackground';
+
 // Constants and Types
 import { 
   GLOBAL_QUICK_HISTORY_SIZE, 
@@ -81,6 +84,9 @@ function AppContent({}: AppContentProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Enable dynamic page background colors
+  usePageBackground();
 
   // State for managing credit cards in the application
   const [creditCards, setCreditCards] = useState<CreditCard[]>([]);
@@ -139,8 +145,8 @@ function AppContent({}: AppContentProps) {
 
   // Effect to handle navigation when on root path with active chat
   useEffect(() => {
-    if (location.pathname === '/' && currentChatId) {
-      navigate(`/${currentChatId}`, { replace: true });
+    if (location.pathname === PAGES.HOME.PATH && currentChatId) {
+      navigate(`${PAGES.HOME.PATH}${currentChatId}`, { replace: true });
     }
   }, [location.pathname, currentChatId, navigate]);
 
@@ -345,7 +351,7 @@ function AppContent({}: AppContentProps) {
     
     // Perform logout and navigation
     await logout();
-    navigate('/signin');
+    navigate(PAGES.SIGN_IN.PATH);
   };
 
   // Function to handle chat history updates and deletions
@@ -431,15 +437,8 @@ function AppContent({}: AppContentProps) {
 
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path === '/history') return createTitle('History');
-    if (path === '/preferences') return createTitle('Preferences');
-    if (path === '/account') return createTitle('Account');
-    if (path === '/signin') return createTitle('Sign In');
-    if (path === '/signup') return createTitle('Sign Up');
-    if (path === '/forgotpassword') return createTitle('Reset Password');
-    if (path === '/welcome') return createTitle('Welcome');
-    if (path === '/my-cards') return createTitle('My Cards');
-    return createTitle();
+    const pageTitle = PageUtils.getTitleByPath(path);
+    return pageTitle ? createTitle(pageTitle) : createTitle();
   };
 
   // Effect to persist side panel state to localStorage
@@ -611,17 +610,17 @@ function AppContent({}: AppContentProps) {
             fullHeight={needsFullHeight}
           >
             <Routes>
-              <Route path="/" element={
+              <Route path={PAGES.HOME.PATH} element={
                 <ProtectedRoute>
                   {renderMainContent()}
                 </ProtectedRoute>
               } />
-              <Route path="/:chatId" element={
+              <Route path={PAGES.HOME.DYNAMIC_PATH} element={
                 <ProtectedRoute>
                   {renderMainContent()}
                 </ProtectedRoute>
               } />
-              <Route path="/preferences" element={
+              <Route path={PAGES.PREFERENCES.PATH} element={
                 <ProtectedRoute>
                   <Preferences 
                     preferencesInstructions={preferencesInstructions}
@@ -633,27 +632,27 @@ function AppContent({}: AppContentProps) {
                   />
                 </ProtectedRoute>
               } />
-              <Route path="/signin" element={
+              <Route path={PAGES.SIGN_IN.PATH} element={
                 <RedirectIfAuthenticated>
                   <SignIn />
                 </RedirectIfAuthenticated>
               } />
-              <Route path="/forgotpassword" element={
+              <Route path={PAGES.FORGOT_PASSWORD.PATH} element={
                 <RedirectIfAuthenticated>
                   <ForgotPassword />
                 </RedirectIfAuthenticated>
               } />
-              <Route path="/signup" element={
+              <Route path={PAGES.SIGN_UP.PATH} element={
                 <RedirectIfAuthenticated>
                   <SignUp />
                 </RedirectIfAuthenticated>
               } />
-              <Route path="/welcome" element={
+              <Route path={PAGES.WELCOME.PATH} element={
                 <ProtectedRoute>
                   <Welcome onModalOpen={() => setIsCardSelectorOpen(true)} />
                 </ProtectedRoute>
               } />
-              <Route path="/account" element={
+              <Route path={PAGES.ACCOUNT.PATH} element={
                 <ProtectedRoute>
                   <Account 
                     setChatHistory={setChatHistory}
@@ -662,7 +661,7 @@ function AppContent({}: AppContentProps) {
                   />
                 </ProtectedRoute>
               } />
-              <Route path="/history" element={
+              <Route path={PAGES.HISTORY.PATH} element={
                 <History 
                   existingHistoryList={chatHistory}
                   currentChatId={currentChatId}
@@ -674,7 +673,7 @@ function AppContent({}: AppContentProps) {
                   showCompletedOnlyPreference={showCompletedOnlyPreference}
                 />
               } />
-              <Route path="/my-cards" element={
+              <Route path={PAGES.MY_CARDS.PATH} element={
                 <ProtectedRoute>
                   <MyCards onCardsUpdate={getCreditCards} />
                 </ProtectedRoute>

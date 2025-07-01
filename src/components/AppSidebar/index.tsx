@@ -22,7 +22,8 @@ import {
   DROPDOWN_ICONS,
   SIDEBAR_TOGGLE_ICON_COLOR,
   ICON_GRAY,
-  ICON_PRIMARY
+  ICON_PRIMARY,
+  PAGES
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import Icon, { IconRenderer } from '../../icons';
@@ -71,18 +72,18 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   
   // Helper function to determine if current path is home or chat route
   const isHomeOrChatRoute = (pathname: string) => {
-    // Matches "/" route
-    if (pathname === '/') return true;
+    // Matches home route
+    if (pathname === PAGES.HOME.PATH) return true;
     
     // Matches "/:chatId" route using currentChatId state
-    if (currentChatId && pathname === `/${currentChatId}`) return true;
+    if (currentChatId && pathname === `${PAGES.HOME.PATH}${currentChatId}`) return true;
     
     return false;
   };
 
   // Helper function to check if a route is active
   const isRouteActive = (routePath: string) => {
-    if (routePath === '/') {
+    if (routePath === PAGES.HOME.PATH) {
       return isHomeOrChatRoute(location.pathname);
     }
     return location.pathname === routePath;
@@ -110,19 +111,19 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   // Mini navigation items for collapsed state
   const miniMiddleNavItems = [
     { 
-      to: "/", 
+      to: PAGES.HOME.PATH, 
       name: PAGE_NAMES.HOME, 
-      icon: () => getIconVariant(PAGE_ICONS.HOME, "/")({ size: 20 })
+      icon: () => getIconVariant(PAGE_ICONS.HOME, PAGES.HOME.PATH)({ size: 20 })
     },
     { 
-      to: "/history", 
+      to: PAGES.HISTORY.PATH, 
       name: PAGE_NAMES.TRANSACTION_HISTORY, 
-      icon: () => getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, "/history")({ size: 20 })
+      icon: () => getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, PAGES.HISTORY.PATH)({ size: 20 })
     },
     { 
-      to: "/my-cards", 
+      to: PAGES.MY_CARDS.PATH, 
       name: PAGE_NAMES.MY_CARDS, 
-      icon: () => getIconVariant(PAGE_ICONS.MY_CARDS, "/my-cards")({ size: 20 })
+      icon: () => getIconVariant(PAGE_ICONS.MY_CARDS, PAGES.MY_CARDS.PATH)({ size: 20 })
     }
   ];
 
@@ -143,7 +144,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     } else {
       // For other pages, navigate to home
       onCurrentChatIdChange(null);
-      navigate('/');
+      navigate(PAGES.HOME.PATH);
     }
   };
 
@@ -172,7 +173,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <div className="sidebar-top">
         {isOpen && (
           <h1 className="app-name">
-            <Link to="/">
+            <Link to={PAGES.HOME.PATH}>
               <img src={PAGE_ICONS.LOGO} alt="Logo" />
               {APP_NAME}
             </Link>
@@ -181,7 +182,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         {!isOpen && (
           <div className="sidebar-logo">
             <Link 
-              to="/" 
+              to={PAGES.HOME.PATH} 
               className="logo-icon"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
@@ -340,12 +341,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" side="right" sideOffset={20} className="sidebar-profile-dropdown">
-                  <Link to="/preferences">
+                  <Link to={PAGES.PREFERENCES.PATH}>
                     <DropdownMenuItem icon={DROPDOWN_ICONS.PREFERENCES.NORMAL}>
                       {PAGE_NAMES.PREFERENCES}
                     </DropdownMenuItem>
                   </Link>
-                  <Link to="/account">
+                  <Link to={PAGES.ACCOUNT.PATH}>
                     <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
                       {PAGE_NAMES.MY_ACCOUNT}
                     </DropdownMenuItem>
@@ -361,13 +362,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               {user.photoURL && (
                 <>
                   <Link 
-                    to="/preferences" 
-                    className={`mini-nav-icon ${location.pathname === '/preferences' ? 'active' : ''}`}
+                    to={PAGES.PREFERENCES.PATH} 
+                    className={`mini-nav-icon ${location.pathname === PAGES.PREFERENCES.PATH ? 'active' : ''}`}
                     onMouseEnter={(e) => handleMiniNavHover(e, PAGE_NAMES.PREFERENCES)}
                     onMouseLeave={() => hideTooltip()}
                     style={{ textDecoration: 'none', color: 'inherit'}}
                   >
-                    {getIconVariant(PAGE_ICONS.PREFERENCES, "/preferences")({ size: 20 })}
+                    {getIconVariant(PAGE_ICONS.PREFERENCES, PAGES.PREFERENCES.PATH)({ size: 20 })}
                   </Link>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -382,7 +383,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" side="right" sideOffset={16} className="mini-profile-dropdown">
-                      <Link to="/account">
+                      <Link to={PAGES.ACCOUNT.PATH}>
                         <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
                           {PAGE_NAMES.MY_ACCOUNT}
                         </DropdownMenuItem>
