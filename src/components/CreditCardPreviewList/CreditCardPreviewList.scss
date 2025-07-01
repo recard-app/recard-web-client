@@ -1,4 +1,4 @@
-@import '../../styling/variables.scss';
+@use '../../styling/variables' as *;
 
 /* Card list component styles */
 .cards-list {

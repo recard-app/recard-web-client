@@ -1,4 +1,4 @@
-@import '../../styling/Variables.scss';
+@use '../../styling/variables' as *;
 
 /* Card details panel styles */
 .no-card-details, .card-details-loading {

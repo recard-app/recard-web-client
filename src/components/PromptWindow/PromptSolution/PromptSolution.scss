@@ -1,4 +1,4 @@
-@import '../../../styling/variables.scss';
+@use '../../../styling/variables' as *;
 
 $collapse-transition-duration: 0.15s;
 

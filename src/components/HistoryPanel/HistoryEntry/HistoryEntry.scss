@@ -1,4 +1,4 @@
-@import '../../../styling/variables.scss';
+@use '../../../styling/variables' as *;
 
 .history-entry {
     // Base styles - common to all variants
