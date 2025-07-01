@@ -447,21 +447,25 @@ function PromptWindow({
                     />
                 </div>
             )}
-        
-            <PromptSolution 
-                promptSolutions={promptSolutions} 
-                creditCards={creditCards} 
-                chatId={chatId}
-                selectedCardId={selectedCardId}
-                onHistoryUpdate={onHistoryUpdate}
-                chatHistory={chatHistory}
-            />
             
-            <PromptField 
-                returnPrompt={getPrompt} 
-                isProcessing={isProcessing} 
-                onCancel={handleCancel} 
-            />
+            <div className="prompt-solutions-container">
+                <PromptSolution 
+                    promptSolutions={promptSolutions} 
+                    creditCards={creditCards} 
+                    chatId={chatId}
+                    selectedCardId={selectedCardId}
+                    onHistoryUpdate={onHistoryUpdate}
+                    chatHistory={chatHistory}
+                />
+            </div>
+            
+            <div className="prompt-input-container">
+                <PromptField 
+                    returnPrompt={getPrompt} 
+                    isProcessing={isProcessing} 
+                    onCancel={handleCancel} 
+                />
+            </div>
             
             {chatHistory.length >= MAX_CHAT_MESSAGES && (
                 <div className="below-prompt-field-text">

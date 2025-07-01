@@ -27,15 +27,12 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
     min-height: 0; // For nested flex scrolling
     height: 100%;
+    background-color: $neutral-white;
 }
 
 .prompt-window {
-    width: 100%;
-    max-width: $prompt-window-max-width;
-    background-color: $neutral-white;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -50,6 +47,7 @@
         min-height: 0;
         scroll-behavior: smooth;
         -webkit-overflow-scrolling: touch; // For better iOS scrolling
+        width: 100%; // Full width for scrollbar positioning
         
         &::-webkit-scrollbar {
             width: 8px;
@@ -67,7 +65,27 @@
         .prompt-history {
             padding: $space-2 $space-1;
             flex-grow: 1;
+            width: 100%;
+            max-width: $prompt-window-max-width;
+            margin: 0 auto; // Center the content
+            box-sizing: border-box;
         }
+    }
+
+    .error-container {
+        width: 100%;
+        max-width: $prompt-window-max-width;
+        margin: 0 auto; // Center the error container
+        box-sizing: border-box;
+        padding: 0 $space-1; // Add consistent padding
+    }
+
+    .prompt-solutions-container {
+        width: 100%;
+        max-width: $prompt-window-max-width;
+        margin: 0 auto; // Center the solutions container
+        box-sizing: border-box;
+        padding: 0 $space-1; // Add consistent padding
     }
 
     .prompt-input-container {
@@ -76,6 +94,10 @@
         border-top: 1px solid #eee;
         z-index: 2;
         flex-shrink: 0;
+        width: 100%;
+        max-width: $prompt-window-max-width;
+        margin: 0 auto; // Center the input container
+        box-sizing: border-box;
     }
 }
 
@@ -84,6 +106,10 @@
     padding: 8px;
     color: #666;
     font-size: 0.8em;
+    width: 100%;
+    max-width: $prompt-window-max-width;
+    margin: 0 auto; // Center the below-prompt text
+    box-sizing: border-box;
     
     .inline-button {
         background-color: #f0f0f0;

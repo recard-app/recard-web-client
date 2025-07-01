@@ -50,6 +50,7 @@
     margin: 0;
     display: flex;
     width: 100%;
+    max-width: 100%; // Ensure entries don't exceed container width
     
     .entry-content {
       display: flex;
