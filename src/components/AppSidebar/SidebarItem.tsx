@@ -166,7 +166,7 @@ export const SidebarItem: React.FC<SidebarItemProps> = ({
 
             {!isCollapsed && (
               <>
-                <span className="sidebar-item-name">{name}</span>
+                <span className="sidebar-item-name caps-label">{name}</span>
                 {isDropdown && (
                     <Icon 
                       name={isExpanded ? 'chevron-up' : 'chevron-down'}

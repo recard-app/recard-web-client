@@ -20,24 +20,20 @@ $collapse-transition-duration: 0.15s;
     align-items: center;
     cursor: pointer;
     padding: $space-1 $space-2;
-    background-color: $neutral-light-gray;
+    background-color: $neutral-lightest-gray;
     border: $border-half solid $neutral-gray;
     border-bottom: none;
     border-radius: $radius-base $radius-base 0 0;
     margin-bottom: 0;
     user-select: none;
+    transition: background-color $transition-base;
 
     &:hover {
-      background-color: $neutral-gray;
+      background-color: $neutral-light-gray;
     }
 
-    h2 {
-      margin: 0;
-      font-size: $font-xs;
-      font-weight: $font-semibold;
-      text-transform: uppercase;
-      color: $neutral-dark-gray;
-      font-family: $font-inter;
+    .caps-label {
+      // Using global caps-label class
     }
 
     .collapse-button {

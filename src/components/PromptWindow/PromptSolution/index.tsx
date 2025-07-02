@@ -233,7 +233,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
     return (
         <div className="solutions-container">
             <div className="solutions-header" onClick={() => setIsExpanded(!isExpanded)}>
-                <h2>Select Card for Purchase</h2>
+                <p className="caps-label">Select Card for Purchase</p>
                 <button 
                     className={`collapse-button ${isExpanded ? 'expanded' : ''}`}
                     aria-label={isExpanded ? 'Collapse solutions' : 'Expand solutions'}

@@ -529,10 +529,6 @@
 
     .sidebar-item-name {
       flex: 1;
-      text-transform: uppercase;
-      font-size: $font-xs;
-      font-weight: $font-bold;
-      color: $neutral-dark-gray;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

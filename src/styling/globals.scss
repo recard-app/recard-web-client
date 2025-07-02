@@ -190,3 +190,13 @@ button, .button {
     }
   }
 }
+
+// Text utility classes
+.caps-label {
+  font-size: $font-xs;
+  font-weight: $font-semibold;
+  text-transform: uppercase;
+  color: $neutral-dark-gray;
+  font-family: $font-inter;
+  margin: 0;
+}
