@@ -3,8 +3,16 @@
 
 $collapse-transition-duration: 0.15s;
 
+.prompt-solutions-container {
+  width: 100%;
+  max-width: $prompt-window-max-width;
+  margin: 0 auto; // Center the solutions container
+  box-sizing: border-box;
+  padding: 0 $space-1; // Add consistent padding
+}
+
 .solutions-container {
-  padding: 0 0 $space-1 0;
+  padding: 0 $space-1;
 
   .solutions-header {
     display: flex;
@@ -13,7 +21,9 @@ $collapse-transition-duration: 0.15s;
     cursor: pointer;
     padding: $space-1 $space-2;
     background-color: $neutral-light-gray;
-    border-radius: $radius-base;
+    border: $border-half solid $neutral-gray;
+    border-bottom: none;
+    border-radius: $radius-base $radius-base 0 0;
     margin-bottom: 0;
     user-select: none;
 

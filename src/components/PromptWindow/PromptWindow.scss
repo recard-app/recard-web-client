@@ -79,14 +79,6 @@
         box-sizing: border-box;
         padding: 0 $space-1; // Add consistent padding
     }
-
-    .prompt-solutions-container {
-        width: 100%;
-        max-width: $prompt-window-max-width;
-        margin: 0 auto; // Center the solutions container
-        box-sizing: border-box;
-        padding: 0 $space-1; // Add consistent padding
-    }
 }
 
 .below-prompt-field-text {
