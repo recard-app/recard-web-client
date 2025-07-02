@@ -30,6 +30,7 @@
     min-height: 0; // For nested flex scrolling
     height: 100%;
     background-color: $neutral-white;
+    padding-bottom: $space-3;
 }
 
 .prompt-window {
@@ -83,28 +84,30 @@
 
 .below-prompt-field-text {
     text-align: left;
-    padding: 8px;
-    color: #666;
-    font-size: 0.8em;
+    padding: $space-3 $space-1;
+    padding-bottom: 0;
+    color: $neutral-dark-gray;
+    font-size: $font-xs;
     width: 100%;
     max-width: $prompt-window-max-width;
     margin: 0 auto; // Center the below-prompt text
     box-sizing: border-box;
     
     .inline-button {
-        background-color: #f0f0f0;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 2px 4px;
-        color: #007bff;
+        background-color: $neutral-light-gray;
+        border: $border-half solid $neutral-gray;
+        border-radius: $radius-base;
+        padding: $space-half $space-1;
+        color: $primary-medium;
         cursor: pointer;
         font: inherit;
-        font-size: 0.9em;
+        font-size: $font-xs;
         margin: 0;
         
         &:hover {
-            background-color: #e0e0e0;
-            color: #0056b3;
+            background-color: $primary-lightest;
+            color: $primary-dark;
+            border-color: $primary-medium;
         }
     }
 }
