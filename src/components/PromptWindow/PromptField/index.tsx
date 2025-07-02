@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, JSX } from 'react';
 import { adjustTextareaHeight, canSubmitPrompt, shouldSubmitOnEnter } from './utils';
+import { Icon } from '../../../icons';
 import './PromptField.scss';
 import { CHAT_MAX_FIELD_HEIGHT } from '../../../types';
 
@@ -75,12 +76,17 @@ function PromptField({ returnPrompt, isProcessing, onCancel }: PromptFieldProps)
         rows={1}
       />
       {isProcessing ? (
-        <button className="cancel-button" onClick={onCancel}>
-          Cancel
+        <button className="button icon" onClick={onCancel} title="Cancel">
+          <Icon name="stop" variant="solid" size={16} />
         </button>
       ) : (
-        <button onClick={handleSubmit} disabled={!promptValue.trim()}>
-          Submit
+        <button 
+          className="button icon" 
+          onClick={handleSubmit} 
+          disabled={!promptValue.trim()}
+          title="Submit"
+        >
+          <Icon name="arrow-up" variant="solid" size={16} />
         </button>
       )}
     </div>

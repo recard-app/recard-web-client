@@ -60,6 +60,9 @@
       .message-text {
         white-space: pre-line;
         word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
         padding: $space-1 $space-3;
         margin: 0;
         width: 100%;

@@ -87,17 +87,6 @@
         box-sizing: border-box;
         padding: 0 $space-1; // Add consistent padding
     }
-
-    .prompt-input-container {
-        padding: 16px;
-        background: white;
-        z-index: 2;
-        flex-shrink: 0;
-        width: 100%;
-        max-width: $prompt-window-max-width;
-        margin: 0 auto; // Center the input container
-        box-sizing: border-box;
-    }
 }
 
 .below-prompt-field-text {

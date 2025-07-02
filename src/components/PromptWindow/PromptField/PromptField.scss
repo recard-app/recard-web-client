@@ -1,26 +1,71 @@
+@use '../../../styling/globals.scss' as *;
+
+.prompt-input-container {
+  padding: $space-1;
+  background: white;
+  z-index: 2;
+  flex-shrink: 0;
+  width: 100%;
+  max-width: $prompt-window-max-width;
+  margin: 0 auto; // Center the input container
+  box-sizing: border-box;
+}
+
 .prompt-field {
     width: 100%;
     display: flex;
-    align-items: flex-start;
-    gap: 8px;
+    align-items: flex-end;
+    gap: $space-1;
+    background: $neutral-white;
+    border: $border-full solid $neutral-gray;
+    border-radius: $radius-md;
+    padding: $space-1-5;
+    box-shadow: $shadow-sm;
+    transition: border-color 0.1s ease, box-shadow 0.1s ease;
+    
+    &:focus-within {
+      border-color: $neutral-medium-gray;
+      box-shadow: $shadow-base;
+    }
     
     textarea {
       min-height: 32px;
       max-height: 140px;
       height: 32px;
-      padding: 4px 8px;
+      padding: $space-1-5 $space-2;
       flex-grow: 1;
       resize: none;
       overflow-y: auto;
-      line-height: 1.5;
+      line-height: 1.4;
       font-family: inherit;
       box-sizing: border-box;
       transition: height 0.1s ease;
+      margin-bottom: 0;
+      font-size: $font-chat;
+      color: $neutral-black;
+      vertical-align: middle;
+      
+      // Remove all default styles
+      outline: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      &:focus {
+        outline: none !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      &:active {
+        outline: none !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      &:focus-visible {
+        outline: none !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
     }
     
     button {
-      width: 120px;
-      height: 32px;
-      align-self: flex-start;
     }
 }

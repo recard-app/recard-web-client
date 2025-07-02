@@ -184,6 +184,46 @@ export const iconRegistry: IconDefinition = {
       ]
     }
   },
+  'arrow-up': {
+    solid: {
+      viewBox: VIEWBOX.DEFAULT,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clipRule="evenodd" />
+      ]
+    },
+    mini: {
+      viewBox: VIEWBOX.MINI,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clipRule="evenodd" />
+      ]
+    },
+    micro: {
+      viewBox: VIEWBOX.MICRO,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M8 14a.75.75 0 0 1-.75-.75V4.56L4.03 7.78a.75.75 0 0 1-1.06-1.06l4.5-4.5a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1-1.06 1.06L8.75 4.56v8.69A.75.75 0 0 1 8 14Z" clipRule="evenodd" />
+      ]
+    }
+  },
+  'stop': {
+    solid: {
+      viewBox: VIEWBOX.DEFAULT,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M4.5 7.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9Z" clipRule="evenodd" />
+      ]
+    },
+    mini: {
+      viewBox: VIEWBOX.MINI,
+      paths: [
+        <path key="1" d="M5.25 3A2.25 2.25 0 0 0 3 5.25v9.5A2.25 2.25 0 0 0 5.25 17h9.5A2.25 2.25 0 0 0 17 14.75v-9.5A2.25 2.25 0 0 0 14.75 3h-9.5Z" />
+      ]
+    },
+    micro: {
+      viewBox: VIEWBOX.MICRO,
+      paths: [
+        <rect key="1" width="10" height="10" x="3" y="3" rx="1.5" />
+      ]
+    }
+  },
   'card': {
     solid: {
       viewBox: VIEWBOX.DEFAULT,
