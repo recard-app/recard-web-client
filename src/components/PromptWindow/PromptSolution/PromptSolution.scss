@@ -116,6 +116,12 @@ $collapse-transition-duration: 0.15s;
       margin-bottom: $space-1;
       transition: all $transition-base;
       background-color: $neutral-white;
+      cursor: pointer;
+
+      &:hover {
+        // border-color: $neutral-medium-gray;
+        // box-shadow: $shadow-sm;
+      }
 
       &.primary-solution {
         border: 2px solid $accent-color;
@@ -125,6 +131,11 @@ $collapse-transition-duration: 0.15s;
         .card-header h3 {
           color: $accent-color;
           font-weight: $font-semibold;
+        }
+
+        &:hover {
+          //border-color: color.adjust($accent-color, $lightness: -10%);
+          //box-shadow: $shadow-md;
         }
       }
 
@@ -138,12 +149,22 @@ $collapse-transition-duration: 0.15s;
           font-weight: $font-semibold;
         }
 
+        &:hover {
+          //border-color: color.adjust($primary-color, $lightness: -10%) !important;
+          //box-shadow: 0 4px 8px rgba($primary-color, 0.3) !important;
+        }
+
         &.primary-solution {
           border-color: $primary-color !important;
           background-color: color.adjust($primary-color, $lightness: +45%) !important;
           
           .card-header h3 {
             color: $primary-medium !important;
+          }
+
+          &:hover {
+            //border-color: color.adjust($primary-color, $lightness: -10%) !important;
+            //box-shadow: 0 4px 8px rgba($primary-color, 0.3) !important;
           }
         }
       }
@@ -262,7 +283,7 @@ $collapse-transition-duration: 0.15s;
   .select-card-button {
     background-color: $neutral-white;
     border: $border-full solid $neutral-gray;
-    padding: $space-1 $space-3;
+    padding: $space-1 $space-2;
     border-radius: $radius-base;
     cursor: pointer;
     font-size: $font-xs;
@@ -273,6 +294,20 @@ $collapse-transition-duration: 0.15s;
     display: flex;
     align-items: center;
     gap: $space-1;
+
+    &.loading.icon.with-text {
+      // Target button with all these classes: selected-card-button loading icon with-text
+      font-size: $font-xs;
+      padding: 3px $space-1;
+      border: $border-full solid $neutral-gray;
+      gap: $space-1;
+      transition: none; // Disable transition to prevent flashing
+      border-radius: $radius-base;
+
+      p {
+        height: 14px;
+      }
+    }
     
     &:hover {
       background-color: $neutral-light-gray;
@@ -282,6 +317,13 @@ $collapse-transition-duration: 0.15s;
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+
+    // Ensure spinner is visible when loading
+    &.loading {
+      svg {
+        color: $neutral-dark-gray !important;
+      }
     }
   }
   
@@ -310,6 +352,13 @@ $collapse-transition-duration: 0.15s;
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+
+    // Ensure spinner is visible when loading
+    &.loading {
+      svg {
+        color: $neutral-dark-gray !important;
+      }
     }
     
     .selected-card-image {
@@ -371,6 +420,20 @@ $collapse-transition-duration: 0.15s;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
         border-right: none;
+
+        &.loading.icon.with-text {
+            // Target button with all these classes: selected-card-button loading icon with-text
+            font-size: $font-xs;
+            padding: 3px $space-1;
+            border: $border-full solid $neutral-gray;
+            gap: $space-1;
+            transition: none; // Disable transition to prevent flashing
+            border-radius: $radius-base;
+
+            p {
+              height: 14px;
+            }
+        }
     }
 
     .deselect-button {
@@ -402,5 +465,10 @@ $collapse-transition-duration: 0.15s;
             opacity: 0.5;
             cursor: not-allowed;
         }
+    }
+
+    // Hide deselect button when the selected-card-button is loading
+    .selected-card-button.loading + .deselect-button {
+        display: none;
     }
 }

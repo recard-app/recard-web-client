@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CreditCard } from '../../../types/CreditCardTypes';
-import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage } from '../../../types';
+import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage, ICON_GRAY_DARK, ICON_GRAY } from '../../../types';
 import { PLACEHOLDER_CARD_IMAGE, LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
 import { CardIcon, Icon } from '../../../icons';
 import { UserHistoryService } from '../../../services';
@@ -77,7 +77,9 @@ const CardSelection: React.FC<CardSelectionProps> = ({
                                     className="selected-card-image"
                                 />
                             )}
-                            <span className="selected-card-name">{selectedCard.CardName}</span>
+                            <span className="selected-card-name">
+                                {isUpdating ? 'Updating...' : selectedCard.CardName}
+                            </span>
                         </button>
                         <button 
                             className="deselect-button"
@@ -95,11 +97,20 @@ const CardSelection: React.FC<CardSelectionProps> = ({
                         {noSolutionsMode ? 'Select card for purchase:' : 'Select a different card:'}
                     </span>
                     <button 
-                        className={`select-card-button ${isUpdating ? 'loading icon with-text' : ''}`}
+                        className={`select-card-button ${isUpdating ? 'loading' : ''}`}
                         onClick={onCardSelectorOpen}
                         disabled={isUpdating}
                     >
-                        {isUpdating && <LOADING_ICON size={LOADING_ICON_SIZE} />}
+                        {isUpdating ? (
+                            <LOADING_ICON size={LOADING_ICON_SIZE} />
+                        ) : (
+                            <Icon 
+                                name="card"
+                                variant="micro"
+                                color={ICON_GRAY}
+                                size={14}
+                            />
+                        )}
                         {isUpdating ? 'Updating...' : 'Select Card'}
                     </button>
                 </>
@@ -276,6 +287,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                 <div 
                                     key={solution.id || index} 
                                     className={`solution-card ${index === 0 ? 'primary-solution' : ''} ${isSelected ? 'selected-card' : ''}`}
+                                    onClick={() => handleCardSelection(solution.id)}
                                 >
                                     <div className="card-header">
                                         <CardIcon 
@@ -297,7 +309,10 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                         </div>
                                         <button 
                                             className={`use-card-button ${isSelected ? 'selected' : ''} ${isUpdating ? 'loading icon' : ''}`}
-                                            onClick={() => handleCardSelection(solution.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleCardSelection(solution.id);
+                                            }}
                                             disabled={isUpdating}
                                         >
                                             {isUpdating && <LOADING_ICON size={LOADING_ICON_SIZE} />}
