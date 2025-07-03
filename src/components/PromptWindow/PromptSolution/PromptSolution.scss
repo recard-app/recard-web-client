@@ -68,12 +68,14 @@ $collapse-transition-duration: 0.15s;
     margin: 0;
     padding: 0;
     min-height: 0;
-    
+    background-color: $neutral-lightest-gray;
+
     &.expanded {
       grid-template-rows: 1fr;
-      margin-bottom: $space-2;
-      padding: 0;
+      padding: $space-2;
       transition: grid-template-rows $collapse-transition-duration ease-in;
+      border: $border-half solid $neutral-gray;
+      border-bottom: none;
     }
 
     > div {
