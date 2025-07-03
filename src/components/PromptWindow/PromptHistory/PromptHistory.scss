@@ -108,6 +108,49 @@
           padding-left: $space-4;
         }
         
+        // Headers - progressive sizing from h6 (1.0rem) to h1 (1.2rem)
+        h6 {
+          font-size: 1.0rem;
+          font-weight: $font-medium;
+          margin: $space-2 0 $space-1 0;
+          line-height: 1.4;
+        }
+
+        h5 {
+          font-size: 1.033rem;
+          font-weight: $font-medium;
+          margin: $space-2 0 $space-1 0;
+          line-height: 1.4;
+        }
+
+        h4 {
+          font-size: 1.067rem;
+          font-weight: $font-medium;
+          margin: $space-2 0 $space-1 0;
+          line-height: 1.4;
+        }
+
+        h3 {
+          font-size: 1.1rem;
+          font-weight: $font-medium;
+          margin: $space-2 0 $space-1 0;
+          line-height: 1.4;
+        }
+
+        h2 {
+          font-size: 1.133rem;
+          font-weight: $font-medium;
+          margin: $space-2 0 $space-1 0;
+          line-height: 1.4;
+        }
+
+        h1 {
+          font-size: 1.2rem;
+          font-weight: $font-medium;
+          margin: $space-3 0 $space-1-5 0;
+          line-height: 1.4;
+        }
+        
         // Line breaks
         br {
           display: inline;

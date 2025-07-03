@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { CreditCard } from '../../../types/CreditCardTypes';
 import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage } from '../../../types';
 import { PLACEHOLDER_CARD_IMAGE, LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
-import { CardIcon } from '../../../icons';
+import { CardIcon, Icon } from '../../../icons';
 import { UserHistoryService } from '../../../services';
 import SingleCardSelector from '../../CreditCardSelector/SingleCardSelector';
 import {
@@ -233,12 +233,25 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
     return (
         <div className="solutions-container">
             <div className="solutions-header" onClick={() => setIsExpanded(!isExpanded)}>
-                <p className="caps-label">Select Card for Purchase</p>
+                <div className="header-title">
+                    <Icon 
+                        name="card"
+                        variant="mini"
+                        color="#B5BBC2"
+                        size={18}
+                    />
+                    <p className="caps-label">Select Card for Purchase</p>
+                </div>
                 <button 
                     className={`collapse-button ${isExpanded ? 'expanded' : ''}`}
                     aria-label={isExpanded ? 'Collapse solutions' : 'Expand solutions'}
                 >
-                    ▼
+                    <Icon 
+                        name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                        variant="mini"
+                        color="black"
+                        size={18}
+                    />
                 </button>
             </div>
             <div className={`collapsible-content ${isExpanded ? 'expanded' : ''}`}>

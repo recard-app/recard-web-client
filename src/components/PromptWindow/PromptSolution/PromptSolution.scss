@@ -32,8 +32,14 @@ $collapse-transition-duration: 0.15s;
       background-color: $neutral-light-gray;
     }
 
-    .caps-label {
-      // Using global caps-label class
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: $space-1-5;
+      
+      .caps-label {
+        // Using global caps-label class
+      }
     }
 
     .collapse-button {
@@ -43,10 +49,13 @@ $collapse-transition-duration: 0.15s;
       color: $neutral-dark-gray;
       font-size: $font-xs;
       cursor: pointer;
-      transition: transform $collapse-transition-duration ease;
+      transition: color $collapse-transition-duration ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       
-      &.expanded {
-        transform: rotate(180deg);
+      &:hover {
+        color: $neutral-black;
       }
     }
   }
