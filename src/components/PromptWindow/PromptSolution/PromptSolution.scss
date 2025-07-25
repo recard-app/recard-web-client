@@ -186,12 +186,32 @@ $collapse-transition-duration: 0.15s;
         gap: $space-1-5;
         margin-bottom: $space-1;
 
+        // Prevent card icon from shrinking
+        svg {
+          flex-shrink: 0;
+        }
+
         h3 {
           margin: 0;
           font-size: $font-sm;
           font-family: $font-inter;
           font-weight: $font-medium;
           color: $neutral-black;
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: $space-1-5;
+        }
+
+        .recommended-badge {
+          background-color: $primary-light;
+          color: $primary-medium;
+          font-size: $font-xxs;
+          font-family: $font-inter;
+          font-weight: $font-medium;
+          padding: $space-half $space-2;
+          border-radius: $radius-full;
+          white-space: nowrap;
         }
       }
 

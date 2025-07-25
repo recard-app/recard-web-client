@@ -287,7 +287,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                             return (
                                 <div 
                                     key={solution.id || index} 
-                                    className={`solution-card ${index === 0 ? 'primary-solution' : ''} ${isSelected ? 'selected-card' : ''}`}
+                                    className={`solution-card ${index === 0 ? 'primary-solution-turned-off' : ''} ${isSelected ? 'selected-card' : ''}`}
                                     onClick={() => handleCardSelection(solution.id)}
                                 >
                                     <div className="card-checkbox-container">
@@ -315,7 +315,12 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                                 primary={cardDetails?.CardPrimaryColor}
                                                 secondary={cardDetails?.CardSecondaryColor}
                                             />
-                                            <h3>{cardName}</h3>
+                                            <h3>
+                                                {cardName}
+                                                {index === 0 && (
+                                                    <span className="recommended-badge">Recommended</span>
+                                                )}
+                                            </h3>
                                         </div>
                                         <div className="card-content">
                                             <div className="card-details">
