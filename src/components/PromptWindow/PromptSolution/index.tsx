@@ -5,6 +5,7 @@ import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage
 import { PLACEHOLDER_CARD_IMAGE, LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
 import { CardIcon, Icon } from '../../../icons';
 import { UserHistoryService } from '../../../services';
+import { CheckIcon } from 'lucide-react';
 import SingleCardSelector from '../../CreditCardSelector/SingleCardSelector';
 import {
   Dialog,
@@ -172,7 +173,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
             return;
         }
 
-        // Set updating state
+        // Set updating state for this specific card only
         setIsUpdating(true);
         setUpdatingCardId(cardId);
 
@@ -280,8 +281,8 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                             // Card is selected if it matches the active card ID
                             const isSelected = solution.id === activeCardId;
                             
-                            // This specific card is being updated
-                            const isUpdatingThis = solution.id === updatingCardId;
+                                                                        // This specific card is being updated
+                                            const isUpdatingThis = isUpdating && solution.id === updatingCardId;
                             
                             return (
                                 <div 
@@ -289,37 +290,45 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                     className={`solution-card ${index === 0 ? 'primary-solution' : ''} ${isSelected ? 'selected-card' : ''}`}
                                     onClick={() => handleCardSelection(solution.id)}
                                 >
-                                    <div className="card-header">
-                                        <CardIcon 
-                                            title={cardName} 
-                                            size={24} 
-                                            primary={cardDetails?.CardPrimaryColor}
-                                            secondary={cardDetails?.CardSecondaryColor}
-                                        />
-                                        <h3>{cardName}</h3>
-                                    </div>
-                                    <div className="card-content">
-                                        <div className="card-details">
-                                            {(solution.rewardCategory || solution.rewardRate) && (
-                                                <p>
-                                                    {solution.rewardCategory && solution.rewardRate 
-                                                        ? `${solution.rewardCategory}: ${solution.rewardRate}`
-                                                        : solution.rewardCategory || solution.rewardRate
-                                                    }
-                                                </p>
-                                            )}
-                                        </div>
+                                    <div className="card-checkbox-container">
                                         <button 
-                                            className={`use-card-button ${isSelected ? 'selected' : ''} ${isUpdating ? 'loading icon' : ''}`}
+                                            className={`use-card-button ${isSelected ? 'selected' : ''} ${(isUpdating && isUpdatingThis && !isSelected) ? 'loading icon' : ''}`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleCardSelection(solution.id);
                                             }}
                                             disabled={isUpdating}
+                                            aria-label={isUpdatingThis ? 'Updating...' : isSelected ? 'Selected for purchase' : 'Select for purchase'}
                                         >
-                                            {isUpdating && <LOADING_ICON size={LOADING_ICON_SIZE} />}
-                                            {isUpdatingThis ? 'Updating...' : isSelected ? 'Used for Purchase' : 'Use this Card'}
+                                            {isSelected ? (
+                                                <CheckIcon size={16} />
+                                            ) : (isUpdating && isUpdatingThis) ? (
+                                                <LOADING_ICON size={16} />
+                                            ) : null}
                                         </button>
+                                    </div>
+                                    <div className="card-content-container">
+                                        <div className="card-header">
+                                            <CardIcon 
+                                                title={cardName} 
+                                                size={24} 
+                                                primary={cardDetails?.CardPrimaryColor}
+                                                secondary={cardDetails?.CardSecondaryColor}
+                                            />
+                                            <h3>{cardName}</h3>
+                                        </div>
+                                        <div className="card-content">
+                                            <div className="card-details">
+                                                {(solution.rewardCategory || solution.rewardRate) && (
+                                                    <p>
+                                                        {solution.rewardCategory && solution.rewardRate 
+                                                            ? `${solution.rewardCategory}: ${solution.rewardRate}`
+                                                            : solution.rewardCategory || solution.rewardRate
+                                                        }
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             );

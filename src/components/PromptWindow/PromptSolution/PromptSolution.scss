@@ -72,7 +72,7 @@ $collapse-transition-duration: 0.15s;
 
     &.expanded {
       grid-template-rows: 1fr;
-      padding: $space-2;
+      padding: $space-1-5;
       transition: grid-template-rows $collapse-transition-duration ease-in;
       border: $border-half solid $neutral-gray;
       border-bottom: none;
@@ -100,8 +100,8 @@ $collapse-transition-duration: 0.15s;
 
     &.expanded .select-different-card {
       opacity: 1;
-      height: auto;
-      margin-top: $space-2;
+      height: 24px;
+      margin-top: $space-1;
       transition: opacity $collapse-transition-duration ease-in 0.1s, height $collapse-transition-duration ease-in, margin $collapse-transition-duration ease-in;
     }
   }
@@ -109,14 +109,17 @@ $collapse-transition-duration: 0.15s;
   .solution-cards {
     display: block;
 
-    .solution-card {
-      border: $border-full solid $neutral-gray;
-      border-radius: $radius-base;
-      padding: $space-2;
-      margin-bottom: $space-1;
-      transition: all $transition-base;
-      background-color: $neutral-white;
-      cursor: pointer;
+      .solution-card {
+        border: $border-full solid $neutral-light-gray;
+        border-radius: $radius-base;
+        padding: $space-2;
+        margin-bottom: $space-1;
+        transition: all $transition-base;
+        background-color: $neutral-white;
+        cursor: pointer;
+        display: flex;
+        align-items: flex-start;
+        gap: $space-2;
 
       &:hover {
         // border-color: $neutral-medium-gray;
@@ -124,48 +127,56 @@ $collapse-transition-duration: 0.15s;
       }
 
       &.primary-solution {
-        border: 2px solid $accent-color;
-        background-color: color.adjust($accent-color, $lightness: +45%);
-        box-shadow: $shadow-sm;
-        
-        .card-header h3 {
-          color: $accent-color;
-          font-weight: $font-semibold;
+        border: $border-full solid $primary-color;
+          .card-header h3 {
+            color: $primary-medium;
+            font-weight: $font-medium;
+          }
+          .card-content {
+            .card-details {
+              p {
+                color: $primary-medium;
+              }
+            }
+          }
         }
-
-        &:hover {
-          //border-color: color.adjust($accent-color, $lightness: -10%);
-          //box-shadow: $shadow-md;
-        }
-      }
 
       &.selected-card {
-        border: 2px solid $primary-color !important;
-        background-color: color.adjust($primary-color, $lightness: +45%) !important;
-        box-shadow: 0 2px 4px rgba($primary-color, 0.2) !important;
+        border: $border-full solid $primary-color;
+        background-color: $primary-lightest;
+        //box-shadow: 0 2px 4px rgba($primary-color, 0.2);
         
         .card-header h3 {
-          color: $primary-medium !important;
+          color: $primary-medium;
           font-weight: $font-semibold;
         }
 
-        &:hover {
-          //border-color: color.adjust($primary-color, $lightness: -10%) !important;
-          //box-shadow: 0 4px 8px rgba($primary-color, 0.3) !important;
+        .card-content {
+          .card-details {
+            p {
+              color: $primary-medium;
+            }
+          }
         }
 
         &.primary-solution {
-          border-color: $primary-color !important;
-          background-color: color.adjust($primary-color, $lightness: +45%) !important;
+          border-color: $primary-color;
+          background-color: $primary-lightest;
           
           .card-header h3 {
-            color: $primary-medium !important;
+            color: $primary-medium;
           }
+        }
 
-          &:hover {
-            //border-color: color.adjust($primary-color, $lightness: -10%) !important;
-            //box-shadow: 0 4px 8px rgba($primary-color, 0.3) !important;
-          }
+        .card-checkbox-container {
+          display: flex;
+          align-items: flex-start;
+          flex-shrink: 0;
+        }
+
+        .card-content-container {
+          flex: 1;
+          min-width: 0;
         }
       }
 
@@ -185,13 +196,7 @@ $collapse-transition-duration: 0.15s;
       }
 
       .card-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: $space-2;
-
         .card-details {
-          flex: 1;
           p {
             margin: 0 0 $space-half 0;
             font-size: $font-xs;
@@ -205,44 +210,54 @@ $collapse-transition-duration: 0.15s;
             }
           }
         }
+      }
 
-        .use-card-button {
-          padding: $space-1 $space-3;
-          font-size: $font-xs;
-          font-family: $font-inter;
-          font-weight: $font-medium;
-          border: $border-full solid $neutral-gray;
-          border-radius: $radius-base;
-          background-color: $neutral-white;
-          color: $neutral-black;
-          cursor: pointer;
-          transition: all $transition-base;
-          white-space: nowrap;
-          min-width: 90px;
-          text-align: center;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: $space-1;
+      .use-card-button {
+        padding: 0;
+        width: 18px;
+        height: 18px;
+        border: $border-full solid $neutral-gray;
+        border-radius: $radius-sm;
+        background-color: $neutral-white;
+        color: $neutral-black;
+        cursor: pointer;
+        transition: all $transition-base;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        min-width: 18px;
+        min-height: 18px;
+
+        &:hover {
+          background-color: $neutral-light-gray;
+          border-color: $neutral-medium-gray;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        // Empty state (unselected)
+        &:not(.selected):not(.loading) {
+          border-color: $neutral-light-gray;
+          background-color: transparent;
+          
+          &:hover {
+            border-color: $neutral-gray;
+            background-color: $neutral-lightest-gray;
+          }
+        }
+
+        &.selected {
+          background-color: $primary-color;
+          color: $neutral-white;
+          border-color: $neutral-light-gray;
 
           &:hover {
-            background-color: $neutral-light-gray;
-            border-color: $neutral-medium-gray;
-          }
-
-          &:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-          }
-
-          &.selected {
-            background-color: $primary-color;
-            color: $neutral-white;
-            border-color: $primary-medium;
-
-            &:hover {
-              background-color: $primary-medium;
-            }
+            background-color: $primary-medium;
+            border-color: $neutral-light-gray;
           }
         }
       }
@@ -440,9 +455,9 @@ $collapse-transition-duration: 0.15s;
     .deselect-button {
         margin: 0;
         width: $space-5;
-        border: $border-full solid $error;
+        border: $border-full solid $neutral-dark-gray;
         border-left: none;
-        background-color: $error;
+        background-color: $neutral-dark-gray;
         color: $neutral-white;
         cursor: pointer;
         display: flex;
@@ -450,7 +465,7 @@ $collapse-transition-duration: 0.15s;
         justify-content: center;
         font-size: $font-xs;
         font-weight: $font-bold;
-        padding: 0;
+        padding: 0 $space-3;
         transition: all $transition-base;
         border-top-right-radius: $radius-base;
         border-bottom-right-radius: $radius-base;
@@ -458,8 +473,8 @@ $collapse-transition-duration: 0.15s;
         border-bottom-left-radius: 0;
 
         &:hover {
-            background-color: color.adjust($error, $lightness: -10%);
-            border-color: color.adjust($error, $lightness: -10%);
+            background-color: $neutral-black;
+            border-color: $neutral-black;
         }
 
         &:disabled {
