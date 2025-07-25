@@ -198,6 +198,7 @@ $collapse-transition-duration: 0.15s;
             font-family: $font-inter;
             color: $neutral-dark-gray;
             line-height: $leading-normal;
+            text-transform: capitalize;
             
             &:last-child {
               margin-bottom: 0;

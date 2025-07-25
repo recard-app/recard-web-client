@@ -300,11 +300,13 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                     </div>
                                     <div className="card-content">
                                         <div className="card-details">
-                                            {solution.rewardCategory && (
-                                                <p><strong>Category:</strong> {solution.rewardCategory}</p>
-                                            )}
-                                            {solution.rewardRate && (
-                                                <p><strong>Reward Rate:</strong> {solution.rewardRate}</p>
+                                            {(solution.rewardCategory || solution.rewardRate) && (
+                                                <p>
+                                                    {solution.rewardCategory && solution.rewardRate 
+                                                        ? `${solution.rewardCategory}: ${solution.rewardRate}`
+                                                        : solution.rewardCategory || solution.rewardRate
+                                                    }
+                                                </p>
                                             )}
                                         </div>
                                         <button 
