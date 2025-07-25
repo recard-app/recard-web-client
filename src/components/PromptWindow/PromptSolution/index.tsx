@@ -292,7 +292,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                 >
                                     <div className="card-checkbox-container">
                                         <button 
-                                            className={`use-card-button ${isSelected ? 'selected' : ''} ${(isUpdating && isUpdatingThis && !isSelected) ? 'loading icon' : ''}`}
+                                            className={`use-card-button ${isSelected ? 'selected' : ''}`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleCardSelection(solution.id);
@@ -302,8 +302,6 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                         >
                                             {isSelected ? (
                                                 <CheckIcon size={16} />
-                                            ) : (isUpdating && isUpdatingThis) ? (
-                                                <LOADING_ICON size={16} />
                                             ) : null}
                                         </button>
                                     </div>

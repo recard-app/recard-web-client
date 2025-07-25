@@ -410,19 +410,23 @@ function FullHistoryPanel({
               // Show categorized view only when no filters are applied
               organizeHistoryByDate(paginatedList).map(section => (
                 <div key={section.title} className="history-section">
-                  <h3 className="section-title">{section.title}</h3>
-                  {section.entries.map(entry => (
-                    <HistoryEntry 
-                      key={entry.chatId} 
-                      chatEntry={entry}
-                      currentChatId={currentChatId}
-                      onDelete={handleDelete}
-                      refreshHistory={forceHistoryRefresh}
-                      returnCurrentChatId={returnCurrentChatId}
-                      creditCards={creditCards}
-                      variant="full-page"
-                    />
-                  ))}
+                  <div className="section-header">
+                    <p className="section-title">{section.title}</p>
+                  </div>
+                  <div className="section-entries">
+                    {section.entries.map(entry => (
+                      <HistoryEntry 
+                        key={entry.chatId} 
+                        chatEntry={entry}
+                        currentChatId={currentChatId}
+                        onDelete={handleDelete}
+                        refreshHistory={forceHistoryRefresh}
+                        returnCurrentChatId={returnCurrentChatId}
+                        creditCards={creditCards}
+                        variant="full-page"
+                      />
+                    ))}
+                  </div>
                 </div>
               ))
             )}
