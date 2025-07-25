@@ -112,8 +112,8 @@ $collapse-transition-duration: 0.15s;
       .solution-card {
         border: $border-full solid $neutral-light-gray;
         border-radius: $radius-base;
-        padding: $space-2;
-        margin-bottom: $space-1;
+        padding: $space-1-5 $space-2;
+        margin-bottom: $space-half;
         transition: all $transition-base;
         background-color: $neutral-white;
         cursor: pointer;
@@ -184,7 +184,6 @@ $collapse-transition-duration: 0.15s;
         display: flex;
         align-items: center;
         gap: $space-1-5;
-        margin-bottom: $space-1;
 
         // Prevent card icon from shrinking
         svg {
