@@ -2,7 +2,7 @@
 
 This is the frontend client for ReCard, built with React and Vite.
 
-*Last Updated: May 28, 2025*
+*Last Updated: February 12, 2025*
 
 ## Getting Started
 
@@ -73,35 +73,93 @@ VITE_PASSWORD_RESET_REDIRECT_URL=your_password_reset_redirect_url
 
 ```
 recardclient/
-├── public/           # Static files
-├── src/              # Source files
-│   ├── components/   # React components
-│   ├── config/       # Configuration files (including Firebase config)
-│   ├── context/      # React context providers
-│   ├── elements/     # Reusable UI elements
-│   │   ├── Dropdown/
-│   │   ├── InfoDisplay/
-│   │   └── ToggleSwitch/
-│   ├── pages/        # Page components
-│   ├── services/     # API and service functions
-│   ├── styling/      # Global styles and styling utilities
-│   │   ├── globals.scss
-│   │   ├── mixins.scss
-│   │   └── variables.scss
-│   ├── types/        # TypeScript type definitions
-│   ├── utils/        # Utility functions
-│   ├── App.tsx       # Root component
-│   ├── App.scss      # App-specific styles
-│   ├── main.tsx      # Application entry point
-│   └── main.css      # Global styles
-├── index.html        # Entry HTML file
-├── vite.config.js    # Vite configuration
-├── tsconfig.json     # TypeScript configuration
-└── package.json      # Project dependencies and scripts
+├── public/                    # Static files and assets
+│   ├── account.png
+│   ├── credit-card-*.png      # App icons
+│   ├── favicon.ico
+│   ├── loader-circle.svg
+│   └── manifest.json
+├── src/                       # Source files
+│   ├── components/            # React components
+│   │   ├── AppHeader/         # Application header component
+│   │   ├── AppSidebar/        # Application sidebar navigation
+│   │   ├── CreditCardDetailView/  # Credit card details display
+│   │   ├── CreditCardManager/     # Credit card management interface
+│   │   ├── CreditCardPreviewList/ # Credit card list previews
+│   │   ├── CreditCardSelector/    # Credit card selection components
+│   │   ├── HistoryPanel/          # Transaction history display
+│   │   ├── Modal/                 # Modal components and hooks
+│   │   ├── MyCardsList/           # User's credit cards list
+│   │   ├── PageFooter/            # Application footer
+│   │   ├── PageHeader/            # Page header component
+│   │   ├── PreferencesModule/     # User preferences management
+│   │   ├── PromptWindow/          # AI chat interface
+│   │   ├── ui/                    # Reusable UI components (shadcn/ui)
+│   │   │   ├── dialog/            # Dialog components
+│   │   │   └── dropdown-menu/     # Dropdown menu components
+│   │   └── UniversalContentWrapper/ # Content wrapper component
+│   ├── config/                # Configuration files
+│   │   └── firebase.jsx       # Firebase configuration
+│   ├── context/               # React context providers
+│   │   ├── AuthContext.tsx    # Authentication context
+│   │   ├── ProtectedRoute.tsx # Route protection wrapper
+│   │   └── RedirectIfAuthenticated.tsx # Auth redirect logic
+│   ├── elements/              # Reusable UI elements
+│   │   ├── Dropdown/          # Custom dropdown component
+│   │   ├── InfoDisplay/       # Information display component
+│   │   └── ToggleSwitch/      # Toggle switch component
+│   ├── hooks/                 # Custom React hooks
+│   │   ├── useFullHeight.ts   # Full height management hook
+│   │   ├── usePageBackground.ts # Page background management
+│   │   └── useScrollHeight.ts # Scroll height utilities
+│   ├── icons/                 # SVG icons and icon components
+│   │   ├── cards.tsx          # Credit card icons
+│   │   └── index.tsx          # Icon exports
+│   ├── lib/                   # Library utilities
+│   │   └── utils.ts           # Utility functions (shadcn/ui utils)
+│   ├── pages/                 # Page components
+│   │   ├── account/           # Account management page
+│   │   ├── authentication/    # Auth pages (signin, signup, etc.)
+│   │   ├── history/           # Transaction history page
+│   │   ├── my-cards/          # Credit cards management page
+│   │   └── preferences/       # User preferences page
+│   ├── services/              # API and service functions
+│   │   ├── AuthService.ts     # Authentication service
+│   │   ├── CardService.ts     # Credit card operations
+│   │   ├── ChatService.ts     # AI chat service
+│   │   └── UserService.ts     # User management service
+│   ├── styling/               # Global styles and styling utilities
+│   │   ├── globals.scss       # Global style definitions
+│   │   ├── mixins.scss        # SCSS mixins
+│   │   └── variables.scss     # SCSS variables
+│   ├── types/                 # TypeScript type definitions
+│   │   ├── AuthTypes.ts       # Authentication types
+│   │   ├── ChatTypes.ts       # Chat/AI related types
+│   │   ├── Constants.ts       # Application constants
+│   │   ├── CreditCardTypes.ts # Credit card types
+│   │   ├── Pages.ts           # Page-related types
+│   │   └── UserTypes.ts       # User management types
+│   ├── utils/                 # Utility functions
+│   │   └── index.ts           # Utility exports
+│   ├── App.tsx                # Root component
+│   ├── App.scss               # App-specific styles
+│   ├── main.tsx               # Application entry point
+│   └── main.css               # Global styles
+├── components.json            # shadcn/ui component configuration
+├── index.html                 # Entry HTML file
+├── postcss.config.js          # PostCSS configuration
+├── tailwind.config.js         # Tailwind CSS configuration
+├── tsconfig.json              # TypeScript configuration
+├── vite.config.js             # Vite configuration
+└── package.json               # Project dependencies and scripts
 ```
 
 ## Built With
 
 - [React](https://reactjs.org/) - Frontend library
-- [Vite](https://vitejs.dev/) - Build tool and development server
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Vite](https://vitejs.dev/) - Build tool and development server
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [shadcn/ui](https://ui.shadcn.com/) - Re-usable component library
+- [Firebase](https://firebase.google.com/) - Authentication and backend services
+- [SCSS](https://sass-lang.com/) - CSS preprocessor
