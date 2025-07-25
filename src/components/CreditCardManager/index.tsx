@@ -14,6 +14,7 @@ import {
   DialogBody,
   DialogFooter,
 } from '../ui/dialog/dialog';
+import Icon from '../../icons';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -380,11 +381,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             
             {/* Sidebar for card selection using CreditCardPreviewList */}
             <div className="card-sidebar">
-                <div className="sidebar-header">
-                    <button className="primary" onClick={handleAddCard}>
-                        Add Card
-                    </button>
-                </div>
                 {showError && (
                     <div className="error-container">
                         <InfoDisplay
@@ -401,6 +397,13 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     loading={isLoading}
                     variant="my-cards"
                 />
+                
+                <div className="sidebar-footer">
+                    <button className="icon with-text" onClick={handleAddCard}>
+                        <Icon name="card" variant="solid" />
+                        Add Card
+                    </button>
+                </div>
             </div>
             
             {/* Main content area for card details */}

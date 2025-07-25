@@ -1,4 +1,5 @@
 @use '../../styling/variables' as *;
+@use '../../styling/mixins' as *;
 
 /* Card details panel styles */
 .no-card-details, .card-details-loading {
@@ -6,8 +7,8 @@
   height: 100%;
   align-items: center;
   justify-content: center;
-  color: #666;
-  font-size: 16px;
+  color: $neutral-dark-gray;
+  font-size: $font-base;
   text-align: center;
 }
 
@@ -32,56 +33,60 @@
       
       h2 {
         margin-top: 0;
-        margin-bottom: 8px;
-        font-size: 24px;
+        margin-bottom: $space-2;
+        font-size: $font-h3;
+        font-weight: $font-medium;
+        color: $neutral-black;
       }
       
       .card-issuer {
-        font-size: 16px;
-        margin-bottom: 4px;
+        font-size: $font-base;
+        margin-bottom: $space-1;
+        color: $neutral-black;
+        font-weight: $font-medium;
       }
       
       .card-network {
-        font-size: 14px;
-        color: #666;
-        margin-bottom: 12px;
+        font-size: $font-sm;
+        color: $neutral-dark-gray;
+        margin-bottom: $space-3;
       }
       
       .card-actions {
-        margin-top: 16px;
+        margin-top: $space-4;
         
         .card-action-buttons {
           display: flex;
-          gap: 12px;
+          gap: $space-3;
           align-items: center;
           
           .preferred-button {
-            background-color: #f5f5f5;
-            color: #333;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: 500;
+            background-color: $neutral-light-gray;
+            color: $neutral-black;
+            border: $border-full solid $neutral-gray;
+            border-radius: $radius-base;
+            padding: $space-1-5 $space-3;
+            font-size: $font-xs;
+            font-weight: $font-medium;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all $transition-base;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: $space-1-5;
             
             &:hover {
-              background-color: #e8e8e8;
-              border-color: #ccc;
+              background-color: $neutral-gray;
+              border-color: $neutral-medium-gray;
             }
             
             &.is-preferred {
               background-color: $primary-color;
-              color: white;
+              color: $neutral-white;
               border-color: $primary-color;
               
               &:hover {
-                background-color: $primary-color;
-                border-color: $primary-color;
+                background-color: $primary-medium;
+                border-color: $primary-medium;
               }
               
               .preferred-icon {
@@ -94,81 +99,103 @@
               opacity: 1;
             }
           }
+          
+          // Make remove card button match preferred button size
+          .button.destructive.icon.with-text {
+            padding: $space-1-5 $space-3;
+            font-size: $font-xs;
+            gap: $space-1-5;
+          }
         }
       }
     }
   }
   
   .card-info-section {
-    background-color: white;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    background-color: $neutral-white;
+    border: $border-full solid $neutral-light-gray;
+    border-radius: $radius-base;
+    padding: $space-4;
+    margin-bottom: $space-6;
     
     .card-basic-info {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+      gap: $space-4;
       
       .info-item {
         display: flex;
         flex-direction: column;
         
         .label {
-          font-size: 14px;
-          color: #666;
-          margin-bottom: 4px;
+          font-size: $font-xs;
+          color: $neutral-dark-gray;
+          margin-bottom: $space-1;
+          text-transform: uppercase;
+          font-weight: $font-medium;
+          letter-spacing: 0.5px;
         }
         
         .value {
-          font-size: 16px;
-          font-weight: 500;
+          font-size: $font-base;
+          font-weight: $font-medium;
+          color: $neutral-black;
         }
       }
     }
   }
   
   .card-section {
-    background-color: white;
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    background-color: $neutral-white;
+    border: $border-full solid $neutral-light-gray;
+    border-radius: $radius-base;
+    padding: $space-4;
+    margin-bottom: $space-6;
     
     h3 {
       margin-top: 0;
-      margin-bottom: 16px;
-      font-size: 18px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #eaeaea;
+      margin-bottom: $space-4;
+      font-size: $font-h5;
+      font-weight: $font-medium;
+      color: $neutral-black;
+      padding-bottom: $space-2;
+      border-bottom: $border-full solid $neutral-light-gray;
     }
     
     .multipliers-list {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 16px;
+      gap: $space-4;
       
       .multiplier-item {
-        background-color: #f9f9f9;
-        border-radius: 6px;
-        padding: 12px;
+        background-color: $neutral-lightest-gray;
+        border: $border-half solid $neutral-light-gray;
+        border-radius: $radius-base;
+        padding: $space-3;
+        transition: all $transition-base;
+        
+        &:hover {
+          border-color: $neutral-gray;
+        }
         
         .multiplier-name {
-          font-weight: 600;
-          margin-bottom: 4px;
+          font-weight: $font-medium;
+          margin-bottom: $space-1;
+          color: $neutral-black;
+          font-size: $font-sm;
         }
         
         .multiplier-value {
-          font-size: 18px;
-          font-weight: 700;
-          color: #0070f3;
-          margin-bottom: 8px;
+          font-size: $font-h5;
+          font-weight: $font-semibold;
+          color: $primary-color;
+          margin-bottom: $space-2;
         }
         
         .multiplier-desc {
-          font-size: 14px;
-          color: #666;
+          font-size: $font-xs;
+          color: $neutral-dark-gray;
+          line-height: $leading-normal;
         }
       }
     }
@@ -176,39 +203,49 @@
     .credits-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: $space-4;
       
       .credit-item {
-        background-color: #f9f9f9;
-        border-radius: 6px;
-        padding: 12px;
+        background-color: $neutral-lightest-gray;
+        border: $border-half solid $neutral-light-gray;
+        border-radius: $radius-base;
+        padding: $space-3;
+        transition: all $transition-base;
+        
+        &:hover {
+          border-color: $neutral-gray;
+        }
         
         .credit-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 4px;
+          margin-bottom: $space-1;
           
           .credit-title {
-            font-weight: 600;
+            font-weight: $font-medium;
+            color: $neutral-black;
+            font-size: $font-sm;
           }
           
           .credit-value {
-            font-size: 16px;
-            font-weight: 700;
-            color: #0070f3;
+            font-size: $font-base;
+            font-weight: $font-semibold;
+            color: $primary-color;
           }
         }
         
         .credit-period {
-          font-size: 14px;
-          color: #555;
-          margin-bottom: 8px;
+          font-size: $font-xs;
+          color: $neutral-dark-gray;
+          margin-bottom: $space-2;
+          font-weight: $font-medium;
         }
         
         .credit-description {
-          font-size: 14px;
-          color: #666;
+          font-size: $font-xs;
+          color: $neutral-dark-gray;
+          line-height: $leading-normal;
         }
       }
     }
@@ -216,87 +253,98 @@
     .perks-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: $space-4;
       
       .perk-item {
-        background-color: #f9f9f9;
-        border-radius: 6px;
-        padding: 12px;
+        background-color: $neutral-lightest-gray;
+        border: $border-half solid $neutral-light-gray;
+        border-radius: $radius-base;
+        padding: $space-3;
+        transition: all $transition-base;
+        
+        &:hover {
+          border-color: $neutral-gray;
+        }
         
         .perk-title {
-          font-weight: 600;
-          margin-bottom: 8px;
+          font-weight: $font-medium;
+          margin-bottom: $space-2;
+          color: $neutral-black;
+          font-size: $font-sm;
         }
         
         .perk-description {
-          font-size: 14px;
-          margin-bottom: 8px;
+          font-size: $font-xs;
+          margin-bottom: $space-2;
+          color: $neutral-black;
+          line-height: $leading-normal;
         }
         
         .perk-details {
-          font-size: 13px;
-          color: #666;
+          font-size: $font-xxs;
+          color: $neutral-dark-gray;
+          line-height: $leading-normal;
         }
       }
     }
   }
   
   .multiplier-details, .credit-details, .perk-details {
-    margin-top: 4px;
-    font-size: 13px;
-    color: #666;
-    line-height: 1.4;
+    margin-top: $space-1;
+    font-size: $font-xxs;
+    color: $neutral-dark-gray;
+    line-height: $leading-normal;
   }
   
   .credit-category, .perk-category, .multiplier-category {
-    margin-top: 8px;
-    font-size: 11px;
-    font-weight: 400;
-    color: #888;
-    background-color: #f5f5f5;
+    margin-top: $space-2;
+    font-size: $font-xxs;
+    font-weight: $font-medium;
+    color: $neutral-dark-gray;
+    background-color: $neutral-light-gray;
     display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
+    padding: $space-half $space-2;
+    border-radius: $radius-full;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
   
   .multiplier-item {
     .multiplier-details {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed #eee;
+      margin-top: $space-2;
+      padding-top: $space-2;
+      border-top: $border-half dashed $neutral-gray;
     }
   }
   
   .credit-item {
     .credit-details {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed #eee;
+      margin-top: $space-2;
+      padding-top: $space-2;
+      border-top: $border-half dashed $neutral-gray;
     }
   }
   
   .perk-item {
     .perk-details {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed #eee;
+      margin-top: $space-2;
+      padding-top: $space-2;
+      border-top: $border-half dashed $neutral-gray;
     }
   }
 }
 
 .card-description-section {
-  background-color: white;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  background-color: $neutral-white;
+  border: $border-full solid $neutral-light-gray;
+  border-radius: $radius-base;
+  padding: $space-4;
+  margin-bottom: $space-6;
   
   .card-description {
     margin: 0;
-    font-size: 15px;
-    line-height: 1.5;
-    color: #333;
-    font-style: italic;
+    font-size: $font-sm;
+    line-height: $leading-relaxed;
+    color: $neutral-dark-gray;
   }
 }

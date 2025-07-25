@@ -17,12 +17,12 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #d0d0d0;
+    background: $neutral-medium-gray;
     border-radius: 3px;
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background: #a0a0a0;
+    background: $neutral-dark-gray;
   }*/
 }
 
@@ -36,15 +36,14 @@
   //border-bottom: $border-half solid $neutral-light-gray;
   cursor: pointer;
   transition: background-color 0.2s;
-  border-radius: $radius-md;
   
   // Base states that apply to all variants
   &:hover {
-    background-color: #f5f5f5;
+    background-color: $neutral-light-gray;
   }
   
   &.selected {
-    background-color: #f0f7ff;
+    background-color: $primary-lightest;
   }
   
   // Base card content styles
