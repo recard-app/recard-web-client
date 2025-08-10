@@ -332,3 +332,49 @@
     }
   }
 }
+
+// Component-specific compact styling for the monthly statement filter
+.date-filter.statement-filter {
+
+  .filter-wrapper {
+    gap: $space-1;
+    padding: 0; // tighter
+
+    select {
+      padding: $space-1 $space-2;
+      font-size: $font-xs; // smaller text
+      color: $neutral-medium-gray; // default gray text
+    }
+
+    .month-select {
+      min-width: 110px;
+      padding-right: $space-5;
+    }
+
+    .year-select {
+      min-width: 72px;
+      padding-right: $space-5;
+    }
+
+    .month-select::after,
+    .year-select::after {
+      right: $space-2;
+      border-left-width: 4px;
+      border-right-width: 4px;
+      border-top-width: 4px;
+    }
+
+    // Active state: white text against black background
+    &.active {
+      select {
+        color: $neutral-white;
+      }
+    }
+
+    // Remove green focus outline for this component
+    &:focus-within {
+      box-shadow: none;
+      border-color: $neutral-gray;
+    }
+  }
+}

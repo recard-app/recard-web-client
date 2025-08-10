@@ -300,7 +300,7 @@ function FullHistoryPanel({
    */
   const renderDateFilter = () => {
     return (
-      <div className="date-filter">
+      <div className="date-filter statement-filter">
         <label className="filter-label">View Monthly Statement</label>
         <div className={`filter-wrapper ${selectedMonth && selectedYear ? 'active' : ''}`}>
           <select 
@@ -384,6 +384,7 @@ function FullHistoryPanel({
               message="Loading transaction history..."
               showTitle={false}
               transparent={true}
+              centered
             />
           </div>
         ) : paginatedList.length === 0 ? (

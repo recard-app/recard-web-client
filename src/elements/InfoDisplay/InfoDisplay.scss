@@ -9,6 +9,16 @@
   border-radius: 2px;
   font-size: 14px;
   line-height: 1.4;
+
+  &.centered {
+    justify-content: center; // center the whole group
+    text-align: center;
+    width: 100%;
+    
+    .info-message {
+      flex: 0 0 auto; // don't stretch; keep together with icon
+    }
+  }
   
   .info-icon-wrapper {
     display: inline-flex;
@@ -36,7 +46,7 @@
   
   .info-message {
     color: inherit;
-    flex: 1 1 auto; // take remaining space
+    flex: 1 1 auto; // take remaining space by default
     min-width: 0; // allow text to wrap without shrinking siblings
     overflow-wrap: anywhere;
     word-break: break-word;

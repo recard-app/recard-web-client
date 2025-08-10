@@ -95,7 +95,7 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
 
   return (
     <div 
-      className="info-component"
+      className={`info-component ${centered ? 'centered' : ''}`}
       style={{ 
         backgroundColor: getBackgroundColor(displayColor),
         color: displayColor,
