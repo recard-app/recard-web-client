@@ -590,7 +590,7 @@ function AppContent({}: AppContentProps) {
           </Dialog>
 
           <Dialog open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen}>
-            <DialogContent width="800px">
+            <DialogContent fullScreen>
               <DialogHeader>
                 <DialogTitle>
                   {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}

@@ -14,7 +14,7 @@
   border-color: $neutral-gray !important;
   box-shadow: $shadow-xl !important;
   max-width: 600px;
-  max-height: 90vh;
+  max-height: calc(100vh - ($space-8 * 2));
   display: flex;
   flex-direction: column;
   overflow: hidden; // Prevent outer scroll, inner will handle it
@@ -23,6 +23,14 @@
   &.full-width {
     max-width: 90vw !important;
     width: 90% !important;
+  }
+
+  &.full-screen {
+    // full-screen modal takes entire viewport minus $space-8 margins
+    width: calc(100vw - ($space-8 * 2));
+    height: calc(100vh - ($space-8 * 2));
+    max-width: var(--full-screen-max-width, 1000px); // fallback 1000px
+    max-height: calc(100vh - ($space-8 * 2));
   }
 }
 

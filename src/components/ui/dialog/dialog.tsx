@@ -29,51 +29,51 @@ function DialogClose({
   return <DialogPrimitive.Close data-slot="dialog-close" {...props} />
 }
 
-function DialogOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Overlay>) {
-  return (
-    <DialogPrimitive.Overlay
-      data-slot="dialog-overlay"
-      className={cn(
-        "fixed inset-0 z-50 bg-black/50",
-        "dialog-overlay data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        className
-      )}
-      {...props}
-    />
-  )
-}
+const DialogOverlay = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentProps<typeof DialogPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    data-slot="dialog-overlay"
+    className={cn(
+      "fixed inset-0 z-50 bg-black/50",
+      "dialog-overlay data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      className
+    )}
+    {...props}
+  />
+));
+DialogOverlay.displayName = "DialogOverlay";
 
 interface DialogContentProps extends React.ComponentProps<typeof DialogPrimitive.Content> {
   showCloseButton?: boolean;
   width?: string;
   fullWidth?: boolean;
+  fullScreen?: boolean;
 }
 
-function DialogContent({
-  className,
-  children,
-  showCloseButton = true,
-  width,
-  fullWidth = false,
-  ...props
-}: DialogContentProps) {
-  const contentStyle = !fullWidth && width ? { width } : undefined;
-  
+const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  DialogContentProps
+>(({ className, children, showCloseButton = true, width, fullWidth = false, fullScreen = false, ...props }, ref) => {
+  const inlineStyles: React.CSSProperties = !!width && !fullWidth && !fullScreen ? { width } : {};
+
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
       <DialogPrimitive.Content
+        ref={ref}
         data-slot="dialog-content"
+        aria-describedby={undefined}
         className={cn(
           "fixed top-[50%] left-[50%] z-50 w-full translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-lg duration-200",
           "dialog-content data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           fullWidth && "full-width",
+          fullScreen && "full-screen",
           className
         )}
-        style={contentStyle}
+        style={inlineStyles}
         {...props}
       >
         <div className="dialog-inner">
@@ -89,7 +89,8 @@ function DialogContent({
       </DialogPrimitive.Content>
     </DialogPortal>
   )
-}
+});
+DialogContent.displayName = "DialogContent";
 
 interface DialogHeaderProps extends React.ComponentProps<"div"> {
   showCloseButton?: boolean;
