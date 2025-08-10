@@ -32,6 +32,7 @@ const ForgotPassword: React.FC = () => {
                     placeholder="Email"
                     value={email}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                    className="default-input"
                     required
                 />
                 <button type="submit">Send Reset Link</button>

@@ -78,6 +78,19 @@ input, textarea, select {
   margin-bottom: $space-4;
 }
 
+// Default input styling classes
+.default-input {
+  @include default-input;
+}
+
+.default-textarea {
+  @include default-textarea;
+}
+
+.default-select {
+  @include default-select;
+}
+
 label {
   @include form-label;
 }

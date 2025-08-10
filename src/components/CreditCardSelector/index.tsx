@@ -144,7 +144,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                     placeholder="Search cards..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-input"
+                    className="search-input default-input"
                     disabled={isSaving}
                 />
             </div>

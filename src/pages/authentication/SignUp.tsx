@@ -123,6 +123,7 @@ const SignUp: React.FC = () => {
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     required
+                    className="default-input"
                 />
                 <input
                     type="text"
@@ -130,6 +131,7 @@ const SignUp: React.FC = () => {
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                     required
+                    className="default-input"
                 />
                 <input
                     type="email"
@@ -137,6 +139,7 @@ const SignUp: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    className="default-input"
                 />
                 <input
                     type="password"
@@ -144,6 +147,7 @@ const SignUp: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    className="default-input"
                 />
                 <input
                     type="password"
@@ -151,6 +155,7 @@ const SignUp: React.FC = () => {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
+                    className="default-input"
                 />
                 <button type="submit">Create Account</button>
             </form>

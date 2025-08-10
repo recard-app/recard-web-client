@@ -312,7 +312,7 @@ function FullHistoryPanel({
               setSelectedMonth('');
               setCurrentPage(1);
             }}
-            className="year-select"
+            className="year-select default-select"
           >
             <option value="">Select Year</option>
             {getAvailableYears(subscriptionPlan, firstEntryDate).map(year => (
@@ -327,7 +327,7 @@ function FullHistoryPanel({
               setSelectedMonth(e.target.value);
               setCurrentPage(1);
             }}
-            className="month-select"
+            className="month-select default-select"
             disabled={!selectedYear}
           >
             <option value="">Select Month</option>

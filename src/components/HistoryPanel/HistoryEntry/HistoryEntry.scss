@@ -246,13 +246,7 @@
       box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.2);
     }
   }
-  
-  .character-count {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #777;
-    text-align: right;
-  }
+
   
   .button-group {
     display: flex;
@@ -290,4 +284,13 @@
       background-color: #f5f5f5;
     }
   }
+}
+
+// Character counter styling for rename dialog (now in Dialog component)
+.character-count {
+  margin-top: $space-2;
+  font-size: $font-xs;
+  color: $neutral-dark-gray;
+  text-align: right;
+  font-family: $font-inter;
 }

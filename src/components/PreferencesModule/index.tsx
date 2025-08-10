@@ -111,7 +111,7 @@ function PreferencesModule({
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
                     placeholder={isLoading ? "Loading instructions..." : "Enter your special instructions for the ReCard AI assistant..."}
                     rows={6}
-                    className={`preferences-textarea ${isLoading ? 'loading' : ''}`}
+                    className={`preferences-textarea default-textarea ${isLoading ? 'loading' : ''}`}
                     disabled={isLoading}
                 />
                 
@@ -122,7 +122,7 @@ function PreferencesModule({
                         value={chatHistoryPreference || 'keep_history'}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
                             setChatHistoryPreference(e.target.value as ChatHistoryPreference)}
-                        className={`chat-history-select ${isLoading ? 'loading' : ''}`}
+                        className={`chat-history-select default-select ${isLoading ? 'loading' : ''}`}
                         disabled={isLoading}
                     >
                         {CHAT_HISTORY_OPTIONS.map(option => (
@@ -140,7 +140,7 @@ function PreferencesModule({
                         value={showCompletedOnlyPreference.toString()}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
                             setShowCompletedOnlyPreference(e.target.value === 'true')}
-                        className={`show-completed-select ${isLoading ? 'loading' : ''}`}
+                        className={`show-completed-select default-select ${isLoading ? 'loading' : ''}`}
                         disabled={isLoading}
                     >
                         <option value="false">Show all transactions</option>

@@ -62,6 +62,7 @@ const SignIn: React.FC = () => {
                     value={email}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                     required
+                    className="default-input"
                 />
                 <input
                     type="password"
@@ -69,6 +70,7 @@ const SignIn: React.FC = () => {
                     value={password}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                     required
+                    className="default-input"
                 />
                 <button type="submit">Sign In with Email</button>
                 <Link to={PAGES.FORGOT_PASSWORD.PATH} className="forgot-password-btn">

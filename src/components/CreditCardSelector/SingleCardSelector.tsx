@@ -138,7 +138,7 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
           placeholder="Search cards..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
+          className="search-input default-input"
           disabled={disabled}
         />
       </div>

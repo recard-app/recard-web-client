@@ -150,7 +150,7 @@
 %dialog-scrollable-content-base {
   flex: 1;
   overflow-y: auto;
-  padding: 0 $space-6 $space-4 $space-6;
+  padding: $space-4 $space-6 $space-4 $space-6;
   
   // Ensure proper scrolling behavior
   &::-webkit-scrollbar {
@@ -176,7 +176,7 @@
   @include heading-4;
   margin: 0;
   color: $neutral-black;
-  font-weight: $font-semibold;
+  font-weight: $font-regular;
 }
 
 // Base description styling for both dialog types

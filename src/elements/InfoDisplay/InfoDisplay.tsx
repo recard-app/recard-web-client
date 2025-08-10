@@ -1,10 +1,11 @@
 import React from 'react';
 import './InfoDisplay.scss';
 import { INFO_COLORS, INFO_ICONS, INFO_TITLES, LOADING_ICON, LOADING_ICON_SIZE } from '../../types/Constants';
+import { IconRenderer } from '../../icons';
 
 interface InfoDisplayProps {
   type?: 'default' | 'error' | 'info' | 'warning' | 'success' | 'loading';
-  icon?: string;
+  icon?: string | React.ComponentType<any> | ((...args: any[]) => React.ReactElement);
   title?: string;
   message: string;
   color?: string;
@@ -110,10 +111,11 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
             className={`info-icon ${type === 'loading' ? 'spinning' : ''}`} 
           />
         ) : (
-          <img 
-            src={displayIcon} 
+          <IconRenderer 
+            icon={displayIcon as any} 
             alt="" 
             className={`info-icon ${type === 'loading' ? 'spinning' : ''}`} 
+            size={16}
           />
         )
       )}

@@ -271,7 +271,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
               value={newChatDescription}
               onChange={(e) => setNewChatDescription(e.target.value)}
               placeholder="Enter a new name for this chat"
-              className="rename-input"
+              className="rename-input default-input"
               maxLength={CHAT_DESCRIPTION_MAX_LENGTH}
               minLength={1}
               required
