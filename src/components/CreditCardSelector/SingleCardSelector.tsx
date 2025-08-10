@@ -153,7 +153,16 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
           <div className="section-cards">
             {otherCards.map(renderCard)}
             {otherCards.length === 0 && !isInitialLoad && (
-              <div className="no-results">No cards available to add</div>
+              <div className="no-results">
+                <InfoDisplay
+                  type="default"
+                  message="No cards available to add"
+                  showTitle={false}
+                  transparent={true}
+                  showIcon={false}
+                  centered
+                />
+              </div>
             )}
           </div>
         ) : (
@@ -179,7 +188,16 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
         )}
         
         {filteredCards.length === 0 && !isInitialLoad && !showOnlyUnselectedCards && (
-          <div className="no-results">No cards match your search</div>
+          <div className="no-results">
+            <InfoDisplay
+              type="default"
+              message="No cards match your search"
+              showTitle={false}
+              transparent={true}
+              showIcon={false}
+              centered
+            />
+          </div>
         )}
       </div>
     </div>

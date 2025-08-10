@@ -6,6 +6,7 @@ import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections, sortCards } from './utils';
 import { APP_NAME, PAGES } from '../../types';
 import { CardIcon } from '../../icons';
+import { InfoDisplay } from '../../elements';
 
 /**
  * Props interface for the CreditCardSelector component
@@ -243,7 +244,16 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                     )}
                     
                     {filteredCards.length === 0 && (
-                        <div className="no-results">No cards match your search</div>
+                        <div className="no-results">
+                            <InfoDisplay
+                                type="default"
+                                message="No cards match your search"
+                                showTitle={false}
+                                transparent={true}
+                                showIcon={false}
+                                centered
+                            />
+                        </div>
                     )}
                     
                     {showSaveButton && (

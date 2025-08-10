@@ -85,7 +85,14 @@ function HistoryPanelPreview({
           />
         </div>
       ) : displayList.length === 0 ? (
-        <p>No transaction history available</p>
+        <InfoDisplay
+          type="default"
+          message="No transaction history available"
+          showTitle={false}
+          transparent={true}
+          showIcon={false}
+          centered
+        />
       ) : (
         displayList.map(entry => (
           <HistoryEntry 

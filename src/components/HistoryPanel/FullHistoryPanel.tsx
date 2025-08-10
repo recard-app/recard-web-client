@@ -387,7 +387,14 @@ function FullHistoryPanel({
             />
           </div>
         ) : paginatedList.length === 0 ? (
-          <p>No transaction history available for this period</p>
+          <InfoDisplay
+            type="default"
+            message="No transaction history available for this period"
+            showTitle={false}
+            transparent={true}
+            showIcon={false}
+            centered
+          />
         ) : (
           <>
             {/* Show filtered results without categories */}

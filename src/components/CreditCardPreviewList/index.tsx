@@ -54,7 +54,14 @@ const CreditCardPreviewList: React.FC<CreditCardPreviewListProps> = ({
         </div>
       ) : sortedCards.length === 0 ? (
         <div className="no-cards">
-          <p>You haven't added any cards yet.</p>
+          <InfoDisplay
+            type="default"
+            message="You haven't added any cards yet."
+            showTitle={false}
+            transparent={true}
+            showIcon={false}
+            centered
+          />
         </div>
       ) : (
         sortedCards.map(card => (

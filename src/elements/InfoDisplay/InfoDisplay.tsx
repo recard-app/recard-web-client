@@ -3,13 +3,15 @@ import './InfoDisplay.scss';
 import { INFO_COLORS, INFO_ICONS, INFO_TITLES, LOADING_ICON, LOADING_ICON_SIZE } from '../../types/Constants';
 
 interface InfoDisplayProps {
-  type?: 'error' | 'info' | 'warning' | 'success' | 'loading';
+  type?: 'default' | 'error' | 'info' | 'warning' | 'success' | 'loading';
   icon?: string;
   title?: string;
   message: string;
   color?: string;
   showTitle?: boolean;
   transparent?: boolean;
+  showIcon?: boolean;
+  centered?: boolean;
 }
 
 export const InfoDisplay: React.FC<InfoDisplayProps> = ({
@@ -19,11 +21,19 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
   message,
   color,
   showTitle = true,
-  transparent = false
+  transparent = false,
+  showIcon = true,
+  centered = false
 }) => {
   // Default values based on type
   const getDefaultValues = () => {
     switch (type) {
+      case 'default':
+        return {
+          defaultTitle: INFO_TITLES.DEFAULT,
+          defaultColor: INFO_COLORS.DEFAULT,
+          defaultIcon: INFO_ICONS.DEFAULT
+        };
       case 'error':
         return {
           defaultTitle: INFO_TITLES.ERROR,
@@ -87,10 +97,13 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
       className="info-component"
       style={{ 
         backgroundColor: getBackgroundColor(displayColor),
-        color: displayColor 
+        color: displayColor,
+        textAlign: centered ? 'center' : undefined,
+        justifyContent: centered ? 'center' : undefined,
+        width: centered ? '100%' : undefined
       }}
     >
-      {displayIcon && (
+      {showIcon && displayIcon && (
         displayIcon === 'loading-spinner' ? (
           <LOADING_ICON 
             size={LOADING_ICON_SIZE} 

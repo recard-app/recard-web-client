@@ -188,6 +188,7 @@ export const MONTH_ABBREVIATIONS = [
 
 // Info component constants
 export const INFO_COLORS = {
+    DEFAULT: ICON_GRAY,
     ERROR: '#ff4444',
     INFO: '#2196F3', 
     WARNING: '#ff9800',
@@ -196,6 +197,7 @@ export const INFO_COLORS = {
 } as const;
 
 export const INFO_ICONS = {
+    DEFAULT: '',
     ERROR: TEMP_ICON,
     INFO: TEMP_ICON,
     WARNING: TEMP_ICON,
@@ -204,6 +206,7 @@ export const INFO_ICONS = {
 } as const;
 
 export const INFO_TITLES = {
+    DEFAULT: '',
     ERROR: 'Error',
     INFO: 'Info',
     WARNING: 'Warning',
