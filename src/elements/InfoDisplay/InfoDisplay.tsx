@@ -105,19 +105,21 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
       }}
     >
       {showIcon && displayIcon && (
-        displayIcon === 'loading-spinner' ? (
-          <LOADING_ICON 
-            size={LOADING_ICON_SIZE} 
-            className={`info-icon ${type === 'loading' ? 'spinning' : ''}`} 
-          />
-        ) : (
-          <IconRenderer 
-            icon={displayIcon as any} 
-            alt="" 
-            className={`info-icon ${type === 'loading' ? 'spinning' : ''}`} 
-            size={16}
-          />
-        )
+        <span className="info-icon-wrapper">
+          {displayIcon === 'loading-spinner' ? (
+            <LOADING_ICON 
+              size={LOADING_ICON_SIZE} 
+              className={`info-icon ${type === 'loading' ? 'spinning' : ''}`} 
+            />
+          ) : (
+            <IconRenderer 
+              icon={displayIcon as any} 
+              alt="" 
+              className={`info-icon ${type === 'loading' ? 'spinning' : ''}`} 
+              size={16}
+            />
+          )}
+        </span>
       )}
       <span className="info-message">
         {showTitle && displayTitle && (
