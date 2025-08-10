@@ -4,26 +4,15 @@
 .info-component {
   display: flex;
   align-items: center;
-  gap: $space-1;
   padding: 8px 12px;
   border-radius: 2px;
   font-size: 14px;
   line-height: 1.4;
   
-  .info-icon-wrapper {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-  }
-  
   .info-icon {
     width: $icon-mini;
     height: $icon-mini;
-    margin-right: 0;
-    flex: 0 0 auto; // prevent shrinking; keep intended size
-    flex-shrink: 0;
-    object-fit: contain;
+    margin-right: $space-1;
     
     &.spinning {
       animation: spin 1s linear infinite;
@@ -36,10 +25,6 @@
   
   .info-message {
     color: inherit;
-    flex: 1 1 auto; // take remaining space
-    min-width: 0; // allow text to wrap without shrinking siblings
-    overflow-wrap: anywhere;
-    word-break: break-word;
   }
 }
 
