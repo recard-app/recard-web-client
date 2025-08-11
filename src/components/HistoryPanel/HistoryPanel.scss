@@ -6,10 +6,11 @@
         margin-bottom: $space-6;
         gap: $space-6;
         align-items: flex-start;
+        //max-width: 1000px;
 
         .section-header {
             flex-shrink: 0;
-            width: 180px;
+            width: 150px;
             position: sticky;
             top: 0;
             
@@ -40,7 +41,7 @@
         flex-direction: column;
         height: 100%;
         max-height: 100vh;
-        background-color: $neutral-light-gray;
+        background-color: $neutral-lightest-gray;
         box-sizing: border-box;
         min-height: 0; // Critical for nested flex scrolling
 
@@ -78,11 +79,11 @@
             min-height: 0;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            padding: $space-4;
+            padding: $space-5;
             
             // Center the content area
-            max-width: 1200px;
-            width: 90%;
+            //max-width: 1200px;
+            width: 100%;
             margin-left: auto;
             margin-right: auto;
             
@@ -173,21 +174,6 @@
   }
 }
 
-.upgrade-message {
-  margin: $space-5 0;
-  padding: $space-4;
-  background-color: $neutral-light-gray;
-  border: $border-full solid $neutral-gray;
-  border-radius: $radius-lg;
-  text-align: center;
-  flex-shrink: 0;
-
-  p {
-    @include body-regular;
-    margin: 0;
-    color: $neutral-dark-gray;
-  }
-}
 
 .date-filter {
   display: flex;

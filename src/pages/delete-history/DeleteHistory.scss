@@ -1,0 +1,20 @@
+@use '../../styling/globals' as *;
+
+.danger-zone {
+  margin-top: 0;
+  padding: $space-4;
+  border: $border-full solid rgba($error, 0.35);
+  border-radius: $radius-lg;
+  background-color: rgba($error, 0.05);
+
+  &__title {
+    color: $error;
+    margin-bottom: $space-2;
+  }
+
+  p { margin-bottom: $space-4; }
+
+  .button-group { display: flex; gap: $space-3; }
+}
+
+

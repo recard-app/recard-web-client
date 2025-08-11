@@ -1,31 +1,51 @@
+@use '../../styling/globals' as *;
+
 .preferences-module {
-    .preferences-content {
-        position: relative;
-        
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-        }
-        
-        .preferences-textarea.loading,
-        .chat-history-select.loading,
-        .show-completed-select.loading {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        .preferences-textarea:disabled,
-        .chat-history-select:disabled,
-        .show-completed-select:disabled {
-            background-color: #f5f5f5;
-            color: #999;
-        }
+  // Card visuals now supplied by ContentContainer `framed` variant
+  padding: $space-2 0;
+
+  h2 { margin-bottom: $space-4; }
+
+  .preferences-content {
+    position: relative;
+    display: grid;
+    gap: $space-5;
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      background: rgba($neutral-white, 0.9);
+      padding: $space-4;
+      border-radius: $radius-lg;
+      margin-bottom: $space-4;
+      box-shadow: $shadow-sm;
     }
+
+    .preferences-textarea.loading,
+    .chat-history-select.loading,
+    .show-completed-select.loading {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .preferences-textarea:disabled,
+    .chat-history-select:disabled,
+    .show-completed-select:disabled {
+      background-color: $neutral-light-gray;
+      color: $neutral-medium-gray;
+    }
+
+    .chat-history-preference,
+    .show-completed-preference {
+      display: grid;
+      gap: $space-2;
+    }
+
+    .save-button {
+      width: fit-content;
+    }
+  }
 }

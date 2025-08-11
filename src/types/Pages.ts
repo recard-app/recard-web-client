@@ -42,6 +42,10 @@ export const PAGES = {
     PATH: '/my-cards',
     TITLE: 'My Cards',
   },
+  DELETE_HISTORY: {
+    PATH: '/delete-history',
+    TITLE: 'Delete History',
+  },
 } as const;
 
 // Helper type for page keys
@@ -127,4 +131,5 @@ export const {
   ACCOUNT,
   HISTORY,
   MY_CARDS,
+  DELETE_HISTORY,
 } = PAGES;

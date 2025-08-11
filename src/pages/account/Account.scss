@@ -1,109 +1,131 @@
-.account {
-  &-page {
-    // Add any page-level styles
-  }
+@use '../../styling/globals' as *;
 
-  &-content {
-    // Add content wrapper styles
-  }
-}
+// Remove empty rules per linter
 
-.user-info {
-  .profile-image {
-    width: 100px;
-    height: 100px;
+// Account layout
+.account-wrapper { display: grid; gap: $space-4; }
+
+.account-header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: $space-3;
+  align-items: center;
+
+  .avatar {
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
-    margin-bottom: 20px;
+    border: $border-full solid $neutral-gray;
+    box-shadow: $shadow-sm;
+    object-fit: cover;
   }
 
-  .subscription-plan {
-    text-transform: capitalize;
-  }
+  .identity {
+    display: grid;
+    gap: $space-1-5;
 
-  .email-status {
-    .verified {
-      color: #4CAF50;
-    }
+    .name { @include heading-5; margin: 0; }
+    .email { @include body-regular; color: $neutral-dark-gray; margin: 0; }
 
-    .unverified {
-      color: #f44336;
-    }
-  }
-
-  .verify-button {
-    // Add verify button styles
-  }
-
-  .message {
-    &.success {
-      color: #4CAF50;
-    }
-
-    &.error {
-      color: #f44336;
-    }
+    .badges { display: flex; gap: $space-2; flex-wrap: wrap; }
   }
 }
 
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-1 $space-2;
+  border-radius: $radius-base;
+  font-size: $font-xs;
+  border: $border-full solid $neutral-gray;
+  background: $neutral-lightest-gray;
+  color: $neutral-dark-gray;
+
+  &--success { background: $primary-light; color: $primary-medium; border-color: $primary-light; }
+  &--warning { background: #FFF3CD; color: #8a6d3b; border-color: #FFECB5; }
+  &--sub { text-transform: capitalize; }
+}
+
+.account-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: $space-4;
+  padding: $space-4;
+  border: $border-full dashed $neutral-gray;
+  border-radius: $radius-lg;
+  background: $neutral-lightest-gray;
+
+  .meta-item { display: grid; gap: $space-half; }
+  .label { @include label; color: $neutral-dark-gray; }
+  .value { @include body-regular; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: $font-sm; }
+}
+
+.account-sections { display: grid; gap: $space-4; }
+
+.section { display: grid; gap: $space-3; }
+.section-title { @include heading-6; margin: 0; }
+
+.plan-section {
+  background: $neutral-lightest-gray;
+  border: $border-half solid $neutral-gray;
+  border-radius: $radius-base;
+  padding: $space-3;
+
+  .plan-row { display: flex; align-items: center; gap: $space-3; flex-wrap: wrap; }
+
+  .plan-tag {
+    display: inline-flex;
+    padding: $space-1 $space-2;
+    border-radius: $radius-full;
+    text-transform: capitalize;
+    font-weight: $font-semibold;
+    background: $primary-lightest;
+    color: $primary-medium;
+    border: $border-full solid $primary-light;
+    font-size: $font-sm;
+  }
+
+  .plan-copy { margin: 0; color: $neutral-dark-gray; font-size: $font-sm; }
+}
+
+.callout {
+  border: $border-full solid $warning;
+  background: rgba($warning, 0.1);
+  border-radius: $radius-lg;
+  padding: $space-4;
+}
+
+// Modal styles kept minimal; buttons already inherit global button styles
 .modal {
   &-container {
-    padding: 20px;
+    padding: $space-5;
     text-align: center;
   }
 
   &-heading {
-    &--success {
-      color: #4CAF50;
-    }
-
-    &--error {
-      color: #f44336;
-    }
+    &--success { color: $success; }
+    &--error { color: $error; }
   }
 
-  &-message {
-    margin: 20px 0;
-  }
+  &-message { margin: $space-5 0; }
 
   &-button-container {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: $space-3;
   }
 
   &-button {
-    padding: 8px 16px;
-    border-radius: 4px;
+    padding: $space-2 $space-4;
+    border-radius: $radius-base;
     cursor: pointer;
 
-    &--success {
-      border: none;
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    &--error {
-      border: none;
-      background-color: #f44336;
-      color: white;
-    }
-
-    &--close {
-      border: 1px solid #ccc;
-      background-color: #fff;
-    }
+    &--success { background-color: $success; color: $neutral-white; border: none; }
+    &--error { background-color: $error; color: $neutral-white; border: none; }
+    &--close { border: $border-full solid $neutral-gray; background-color: $neutral-white; }
   }
 }
 
-.danger-zone {
-  margin-top: 2rem;
-  padding: 1rem;
-  border: 1px solid #ff0000;
-  border-radius: 4px;
-  width: 100%;
-  max-width: 500px;
-
-  &__title {
-    color: #ff0000;
-  }
-}
+// Simple link row for danger area redirect
+.danger-link-copy { color: $neutral-dark-gray; margin: 0; }

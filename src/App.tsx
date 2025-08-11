@@ -18,6 +18,7 @@ import './components/PromptWindow/PromptWindow.scss';
 
 // Pages
 import Account from './pages/account/Account';
+import DeleteHistory from './pages/delete-history/DeleteHistory';
 import Preferences from './pages/preferences/Preferences';
 import SignIn from './pages/authentication/SignIn';
 import SignUp from './pages/authentication/SignUp';
@@ -681,6 +682,14 @@ function AppContent({}: AppContentProps) {
                   <Route path={PAGES.MY_CARDS.PATH} element={
                     <ProtectedRoute>
                       <MyCards onCardsUpdate={getCreditCards} />
+                    </ProtectedRoute>
+                  } />
+                  <Route path={PAGES.DELETE_HISTORY.PATH} element={
+                    <ProtectedRoute>
+                      <DeleteHistory 
+                        setChatHistory={setChatHistory}
+                        setHistoryRefreshTrigger={setHistoryRefreshTrigger}
+                      />
                     </ProtectedRoute>
                   } />
                 </Routes>

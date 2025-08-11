@@ -1,0 +1,30 @@
+@use '../../styling/globals' as *;
+
+.content-container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: $space-2;
+
+  // Base readable line-length
+  max-width: 720px;
+
+  &--sm { max-width: 560px; }
+  &--md { max-width: 720px; }
+  &--lg { max-width: 960px; }
+
+  // Optional framed variant, matching auth cards
+  &--framed {
+    background-color: $neutral-lightest-gray;
+    border: $border-half solid $neutral-gray;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    padding: $space-6; // override to match auth-card spacing
+
+    @media (max-width: $breakpoint-sm) {
+      padding: $space-4;
+      border-radius: $radius-xl;
+    }
+  }
+}
+

@@ -288,9 +288,13 @@ function FullHistoryPanel({
     if (!SHOW_SUBSCRIPTION_MENTIONS || !shouldShowUpgradeMessage(true, paginationData, subscriptionPlan, selectedMonth, selectedYear, firstEntryDate)) return null;
 
     return (
-      <div className="upgrade-message">
-        <p>{getUpgradeMessageText(selectedMonth, selectedYear)}</p>
-      </div>
+      <InfoDisplay
+        type="info"
+        message={getUpgradeMessageText(selectedMonth, selectedYear)}
+        showTitle={false}
+        transparent={false}
+        centered
+      />
     );
   };
 

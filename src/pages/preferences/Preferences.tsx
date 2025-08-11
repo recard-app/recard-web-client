@@ -12,6 +12,7 @@ import {
   DialogBody,
 } from '../../components/ui/dialog/dialog';
 import PreferencesHelpModal from './PreferencesHelpModal';
+import ContentContainer from '../../components/ContentContainer';
 
 interface PreferencesProps {
     preferencesInstructions: InstructionsPreference;
@@ -45,14 +46,16 @@ const Preferences: React.FC<PreferencesProps> = ({
                 onHelpClick={() => setIsHelpOpen(true)}
             />
             <div className="full-page-content">
-                <PreferencesModule 
-                    customInstructions={preferencesInstructions}
-                    onInstructionsUpdate={setPreferencesInstructions}
-                    chatHistoryPreference={chatHistoryPreference}
-                    setChatHistoryPreference={setChatHistoryPreference}
-                    showCompletedOnlyPreference={showCompletedOnlyPreference}
-                    setShowCompletedOnlyPreference={setShowCompletedOnlyPreference}
-                />
+                <ContentContainer size="md" framed>
+                    <PreferencesModule 
+                        customInstructions={preferencesInstructions}
+                        onInstructionsUpdate={setPreferencesInstructions}
+                        chatHistoryPreference={chatHistoryPreference}
+                        setChatHistoryPreference={setChatHistoryPreference}
+                        showCompletedOnlyPreference={showCompletedOnlyPreference}
+                        setShowCompletedOnlyPreference={setShowCompletedOnlyPreference}
+                    />
+                </ContentContainer>
             </div>
 
             <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>

@@ -147,6 +147,7 @@
 
     // FULL-PAGE VARIANT - More detailed styling
     &.full-page-variant {
+      border: $border-half solid $neutral-light-gray;
         &:hover {
         }
 
