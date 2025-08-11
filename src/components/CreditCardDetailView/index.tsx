@@ -90,15 +90,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 </div>
             </div>
             
-            {/* Display the card's description/details */}
-            {cardDetails.CardDetails && cardDetails.CardDetails.trim() !== '' && (
-                <div className="card-description-section">
-                    <p className="card-description">{cardDetails.CardDetails}</p>
-                </div>
-            )}
-            
             <div className="card-info-section">
                 <h3>Card Details</h3>
+                {cardDetails.CardDetails && cardDetails.CardDetails.trim() !== '' && (
+                    <p className="card-description">{cardDetails.CardDetails}</p>
+                )}
                 <div className="card-basic-info">
                     <div className="info-item">
                         <span className="label">Annual Fee</span>

@@ -114,16 +114,27 @@
   .card-info-section {
     @include card-panel;
     
+    .card-description {
+      margin: 0 0 $space-5 0;
+      font-size: $font-sm;
+      line-height: $leading-relaxed;
+      color: $neutral-dark-gray;
+    }
+
     h3 { @include section-header; }
 
     .card-basic-info {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: $space-4;
+      gap: $space-3;
       
       .info-item {
         display: flex;
         flex-direction: column;
+        //background-color: $neutral-lightest-gray;
+        border: $border-half solid $neutral-light-gray;
+        border-radius: $radius-base;
+        padding: $space-2;
         
         .label {
           font-size: $font-xxs;
@@ -167,9 +178,7 @@
           width: 100%;
           position: relative;
           padding: $space-1 $space-2;
-          border: $border-full solid $neutral-light-gray;
-          border-right: none;
-          border-left: none;
+          border-bottom: $border-full solid $neutral-light-gray;
           background-color: $neutral-lightest-gray;
           text-transform: uppercase;
           letter-spacing: 0.5px;
@@ -368,20 +377,5 @@
       padding-top: $space-2;
       border-top: $border-half dashed $neutral-gray;
     }
-  }
-}
-
-.card-description-section {
-  background-color: $neutral-white;
-  border: $border-full solid $neutral-light-gray;
-  border-radius: $radius-base;
-  padding: $space-4;
-  margin-bottom: $space-6;
-  
-  .card-description {
-    margin: 0;
-    font-size: $font-sm;
-    line-height: $leading-relaxed;
-    color: $neutral-dark-gray;
   }
 }
