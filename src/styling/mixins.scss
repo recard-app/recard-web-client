@@ -51,6 +51,26 @@
   margin-bottom: $space-2;
 }
 
+// Section header used for card panels (h3 in detail sections)
+@mixin section-header {
+  margin-top: 0;
+  margin-bottom: $space-4;
+  font-size: $font-h5;
+  font-weight: $font-medium;
+  color: $neutral-black;
+  padding-bottom: $space-2;
+  border-bottom: $border-full solid $neutral-light-gray;
+}
+
+// Card panel container (white background with border and padding)
+@mixin card-panel {
+  background-color: $neutral-white;
+  border: $border-full solid $neutral-light-gray;
+  border-radius: $radius-base;
+  padding: $space-4;
+  margin-bottom: $space-6;
+}
+
 // Body text styles
 @mixin body-large {
   font-family: $font-manrope;

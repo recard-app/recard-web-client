@@ -1,7 +1,7 @@
 import React from 'react';
 import './CreditCardDetailView.scss';
-import { CreditCardDetails } from '../../types/CreditCardTypes';
-import { PLACEHOLDER_CARD_IMAGE, ICON_WHITE, ICON_GRAY } from '../../types';
+import { CreditCardDetails, CardMultiplier } from '../../types/CreditCardTypes';
+import { ICON_WHITE, ICON_GRAY } from '../../types';
 import { CardIcon } from '../../icons';
 import { InfoDisplay } from '../../elements';
 import { Icon } from '../../icons';
@@ -98,6 +98,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
             )}
             
             <div className="card-info-section">
+                <h3>Card Details</h3>
                 <div className="card-basic-info">
                     <div className="info-item">
                         <span className="label">Annual Fee</span>
@@ -121,22 +122,49 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
             {cardDetails.Multipliers && cardDetails.Multipliers.length > 0 && (
                 <div className="card-section">
                     <h3>Reward Multipliers</h3>
-                    <div className="multipliers-list">
-                        {cardDetails.Multipliers.map((multiplier, index) => (
-                            <div key={index} className="multiplier-item">
-                                <div className="multiplier-name">{multiplier.Name}</div>
-                                <div className="multiplier-value">{multiplier.Multiplier}x</div>
-                                <div className="multiplier-desc">{multiplier.Description}</div>
-                                {multiplier.Details && (
-                                    <div className="multiplier-details">{multiplier.Details}</div>
-                                )}
-                                {(multiplier.Category || multiplier.SubCategory) && (
-                                    <div className="multiplier-category">
-                                        {multiplier.Category}{multiplier.SubCategory ? ` › ${multiplier.SubCategory}` : ''}
+                    <div className="multipliers-table">
+                        {Array.from(
+                            (cardDetails.Multipliers || []).reduce((map, m) => {
+                                const key = (m.Category && m.Category.trim() !== '') ? m.Category : 'Other';
+                                if (!map.has(key)) map.set(key, [] as CardMultiplier[]);
+                                map.get(key)!.push(m);
+                                return map;
+                            }, new Map<string, CardMultiplier[]>())
+                        ).map(([category, items]) => {
+                            const mainItems = items.filter(i => !i.SubCategory || i.SubCategory.trim() === '');
+                            const subItems = items.filter(i => i.SubCategory && i.SubCategory.trim() !== '');
+                            return (
+                                <div key={category} className="category-group">
+                                    <div className="category-title">{category}</div>
+                                    <div className="table">
+                                        {mainItems.map((m, idx) => (
+                                            <div key={`main-${idx}`} className="table-row main-row">
+                                                <div className="cell subcategory">{m.Name}</div>
+                                                <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
+                                                <div className="cell description">
+                                                    <div className="multiplier-desc">{m.Description}</div>
+                                                    {m.Details && (
+                                                        <div className="multiplier-details">{m.Details}</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                        {subItems.map((m, idx) => (
+                                            <div key={`sub-${idx}-${m.SubCategory}`} className="table-row sub-row">
+                                                <div className="cell subcategory">{m.Name}</div>
+                                                <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
+                                                <div className="cell description">
+                                                    <div className="multiplier-desc">{m.Description}</div>
+                                                    {m.Details && (
+                                                        <div className="multiplier-details">{m.Details}</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                )}
-                            </div>
-                        ))}
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             )}

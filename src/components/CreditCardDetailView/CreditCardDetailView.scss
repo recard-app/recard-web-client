@@ -112,12 +112,10 @@
   }
   
   .card-info-section {
-    background-color: $neutral-white;
-    border: $border-full solid $neutral-light-gray;
-    border-radius: $radius-base;
-    padding: $space-4;
-    margin-bottom: $space-6;
+    @include card-panel;
     
+    h3 { @include section-header; }
+
     .card-basic-info {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -128,7 +126,7 @@
         flex-direction: column;
         
         .label {
-          font-size: $font-xs;
+          font-size: $font-xxs;
           color: $neutral-dark-gray;
           margin-bottom: $space-1;
           text-transform: uppercase;
@@ -137,65 +135,112 @@
         }
         
         .value {
-          font-size: $font-base;
+          font-size: $font-sm;
           font-weight: $font-medium;
           color: $neutral-black;
+          text-transform: capitalize;
         }
       }
     }
   }
   
   .card-section {
-    background-color: $neutral-white;
-    border: $border-full solid $neutral-light-gray;
-    border-radius: $radius-base;
-    padding: $space-4;
-    margin-bottom: $space-6;
+    @include card-panel;
     
-    h3 {
-      margin-top: 0;
-      margin-bottom: $space-4;
-      font-size: $font-h5;
-      font-weight: $font-medium;
-      color: $neutral-black;
-      padding-bottom: $space-2;
-      border-bottom: $border-full solid $neutral-light-gray;
-    }
+    h3 { @include section-header; }
     
-    .multipliers-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: $space-4;
-      
-      .multiplier-item {
+    .multipliers-table {
+      display: flex;
+      flex-direction: column;
+      gap: $space-3;
+
+      .category-group {
         background-color: $neutral-lightest-gray;
         border: $border-half solid $neutral-light-gray;
         border-radius: $radius-base;
-        padding: $space-3;
-        transition: all $transition-base;
-        
-        &:hover {
-          border-color: $neutral-gray;
-        }
-        
-        .multiplier-name {
-          font-weight: $font-medium;
-          margin-bottom: $space-1;
-          color: $neutral-black;
-          font-size: $font-sm;
-        }
-        
-        .multiplier-value {
-          font-size: $font-h5;
+        overflow: hidden;
+
+        .category-title {
+          display: flex;
+          align-items: center;
+          gap: $space-1-5;
+          width: 100%;
+          position: relative;
+          padding: $space-1 $space-2;
+          border: $border-full solid $neutral-light-gray;
+          border-right: none;
+          border-left: none;
+          background-color: $neutral-lightest-gray;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          font-size: $font-xxs;
           font-weight: $font-semibold;
-          color: $primary-color;
-          margin-bottom: $space-2;
-        }
-        
-        .multiplier-desc {
-          font-size: $font-xs;
           color: $neutral-dark-gray;
-          line-height: $leading-normal;
+        }
+
+        .table {
+          width: 100%;
+          display: grid;
+          grid-auto-rows: minmax(40px, auto);
+
+          .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 4fr;
+            gap: 0;
+            align-items: start;
+            border-bottom: $border-half solid $neutral-light-gray;
+            background-color: $neutral-white;
+            font-size: $font-sm;
+            color: $neutral-dark-gray;
+            
+            &:last-child {
+              border-bottom: none;
+            }
+
+            &.main-row {
+              //background-color: $neutral-light-gray;
+              .cell.subcategory {
+                font-weight: $font-semibold;
+                color: $neutral-black;
+              }
+              .cell.rate {
+                color: $primary-color;
+              }
+            }
+
+            &.sub-row {
+              background-color: $neutral-white;
+            }
+
+            .cell {
+              padding: $space-2 $space-2;
+
+              &.subcategory {
+                text-transform: capitalize;
+              }
+
+              &.rate {
+                font-weight: $font-semibold;
+                color: $primary-color;
+                white-space: nowrap;
+              }
+
+              &.description {
+                .multiplier-name {
+                  font-weight: $font-medium;
+                  margin-bottom: $space-1;
+                  color: $neutral-black;
+                  font-size: $font-sm;
+                }
+
+                .multiplier-desc {
+                  font-size: $font-xs;
+                  color: $neutral-dark-gray;
+                  line-height: $leading-normal;
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -296,7 +341,7 @@
     line-height: $leading-normal;
   }
   
-  .credit-category, .perk-category, .multiplier-category {
+  .credit-category, .perk-category {
     margin-top: $space-2;
     font-size: $font-xxs;
     font-weight: $font-medium;
@@ -307,14 +352,6 @@
     border-radius: $radius-full;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-  }
-  
-  .multiplier-item {
-    .multiplier-details {
-      margin-top: $space-2;
-      padding-top: $space-2;
-      border-top: $border-half dashed $neutral-gray;
-    }
   }
   
   .credit-item {
