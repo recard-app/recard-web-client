@@ -38,18 +38,37 @@
         font-weight: $font-medium;
         color: $neutral-black;
       }
-      
-      .card-issuer {
-        font-size: $font-base;
-        margin-bottom: $space-1;
-        color: $neutral-black;
-        font-weight: $font-medium;
-      }
-      
-      .card-network {
-        font-size: $font-sm;
-        color: $neutral-dark-gray;
+
+      .header-meta {
+        display: flex;
+        flex-direction: column;
+        gap: $space-1;
         margin-bottom: $space-3;
+
+        .meta-item {
+          display: inline-flex;
+          align-items: center;
+          gap: $space-1;
+          line-height: 1;
+          margin-bottom: $space-1-5;
+
+          .meta-icon {
+            width: $icon-mini;
+            height: $icon-mini;
+          }
+
+          .meta-label {
+            font-size: $font-sm;
+            color: $neutral-dark-gray;
+            font-weight: $font-medium;
+          }
+
+          .meta-value {
+            font-size: $font-sm;
+            color: $neutral-black;
+            font-weight: $font-semibold;
+          }
+        }
       }
       
       .card-actions {
@@ -265,11 +284,7 @@
         border-radius: $radius-base;
         padding: $space-3;
         transition: all $transition-base;
-        
-        &:hover {
-          border-color: $neutral-gray;
-        }
-        
+      
         .credit-header {
           display: flex;
           justify-content: space-between;
@@ -315,10 +330,6 @@
         border-radius: $radius-base;
         padding: $space-3;
         transition: all $transition-base;
-        
-        &:hover {
-          border-color: $neutral-gray;
-        }
         
         .perk-title {
           font-weight: $font-medium;

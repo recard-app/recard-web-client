@@ -49,8 +49,18 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 />
                 <div className="card-header-info">
                     <h2>{cardDetails.CardName}</h2>
-                    <p className="card-issuer">{cardDetails.CardIssuer}</p>
-                    <p className="card-network">{cardDetails.CardNetwork}</p>
+                    <div className="header-meta">
+                        <div className="meta-item">
+                            <Icon name="bank" variant="micro" color="#C9CED3" className="meta-icon" aria-hidden="true" />
+                            <span className="meta-label">Issuer:</span>
+                            <span className="meta-value">{cardDetails.CardIssuer}</span>
+                        </div>
+                        <div className="meta-item">
+                            <Icon name="card" variant="micro" color="#C9CED3" className="meta-icon" aria-hidden="true" />
+                            <span className="meta-label">Network:</span>
+                            <span className="meta-value">{cardDetails.CardNetwork}</span>
+                        </div>
+                    </div>
                     
                     {/* Preferred Card Button or Badge */}
                     <div className="card-actions">
