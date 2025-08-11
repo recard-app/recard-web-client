@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthService } from '../../services';
 import { AuthResponse, PAGES } from '../../types';
 import { InfoDisplay } from '../../elements';
+import './Auth.scss';
 
 /**
  * Interface representing the structure of an error response.
@@ -113,67 +114,81 @@ const SignUp: React.FC = () => {
     };
 
     return (
-        <div className="auth-page">
-            <h1>Create Account</h1>
-            
-            <form onSubmit={handleSignUp}>
-                <input
-                    type="text"
-                    placeholder="First Name"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    required
-                    className="default-input"
-                />
-                <input
-                    type="text"
-                    placeholder="Last Name"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    required
-                    className="default-input"
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="default-input"
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="default-input"
-                />
-                <input
-                    type="password"
-                    placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    className="default-input"
-                />
-                <button type="submit">Create Account</button>
-            </form>
+        <div className="auth-card">
+                <div className="auth-header">
+                    <h1>Create your account</h1>
+                    <p className="subtitle">Start optimizing your credit card rewards.</p>
+                </div>
 
-            <p className="auth-redirect">
-                Already have an account? <Link to={PAGES.SIGN_IN.PATH}>Sign In</Link>
-            </p>
-            <p>You can also sign up with Google</p>
-            <button onClick={handleGoogleSignIn}>
-                Sign Up with Google
-            </button>
+                <form onSubmit={handleSignUp} className="auth-form">
+                    <div className="form-row">
+                        <input
+                            type="text"
+                            placeholder="First name"
+                            value={firstName}
+                            onChange={(e) => setFirstName(e.target.value)}
+                            required
+                            className="default-input"
+                        />
+                    </div>
+                    <div className="form-row">
+                        <input
+                            type="text"
+                            placeholder="Last name"
+                            value={lastName}
+                            onChange={(e) => setLastName(e.target.value)}
+                            required
+                            className="default-input"
+                        />
+                    </div>
+                    <div className="form-row">
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className="default-input"
+                        />
+                    </div>
+                    <div className="form-row">
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="default-input"
+                        />
+                    </div>
+                    <div className="form-row">
+                        <input
+                            type="password"
+                            placeholder="Confirm password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                            className="default-input"
+                        />
+                    </div>
+                    <button type="submit" className="submit-button">Create account</button>
+                </form>
 
-            {error && (
-                <InfoDisplay
-                    type="error"
-                    message={error}
-                />
-            )}
+                <div className="auth-divider">or continue with</div>
+                <button onClick={handleGoogleSignIn} className="social-button">
+                    Sign up with Google
+                </button>
+
+                <p className="auth-redirect">
+                    Already have an account? <Link to={PAGES.SIGN_IN.PATH}>Sign in</Link>
+                </p>
+
+                {error && (
+                    <InfoDisplay
+                        type="error"
+                        message={error}
+                    />
+                )}
         </div>
     );
 };

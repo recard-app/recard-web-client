@@ -1,0 +1,101 @@
+@use '../../styling/globals' as *;
+
+// Note: Centering is handled by UniversalContentWrapper's `.center-content` variant
+
+// Card wrapper for all auth screens
+.auth-card {
+  width: 100%;
+  max-width: 480px;
+  background-color: $neutral-white;
+  border: $border-full solid $neutral-gray;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-lg;
+  padding: $space-8;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: $space-6;
+
+  h1 {
+    @include heading-3;
+    margin-bottom: $space-2;
+  }
+
+  .subtitle {
+    @include body-regular;
+    color: $neutral-dark-gray;
+  }
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $space-1;
+}
+
+.submit-button {
+  width: 100%;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin: $space-6 0;
+  color: $neutral-dark-gray;
+  @include label;
+
+  &::before,
+  &::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background-color: $neutral-gray;
+  }
+}
+
+.social-button {
+  width: 100%;
+}
+
+.auth-redirect {
+  text-align: center;
+  margin-top: $space-6;
+}
+
+.aux-link {
+  @include link-subtle;
+}
+
+// Compact copy in forgot password
+.helper-text {
+  @include body-regular;
+  color: $neutral-dark-gray;
+  margin-bottom: $space-4;
+}
+
+@media (max-width: $breakpoint-sm) {
+  .auth-card {
+    padding: $space-6;
+    border-radius: $radius-xl;
+  }
+
+  .auth-header h1 {
+    @include heading-4;
+  }
+}
+
+

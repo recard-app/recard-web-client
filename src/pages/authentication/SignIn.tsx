@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthService } from '../../services';
 import { AuthResponse, PAGES } from '../../types';
 import { InfoDisplay } from '../../elements';
+import './Auth.scss';
 
 const SignIn: React.FC = () => {
     const { login, loginWithEmail } = useAuth(); // Destructure login methods from AuthContext
@@ -52,48 +53,54 @@ const SignIn: React.FC = () => {
     };
 
     return (
-        <div className="auth-page">
-            <h1>Sign In</h1>
-            
-            <form onSubmit={handleEmailSignIn}>
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                    required
-                    className="default-input"
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-                    required
-                    className="default-input"
-                />
-                <button type="submit">Sign In with Email</button>
-                <Link to={PAGES.FORGOT_PASSWORD.PATH} className="forgot-password-btn">
-                    Forgot Password?
-                </Link>
-            </form>
+        <div className="auth-card">
+                <div className="auth-header">
+                    <h1>Sign in</h1>
+                    <p className="subtitle">Welcome back. Please enter your details.</p>
+                </div>
 
-            <div className="divider">or</div>
+                <form onSubmit={handleEmailSignIn} className="auth-form">
+                    <div className="form-row">
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                            required
+                            className="default-input"
+                        />
+                    </div>
+                    <div className="form-row">
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                            required
+                            className="default-input"
+                        />
+                    </div>
+                    <div className="form-actions">
+                        <Link to={PAGES.FORGOT_PASSWORD.PATH} className="aux-link">Forgot password?</Link>
+                    </div>
+                    <button type="submit" className="submit-button">Sign in</button>
+                </form>
 
-            <button onClick={handleGoogleSignIn}>
-                Continue with Google
-            </button>
+                <div className="auth-divider">or continue with</div>
+                <button onClick={handleGoogleSignIn} className="social-button">
+                    Continue with Google
+                </button>
 
-            <p className="auth-redirect">
-                Need an account? <Link to={PAGES.SIGN_UP.PATH}>Sign Up</Link>
-            </p>
+                <p className="auth-redirect">
+                    Need an account? <Link to={PAGES.SIGN_UP.PATH}>Create one</Link>
+                </p>
 
-            {error && (
-                <InfoDisplay
-                    type="error"
-                    message={error}
-                />
-            )}
+                {error && (
+                    <InfoDisplay
+                        type="error"
+                        message={error}
+                    />
+                )}
         </div>
     );
 };

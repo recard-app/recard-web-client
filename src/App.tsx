@@ -127,7 +127,7 @@ function AppContent({}: AppContentProps) {
   // State for managing full height behavior
   const [needsFullHeight, setNeedsFullHeight] = useState<boolean>(false);
   // State for managing scroll height behavior
-  const [needsScrollHeight, setNeedsScrollHeight] = useState<boolean>(false);
+  const [_needsScrollHeight, setNeedsScrollHeight] = useState<boolean>(false);
 
   const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
   const [isCardDetailsOpen, setIsCardDetailsOpen] = useState(false);
@@ -605,81 +605,88 @@ function AppContent({}: AppContentProps) {
             </DialogContent>
           </Dialog>
           
-          <UniversalContentWrapper 
-            isSidePanelOpen={user ? isSidePanelOpen : false}
-            fullHeight={needsFullHeight}
-          >
-            <Routes>
-              <Route path={PAGES.HOME.PATH} element={
-                <ProtectedRoute>
-                  {renderMainContent()}
-                </ProtectedRoute>
-              } />
-              <Route path={PAGES.HOME.DYNAMIC_PATH} element={
-                <ProtectedRoute>
-                  {renderMainContent()}
-                </ProtectedRoute>
-              } />
-              <Route path={PAGES.PREFERENCES.PATH} element={
-                <ProtectedRoute>
-                  <Preferences 
-                    preferencesInstructions={preferencesInstructions}
-                    setPreferencesInstructions={setPreferencesInstructions}
-                    chatHistoryPreference={chatHistoryPreference}
-                    setChatHistoryPreference={(preference: ChatHistoryPreference) => setChatHistoryPreference(preference)}
-                    showCompletedOnlyPreference={showCompletedOnlyPreference}
-                    setShowCompletedOnlyPreference={(preference: ShowCompletedOnlyPreference) => setShowCompletedOnlyPreference(preference)}
-                  />
-                </ProtectedRoute>
-              } />
-              <Route path={PAGES.SIGN_IN.PATH} element={
-                <RedirectIfAuthenticated>
-                  <SignIn />
-                </RedirectIfAuthenticated>
-              } />
-              <Route path={PAGES.FORGOT_PASSWORD.PATH} element={
-                <RedirectIfAuthenticated>
-                  <ForgotPassword />
-                </RedirectIfAuthenticated>
-              } />
-              <Route path={PAGES.SIGN_UP.PATH} element={
-                <RedirectIfAuthenticated>
-                  <SignUp />
-                </RedirectIfAuthenticated>
-              } />
-              <Route path={PAGES.WELCOME.PATH} element={
-                <ProtectedRoute>
-                  <Welcome onModalOpen={() => setIsCardSelectorOpen(true)} />
-                </ProtectedRoute>
-              } />
-              <Route path={PAGES.ACCOUNT.PATH} element={
-                <ProtectedRoute>
-                  <Account 
-                    setChatHistory={setChatHistory}
-                    setHistoryRefreshTrigger={setHistoryRefreshTrigger}
-                    subscriptionPlan={subscriptionPlan}
-                  />
-                </ProtectedRoute>
-              } />
-              <Route path={PAGES.HISTORY.PATH} element={
-                <History 
-                  existingHistoryList={chatHistory}
-                  currentChatId={currentChatId}
-                  returnCurrentChatId={getCurrentChatId}
-                  onHistoryUpdate={handleHistoryUpdate}
-                  subscriptionPlan={subscriptionPlan}
-                  creditCards={creditCards}
-                  historyRefreshTrigger={historyRefreshTrigger}
-                  showCompletedOnlyPreference={showCompletedOnlyPreference}
-                />
-              } />
-              <Route path={PAGES.MY_CARDS.PATH} element={
-                <ProtectedRoute>
-                  <MyCards onCardsUpdate={getCreditCards} />
-                </ProtectedRoute>
-              } />
-            </Routes>
-          </UniversalContentWrapper>
+          {(() => {
+            const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH]);
+            const isAuthRoute = authPaths.has(location.pathname);
+            return (
+              <UniversalContentWrapper 
+                isSidePanelOpen={user ? isSidePanelOpen : false}
+                fullHeight={isAuthRoute ? true : needsFullHeight}
+                className={isAuthRoute ? 'center-content' : ''}
+              >
+                <Routes>
+                  <Route path={PAGES.HOME.PATH} element={
+                    <ProtectedRoute>
+                      {renderMainContent()}
+                    </ProtectedRoute>
+                  } />
+                  <Route path={PAGES.HOME.DYNAMIC_PATH} element={
+                    <ProtectedRoute>
+                      {renderMainContent()}
+                    </ProtectedRoute>
+                  } />
+                  <Route path={PAGES.PREFERENCES.PATH} element={
+                    <ProtectedRoute>
+                      <Preferences 
+                        preferencesInstructions={preferencesInstructions}
+                        setPreferencesInstructions={setPreferencesInstructions}
+                        chatHistoryPreference={chatHistoryPreference}
+                        setChatHistoryPreference={(preference: ChatHistoryPreference) => setChatHistoryPreference(preference)}
+                        showCompletedOnlyPreference={showCompletedOnlyPreference}
+                        setShowCompletedOnlyPreference={(preference: ShowCompletedOnlyPreference) => setShowCompletedOnlyPreference(preference)}
+                      />
+                    </ProtectedRoute>
+                  } />
+                  <Route path={PAGES.SIGN_IN.PATH} element={
+                    <RedirectIfAuthenticated>
+                      <SignIn />
+                    </RedirectIfAuthenticated>
+                  } />
+                  <Route path={PAGES.FORGOT_PASSWORD.PATH} element={
+                    <RedirectIfAuthenticated>
+                      <ForgotPassword />
+                    </RedirectIfAuthenticated>
+                  } />
+                  <Route path={PAGES.SIGN_UP.PATH} element={
+                    <RedirectIfAuthenticated>
+                      <SignUp />
+                    </RedirectIfAuthenticated>
+                  } />
+                  <Route path={PAGES.WELCOME.PATH} element={
+                    <ProtectedRoute>
+                      <Welcome onModalOpen={() => setIsCardSelectorOpen(true)} />
+                    </ProtectedRoute>
+                  } />
+                  <Route path={PAGES.ACCOUNT.PATH} element={
+                    <ProtectedRoute>
+                      <Account 
+                        setChatHistory={setChatHistory}
+                        setHistoryRefreshTrigger={setHistoryRefreshTrigger}
+                        subscriptionPlan={subscriptionPlan}
+                      />
+                    </ProtectedRoute>
+                  } />
+                  <Route path={PAGES.HISTORY.PATH} element={
+                    <History 
+                      existingHistoryList={chatHistory}
+                      currentChatId={currentChatId}
+                      returnCurrentChatId={getCurrentChatId}
+                      onHistoryUpdate={handleHistoryUpdate}
+                      subscriptionPlan={subscriptionPlan}
+                      creditCards={creditCards}
+                      historyRefreshTrigger={historyRefreshTrigger}
+                      showCompletedOnlyPreference={showCompletedOnlyPreference}
+                    />
+                  } />
+                  <Route path={PAGES.MY_CARDS.PATH} element={
+                    <ProtectedRoute>
+                      <MyCards onCardsUpdate={getCreditCards} />
+                    </ProtectedRoute>
+                  } />
+                </Routes>
+              </UniversalContentWrapper>
+            );
+          })()}
         </div>
       </ScrollHeightContext.Provider>
     </FullHeightContext.Provider>

@@ -14,6 +14,14 @@
     margin-left: $mini-sidebar-width;
   }
 
+  // Center content utility variant for simple pages (e.g., auth)
+  &.center-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $space-6 $space-4;
+  }
+
   // Full height variant for pages like prompt window that need viewport height
   &.full-height {
     height: 100%;
@@ -38,7 +46,8 @@
 
   // Default behavior for regular pages (scrollable)
   &:not(.full-height) {
-    min-height: 100vh;
+    // Fill the remaining space beneath the header within the flex column app shell
+    min-height: 100%;
     overflow-y: auto;
   }
 }

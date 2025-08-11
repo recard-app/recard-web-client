@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../types';
 import { InfoDisplay } from '../../elements';
+import './Auth.scss';
 
 const ForgotPassword: React.FC = () => {
     const { sendPasswordResetEmail } = useAuth();
@@ -22,38 +23,42 @@ const ForgotPassword: React.FC = () => {
     };
 
     return (
-        <div className="auth-page">
-            <h1>Reset Password</h1>
-            <p>Enter your email address and we'll send you a link to reset your password.</p>
-            
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                    className="default-input"
-                    required
-                />
-                <button type="submit">Send Reset Link</button>
-            </form>
+        <div className="auth-card">
+                <div className="auth-header">
+                    <h1>Reset your password</h1>
+                    <p className="subtitle">Enter your email and we’ll send you a reset link.</p>
+                </div>
 
-            <p className="auth-redirect">
-                Remember your password? <Link to={PAGES.SIGN_IN.PATH}>Sign In</Link>
-            </p>
+                <form onSubmit={handleSubmit} className="auth-form">
+                    <div className="form-row">
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                            className="default-input"
+                            required
+                        />
+                    </div>
+                    <button type="submit" className="submit-button">Send reset link</button>
+                </form>
 
-            {error && (
-                <InfoDisplay
-                    type="error"
-                    message={error}
-                />
-            )}
-            {message && (
-                <InfoDisplay
-                    type="success"
-                    message={message}
-                />
-            )}
+                <p className="auth-redirect">
+                    Remember your password? <Link to={PAGES.SIGN_IN.PATH}>Sign in</Link>
+                </p>
+
+                {error && (
+                    <InfoDisplay
+                        type="error"
+                        message={error}
+                    />
+                )}
+                {message && (
+                    <InfoDisplay
+                        type="success"
+                        message={message}
+                    />
+                )}
         </div>
     );
 };
