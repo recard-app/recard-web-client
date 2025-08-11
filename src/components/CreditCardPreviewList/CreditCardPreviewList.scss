@@ -27,118 +27,135 @@
 }
 
 /* Individual card preview styles */
-.credit-card-preview {
-  // Base styles - common to all variants
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: $space-1-5;
-  //border-bottom: $border-half solid $neutral-light-gray;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  
-  // Base states that apply to all variants
-  &:hover {
-    background-color: $neutral-light-gray;
-  }
-  
-  &.selected {
-    background-color: $primary-lightest;
-  }
-  
-  // Base card content styles
-  .card-content {
+  .credit-card-preview {
+    // Base styles - common to all variants
     display: flex;
-    align-items: flex-start;
-    flex: 1;
-    gap: $space-2;
+    justify-content: space-between;
+    align-items: center;
+    padding: $space-1-5;
+    cursor: pointer;
+    transition: background-color 0.2s;
     
-    .card-thumbnail {
-      width: $icon-large;
-      height: auto;
-      flex-shrink: 0;
-      margin-top: 5px;
-    }
-    
-    .card-info {
-      .card-name {
-        font-weight: $font-semibold;
-        margin-bottom: 0;
-        font-size: $font-sm;
-      }
-      
-      .card-network {
-        font-size: $font-xs;
-        color: $neutral-dark-gray;
-      }
-      
-      .preferred-star-icon {
-        display: inline;
-        margin-right: 2px;
-        margin-top: 1px;
-        vertical-align: text-top;
-      }
-    }
-  }
-
-  // SIDEBAR VARIANT - Compact styling for sidebar view
-  &.sidebar-variant {
+    // Base states that apply to all variants
     &:hover {
-      // Custom hover styles for sidebar if needed
+      background-color: $neutral-light-gray;
     }
-
+    
     &.selected {
-      // Custom selected styles for sidebar if needed
+      background-color: $primary-lightest;
     }
-
+    
+    // Base card content styles
     .card-content {
+      display: flex;
+      align-items: flex-start;
+      flex: 1;
+      gap: $space-2;
+      
       .card-thumbnail {
-        // Custom thumbnail styles for sidebar if needed
+        width: $icon-large;
+        height: auto;
+        flex-shrink: 0;
+        margin-top: 5px;
       }
       
       .card-info {
         .card-name {
-          // Custom card name styles for sidebar if needed
+          font-weight: $font-semibold;
+          margin-bottom: 0;
+          font-size: $font-sm;
         }
         
         .card-network {
-          // Custom card network styles for sidebar if needed
+          font-size: $font-xs;
+          color: $neutral-dark-gray;
         }
         
         .preferred-star-icon {
-          // Custom star icon styles for sidebar if needed
+          display: inline;
+          margin-right: 2px;
+          margin-top: 1px;
+          vertical-align: text-top;
+        }
+      }
+    }
+
+    // Variant templates - currently inherit all base styles
+    // Add variant-specific overrides here if needed in the future
+    /* stylelint-disable-next-line block-no-empty */
+    &.sidebar-variant {
+      // Override base styles for sidebar variant
+      /* stylelint-disable-next-line block-no-empty */
+      border-radius: $radius-base;
+      &:hover {
+        // Custom hover styles
+      }
+
+      /* stylelint-disable-next-line block-no-empty */
+      &.selected {
+        // Custom selected styles
+      }
+
+      .card-content {
+        /* stylelint-disable-next-line block-no-empty */
+        .card-thumbnail {
+          // Custom thumbnail styles
+        }
+        
+        .card-info {
+          /* stylelint-disable-next-line block-no-empty */
+          .card-name {
+            // Custom name styles
+          }
+          
+          /* stylelint-disable-next-line block-no-empty */
+          .card-network {
+            // Custom network styles
+          }
+          
+          /* stylelint-disable-next-line block-no-empty */
+          .preferred-star-icon {
+            // Custom star icon styles
+          }
+        }
+      }
+    }
+
+    /* stylelint-disable-next-line block-no-empty */
+    &.my-cards-variant {
+      // Override base styles for my-cards variant
+      /* stylelint-disable-next-line block-no-empty */
+      &:hover {
+        // Custom hover styles
+      }
+
+      /* stylelint-disable-next-line block-no-empty */
+      &.selected {
+        // Custom selected styles
+      }
+
+      .card-content {
+        /* stylelint-disable-next-line block-no-empty */
+        .card-thumbnail {
+          // Custom thumbnail styles
+        }
+        
+        .card-info {
+          /* stylelint-disable-next-line block-no-empty */
+          .card-name {
+            // Custom name styles
+          }
+          
+          /* stylelint-disable-next-line block-no-empty */
+          .card-network {
+            // Custom network styles
+          }
+          
+          /* stylelint-disable-next-line block-no-empty */
+          .preferred-star-icon {
+            // Custom star icon styles
+          }
         }
       }
     }
   }
-
-  // MY-CARDS VARIANT - Detailed styling for my-cards page view
-  &.my-cards-variant {
-    padding: $space-4 $space-2;
-    &:hover {
-      // Custom hover styles for my-cards page if needed
-    }
-
-    &.selected {
-      // Custom selected styles for my-cards page if needed
-    }
-
-    .card-content {
-      .card-thumbnail {
-        // Custom thumbnail styles for my-cards page if needed
-      }
-      
-      .card-info {
-        .card-name {
-        }
-        
-        .card-network {
-        }
-        
-        .preferred-star-icon {
-          // Custom star icon styles for my-cards page if needed
-        }
-      }
-    }
-  }
-}

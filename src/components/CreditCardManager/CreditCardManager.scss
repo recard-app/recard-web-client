@@ -23,25 +23,25 @@
       padding: 16px;
     }
 
-    /* Credit card preview list should take remaining space and scroll */
-    > div:not(.error-container):not(.sidebar-footer) {
-      flex: 1;
-      overflow-y: auto;
-      min-height: 0;
-    }
-
-    .sidebar-footer {
+    .sidebar-action {
       display: flex;
       justify-content: stretch;
       align-items: center;
       padding: 16px;
-      border-top: $border-full solid $neutral-light-gray;
+      border-bottom: $border-full solid $neutral-light-gray;
       flex-shrink: 0;
       background-color: $neutral-white;
       
       button {
         width: 100%;
       }
+    }
+
+    /* Credit card preview list should take remaining space and scroll */
+    > div:not(.error-container):not(.sidebar-action) {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
     }
     
     .add-first-card-button {

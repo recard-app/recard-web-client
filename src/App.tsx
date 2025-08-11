@@ -660,10 +660,7 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.ACCOUNT.PATH} element={
                     <ProtectedRoute>
-                      <Account 
-                        setChatHistory={setChatHistory}
-                        setHistoryRefreshTrigger={setHistoryRefreshTrigger}
-                        subscriptionPlan={subscriptionPlan}
+                      <Account subscriptionPlan={subscriptionPlan}
                       />
                     </ProtectedRoute>
                   } />
