@@ -63,15 +63,25 @@
   z-index: 10;
   background: $neutral-white;
   border-bottom: 1px solid $neutral-light-gray;
-  padding: $space-2 $space-2 $space-1-5 $space-2;
+  padding: $space-2 $space-3 $space-1-5 $space-3;
   // Reserve space on the right for the close button so it never overflows
   padding-right: calc($space-2 + 28px);
-  min-height: 48px;
+  min-height: 36px;
   display: flex;
-  align-items: center;
+  flex-direction: column; // stack title and description vertically
+  align-items: flex-start;
+  gap: $space-1;
   margin-bottom: 0;
   text-align: center;
   flex-shrink: 0; // Prevent header from shrinking
+
+  h2 {
+    font-size: $font-sm;
+    font-weight: $font-bold;
+    font-family: $font-inter;
+    text-transform: uppercase;
+    color: $primary-medium;
+  }
   
   @media (min-width: 640px) {
     text-align: left;
@@ -81,7 +91,7 @@
   .dialog-close-btn {
     position: absolute;
     top: 50%;
-    right: $space-4;
+    right: $space-3;
     transform: translateY(-50%);
     background: none;
     border: none;
