@@ -154,7 +154,7 @@
 }
 
 // Mobile-only overrides for sidebar preview
-@media (max-width: 780px) {
+@media (max-width: $mobile-breakpoint) {
   .mobile-drawer-content {
     .history-entry.current {
       background-color: $neutral-light-gray !important;

@@ -579,8 +579,8 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-// Mobile responsiveness: fully hide the sidebar when viewport is under 780px
-@media (max-width: 780px) {
+// Mobile responsiveness: fully hide the sidebar when viewport is under $mobile-breakpoint
+@media (max-width: $mobile-breakpoint) {
   .app-sidebar {
     display: none !important;
   }

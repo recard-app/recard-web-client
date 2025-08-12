@@ -52,8 +52,8 @@
   }
 }
 
-// Mobile responsiveness: remove left offset when viewport is under 780px
-@media (max-width: 780px) {
+// Mobile responsiveness: remove left offset when viewport is under $mobile-breakpoint
+@media (max-width: $mobile-breakpoint) {
   .universal-content-wrapper {
     margin-left: 0 !important;
 

@@ -130,7 +130,7 @@
 }
 
 // Mobile sidebar variant tweaks
-@media (max-width: 780px) {
+@media (max-width: $mobile-breakpoint) {
   .mobile-drawer-content .history-panel {
     .timestamp,
     .selected-card-display {

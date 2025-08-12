@@ -87,14 +87,14 @@
   }
 }
 
-@media (max-width: 780px) {
+@media (max-width: $mobile-breakpoint) {
   .mobile-header {
     display: flex; // show on mobile
   }
 }
 
 // Drawer styles
-@media (max-width: 780px) {
+@media (max-width: $mobile-breakpoint) {
   .mobile-drawer-overlay {
     position: fixed;
     inset: 0;
@@ -250,9 +250,11 @@
     padding: $space-2;
     margin-bottom: $space-2;
     .section-title {
+      font-family: $font-inter;
+      font-weight: $font-bold;
       font-size: $font-xs;
       color: $neutral-medium-gray;
-      margin-bottom: $space-2;
+      margin-bottom: $space-1;
       text-transform: uppercase;
     }
   }

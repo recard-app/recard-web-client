@@ -74,7 +74,7 @@
 }
 
 // Hide the desktop app header on mobile when MobileHeader is shown
-@media (max-width: 780px) {
+@media (max-width: $mobile-breakpoint) {
   .app-header {
     display: none !important;
   }

@@ -34,6 +34,20 @@
   }
 }
 
+// Mobile-only template for dialog content (fill in as needed)
+@media (max-width: $mobile-breakpoint) {
+   .dialog-content {
+    width: calc(100vw - ($space-4 * 2));
+    max-height: calc(100vh - ($space-4 * 2));
+   }
+   //.dialog-content.full-width { }
+   .dialog-content.full-screen {
+      width: calc(100vw - ($space-4 * 2));
+      height: calc(100vh - ($space-4 * 2));
+      max-height: calc(100vh - ($space-4 * 2));
+    }
+}
+
 // Base inner container styling for both dialog types
 %dialog-inner-base {
   display: flex;
