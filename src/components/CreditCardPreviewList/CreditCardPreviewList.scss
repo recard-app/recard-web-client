@@ -82,80 +82,12 @@
 
     // Variant templates - currently inherit all base styles
     // Add variant-specific overrides here if needed in the future
-    /* stylelint-disable-next-line block-no-empty */
     &.sidebar-variant {
-      // Override base styles for sidebar variant
-      /* stylelint-disable-next-line block-no-empty */
       border-radius: $radius-base;
-      &:hover {
-        // Custom hover styles
-      }
-
-      /* stylelint-disable-next-line block-no-empty */
-      &.selected {
-        // Custom selected styles
-      }
-
-      .card-content {
-        /* stylelint-disable-next-line block-no-empty */
-        .card-thumbnail {
-          // Custom thumbnail styles
-        }
-        
-        .card-info {
-          /* stylelint-disable-next-line block-no-empty */
-          .card-name {
-            // Custom name styles
-          }
-          
-          /* stylelint-disable-next-line block-no-empty */
-          .card-network {
-            // Custom network styles
-          }
-          
-          /* stylelint-disable-next-line block-no-empty */
-          .preferred-star-icon {
-            // Custom star icon styles
-          }
-        }
-      }
     }
 
-    /* stylelint-disable-next-line block-no-empty */
+    // my-cards variant currently uses base styles; include minimal non-empty rule for linter
     &.my-cards-variant {
-      // Override base styles for my-cards variant
-      /* stylelint-disable-next-line block-no-empty */
-      &:hover {
-        // Custom hover styles
-      }
-
-      /* stylelint-disable-next-line block-no-empty */
-      &.selected {
-        // Custom selected styles
-      }
-
-      .card-content {
-        /* stylelint-disable-next-line block-no-empty */
-        .card-thumbnail {
-          // Custom thumbnail styles
-        }
-        
-        .card-info {
-          /* stylelint-disable-next-line block-no-empty */
-          .card-name {
-            // Custom name styles
-          }
-          
-          /* stylelint-disable-next-line block-no-empty */
-          .card-network {
-            // Custom network styles
-          }
-          
-          /* stylelint-disable-next-line block-no-empty */
-          .preferred-star-icon {
-            // Custom star icon styles
-          }
-        }
-      }
+      .card-content { gap: $space-3; }
     }
   }

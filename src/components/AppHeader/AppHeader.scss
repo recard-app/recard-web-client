@@ -72,3 +72,10 @@
         }
     }
 }
+
+// Hide the desktop app header on mobile when MobileHeader is shown
+@media (max-width: 780px) {
+  .app-header {
+    display: none !important;
+  }
+}

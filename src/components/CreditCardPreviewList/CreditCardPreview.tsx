@@ -8,7 +8,7 @@ interface CreditCardPreviewProps {
   card: CreditCard;
   isSelected?: boolean;
   onCardSelect?: (card: CreditCard) => void;
-  variant?: 'sidebar' | 'my-cards';
+  variant?: 'sidebar' | 'my-cards' | 'mobile-sidebar';
 }
 
 const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
@@ -26,6 +26,7 @@ const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
   const getVariantClass = () => {
     if (variant === 'sidebar') return 'sidebar-variant';
     if (variant === 'my-cards') return 'my-cards-variant';
+    if (variant === 'mobile-sidebar') return 'mobile-sidebar-variant';
     return '';
   };
 
@@ -55,7 +56,9 @@ const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
             )}
             {card.CardName}
           </div>
-          <div className="card-network">{card.CardNetwork}</div>
+          {variant !== 'mobile-sidebar' && (
+            <div className="card-network">{card.CardNetwork}</div>
+          )}
         </div>
       </div>
     </div>

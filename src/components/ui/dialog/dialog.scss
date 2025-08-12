@@ -49,7 +49,12 @@
   z-index: 10;
   background: $neutral-white;
   border-bottom: 1px solid $neutral-light-gray;
-  padding: $space-6 $space-6 $space-4 $space-6;
+  padding: $space-2 $space-2 $space-1-5 $space-2;
+  // Reserve space on the right for the close button so it never overflows
+  padding-right: calc($space-2 + 28px);
+  min-height: 48px;
+  display: flex;
+  align-items: center;
   margin-bottom: 0;
   text-align: center;
   flex-shrink: 0; // Prevent header from shrinking
@@ -61,16 +66,24 @@
   /* Close button styling */
   .dialog-close-btn {
     position: absolute;
-    top: $space-4;
+    top: 50%;
     right: $space-4;
+    transform: translateY(-50%);
     background: none;
     border: none;
-    font-size: $font-h5;
     cursor: pointer;
     padding: $space-1;
     border-radius: $radius-base;
     color: $neutral-dark-gray;
-    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; // ensure above header/title on mobile
+
+    svg {
+      width: $icon-mini;
+      height: $icon-mini;
+    }
     
     &:hover {
       background-color: $neutral-light-gray;
@@ -181,7 +194,7 @@
 
 // Base title styling for both dialog types
 %dialog-title-base {
-  @include heading-4;
+  @include heading-5;
   margin: 0;
   color: $neutral-black;
   font-weight: $font-regular;
@@ -193,6 +206,15 @@
   margin-top: $space-2;
   color: $neutral-dark-gray;
   line-height: $leading-relaxed;
+}
+
+// Utility: visually hidden (screen-reader only)
+.sr-only {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
 }
 
 // === DIALOG SPECIFIC STYLES ===

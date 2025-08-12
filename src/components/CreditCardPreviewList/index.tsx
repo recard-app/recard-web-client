@@ -10,7 +10,7 @@ interface CreditCardPreviewListProps {
   onCardSelect?: (card: CreditCard) => void;
   loading?: boolean;
   showOnlySelected?: boolean;
-  variant?: 'sidebar' | 'my-cards';
+  variant?: 'sidebar' | 'my-cards' | 'mobile-sidebar';
 }
 
 // Helper function to sort credit cards (default card first, then alphabetically)

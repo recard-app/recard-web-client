@@ -77,3 +77,10 @@
     }
   }
 }
+
+// Hide page headers on mobile
+@media (max-width: 780px) {
+  .page-header {
+    display: none !important;
+  }
+}

@@ -129,6 +129,20 @@
     }
 }
 
+// Mobile sidebar variant tweaks
+@media (max-width: 780px) {
+  .mobile-drawer-content .history-panel {
+    .timestamp,
+    .selected-card-display {
+      display: none !important;
+    }
+
+    .entry-title {
+      font-size: $font-sm;
+    }
+  }
+}
+
 // Adjust pagination controls styling for the sticky footer
 .pagination-controls {
   display: flex;

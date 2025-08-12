@@ -45,6 +45,7 @@ import CreditCardDetailView from './components/CreditCardDetailView';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
 import PromptHelpModal from './components/PromptWindow/PromptHelpModal';
 import PageHeader from './components/PageHeader';
+import MobileHeader from './components/MobileHeader';
 import { InfoDisplay } from './elements';
 
 // Context
@@ -546,6 +547,30 @@ function AppContent({}: AppContentProps) {
               onNewChat={handleClearChat}
             />
           )}
+          {(() => {
+            const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH]);
+            const isAuthRoute = authPaths.has(location.pathname);
+            const mobileHeaderTitle = PageUtils.getTitleByPath(location.pathname) || APP_NAME;
+            // Render mobile header for authenticated, non-auth routes. CSS shows it only under 780px.
+            return user && !isAuthRoute ? (
+              <MobileHeader 
+                title={mobileHeaderTitle}
+                onLogout={handleLogout}
+                chatHistory={chatHistory}
+                currentChatId={currentChatId}
+                onCurrentChatIdChange={getCurrentChatId}
+                onHistoryUpdate={handleHistoryUpdate}
+                subscriptionPlan={subscriptionPlan}
+                creditCards={creditCards}
+                isLoadingCreditCards={isLoadingCreditCards}
+                isLoadingHistory={isLoadingHistory}
+                onCardSelect={handleCardSelect}
+                quickHistorySize={quick_history_size}
+                user={user}
+                onNewChat={handleClearChat}
+              />
+            ) : null;
+          })()}
           
           <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
             <DialogContent>
@@ -593,7 +618,7 @@ function AppContent({}: AppContentProps) {
           <Dialog open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen}>
             <DialogContent fullScreen>
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="sr-only">
                   {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
                 </DialogTitle>
               </DialogHeader>

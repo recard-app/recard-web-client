@@ -111,78 +111,59 @@
 
     // SIDEBAR VARIANT - More compact styling
     &.sidebar-variant {
-        &:hover {
-        }
+        &:hover { }
 
-        &.has-selected-card {
-            &:hover {
-            }
-        }
+        &.has-selected-card { }
 
-        &.current {
-            &:hover {
-            }
-        }
+        &.current { }
 
         .entry-content {
             .entry-info {
-                .entry-title {
-                }
+                .entry-title { }
 
-                .timestamp {
-                }
+                .timestamp { }
             }
 
-            .selected-card-display {
-                .card-thumbnail {
-                }
-            }
+            .selected-card-display { }
         }
 
-        .actions-dropdown {
-            .action-icon-button {
-            }
-        }
+        .actions-dropdown { }
     }
 
     // FULL-PAGE VARIANT - More detailed styling
     &.full-page-variant {
       border: $border-half solid $neutral-light-gray;
-        &:hover {
-        }
+        &:hover { }
 
-        &.has-selected-card {
-            &:hover {
-            }
-        }
+        &.has-selected-card { }
 
-        &.current {
-            &:hover {
-            }
-        }
+        &.current { }
 
         .entry-content {
             .entry-info {
-                .entry-title {
-                }
+                .entry-title { }
 
-                .timestamp {
-                }
+                .timestamp { }
             }
 
-            .selected-card-display {
-                .card-thumbnail {
-                }
-            }
+            .selected-card-display { }
         }
 
-        .actions-dropdown {
-            .action-icon-button {
-                &:hover {
-                }
-            }
-        }
+        .actions-dropdown { }
     }
+}
+
+// Mobile-only overrides for sidebar preview
+@media (max-width: 780px) {
+  .mobile-drawer-content {
+    .history-entry.current {
+      background-color: $neutral-light-gray !important;
+    }
+
+    .history-entry .entry-content .entry-info .entry-title {
+      font-weight: $font-semibold !important;
+    }
+  }
 }
 
 .delete-confirmation {

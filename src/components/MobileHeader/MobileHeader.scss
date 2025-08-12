@@ -1,0 +1,364 @@
+@use '../../styling/globals' as *;
+
+.mobile-header {
+  display: none; // hidden by default on desktop
+  position: sticky;
+  top: 0;
+  z-index: 9; // below sidebar (10), above content
+  height: 48px;
+  background-color: $neutral-white;
+  border-bottom: $border-half solid $neutral-light-gray;
+  padding: 0 $space-3;
+  box-sizing: border-box;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+
+  .mobile-header__title {
+    font-size: $font-h5;
+    font-weight: $font-medium;
+    color: $neutral-black;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .sr-only {
+    position: absolute !important;
+    height: 1px; width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+  }
+
+  .mobile-header__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    min-width: $icon-large; // to keep center alignment stable
+    justify-content: flex-end;
+  }
+
+  .mobile-header__brand {
+    display: flex;
+    align-items: center;
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      text-decoration: none;
+      color: inherit;
+      img { width: $icon-medium; height: $icon-medium; }
+      .brand-name { font-weight: $font-semibold; font-size: $font-h6; }
+    }
+  }
+
+  .mobile-header__left {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: $icon-large; // width to balance the right side for center title
+  }
+
+  .mobile-header__center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 780px) {
+  .mobile-header {
+    display: flex; // show on mobile
+  }
+}
+
+// Drawer styles
+@media (max-width: 780px) {
+  .mobile-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 20000; // ensure above any app layer/tooltips
+  }
+
+  .mobile-drawer-content {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 280px;
+    max-width: 80vw;
+    background: $neutral-white;
+    border-right: $border-half solid $neutral-light-gray;
+    display: flex;
+    flex-direction: column;
+    outline: none;
+    box-shadow: $shadow-lg;
+    z-index: 30001; // above overlay and all other UI; higher than app dialogs
+  }
+
+  .mobile-drawer-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .mobile-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-2;
+    height: 48px;
+    min-height: 48px;
+    padding: 0 $space-3;
+    border-bottom: $border-half solid $neutral-light-gray;
+  }
+
+  .mobile-drawer-title {
+    font-size: $font-h6;
+    font-weight: $font-semibold;
+  }
+
+  .visually-hidden {
+    position: absolute !important;
+    height: 1px; width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap; /* added line */
+  }
+
+  .mobile-drawer-close {
+    background: none;
+    border: none;
+    padding: $space-2;
+    border-radius: $radius-base;
+    cursor: pointer;
+    &:hover { background-color: $neutral-light-gray; }
+  }
+
+  .mobile-drawer-nav {
+    padding: 0 $space-2;
+    ul { list-style: none; padding: 0; margin: 0; }
+    li {
+      a, button {
+        display: flex;
+        align-items: center;
+        gap: $space-3;
+        width: 100%;
+        padding: $space-2;
+        justify-content: flex-start;
+        min-height: 36px; // ensure consistent item height across all entries
+        border-radius: $radius-base;
+        color: inherit;
+        background: none;
+        border: none;
+        text-decoration: none;
+        cursor: pointer;
+        &:hover { background-color: $neutral-light-gray; }
+        img { width: $icon-mini; height: $icon-mini; }
+        svg { width: $icon-mini; height: $icon-mini; }
+        span { font-size: $font-sm; }
+      }
+      &.active a {
+        background-color: $neutral-light-gray;
+      }
+    }
+  }
+
+  .primary-links {
+    padding: $space-2;
+    .nav-item-new-chat {
+      button {
+        color: $primary-medium;
+        svg { color: $primary-medium; }
+      }
+    }
+  }
+
+  .mobile-drawer-actions {
+    padding: $space-2;
+    .new-chat-button {
+      // Mirror expanded sidebar: left-aligned label with full-width clickable row
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      justify-content: flex-start;
+      border: $border-full solid $neutral-light-gray !important;
+      border-radius: $radius-base !important;
+      background-color: $neutral-lightest-gray !important;
+      padding: $space-3 !important;
+      color: $neutral-black !important;
+      text-align: left;
+
+      svg {
+        color: $success; // green icon
+        flex-shrink: 0;
+      }
+
+      span {
+        flex: 1;
+        text-align: left;
+        font-weight: $font-medium;
+      }
+
+      &:hover {
+        background-color: $neutral-light-gray !important;
+      }
+    }
+  }
+
+  .mobile-drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: $space-2;
+  }
+
+  .mobile-header__menu-button {
+    background: none;
+    border: none;
+    padding: $space-2;
+    border-radius: $radius-base;
+    cursor: pointer;
+    &:hover { background-color: $neutral-light-gray; }
+  }
+
+  .mobile-drawer-section {
+    padding: $space-2;
+    .section-title {
+      font-size: $font-xs;
+      color: $neutral-medium-gray;
+      margin-bottom: $space-2;
+      text-transform: uppercase;
+    }
+  }
+
+  .mobile-drawer-brand {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    text-decoration: none;
+    color: inherit;
+    img { width: $icon-medium; height: $icon-medium; }
+    .brand-name { font-weight: $font-medium; }
+  }
+
+  .mobile-drawer-bottom {
+    border-top: $border-half solid $neutral-light-gray;
+    padding: $space-2 $space-3;
+    background: $neutral-white;
+    .user-profile-section {
+      // mirror expanded sidebar profile section
+      .profile-trigger-button {
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+        cursor: pointer;
+        width: 100%;
+        text-align: left;
+        display: flex;
+
+        &:hover {
+          background: none !important;
+          background-color: transparent !important;
+          transform: none !important;
+
+          .profile-trigger {
+            background-color: $neutral-light-gray;
+          }
+        }
+
+        &:focus,
+        &:focus-visible {
+          outline: none !important;
+          box-shadow: none !important;
+          background: none !important;
+          background-color: transparent !important;
+        }
+
+        &:active {
+          background: none !important;
+          background-color: transparent !important;
+          transform: none !important;
+
+          .profile-trigger {
+            background-color: $neutral-light-gray !important;
+          }
+        }
+      }
+
+      .profile-trigger {
+        display: flex;
+        align-items: center;
+        gap: $space-3;
+        padding: $space-2;
+        border-radius: $radius-base;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        width: 100%;
+
+        &:hover {
+          background-color: $neutral-light-gray;
+        }
+
+        &:focus {
+          outline: none;
+        }
+
+        .profile-image {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        .profile-info {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-width: 0; // Allows text truncation
+        }
+
+        .profile-name {
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: $neutral-dark-gray;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .profile-plan {
+          font-size: 0.75rem;
+          font-weight: 400;
+          color: $neutral-medium-gray;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          margin-top: 1px;
+        }
+
+        .profile-options-icon {
+          object-fit: contain;
+          flex-shrink: 0;
+          transition: opacity $transition-base;
+        }
+      }
+    }
+  }
+
+  // Make the account dropdown as wide as the drawer
+  .mobile-drawer-dropdown[data-slot="dropdown-menu-content"] {
+    width: 280px;
+    max-width: 80vw;
+  }
+
+  // Improve signout appearance within dropdown
+  .mobile-drawer-dropdown .signout-action[data-slot="dropdown-menu-item"] {
+    color: $error;
+  }
+}
+
+
