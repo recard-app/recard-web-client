@@ -59,6 +59,7 @@
   .mobile-header__brand {
     display: flex;
     align-items: center;
+    justify-content: center;
     .brand {
       display: flex;
       align-items: center;
@@ -68,6 +69,7 @@
       img { width: $icon-medium; height: $icon-medium; }
       .brand-name { font-weight: $font-semibold; font-size: $font-h6; }
     }
+    img { width: $icon-medium; height: $icon-medium; display: block; }
   }
 
   .mobile-header__left {

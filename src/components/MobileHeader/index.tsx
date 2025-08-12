@@ -123,7 +123,13 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           </div>
 
           <div className="mobile-header__center">
-            <h1 className="mobile-header__title">{getCurrentPageTitle()}</h1>
+            {isHomeOrChatRoute(location.pathname) ? (
+              <Link to={PAGES.HOME.PATH} className="mobile-header__brand" aria-label={APP_NAME}>
+                <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} />
+              </Link>
+            ) : (
+              <h1 className="mobile-header__title">{getCurrentPageTitle()}</h1>
+            )}
           </div>
 
           <div className="mobile-header__actions">
