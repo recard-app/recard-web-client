@@ -142,16 +142,22 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           </div>
 
           <div className="mobile-header__center">
-            {isHomeOrChatRoute(location.pathname) ? (
-              <Link to={PAGES.HOME.PATH} className="mobile-header__brand" aria-label={APP_NAME}>
-                <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} />
-              </Link>
-            ) : (
-              <h1 className="mobile-header__title">
-                {getCurrentPageIcon()}
-                <span>{getCurrentPageTitle()}</span>
-              </h1>
-            )}
+            {(() => {
+              const currentTitle = getCurrentPageTitle();
+              if (isHomeOrChatRoute(location.pathname) || currentTitle === PAGE_NAMES.HOME) {
+                return (
+                  <Link to={PAGES.HOME.PATH} className="mobile-header__brand" aria-label={APP_NAME}>
+                    <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} />
+                  </Link>
+                );
+              }
+              return (
+                <h1 className="mobile-header__title">
+                  {getCurrentPageIcon()}
+                  <span>{currentTitle}</span>
+                </h1>
+              );
+            })()}
           </div>
 
           <div className="mobile-header__actions">

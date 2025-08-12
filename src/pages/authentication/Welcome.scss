@@ -1,0 +1,101 @@
+@use '../../styling/globals' as *;
+
+.welcome-wrapper {
+  display: grid;
+  gap: $space-6;
+
+  .welcome-hero {
+    display: grid;
+    gap: $space-3;
+    text-align: left;
+
+    .welcome-title {
+      @include heading-4;
+      margin: 0;
+    }
+
+    .welcome-subtitle {
+      @include body-regular;
+      color: $neutral-dark-gray;
+      margin: 0;
+    }
+
+    .welcome-actions {
+      display: flex;
+      gap: $space-3;
+      flex-wrap: wrap;
+    }
+  }
+
+  .welcome-sections {
+    display: grid;
+    gap: $space-5;
+  }
+
+  .section {
+    display: grid;
+    gap: $space-3;
+  }
+
+  .section-title {
+    @include heading-6;
+    margin: 0;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-3;
+
+    @media (max-width: $breakpoint-sm) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .step-card {
+    display: grid;
+    gap: $space-2;
+    background: $neutral-white;
+    border: $border-half solid $neutral-gray;
+    border-radius: $radius-base;
+    padding: $space-3;
+
+    h4 { @include heading-6; margin: 0; }
+    p { margin: 0; color: $neutral-dark-gray; }
+
+    &.active {
+      background: $primary-lightest;
+      border-color: $primary-light;
+    }
+
+    .card-actions {
+      margin-top: $space-1;
+    }
+  }
+
+  .tips {
+    background: $neutral-lightest-gray;
+    border: $border-half solid $neutral-gray;
+    border-radius: $radius-base;
+    padding: $space-3;
+
+    .tips-list {
+      display: grid;
+      gap: $space-1-5;
+      margin: 0;
+      padding-left: $space-4;
+      list-style: disc;
+      color: $neutral-dark-gray;
+    }
+
+    .tip-actions {
+      margin-top: $space-2;
+    }
+  }
+
+  .subtle {
+    color: $neutral-dark-gray;
+  }
+}
+
+
