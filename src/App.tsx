@@ -26,6 +26,9 @@ import ForgotPassword from './pages/authentication/ForgotPassword';
 import Welcome from './pages/authentication/Welcome';
 import History from './pages/history/History';
 import MyCards from './pages/my-cards/MyCards';
+import HistoryHelpModal from './pages/history/HistoryHelpModal';
+import MyCardsHelpModal from './pages/my-cards/MyCardsHelpModal';
+import PreferencesHelpModal from './pages/preferences/PreferencesHelpModal';
 // Components
 import AppHeader from './components/AppHeader';
 import AppSidebar from './components/AppSidebar';
@@ -453,6 +456,32 @@ function AppContent({}: AppContentProps) {
     setIsSidePanelOpen(prev => !prev);
   };
 
+  const shouldShowMobileHelp = (): boolean => {
+    const path = location.pathname;
+    if (path === PAGES.HOME.PATH || PageUtils.isPage(path, 'HOME')) return true;
+    if (path === PAGES.HISTORY.PATH) return true;
+    if (path === PAGES.MY_CARDS.PATH) return true;
+    if (path === PAGES.PREFERENCES.PATH) return true;
+    return false;
+  };
+
+  const renderGlobalHelpContent = (): React.ReactNode => {
+    const path = location.pathname;
+    if (path === PAGES.HOME.PATH || PageUtils.isPage(path, 'HOME')) {
+      return <PromptHelpModal />;
+    }
+    if (path === PAGES.HISTORY.PATH) {
+      return <HistoryHelpModal />;
+    }
+    if (path === PAGES.MY_CARDS.PATH) {
+      return <MyCardsHelpModal />;
+    }
+    if (path === PAGES.PREFERENCES.PATH) {
+      return <PreferencesHelpModal />;
+    }
+    return null;
+  };
+
   const renderMainContent = () => {
     const headerActions = (
       <>
@@ -494,16 +523,7 @@ function AppContent({}: AppContentProps) {
           </div>
         </div>
 
-        <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Help</DialogTitle>
-            </DialogHeader>
-            <DialogBody>
-              <PromptHelpModal />
-            </DialogBody>
-          </DialogContent>
-        </Dialog>
+        {/* Home help handled by global help dialog below */}
       </div>
     );
   };
@@ -555,6 +575,8 @@ function AppContent({}: AppContentProps) {
             return user && !isAuthRoute ? (
               <MobileHeader 
                 title={mobileHeaderTitle}
+                showHelpButton={shouldShowMobileHelp()}
+                onHelpClick={() => setIsHelpOpen(true)}
                 onLogout={handleLogout}
                 chatHistory={chatHistory}
                 currentChatId={currentChatId}
@@ -571,6 +593,18 @@ function AppContent({}: AppContentProps) {
               />
             ) : null;
           })()}
+
+          {/* Global contextual Help Dialog for mobile and desktop */}
+          <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Help</DialogTitle>
+              </DialogHeader>
+              <DialogBody>
+                {renderGlobalHelpContent()}
+              </DialogBody>
+            </DialogContent>
+          </Dialog>
           
           <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
             <DialogContent>

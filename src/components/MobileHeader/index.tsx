@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY } from '../../types';
+import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, PageUtils } from '../../types';
 import { Icon, IconRenderer } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -20,6 +20,9 @@ interface MobileHeaderProps {
   title: string;
   rightContent?: React.ReactNode;
   onLogout?: () => void;
+  // Right-side help button for pages with help
+  showHelpButton?: boolean;
+  onHelpClick?: () => void;
   // Sidebar-like data/handlers
   chatHistory?: Conversation[];
   currentChatId?: string | null;
@@ -38,7 +41,9 @@ interface MobileHeaderProps {
 const MobileHeader: React.FC<MobileHeaderProps> = ({ 
   // title is intentionally unused; we don't render dynamic titles in mobile header
   title: _unusedTitle, 
-  rightContent, 
+  rightContent,
+  showHelpButton = false,
+  onHelpClick,
   onLogout,
   chatHistory = [],
   currentChatId = null,
@@ -62,6 +67,35 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     if (pathname === PAGES.HOME.PATH) return true;
     if (currentChatId && pathname === `${PAGES.HOME.PATH}${currentChatId}`) return true;
     return false;
+  };
+
+  // Get the current page title for display in mobile header
+  const getCurrentPageTitle = (): string => {
+    const currentPath = location.pathname;
+    
+    // Handle home/chat routes specially
+    if (isHomeOrChatRoute(currentPath)) {
+      return PAGE_NAMES.HOME;
+    }
+    
+    // Direct path matching for better reliability
+    switch (currentPath) {
+      case PAGES.HISTORY.PATH:
+        return PAGE_NAMES.TRANSACTION_HISTORY;
+      case PAGES.MY_CARDS.PATH:
+        return PAGE_NAMES.MY_CARDS;
+      case PAGES.PREFERENCES.PATH:
+        return PAGE_NAMES.PREFERENCES;
+      case PAGES.ACCOUNT.PATH:
+        return PAGE_NAMES.MY_ACCOUNT;
+      default:
+        // Use PageUtils as fallback
+        const pageTitle = PageUtils.getTitleByPath(currentPath);
+        if (pageTitle) {
+          return pageTitle;
+        }
+        return PAGE_NAMES.HOME; // final fallback
+    }
   };
 
   const handleNewChatClick = () => {
@@ -88,10 +122,23 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             </Drawer.Trigger>
           </div>
 
-          <div className="mobile-header__center" />
+          <div className="mobile-header__center">
+            <h1 className="mobile-header__title">{getCurrentPageTitle()}</h1>
+          </div>
 
           <div className="mobile-header__actions">
-            {rightContent || <span aria-hidden className="header-spacer" />}
+            {showHelpButton && onHelpClick ? (
+              <button 
+                className="button no-outline small icon-gray-hover mobile-header__help-button"
+                onClick={onHelpClick}
+                aria-label="Open help"
+                title="Help"
+              >
+                <Icon name="help" variant="outline" size={20} color={SIDEBAR_TOGGLE_ICON_COLOR} />
+              </button>
+            ) : (
+              rightContent || <span aria-hidden className="header-spacer" />
+            )}
           </div>
           <Drawer.Portal>
             <Drawer.Overlay className="mobile-drawer-overlay" />

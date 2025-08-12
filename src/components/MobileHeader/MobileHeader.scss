@@ -15,12 +15,14 @@
   justify-content: space-between;
 
   .mobile-header__title {
-    font-size: $font-h5;
+    font-size: $font-h6;
     font-weight: $font-medium;
     color: $neutral-black;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    margin: 0;
+    text-align: center;
   }
 
   .sr-only {
@@ -37,6 +39,21 @@
     gap: $space-2;
     min-width: $icon-large; // to keep center alignment stable
     justify-content: flex-end;
+
+    .mobile-header__help-button {
+      background: none;
+      border: none;
+      padding: $space-2;
+      border-radius: $radius-base;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover { 
+        background-color: $neutral-light-gray; 
+      }
+    }
   }
 
   .mobile-header__brand {
@@ -140,6 +157,8 @@
 
   .mobile-drawer-nav {
     padding: 0 $space-2;
+    margin-top: $space-2;
+    margin-bottom: $space-4;
     ul { list-style: none; padding: 0; margin: 0; }
     li {
       a, button {
@@ -227,6 +246,7 @@
 
   .mobile-drawer-section {
     padding: $space-2;
+    margin-bottom: $space-2;
     .section-title {
       font-size: $font-xs;
       color: $neutral-medium-gray;
