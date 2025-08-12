@@ -23,6 +23,24 @@
     text-overflow: ellipsis;
     margin: 0;
     text-align: center;
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1-5;
+
+    .title-icon {
+      width: $icon-small;
+      height: $icon-small;
+      color: $primary-color;
+      flex-shrink: 0;
+    }
+
+    span {
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+    }
   }
 
   .sr-only {
@@ -271,7 +289,7 @@
 
   .mobile-drawer-bottom {
     border-top: $border-half solid $neutral-light-gray;
-    padding: $space-2 $space-3;
+    padding: $space-1;
     background: $neutral-white;
     .user-profile-section {
       // mirror expanded sidebar profile section

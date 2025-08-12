@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, PageUtils } from '../../types';
-import { Icon, IconRenderer } from '../../icons';
+import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils } from '../../types';
+import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import {
@@ -98,6 +98,25 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     }
   };
 
+  // Get the current page icon (mini) for display in mobile header
+  const getCurrentPageIcon = (): React.ReactNode | null => {
+    const currentPath = location.pathname;
+    if (isHomeOrChatRoute(currentPath)) return null;
+
+    switch (currentPath) {
+      case PAGES.HISTORY.PATH:
+        return <Icon name="history" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+      case PAGES.MY_CARDS.PATH:
+        return <Icon name="card" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+      case PAGES.PREFERENCES.PATH:
+        return <Icon name="preferences" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+      case PAGES.ACCOUNT.PATH:
+        return <Icon name="account" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+      default:
+        return null;
+    }
+  };
+
   const handleNewChatClick = () => {
     if (isHomeOrChatRoute(location.pathname)) {
       onNewChat?.();
@@ -128,7 +147,10 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} />
               </Link>
             ) : (
-              <h1 className="mobile-header__title">{getCurrentPageTitle()}</h1>
+              <h1 className="mobile-header__title">
+                {getCurrentPageIcon()}
+                <span>{getCurrentPageTitle()}</span>
+              </h1>
             )}
           </div>
 
@@ -178,7 +200,12 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                       <li className={isActive(PAGES.HISTORY.PATH) ? 'active' : ''}>
                         <Drawer.Close asChild>
                           <Link to={PAGES.HISTORY.PATH}>
-                            <IconRenderer icon={PAGE_ICONS.TRANSACTION_HISTORY.INACTIVE} size={16} />
+                            <Icon 
+                              name="history" 
+                              variant={isActive(PAGES.HISTORY.PATH) ? 'solid' : 'outline'} 
+                              size={16}
+                              color={SIDEBAR_INACTIVE_ICON_COLOR}
+                            />
                             <span>{PAGE_NAMES.TRANSACTION_HISTORY}</span>
                           </Link>
                         </Drawer.Close>
@@ -186,7 +213,12 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                       <li className={isActive(PAGES.MY_CARDS.PATH) ? 'active' : ''}>
                         <Drawer.Close asChild>
                           <Link to={PAGES.MY_CARDS.PATH}>
-                            <IconRenderer icon={PAGE_ICONS.MY_CARDS.INACTIVE} size={16} />
+                            <Icon 
+                              name="card" 
+                              variant={isActive(PAGES.MY_CARDS.PATH) ? 'solid' : 'outline'} 
+                              size={16}
+                              color={SIDEBAR_INACTIVE_ICON_COLOR}
+                            />
                             <span>{PAGE_NAMES.MY_CARDS}</span>
                           </Link>
                         </Drawer.Close>
