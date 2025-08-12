@@ -206,6 +206,19 @@
   }
 }
 
+@media (max-width: $mobile-breakpoint) {
+  // Overwrite %dialog-scrollable-content-base consumers
+  .dialog-body {
+    padding: $space-3 $space-2;
+  }
+
+  // Optional: full-screen variant tweaks
+  .dialog-content.full-screen .dialog-body,
+  .alert-dialog-content.full-screen .alert-dialog-body {
+    // padding: $space-2;
+  }
+}
+
 // Base title styling for both dialog types
 %dialog-title-base {
   @include heading-5;
