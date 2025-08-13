@@ -89,6 +89,65 @@
   }
 }
 
+/* Mobile layout adjustments */
+@media (max-width: $mobile-breakpoint) {
+  .credit-card-manager {
+    position: relative;
+    flex-direction: column;
+
+    /* Hide sidebar; details become primary content */
+    .card-sidebar {
+      display: none;
+    }
+
+    .card-details-panel {
+      flex: 1;
+      padding: $space-4;
+      overflow-y: auto;
+      min-height: 0;
+      background-color: $neutral-lightest-gray;
+    }
+
+    /* Footer with actions (occupies layout space, not floating) */
+    .mobile-sticky-footer {
+      position: relative;
+      flex-shrink: 0;
+      background-color: $neutral-white;
+      border-top: $border-full solid $neutral-light-gray;
+      padding: $space-3 $space-4 $space-4;
+      display: flex;
+      flex-direction: column;
+      gap: $space-3;
+
+      .add-card-button {
+        @include button-primary;
+        width: 100%;
+      }
+
+      .view-card-select {
+        @include default-select;
+        width: 100%;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: $space-3;
+        background-color: $neutral-white;
+
+        .select-card-icon {
+          flex-shrink: 0;
+        }
+
+        .label-text {
+          flex: 1;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+}
+
 /* Custom styles for the modal content */
 .modal-header-content {
   text-align: left;

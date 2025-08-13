@@ -22,6 +22,7 @@ interface SingleCardSelectorProps {
   externalSearchTerm?: string;
   onExternalSearchTermChange?: (value: string) => void;
   hideInternalSearch?: boolean;
+  onlyShowUserCards?: boolean;
 }
 
 /**
@@ -36,7 +37,8 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   disabled = false,
   externalSearchTerm,
   onExternalSearchTermChange,
-  hideInternalSearch = false
+  hideInternalSearch = false,
+  onlyShowUserCards = false
 }) => {
   // State for managing the list of all credit cards, initialized with sorted existing cards
   const [cards, setCards] = useState<CreditCard[]>(sortCards(creditCards || []));
@@ -56,7 +58,8 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
     const loadCards = async () => {
       try {
         const fetchedCards = await fetchUserCards(cards);
-        setCards(fetchedCards);
+        const nextCards = onlyShowUserCards ? fetchedCards.filter(c => c.selected) : fetchedCards;
+        setCards(nextCards);
         setIsInitialLoad(false);
         // Clear any previous errors on successful load
         setShowError(false);
@@ -69,7 +72,7 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
     };
 
     loadCards();
-  }, [creditCards, selectedCardId]);
+  }, [creditCards, selectedCardId, onlyShowUserCards]);
 
   /**
    * Handle card selection
@@ -88,7 +91,7 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   const userCards = filteredCards.filter(card => card.selected);
   
   // All other cards (not selected in user profile)
-  let otherCards = filteredCards.filter(card => !card.selected);
+  let otherCards = onlyShowUserCards ? [] : filteredCards.filter(card => !card.selected);
   
   // Determine section header for non-selected cards
   const otherCardsHeader = userCards.length > 0 ? "Other Cards" : "All Cards";
@@ -138,8 +141,8 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
           />
         </div>
       )}
-      
-      {!hideInternalSearch && (
+
+      {!hideInternalSearch && !onlyShowUserCards && (
         <div className="search-container">
           <input
             type="text"
@@ -184,14 +187,14 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
           <>
             {userCards.length > 0 && (
               <div className="card-section">
-                <h4 className="section-header">My Cards</h4>
+                {!onlyShowUserCards && <h4 className="section-header">My Cards</h4>}
                 <div className="section-cards">
                   {userCards.map(renderCard)}
                 </div>
               </div>
             )}
-            
-            {otherCards.length > 0 && (
+
+            {!onlyShowUserCards && otherCards.length > 0 && (
               <div className="card-section">
                 <h4 className="section-header">{otherCardsHeader}</h4>
                 <div className="section-cards">
@@ -201,7 +204,7 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
             )}
           </>
         )}
-        
+
         {filteredCards.length === 0 && !isInitialLoad && !showOnlyUnselectedCards && (
           <div className="no-results">
             <InfoDisplay

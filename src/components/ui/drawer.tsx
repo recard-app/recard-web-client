@@ -46,8 +46,9 @@ DrawerOverlay.displayName = "DrawerOverlay";
 function DrawerContent({
   className,
   children,
+  fitContent,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+}: React.ComponentProps<typeof DrawerPrimitive.Content> & { fitContent?: boolean }) {
   return (
     <DrawerPortal data-slot="drawer-portal">
       <DrawerOverlay />
@@ -63,6 +64,8 @@ function DrawerContent({
           "sm:data-[vaul-drawer-direction=bottom]:max-w-[1200px] sm:data-[vaul-drawer-direction=bottom]:inset-x-auto sm:data-[vaul-drawer-direction=bottom]:left-1/2 sm:data-[vaul-drawer-direction=bottom]:translate-x-[-50%]",
           "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:sm:max-w-sm",
           "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:sm:max-w-sm",
+          // Optional: allow content-sized drawers without hardcoding heights
+          fitContent && "data-[vaul-drawer-direction=bottom]:h-auto data-[vaul-drawer-direction=bottom]:max-h-screen data-[vaul-drawer-direction=top]:h-auto data-[vaul-drawer-direction=top]:max-h-screen",
           className
         )}
         {...props}

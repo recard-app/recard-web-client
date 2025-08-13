@@ -20,6 +20,7 @@ import {
   DrawerTitle,
 } from '../ui/drawer';
 import Icon from '../../icons';
+import { CardIcon } from '../../icons';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,8 +48,11 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
     
     // Dialog state management
     const [showSelector, setShowSelector] = useState(false);
+    const [selectorMode, setSelectorMode] = useState<'add' | 'view'>('add');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [addCardSearchTerm, setAddCardSearchTerm] = useState<string>('');
+    // View selector does not use search currently (hidden in UI)
+    // Keeping state omitted to avoid unused warnings
     const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
         if (typeof window === 'undefined') return false;
         return window.matchMedia('(max-width: 780px)').matches;
@@ -323,6 +327,13 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
 
     // Handle adding a new card via the CreditCardSelector
     const handleAddCard = () => {
+        setSelectorMode('add');
+        setShowSelector(true);
+    };
+
+    // Open selector to choose a card to view (mobile-only footer control)
+    const handleOpenViewSelector = () => {
+        setSelectorMode('view');
         setShowSelector(true);
     };
 
@@ -331,6 +342,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
         if (!open) {
             setIsAddingCard(false);
             setSelectedCardForAdding(null);
+            setAddCardSearchTerm('');
         }
         setShowSelector(open);
     };
@@ -404,6 +416,21 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
         setShowSelector(false);
     };
 
+    // Handle selecting a card just for viewing (no DB changes)
+    const handleViewSelectorCardSelect = async (card: CreditCard) => {
+        // Update selection for viewing
+        setSelectedCard(card);
+        // Use cached details if available, otherwise load
+        const cachedDetails = detailedCards.find(detail => detail.id === card.id);
+        if (cachedDetails) {
+            setCardDetails(cachedDetails);
+        } else {
+            setIsLoading(true);
+            await loadCardDetails(card.id);
+        }
+        setShowSelector(false);
+    };
+
     // Get only the selected cards to display
     const selectedCards = userCards.filter(card => card.selected)
         .sort((a, b) => {
@@ -453,6 +480,35 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     onRemoveCard={selectedCard ? () => handleRemoveCard(selectedCard) : undefined}
                 />
             </div>
+
+            {/* Mobile-only sticky footer controls */}
+            {isMobileViewport && (
+                <div className="mobile-sticky-footer" role="region" aria-label="Card actions">
+                    <button className="button icon with-text add-card-button" onClick={handleAddCard}>
+                        <Icon name="card" variant="solid" />
+                        Add Card
+                    </button>
+                    <button className="view-card-select" onClick={handleOpenViewSelector} aria-haspopup="dialog">
+                        {selectedCard ? (
+                            <>
+                                <CardIcon
+                                    title={`${selectedCard.CardName} card`}
+                                    size={24}
+                                    primary={selectedCard.CardPrimaryColor}
+                                    secondary={selectedCard.CardSecondaryColor}
+                                    className="select-card-icon"
+                                />
+                                <span className="label-text">{selectedCard.CardName}</span>
+                            </>
+                        ) : (
+                            <>
+                                <Icon name="card" variant="outline" />
+                                <span className="label-text">Select a card to view</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+            )}
             
             {/* Card selector modal/drawer */}
             {(() => {
@@ -460,34 +516,48 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 if (useDrawer) {
                     return (
                         <Drawer open={showSelector} onOpenChange={handleSelectorDialogChange} direction="bottom">
-                            <DrawerContent>
-                                <DrawerTitle className="sr-only">Add a Credit Card</DrawerTitle>
+                            <DrawerContent fitContent>
+                                <DrawerTitle className="sr-only">{selectorMode === 'view' ? 'Select a Card to View' : 'Add a Credit Card'}</DrawerTitle>
                                 <div className="dialog-header drawer-sticky-header">
-                                    <h2>Add a Credit Card</h2>
-                                    <div className="search-container" style={{ marginTop: 6 }}>
-                                        <input
-                                            type="text"
-                                            placeholder="Search cards..."
-                                            value={addCardSearchTerm}
-                                            onChange={(e) => setAddCardSearchTerm(e.target.value)}
-                                            className="search-input default-input"
-                                            disabled={isAddingCard}
-                                        />
-                                    </div>
+                                    <h2>{selectorMode === 'view' ? 'Select a Card to View' : 'Add a Credit Card'}</h2>
+                                    {selectorMode === 'add' && (
+                                        <div className="search-container" style={{ marginTop: 6 }}>
+                                            <input
+                                                type="text"
+                                                placeholder="Search cards..."
+                                                value={addCardSearchTerm}
+                                                onChange={(e) => setAddCardSearchTerm(e.target.value)}
+                                                className="search-input default-input"
+                                                disabled={isAddingCard}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="dialog-body" style={{ overflowY: 'auto' }}>
-                                    <SingleCardSelector 
-                                        creditCards={userCards.filter(card => !card.selected)}
-                                        onSelectCard={handleSelectorCardSelect}
-                                        selectedCardId={undefined}
-                                        showOnlyUnselectedCards={true}
-                                        disabled={isAddingCard}
-                                        hideInternalSearch={true}
-                                        externalSearchTerm={addCardSearchTerm}
-                                        onExternalSearchTermChange={setAddCardSearchTerm}
-                                    />
+                                    {selectorMode === 'view' ? (
+                                        <SingleCardSelector
+                                            creditCards={userCards.filter(card => card.selected)}
+                                            onSelectCard={handleViewSelectorCardSelect}
+                                            selectedCardId={selectedCard?.id}
+                                            showOnlyUnselectedCards={false}
+                                            disabled={false}
+                                            hideInternalSearch={true}
+                                            onlyShowUserCards={true}
+                                        />
+                                    ) : (
+                                        <SingleCardSelector 
+                                            creditCards={userCards.filter(card => !card.selected)}
+                                            onSelectCard={handleSelectorCardSelect}
+                                            selectedCardId={undefined}
+                                            showOnlyUnselectedCards={true}
+                                            disabled={isAddingCard}
+                                            hideInternalSearch={true}
+                                            externalSearchTerm={addCardSearchTerm}
+                                            onExternalSearchTermChange={setAddCardSearchTerm}
+                                        />
+                                    )}
                                 </div>
-                                {isAddingCard && selectedCardForAdding && (
+                                {selectorMode === 'add' && isAddingCard && selectedCardForAdding && (
                                     <div className="dialog-footer">
                                         <InfoDisplay
                                             type="loading"
@@ -504,18 +574,30 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     <Dialog open={showSelector} onOpenChange={handleSelectorDialogChange}>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>Add a Credit Card</DialogTitle>
+                                <DialogTitle>{selectorMode === 'view' ? 'Select a Card to View' : 'Add a Credit Card'}</DialogTitle>
                             </DialogHeader>
                             <DialogBody>
-                                <SingleCardSelector 
-                                    creditCards={userCards.filter(card => !card.selected)}
-                                    onSelectCard={handleSelectorCardSelect}
-                                    selectedCardId={undefined}
-                                    showOnlyUnselectedCards={true}
-                                    disabled={isAddingCard}
-                                />
+                                {selectorMode === 'view' ? (
+                                    <SingleCardSelector 
+                                        creditCards={userCards.filter(card => card.selected)}
+                                        onSelectCard={handleViewSelectorCardSelect}
+                                        selectedCardId={selectedCard?.id}
+                                        showOnlyUnselectedCards={false}
+                                        disabled={false}
+                                        hideInternalSearch={true}
+                                        onlyShowUserCards={true}
+                                    />
+                                ) : (
+                                    <SingleCardSelector 
+                                        creditCards={userCards.filter(card => !card.selected)}
+                                        onSelectCard={handleSelectorCardSelect}
+                                        selectedCardId={undefined}
+                                        showOnlyUnselectedCards={true}
+                                        disabled={isAddingCard}
+                                    />
+                                )}
                             </DialogBody>
-                            {isAddingCard && selectedCardForAdding && (
+                            {selectorMode === 'add' && isAddingCard && selectedCardForAdding && (
                                 <DialogFooter>
                                     <InfoDisplay
                                         type="loading"
