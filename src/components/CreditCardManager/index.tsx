@@ -484,10 +484,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             {/* Mobile-only sticky footer controls */}
             {isMobileViewport && (
                 <div className="mobile-sticky-footer" role="region" aria-label="Card actions">
-                    <button className="button icon with-text add-card-button" onClick={handleAddCard}>
-                        <Icon name="card" variant="solid" />
-                        Add Card
-                    </button>
+                    <p className="caps-label">View or Manage Cards</p>
                     <button className="view-card-select" onClick={handleOpenViewSelector} aria-haspopup="dialog">
                         {selectedCard ? (
                             <>
@@ -516,10 +513,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 if (useDrawer) {
                     return (
                         <Drawer open={showSelector} onOpenChange={handleSelectorDialogChange} direction="bottom">
-                            <DrawerContent fitContent>
-                                <DrawerTitle className="sr-only">{selectorMode === 'view' ? 'Select a Card to View' : 'Add a Credit Card'}</DrawerTitle>
+                            <DrawerContent fitContent={selectorMode === 'view'}>
+                                <DrawerTitle className="sr-only">My Cards</DrawerTitle>
                                 <div className="dialog-header drawer-sticky-header">
-                                    <h2>{selectorMode === 'view' ? 'Select a Card to View' : 'Add a Credit Card'}</h2>
+                                    <h2>My Cards</h2>
                                     {selectorMode === 'add' && (
                                         <div className="search-container" style={{ marginTop: 6 }}>
                                             <input
@@ -557,6 +554,14 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                                         />
                                     )}
                                 </div>
+                                {selectorMode === 'view' && (
+                                    <div className="dialog-footer">
+                                        <button className="button icon with-text add-card-button" onClick={handleAddCard}>
+                                            <Icon name="card" variant="solid" />
+                                            Add Card
+                                        </button>
+                                    </div>
+                                )}
                                 {selectorMode === 'add' && isAddingCard && selectedCardForAdding && (
                                     <div className="dialog-footer">
                                         <InfoDisplay
@@ -574,7 +579,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     <Dialog open={showSelector} onOpenChange={handleSelectorDialogChange}>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>{selectorMode === 'view' ? 'Select a Card to View' : 'Add a Credit Card'}</DialogTitle>
+                                <DialogTitle>My Cards</DialogTitle>
                             </DialogHeader>
                             <DialogBody>
                                 {selectorMode === 'view' ? (
@@ -597,6 +602,14 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                                     />
                                 )}
                             </DialogBody>
+                            {selectorMode === 'view' && (
+                                <DialogFooter>
+                                    <button className="button icon with-text add-card-button" onClick={handleAddCard}>
+                                        <Icon name="card" variant="solid" />
+                                        Add Card
+                                    </button>
+                                </DialogFooter>
+                            )}
                             {selectorMode === 'add' && isAddingCard && selectedCardForAdding && (
                                 <DialogFooter>
                                     <InfoDisplay

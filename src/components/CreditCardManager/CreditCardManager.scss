@@ -119,11 +119,6 @@
       flex-direction: column;
       gap: $space-3;
 
-      .add-card-button {
-        @include button-primary;
-        width: 100%;
-      }
-
       .view-card-select {
         @include default-select;
         width: 100%;
