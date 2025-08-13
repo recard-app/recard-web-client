@@ -38,11 +38,13 @@
     
     // Base states that apply to all variants
     &:hover {
-      background-color: $neutral-light-gray;
+      // Match HistoryEntry hover color
+      background-color: $neutral-lightest-gray;
     }
     
     &.selected {
-      background-color: $primary-lightest;
+      // Match HistoryEntry selected/active color
+      background-color: $neutral-light-gray;
     }
     
     // Base card content styles

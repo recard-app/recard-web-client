@@ -16,6 +16,10 @@ import {
 } from '../ui/dialog/dialog';
 import {
   Drawer,
+  DrawerNestedRoot,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerTrigger,
   DrawerContent,
   DrawerTitle,
 } from '../ui/drawer';
@@ -64,6 +68,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
     // Add card loading state
     const [isAddingCard, setIsAddingCard] = useState(false);
     const [selectedCardForAdding, setSelectedCardForAdding] = useState<CreditCard | null>(null);
+    const [showAddNested, setShowAddNested] = useState(false);
     
     // Error message state
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -410,10 +415,15 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             }
         }
         
-        // Clear loading state and close the selector
+        // Clear loading state and close drawers appropriately
         setIsAddingCard(false);
         setSelectedCardForAdding(null);
-        setShowSelector(false);
+        if (isMobileViewport) {
+            // Close only the nested drawer, keep the outer drawer open
+            setShowAddNested(false);
+        } else {
+            setShowSelector(false);
+        }
     };
 
     // Handle selecting a card just for viewing (no DB changes)
@@ -513,64 +523,75 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 if (useDrawer) {
                     return (
                         <Drawer open={showSelector} onOpenChange={handleSelectorDialogChange} direction="bottom">
-                            <DrawerContent fitContent={selectorMode === 'view'}>
+                            <DrawerContent fitContent>
                                 <DrawerTitle className="sr-only">My Cards</DrawerTitle>
                                 <div className="dialog-header drawer-sticky-header">
                                     <h2>My Cards</h2>
-                                    {selectorMode === 'add' && (
-                                        <div className="search-container" style={{ marginTop: 6 }}>
-                                            <input
-                                                type="text"
-                                                placeholder="Search cards..."
-                                                value={addCardSearchTerm}
-                                                onChange={(e) => setAddCardSearchTerm(e.target.value)}
-                                                className="search-input default-input"
-                                                disabled={isAddingCard}
-                                            />
-                                        </div>
-                                    )}
                                 </div>
                                 <div className="dialog-body" style={{ overflowY: 'auto' }}>
-                                    {selectorMode === 'view' ? (
-                                        <SingleCardSelector
-                                            creditCards={userCards.filter(card => card.selected)}
-                                            onSelectCard={handleViewSelectorCardSelect}
-                                            selectedCardId={selectedCard?.id}
-                                            showOnlyUnselectedCards={false}
-                                            disabled={false}
-                                            hideInternalSearch={true}
-                                            onlyShowUserCards={true}
-                                        />
-                                    ) : (
-                                        <SingleCardSelector 
-                                            creditCards={userCards.filter(card => !card.selected)}
-                                            onSelectCard={handleSelectorCardSelect}
-                                            selectedCardId={undefined}
-                                            showOnlyUnselectedCards={true}
-                                            disabled={isAddingCard}
-                                            hideInternalSearch={true}
-                                            externalSearchTerm={addCardSearchTerm}
-                                            onExternalSearchTermChange={setAddCardSearchTerm}
-                                        />
-                                    )}
+                                    <SingleCardSelector
+                                        creditCards={userCards.filter(card => card.selected)}
+                                        onSelectCard={handleViewSelectorCardSelect}
+                                        selectedCardId={selectedCard?.id}
+                                        showOnlyUnselectedCards={false}
+                                        disabled={false}
+                                        hideInternalSearch={true}
+                                        onlyShowUserCards={true}
+                                    />
                                 </div>
-                                {selectorMode === 'view' && (
-                                    <div className="dialog-footer">
-                                        <button className="button icon with-text add-card-button" onClick={handleAddCard}>
-                                            <Icon name="card" variant="solid" />
-                                            Add Card
-                                        </button>
-                                    </div>
-                                )}
-                                {selectorMode === 'add' && isAddingCard && selectedCardForAdding && (
-                                    <div className="dialog-footer">
-                                        <InfoDisplay
-                                            type="loading"
-                                            message={`Adding ${selectedCardForAdding.CardName}...`}
-                                            showTitle={false}
-                                        />
-                                    </div>
-                                )}
+                                <div className="dialog-footer">
+                                    <DrawerNestedRoot open={showAddNested} onOpenChange={setShowAddNested}>
+                                        <DrawerTrigger asChild>
+                                            <button className="button icon with-text add-card-button">
+                                                <Icon name="card" variant="solid" />
+                                                Add Card
+                                            </button>
+                                        </DrawerTrigger>
+                                        <DrawerPortal>
+                                            <DrawerOverlay />
+                                            <DrawerContent>
+                                                <DrawerTitle className="sr-only">Add Card</DrawerTitle>
+                                                <div className="dialog-header drawer-sticky-header">
+                                                    <h2>Add Card</h2>
+                                                    <div className="search-container" style={{ marginTop: 6 }}>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Search cards..."
+                                                            value={addCardSearchTerm}
+                                                            onChange={(e) => setAddCardSearchTerm(e.target.value)}
+                                                            className="search-input default-input"
+                                                            disabled={isAddingCard}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="dialog-body" style={{ overflowY: 'auto' }}>
+                                                    <SingleCardSelector 
+                                                        creditCards={userCards.filter(card => !card.selected)}
+                                                        onSelectCard={(card) => {
+                                                            handleSelectorCardSelect(card);
+                                                            setShowAddNested(false);
+                                                        }}
+                                                        selectedCardId={undefined}
+                                                        showOnlyUnselectedCards={true}
+                                                        disabled={isAddingCard}
+                                                        hideInternalSearch={true}
+                                                        externalSearchTerm={addCardSearchTerm}
+                                                        onExternalSearchTermChange={setAddCardSearchTerm}
+                                                    />
+                                                </div>
+                                                {isAddingCard && selectedCardForAdding && (
+                                                    <div className="dialog-footer">
+                                                        <InfoDisplay
+                                                            type="loading"
+                                                            message={`Adding ${selectedCardForAdding.CardName}...`}
+                                                            showTitle={false}
+                                                        />
+                                                    </div>
+                                                )}
+                                            </DrawerContent>
+                                        </DrawerPortal>
+                                    </DrawerNestedRoot>
+                                </div>
                             </DrawerContent>
                         </Drawer>
                     );
@@ -579,7 +600,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     <Dialog open={showSelector} onOpenChange={handleSelectorDialogChange}>
                         <DialogContent>
                             <DialogHeader>
-                                <DialogTitle>My Cards</DialogTitle>
+                                <DialogTitle>{selectorMode === 'add' ? 'Add Card' : 'My Cards'}</DialogTitle>
                             </DialogHeader>
                             <DialogBody>
                                 {selectorMode === 'view' ? (
