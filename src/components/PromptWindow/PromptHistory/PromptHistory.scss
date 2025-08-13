@@ -67,6 +67,11 @@
         margin: 0;
         width: 100%;
         font-size: $font-chat;
+
+        // TOGGLE: Mobile-only overrides for prompt history that makes text bubbles take up less space
+        @media (max-width: $mobile-breakpoint) {
+          padding: 0 $space-2;
+        }
         
         // Global reset for all elements
         * {
