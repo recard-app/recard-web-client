@@ -162,7 +162,15 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
             )}
             
             {isInitialLoad ? (
-                <div className="loading">Loading cards...</div>
+                <div className="loading">
+                    <InfoDisplay
+                        type="loading"
+                        message="Loading cards..."
+                        showTitle={false}
+                        transparent={true}
+                        centered
+                    />
+                </div>
             ) : (
                 <div className="cards-container">
                     {userCards.length > 0 && (

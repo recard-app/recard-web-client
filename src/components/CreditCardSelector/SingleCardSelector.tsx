@@ -162,7 +162,15 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
       )}
       
       {isInitialLoad && (
-        <div className="loading">Loading cards...</div>
+        <div className="loading">
+          <InfoDisplay
+            type="loading"
+            message="Loading cards..."
+            showTitle={false}
+            transparent={true}
+            centered
+          />
+        </div>
       )}
       
       <div className="cards-container" style={{ minHeight: 0 }}>
