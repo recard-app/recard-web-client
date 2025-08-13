@@ -155,7 +155,7 @@
       
       .no-results {
         text-align: center;
-        padding: $space-8 $space-5;
+        padding: $space-2;
         color: $neutral-medium-gray;
         font-style: italic;
       }
@@ -163,7 +163,7 @@
     
     .loading {
       text-align: center;
-      padding: $space-8 $space-5;
+      padding: $space-2;
       color: $neutral-dark-gray;
     }
     
@@ -343,7 +343,7 @@
       
       .no-results {
         text-align: center;
-        padding: 20px;
+        padding: $space-2;
         color: #888;
         font-style: italic;
       }
@@ -351,7 +351,7 @@
     
     .loading {
       text-align: center;
-      padding: 20px;
+      padding: $space-2;
       color: #666;
     }
   }

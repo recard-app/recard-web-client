@@ -27,21 +27,21 @@ function DrawerClose({
   return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />
 }
 
-function DrawerOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
-  return (
-    <DrawerPrimitive.Overlay
-      data-slot="drawer-overlay"
-      className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[40000] bg-black/50",
-        className
-      )}
-      {...props}
-    />
-  )
-}
+const DrawerOverlay = React.forwardRef<
+  React.ElementRef<typeof DrawerPrimitive.Overlay>,
+  React.ComponentProps<typeof DrawerPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DrawerPrimitive.Overlay
+    ref={ref}
+    data-slot="drawer-overlay"
+    className={cn(
+      "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[40000] bg-black/50",
+      className
+    )}
+    {...props}
+  />
+));
+DrawerOverlay.displayName = "DrawerOverlay";
 
 function DrawerContent({
   className,
@@ -53,6 +53,7 @@ function DrawerContent({
       <DrawerOverlay />
       <DrawerPrimitive.Content
         data-slot="drawer-content"
+        aria-describedby={undefined}
         className={cn(
           "group/drawer-content bg-background fixed z-[40001] flex flex-col overflow-hidden",
           // Use a static height for consistent UX; content scrolls inside

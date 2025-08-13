@@ -17,6 +17,7 @@ import {
 import {
   Drawer,
   DrawerContent,
+  DrawerTitle,
 } from '../ui/drawer';
 import Icon from '../../icons';
 import {
@@ -460,6 +461,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     return (
                         <Drawer open={showSelector} onOpenChange={handleSelectorDialogChange} direction="bottom">
                             <DrawerContent>
+                                <DrawerTitle className="sr-only">Add a Credit Card</DrawerTitle>
                                 <div className="dialog-header drawer-sticky-header">
                                     <h2>Add a Credit Card</h2>
                                     <div className="search-container" style={{ marginTop: 6 }}>

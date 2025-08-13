@@ -217,6 +217,10 @@
 }
 
 @media (max-width: $mobile-breakpoint) {
+  %dialog-scrollable-content-base {
+    padding: 0;
+  }
+
   // Overwrite %dialog-scrollable-content-base consumers
   .dialog-body {
     padding: $space-3 $space-2;

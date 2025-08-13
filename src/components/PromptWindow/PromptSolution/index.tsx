@@ -16,6 +16,7 @@ import {
 import {
   Drawer,
   DrawerContent,
+  DrawerTitle,
 } from '../../ui/drawer';
 import './PromptSolution.scss';
 
@@ -270,6 +271,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                         return (
                             <Drawer open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen} direction="bottom">
                                 <DrawerContent>
+                                    <DrawerTitle className="sr-only">Select a Credit Card</DrawerTitle>
                                     <div className="dialog-header drawer-sticky-header">
                                         <h2>Select a Credit Card</h2>
                                         <div className="search-container" style={{ marginTop: 6 }}>
@@ -432,6 +434,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                     return (
                         <Drawer open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen} direction="bottom">
                             <DrawerContent>
+                                <DrawerTitle className="sr-only">Select a Credit Card</DrawerTitle>
                                 <div className="dialog-header drawer-sticky-header">
                                     <h2>Select a Credit Card</h2>
                                     <div className="search-container" style={{ marginTop: 6 }}>
