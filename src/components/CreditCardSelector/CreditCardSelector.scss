@@ -181,6 +181,7 @@
 
   /* SingleCardSelector specific styles */
   .single-card-selector {
+    // Default scroll behaviour; will be overridden when used inside dialog-body
     max-height: 80vh;
     overflow-y: auto;
     
@@ -188,6 +189,12 @@
     .dialog-content & {
       @extend %dialog-scrollable-content-base;
       max-height: 70vh;
+    }
+
+    // When wrapped in our dialog-body within a Drawer, avoid nested scrollbars
+    .dialog-body & {
+      max-height: none;
+      overflow-y: visible;
     }
     
     &.disabled {

@@ -19,6 +19,9 @@ interface SingleCardSelectorProps {
   selectedCardId?: string;
   showOnlyUnselectedCards?: boolean;
   disabled?: boolean;
+  externalSearchTerm?: string;
+  onExternalSearchTermChange?: (value: string) => void;
+  hideInternalSearch?: boolean;
 }
 
 /**
@@ -30,7 +33,10 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   onSelectCard,
   selectedCardId,
   showOnlyUnselectedCards = false,
-  disabled = false
+  disabled = false,
+  externalSearchTerm,
+  onExternalSearchTermChange,
+  hideInternalSearch = false
 }) => {
   // State for managing the list of all credit cards, initialized with sorted existing cards
   const [cards, setCards] = useState<CreditCard[]>(sortCards(creditCards || []));
@@ -74,7 +80,8 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
   };
 
   // Get filtered cards based on search term
-  const filteredCards = filterCards(cards, searchTerm);
+  const effectiveSearchTerm = typeof externalSearchTerm === 'string' ? externalSearchTerm : searchTerm;
+  const filteredCards = filterCards(cards, effectiveSearchTerm);
   
   // Split cards into "Your Cards" and "Other Cards"
   // "Your Cards" = cards with selected=true in their profile
@@ -132,22 +139,30 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
         </div>
       )}
       
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Search cards..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input default-input"
-          disabled={disabled}
-        />
-      </div>
+      {!hideInternalSearch && (
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search cards..."
+            value={effectiveSearchTerm}
+            onChange={(e) => {
+              if (onExternalSearchTermChange) {
+                onExternalSearchTermChange(e.target.value);
+              } else {
+                setSearchTerm(e.target.value);
+              }
+            }}
+            className="search-input default-input"
+            disabled={disabled}
+          />
+        </div>
+      )}
       
       {isInitialLoad && (
         <div className="loading">Loading cards...</div>
       )}
       
-      <div className="cards-container">
+      <div className="cards-container" style={{ minHeight: 0 }}>
         {/* When showing only unselected cards, we just render them directly without sections */}
         {showOnlyUnselectedCards ? (
           <div className="section-cards">

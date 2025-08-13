@@ -14,6 +14,10 @@ import {
   DialogBody,
   DialogFooter,
 } from '../ui/dialog/dialog';
+import {
+  Drawer,
+  DrawerContent,
+} from '../ui/drawer';
 import Icon from '../../icons';
 import {
   AlertDialog,
@@ -43,6 +47,14 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
     // Dialog state management
     const [showSelector, setShowSelector] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [addCardSearchTerm, setAddCardSearchTerm] = useState<string>('');
+    const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
+        if (typeof window === 'undefined') return false;
+        return window.matchMedia('(max-width: 780px)').matches;
+    });
+    // Local feature flags for Add Card selector (drawer vs dialog)
+    const USE_DRAWER_FOR_ADD_CARD_DESKTOP = false;
+    const USE_DRAWER_FOR_ADD_CARD_MOBILE = true;
     
     // Add card loading state
     const [isAddingCard, setIsAddingCard] = useState(false);
@@ -102,6 +114,31 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
         };
 
         loadUserCards();
+    }, []);
+
+    // Track viewport size
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const mediaQuery = window.matchMedia('(max-width: 780px)');
+        const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+            const matches = 'matches' in e ? e.matches : (e as MediaQueryList).matches;
+            setIsMobileViewport(matches);
+        };
+        handleChange(mediaQuery);
+        try {
+            mediaQuery.addEventListener('change', handleChange as unknown as EventListener);
+        } catch {
+            // @ts-ignore Safari fallback
+            mediaQuery.addListener(handleChange);
+        }
+        return () => {
+            try {
+                mediaQuery.removeEventListener('change', handleChange as unknown as EventListener);
+            } catch {
+                // @ts-ignore Safari fallback
+                mediaQuery.removeListener(handleChange);
+            }
+        };
     }, []);
 
     // Load detailed information for a specific card
@@ -416,32 +453,79 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 />
             </div>
             
-            {/* Card selector modal */}
-            <Dialog open={showSelector} onOpenChange={handleSelectorDialogChange}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Add a Credit Card</DialogTitle>
-                    </DialogHeader>
-                    <DialogBody>
-                        <SingleCardSelector 
-                            creditCards={userCards.filter(card => !card.selected)}
-                            onSelectCard={handleSelectorCardSelect}
-                            selectedCardId={undefined}
-                            showOnlyUnselectedCards={true}
-                            disabled={isAddingCard}
-                        />
-                    </DialogBody>
-                    {isAddingCard && selectedCardForAdding && (
-                        <DialogFooter>
-                            <InfoDisplay
-                                type="loading"
-                                message={`Adding ${selectedCardForAdding.CardName}...`}
-                                showTitle={false}
-                            />
-                        </DialogFooter>
-                    )}
-                </DialogContent>
-            </Dialog>
+            {/* Card selector modal/drawer */}
+            {(() => {
+                const useDrawer = isMobileViewport ? USE_DRAWER_FOR_ADD_CARD_MOBILE : USE_DRAWER_FOR_ADD_CARD_DESKTOP;
+                if (useDrawer) {
+                    return (
+                        <Drawer open={showSelector} onOpenChange={handleSelectorDialogChange} direction="bottom">
+                            <DrawerContent>
+                                <div className="dialog-header drawer-sticky-header">
+                                    <h2>Add a Credit Card</h2>
+                                    <div className="search-container" style={{ marginTop: 6 }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Search cards..."
+                                            value={addCardSearchTerm}
+                                            onChange={(e) => setAddCardSearchTerm(e.target.value)}
+                                            className="search-input default-input"
+                                            disabled={isAddingCard}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="dialog-body" style={{ overflowY: 'auto' }}>
+                                    <SingleCardSelector 
+                                        creditCards={userCards.filter(card => !card.selected)}
+                                        onSelectCard={handleSelectorCardSelect}
+                                        selectedCardId={undefined}
+                                        showOnlyUnselectedCards={true}
+                                        disabled={isAddingCard}
+                                        hideInternalSearch={true}
+                                        externalSearchTerm={addCardSearchTerm}
+                                        onExternalSearchTermChange={setAddCardSearchTerm}
+                                    />
+                                </div>
+                                {isAddingCard && selectedCardForAdding && (
+                                    <div className="dialog-footer">
+                                        <InfoDisplay
+                                            type="loading"
+                                            message={`Adding ${selectedCardForAdding.CardName}...`}
+                                            showTitle={false}
+                                        />
+                                    </div>
+                                )}
+                            </DrawerContent>
+                        </Drawer>
+                    );
+                }
+                return (
+                    <Dialog open={showSelector} onOpenChange={handleSelectorDialogChange}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Add a Credit Card</DialogTitle>
+                            </DialogHeader>
+                            <DialogBody>
+                                <SingleCardSelector 
+                                    creditCards={userCards.filter(card => !card.selected)}
+                                    onSelectCard={handleSelectorCardSelect}
+                                    selectedCardId={undefined}
+                                    showOnlyUnselectedCards={true}
+                                    disabled={isAddingCard}
+                                />
+                            </DialogBody>
+                            {isAddingCard && selectedCardForAdding && (
+                                <DialogFooter>
+                                    <InfoDisplay
+                                        type="loading"
+                                        message={`Adding ${selectedCardForAdding.CardName}...`}
+                                        showTitle={false}
+                                    />
+                                </DialogFooter>
+                            )}
+                        </DialogContent>
+                    </Dialog>
+                );
+            })()}
             
             {/* Delete confirmation modal */}
             <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>

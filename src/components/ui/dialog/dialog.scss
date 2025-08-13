@@ -222,11 +222,7 @@
     padding: $space-3 $space-2;
   }
 
-  // Optional: full-screen variant tweaks
-  .dialog-content.full-screen .dialog-body,
-  .alert-dialog-content.full-screen .alert-dialog-body {
-    // padding: $space-2;
-  }
+  // Optional: full-screen variant tweaks (add rules here if needed)
 }
 
 // Base title styling for both dialog types
@@ -270,6 +266,40 @@
 
 .dialog-header {
   @extend %dialog-header-base;
+}
+
+// Sticky header for drawers that reuse dialog header look
+.drawer-sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: $neutral-white;
+  border-bottom: 1px solid $neutral-light-gray;
+  padding: $space-2 $space-3 $space-1-5 $space-3;
+  margin-bottom: 0;
+  flex-shrink: 0;
+  text-align: center;
+
+  h2 {
+    font-size: $font-sm;
+    font-weight: $font-bold;
+    font-family: $font-inter;
+    text-transform: uppercase;
+    color: $primary-medium;
+    margin: 0;
+  }
+
+  // Ensure search bar spans full width inside the sticky header
+  .search-container {
+    width: 100%;
+    display: block;
+    margin-top: $space-1-5;
+
+    .search-input {
+      width: 100%;
+      display: block;
+    }
+  }
 }
 
 .dialog-title {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CreditCard } from '../../../types/CreditCardTypes';
-import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage, ICON_GRAY_DARK, ICON_GRAY } from '../../../types';
-import { PLACEHOLDER_CARD_IMAGE, LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
+import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage, ICON_GRAY } from '../../../types';
+import { LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
 import { CardIcon, Icon } from '../../../icons';
 import { UserHistoryService } from '../../../services';
 import { CheckIcon } from 'lucide-react';
@@ -13,6 +13,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../../ui/dialog/dialog';
+import {
+  Drawer,
+  DrawerContent,
+} from '../../ui/drawer';
 import './PromptSolution.scss';
 
 /**
@@ -57,7 +61,7 @@ const CardSelection: React.FC<CardSelectionProps> = ({
     const hasSelectedCard = activeCardId && selectedCard;
     
     return (
-        <div className="select-different-card">
+        <div className="select-different-card" data-solutions-count={solutions ? solutions.length : 0}>
             {hasSelectedCard ? (
                 <>
                     <span className="selection-label">Selected card:</span>
@@ -135,6 +139,14 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
     // Flag to expand the solutions container
     const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
+    const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
+        if (typeof window === 'undefined') return false;
+        return window.matchMedia('(max-width: 780px)').matches;
+    });
+    const USE_DRAWER_FOR_SELECT_CARD_DESKTOP = false;
+    const USE_DRAWER_FOR_SELECT_CARD_MOBILE = true;
+    const [selectCardSearchTerm, setSelectCardSearchTerm] = useState<string>('');
+
     // Update active card when prop changes or when chatId changes
     useEffect(() => {
         setActiveCardId(selectedCardId || '');
@@ -145,8 +157,36 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
         const solutionsArray = Array.isArray(promptSolutions) 
             ? promptSolutions 
             : promptSolutions ? [promptSolutions] : [];
-        setSolutions(solutionsArray);
+        // Keep in state only if we display solution cards; otherwise skip to avoid unused warning
+        if (solutionsArray.length > 0 && solutionsArray.some(s => s.cardName)) {
+            setSolutions(solutionsArray);
+        }
     }, [promptSolutions]);
+
+    // Track viewport size
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const mediaQuery = window.matchMedia('(max-width: 780px)');
+        const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+            const matches = 'matches' in e ? e.matches : (e as MediaQueryList).matches;
+            setIsMobileViewport(matches);
+        };
+        handleChange(mediaQuery);
+        try {
+            mediaQuery.addEventListener('change', handleChange as unknown as EventListener);
+        } catch {
+            // @ts-ignore Safari fallback
+            mediaQuery.addListener(handleChange);
+        }
+        return () => {
+            try {
+                mediaQuery.removeEventListener('change', handleChange as unknown as EventListener);
+            } catch {
+                // @ts-ignore Safari fallback
+                mediaQuery.removeListener(handleChange);
+            }
+        };
+    }, []);
 
     // Handle card selection
     const handleCardSelection = async (cardId: string) => {
@@ -213,31 +253,68 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
         return (
             <div className="solutions-container">
                 {chatHistory.length >= 2 && (
-                    <CardSelection
-                        activeCardId={activeCardId}
-                        creditCards={creditCards}
-                        solutions={solutions}
-                        isUpdating={isUpdating}
-                        onCardSelectorOpen={() => setIsCardSelectorOpen(true)}
-                        noSolutionsMode={true}
-                        handleCardSelection={handleCardSelection}
-                    />
+                        <CardSelection
+                            activeCardId={activeCardId}
+                            creditCards={creditCards}
+                            solutions={solutions}
+                            isUpdating={isUpdating}
+                            onCardSelectorOpen={() => setIsCardSelectorOpen(true)}
+                            noSolutionsMode={true}
+                            handleCardSelection={handleCardSelection}
+                        />
                 )}
 
-                <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Select a Credit Card</DialogTitle>
-                        </DialogHeader>
-                        {creditCards && (
-                            <SingleCardSelector
-                                creditCards={creditCards}
-                                onSelectCard={handleCardSelectedFromModal}
-                                selectedCardId={activeCardId}
-                            />
-                        )}
-                    </DialogContent>
-                </Dialog>
+                {(() => {
+                    const useDrawer = isMobileViewport ? USE_DRAWER_FOR_SELECT_CARD_MOBILE : USE_DRAWER_FOR_SELECT_CARD_DESKTOP;
+                    if (useDrawer) {
+                        return (
+                            <Drawer open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen} direction="bottom">
+                                <DrawerContent>
+                                    <div className="dialog-header drawer-sticky-header">
+                                        <h2>Select a Credit Card</h2>
+                                        <div className="search-container" style={{ marginTop: 6 }}>
+                                            <input
+                                                type="text"
+                                                placeholder="Search cards..."
+                                                value={selectCardSearchTerm}
+                                                onChange={(e) => setSelectCardSearchTerm(e.target.value)}
+                                                className="search-input default-input"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="dialog-body" style={{ overflowY: 'auto' }}>
+                                        {creditCards && (
+                                            <SingleCardSelector
+                                                creditCards={creditCards}
+                                                onSelectCard={handleCardSelectedFromModal}
+                                                selectedCardId={activeCardId}
+                                                hideInternalSearch={true}
+                                                externalSearchTerm={selectCardSearchTerm}
+                                                onExternalSearchTermChange={setSelectCardSearchTerm}
+                                            />
+                                        )}
+                                    </div>
+                                </DrawerContent>
+                            </Drawer>
+                        );
+                    }
+                    return (
+                        <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Select a Credit Card</DialogTitle>
+                                </DialogHeader>
+                                {creditCards && (
+                                    <SingleCardSelector
+                                        creditCards={creditCards}
+                                        onSelectCard={handleCardSelectedFromModal}
+                                        selectedCardId={activeCardId}
+                                    />
+                                )}
+                            </DialogContent>
+                        </Dialog>
+                    );
+                })()}
             </div>
         );
     }
@@ -276,7 +353,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                             
                             // If no matching card is found, use the solution's default values
                             const cardName = cardDetails?.CardName || solution.cardName;
-                            const cardImage = cardDetails?.CardImage || PLACEHOLDER_CARD_IMAGE;
+                            // const cardImage = cardDetails?.CardImage || PLACEHOLDER_CARD_IMAGE;
                             
                             // Card is selected if it matches the active card ID
                             const isSelected = solution.id === activeCardId;
@@ -349,20 +426,57 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
 
             </div>
 
-            <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Select a Credit Card</DialogTitle>
-                    </DialogHeader>
-                    {creditCards && (
-                        <SingleCardSelector
-                            creditCards={creditCards}
-                            onSelectCard={handleCardSelectedFromModal}
-                            selectedCardId={activeCardId}
-                        />
-                    )}
-                </DialogContent>
-            </Dialog>
+            {(() => {
+                const useDrawer = isMobileViewport ? USE_DRAWER_FOR_SELECT_CARD_MOBILE : USE_DRAWER_FOR_SELECT_CARD_DESKTOP;
+                if (useDrawer) {
+                    return (
+                        <Drawer open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen} direction="bottom">
+                            <DrawerContent>
+                                <div className="dialog-header drawer-sticky-header">
+                                    <h2>Select a Credit Card</h2>
+                                    <div className="search-container" style={{ marginTop: 6 }}>
+                                        <input
+                                            type="text"
+                                            placeholder="Search cards..."
+                                            value={selectCardSearchTerm}
+                                            onChange={(e) => setSelectCardSearchTerm(e.target.value)}
+                                            className="search-input default-input"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="dialog-body" style={{ overflowY: 'auto' }}>
+                                    {creditCards && (
+                                        <SingleCardSelector
+                                            creditCards={creditCards}
+                                            onSelectCard={handleCardSelectedFromModal}
+                                            selectedCardId={activeCardId}
+                                            hideInternalSearch={true}
+                                            externalSearchTerm={selectCardSearchTerm}
+                                            onExternalSearchTermChange={setSelectCardSearchTerm}
+                                        />
+                                    )}
+                                </div>
+                            </DrawerContent>
+                        </Drawer>
+                    );
+                }
+                return (
+                    <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Select a Credit Card</DialogTitle>
+                            </DialogHeader>
+                            {creditCards && (
+                                <SingleCardSelector
+                                    creditCards={creditCards}
+                                    onSelectCard={handleCardSelectedFromModal}
+                                    selectedCardId={activeCardId}
+                                />
+                            )}
+                        </DialogContent>
+                    </Dialog>
+                );
+            })()}
         </div>
     );
 }
