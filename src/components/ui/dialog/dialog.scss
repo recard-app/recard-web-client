@@ -290,6 +290,9 @@
   margin-bottom: 0;
   flex-shrink: 0;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center; // ensure title centers horizontally
 
   h2 {
     font-size: $font-sm;
@@ -298,6 +301,9 @@
     text-transform: uppercase;
     color: $primary-medium;
     margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
   }
 
   // Ensure search bar spans full width inside the sticky header
