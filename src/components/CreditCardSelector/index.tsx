@@ -19,6 +19,9 @@ interface CreditCardSelectorProps {
   showSaveButton?: boolean;
   onSaveComplete?: (success: boolean, message: string) => void;
   isSaving?: boolean;
+  externalSearchTerm?: string;
+  onExternalSearchTermChange?: (value: string) => void;
+  hideInternalSearch?: boolean;
 }
 
 export interface CreditCardSelectorRef {
@@ -29,7 +32,7 @@ export interface CreditCardSelectorRef {
  * Component for selecting and managing credit cards
  * Allows users to view, select, search, and set default cards
  */
-const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorProps>(({ returnCreditCards, existingCreditCards, showSaveButton = true, onSaveComplete, isSaving = false }, ref) => {
+const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorProps>(({ returnCreditCards, existingCreditCards, showSaveButton = true, onSaveComplete, isSaving = false, externalSearchTerm, onExternalSearchTermChange, hideInternalSearch = false }, ref) => {
     // State for managing the list of all credit cards, initialized with existing cards
     const [creditCards, setCreditCards] = useState<CreditCard[]>(sortCards(existingCreditCards || []));
     // State for managing the search input value
@@ -98,7 +101,8 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
     }));
 
     // Use the filterCards utility function
-    const filteredCards = filterCards(creditCards, searchTerm);
+    const effectiveSearchTerm = typeof externalSearchTerm === 'string' ? externalSearchTerm : searchTerm;
+    const filteredCards = filterCards(creditCards, effectiveSearchTerm);
     
     // Split cards into "Your Cards" and "Other Cards"
     const userCards = filteredCards.filter(card => card.selected);
@@ -138,16 +142,24 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
     return (
         <div className='credit-card-selector'>
             
-            <div className="search-container">
-                <input
-                    type="text"
-                    placeholder="Search cards..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-input default-input"
-                    disabled={isSaving}
-                />
-            </div>
+            {!hideInternalSearch && (
+                <div className="search-container">
+                    <input
+                        type="text"
+                        placeholder="Search cards..."
+                        value={effectiveSearchTerm}
+                        onChange={(e) => {
+                            if (onExternalSearchTermChange) {
+                                onExternalSearchTermChange(e.target.value);
+                            } else {
+                                setSearchTerm(e.target.value);
+                            }
+                        }}
+                        className="search-input default-input"
+                        disabled={isSaving}
+                    />
+                </div>
+            )}
             
             {isInitialLoad ? (
                 <div className="loading">Loading cards...</div>

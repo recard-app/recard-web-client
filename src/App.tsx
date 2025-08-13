@@ -146,6 +146,12 @@ function AppContent({}: AppContentProps) {
   const [cardSelectorSaveStatus, setCardSelectorSaveStatus] = useState<string>('');
   const [cardSelectorSaveSuccess, setCardSelectorSaveSuccess] = useState<boolean>(false);
   const [isSavingCards, setIsSavingCards] = useState(false);
+  const [cardSelectorSearchTerm, setCardSelectorSearchTerm] = useState<string>('');
+  const resetCardSelectorUI = () => {
+    setCardSelectorSearchTerm('');
+    setCardSelectorSaveStatus('');
+    setCardSelectorSaveSuccess(false);
+  };
   const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return window.matchMedia('(max-width: 780px)').matches;
@@ -649,48 +655,128 @@ function AppContent({}: AppContentProps) {
             </DialogContent>
           </Dialog>
           
-          <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Select Your Credit Cards</DialogTitle>
-              </DialogHeader>
-              <DialogBody>
-                <CreditCardSelector 
-                  ref={creditCardSelectorRef}
-                  returnCreditCards={getCreditCards} 
-                  existingCreditCards={creditCards}
-                  showSaveButton={false}
-                  onSaveComplete={handleCardSelectorSaveComplete}
-                  isSaving={isSavingCards}
-                />
-              </DialogBody>
-              <DialogFooter>
-                {cardSelectorSaveStatus && (
-                  <InfoDisplay
-                    type={cardSelectorSaveSuccess ? 'success' : 'error'}
-                    message={cardSelectorSaveStatus}
-                  />
-                )}
-                <div className="button-group">
-                  <button
-                    className={`button ${isSavingCards ? 'loading icon with-text' : ''}`}
-                    onClick={handleSaveCardSelections}
-                    disabled={isSavingCards}
-                  >
-                    {isSavingCards && <LOADING_ICON size={LOADING_ICON_SIZE} />}
-                    {isSavingCards ? 'Saving...' : 'Save'}
-                  </button>
-                  <button
-                    className={`button outline ${isSavingCards ? 'disabled' : ''}`}
-                    onClick={() => setIsCardSelectorOpen(false)}
-                    disabled={isSavingCards}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          {(() => {
+            if (isMobileViewport) {
+              return (
+                <Drawer open={isCardSelectorOpen} onOpenChange={(open) => {
+                  if (!open) {
+                    resetCardSelectorUI();
+                  }
+                  setIsCardSelectorOpen(open);
+                }} direction="bottom">
+                  <DrawerContent className="mobile-card-selector-drawer">
+                    <DrawerTitle className="sr-only">Select Your Credit Cards</DrawerTitle>
+                    <div className="dialog-header drawer-sticky-header">
+                      <h2>Select Your Credit Cards</h2>
+                      <div className="search-container" style={{ marginTop: 6 }}>
+                        <input
+                          type="text"
+                          placeholder="Search cards..."
+                          value={cardSelectorSearchTerm}
+                          onChange={(e) => setCardSelectorSearchTerm(e.target.value)}
+                          className="search-input default-input"
+                          disabled={isSavingCards}
+                        />
+                      </div>
+                    </div>
+                    <div className="dialog-body" style={{ overflowY: 'auto', minHeight: 0 }}>
+                      <CreditCardSelector
+                        ref={creditCardSelectorRef}
+                        returnCreditCards={getCreditCards}
+                        existingCreditCards={creditCards}
+                        showSaveButton={false}
+                        onSaveComplete={handleCardSelectorSaveComplete}
+                        isSaving={isSavingCards}
+                        hideInternalSearch={true}
+                        externalSearchTerm={cardSelectorSearchTerm}
+                        onExternalSearchTermChange={setCardSelectorSearchTerm}
+                      />
+                    </div>
+                    <div className="dialog-footer">
+                      {cardSelectorSaveStatus && (
+                        <InfoDisplay
+                          type={cardSelectorSaveSuccess ? 'success' : 'error'}
+                          message={cardSelectorSaveStatus}
+                        />
+                      )}
+                      <div className="button-group">
+                        <button
+                          className={`button ${isSavingCards ? 'loading icon with-text' : ''}`}
+                          onClick={handleSaveCardSelections}
+                          disabled={isSavingCards}
+                        >
+                          {isSavingCards && <LOADING_ICON size={LOADING_ICON_SIZE} />}
+                          {isSavingCards ? 'Saving...' : 'Save'}
+                        </button>
+                        <button
+                          className={`button outline ${isSavingCards ? 'disabled' : ''}`}
+                          onClick={() => {
+                            resetCardSelectorUI();
+                            setIsCardSelectorOpen(false);
+                          }}
+                          disabled={isSavingCards}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  </DrawerContent>
+                </Drawer>
+              );
+            }
+            return (
+              <Dialog open={isCardSelectorOpen} onOpenChange={(open) => {
+                if (!open) {
+                  resetCardSelectorUI();
+                }
+                setIsCardSelectorOpen(open);
+              }}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Select Your Credit Cards</DialogTitle>
+                  </DialogHeader>
+                  <DialogBody>
+                    <CreditCardSelector 
+                      ref={creditCardSelectorRef}
+                      returnCreditCards={getCreditCards} 
+                      existingCreditCards={creditCards}
+                      showSaveButton={false}
+                      onSaveComplete={handleCardSelectorSaveComplete}
+                      isSaving={isSavingCards}
+                    />
+                  </DialogBody>
+                  <DialogFooter>
+                    {cardSelectorSaveStatus && (
+                      <InfoDisplay
+                        type={cardSelectorSaveSuccess ? 'success' : 'error'}
+                        message={cardSelectorSaveStatus}
+                      />
+                    )}
+                    <div className="button-group">
+                      <button
+                        className={`button ${isSavingCards ? 'loading icon with-text' : ''}`}
+                        onClick={handleSaveCardSelections}
+                        disabled={isSavingCards}
+                      >
+                        {isSavingCards && <LOADING_ICON size={LOADING_ICON_SIZE} />}
+                        {isSavingCards ? 'Saving...' : 'Save'}
+                      </button>
+                      <button
+                        className={`button outline ${isSavingCards ? 'disabled' : ''}`}
+                        onClick={() => {
+                          resetCardSelectorUI();
+                          setIsCardSelectorOpen(false);
+                        }}
+                        disabled={isSavingCards}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            );
+          })()}
 
           {(() => {
             const useDrawerForCardDetails = isMobileViewport

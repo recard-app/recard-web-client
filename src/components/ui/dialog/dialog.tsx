@@ -61,13 +61,15 @@ const DialogContent = React.forwardRef<
 
   return (
     <DialogPortal data-slot="dialog-portal">
-      <DialogOverlay className="z-[40000]" />
+      <DialogOverlay className="z-[60010]" />
       <DialogPrimitive.Content
         ref={ref}
         data-slot="dialog-content"
         aria-describedby={undefined}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         className={cn(
-          "fixed top-[50%] left-[50%] z-[40001] w-full translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-lg duration-200",
+          "fixed top-[50%] left-[50%] z-[60011] w-full translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-lg duration-200",
           "dialog-content data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           fullWidth && "full-width",
           fullScreen && "full-screen",

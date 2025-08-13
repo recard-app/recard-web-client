@@ -42,7 +42,7 @@ const DrawerOverlay = React.forwardRef<
     ref={ref}
     data-slot="drawer-overlay"
     className={cn(
-      "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[40000] bg-black/50",
+      "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-[50000] bg-black/50",
       className
     )}
     {...props}
@@ -63,7 +63,7 @@ function DrawerContent({
         data-slot="drawer-content"
         aria-describedby={undefined}
         className={cn(
-          "group/drawer-content bg-background fixed z-[40001] flex flex-col overflow-hidden",
+          "group/drawer-content bg-background fixed z-[50001] flex flex-col overflow-hidden",
           // Use a static height for consistent UX; content scrolls inside
           "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-lg data-[vaul-drawer-direction=top]:border-b",
           // Bottom drawer: full width on mobile, centered with max-width on larger screens
