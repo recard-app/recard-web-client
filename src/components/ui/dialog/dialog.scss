@@ -236,6 +236,20 @@
   // Optional: full-screen variant tweaks (add rules here if needed)
 }
 
+// Mobile-only: apply the same outer padding to alert dialogs as normal dialogs
+@media (max-width: $mobile-breakpoint) {
+  .alert-dialog-content {
+    width: calc(100vw - ($space-4 * 2));
+    max-height: calc(100vh - ($space-4 * 2));
+  }
+
+  .alert-dialog-content.full-screen {
+    width: calc(100vw - ($space-4 * 2));
+    height: calc(100vh - ($space-4 * 2));
+    max-height: calc(100vh - ($space-4 * 2));
+  }
+}
+
 // Base title styling for both dialog types
 %dialog-title-base {
   @include heading-5;

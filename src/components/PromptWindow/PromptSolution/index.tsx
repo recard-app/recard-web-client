@@ -148,21 +148,31 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
     const USE_DRAWER_FOR_SELECT_CARD_MOBILE = true;
     const [selectCardSearchTerm, setSelectCardSearchTerm] = useState<string>('');
 
-    // Update active card when prop changes or when chatId changes
+    // Update active card when prop changes
     useEffect(() => {
         setActiveCardId(selectedCardId || '');
-    }, [selectedCardId, chatId]);
+    }, [selectedCardId]);
 
-    // Convert the promptSolutions to an array
+    // Normalize and store solutions for current chat; renderer will filter as needed
     useEffect(() => {
-        const solutionsArray = Array.isArray(promptSolutions) 
-            ? promptSolutions 
-            : promptSolutions ? [promptSolutions] : [];
-        // Keep in state only if we display solution cards; otherwise skip to avoid unused warning
-        if (solutionsArray.length > 0 && solutionsArray.some(s => s.cardName)) {
-            setSolutions(solutionsArray);
-        }
+        const incoming = Array.isArray(promptSolutions)
+            ? promptSolutions
+            : promptSolutions
+            ? [promptSolutions]
+            : [];
+        setSolutions(incoming as ChatSolutionCard[]);
     }, [promptSolutions]);
+
+    // On route chat change, clear UI once; PromptWindow will repopulate promptSolutions and chatId later
+    useEffect(() => {
+        setSolutions([]);
+        setIsCardSelectorOpen(false);
+        setIsExpanded(true);
+        setSelectCardSearchTerm('');
+        setUpdatingCardId(null);
+        setIsUpdating(false);
+        setActiveCardId(selectedCardId || '');
+    }, [urlChatId]);
 
     // Track viewport size
     useEffect(() => {

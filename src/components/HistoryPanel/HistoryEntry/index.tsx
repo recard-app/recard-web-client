@@ -17,6 +17,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogBody,
 } from '../../ui/dialog/dialog';
 import {
   AlertDialog,
@@ -265,28 +266,30 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
           <DialogHeader>
             <DialogTitle>Rename Chat</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleRenameSubmit}>
-            <input
-              type="text"
-              value={newChatDescription}
-              onChange={(e) => setNewChatDescription(e.target.value)}
-              placeholder="Enter a new name for this chat"
-              className="rename-input default-input"
-              maxLength={CHAT_DESCRIPTION_MAX_LENGTH}
-              minLength={1}
-              required
-              autoFocus
-            />
-            <div className="character-count">
-              {newChatDescription.length}/{CHAT_DESCRIPTION_MAX_LENGTH}
-            </div>
-            {renameError && (
-              <InfoDisplay
-                type="error"
-                message={renameError}
+          <DialogBody>
+            <form onSubmit={handleRenameSubmit}>
+              <input
+                type="text"
+                value={newChatDescription}
+                onChange={(e) => setNewChatDescription(e.target.value)}
+                placeholder="Enter a new name for this chat"
+                className="rename-input default-input"
+                maxLength={CHAT_DESCRIPTION_MAX_LENGTH}
+                minLength={1}
+                required
+                autoFocus
               />
-            )}
-          </form>
+              <div className="character-count">
+                {newChatDescription.length}/{CHAT_DESCRIPTION_MAX_LENGTH}
+              </div>
+              {renameError && (
+                <InfoDisplay
+                  type="error"
+                  message={renameError}
+                />
+              )}
+            </form>
+          </DialogBody>
           <DialogFooter>
             <div className="button-group">
               <button

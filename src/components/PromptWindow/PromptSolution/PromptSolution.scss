@@ -37,9 +37,7 @@ $collapse-transition-duration: 0.15s;
       align-items: center;
       gap: $space-1-5;
       
-      .caps-label {
-        // Using global caps-label class
-      }
+      // .caps-label uses global styles from globals.scss
     }
 
     .collapse-button {
@@ -121,10 +119,7 @@ $collapse-transition-duration: 0.15s;
         align-items: flex-start;
         gap: $space-2;
 
-      &:hover {
-        // border-color: $neutral-medium-gray;
-        // box-shadow: $shadow-sm;
-      }
+      // hover state intentionally minimal to keep cards calm in this section
 
       &.primary-solution {
         border: $border-full solid $primary-color;
@@ -528,9 +523,11 @@ $collapse-transition-duration: 0.15s;
 
   .selected-card-container {
     .selected-card-button {
-      flex: 1 1 auto;
+      /* Shrink to content but cap so it doesn't wrap */
+      flex: 0 1 auto;
+      width: auto;
+      max-width: calc(100% - #{$space-5});
       min-width: 0;
-      max-width: 100%;
       
       .selected-card-image {
         flex-shrink: 0;
