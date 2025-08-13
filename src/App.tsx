@@ -174,6 +174,13 @@ function AppContent({}: AppContentProps) {
     }
   }, [location.pathname, currentChatId, navigate]);
 
+  // Close Help dialog on route change for better UX
+  useEffect(() => {
+    if (isHelpOpen) {
+      setIsHelpOpen(false);
+    }
+  }, [location.pathname]);
+
   // Effect to fetch credit cards when user is authenticated
   useEffect(() => {
     const fetchCreditCards = async () => {

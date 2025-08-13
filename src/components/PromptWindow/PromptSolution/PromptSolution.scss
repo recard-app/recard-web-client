@@ -11,6 +11,14 @@ $collapse-transition-duration: 0.15s;
   padding: 0 $space-1; // Add consistent padding
 }
 
+
+// TOGGLE: Mobile-only overrides for prompt input container
+@media (max-width: $mobile-breakpoint) {
+  .prompt-solutions-container {
+    padding: 0 $space-2 0 $space-2;
+  }
+}
+
 .solutions-container {
   padding: 0 $space-1;
 

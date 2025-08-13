@@ -105,6 +105,11 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                 <p className="danger-link-copy">Need to delete your chat history?</p>
                 <Link className="link" to={PAGES.DELETE_HISTORY.PATH}>Delete your chat history</Link>
               </section>
+
+              <section className="section">
+                <p className="danger-link-copy">Want to revisit onboarding?</p>
+                <Link className="link" to={PAGES.WELCOME.PATH}>Revisit onboarding</Link>
+              </section>
             </div>
           </div>
         ) : (

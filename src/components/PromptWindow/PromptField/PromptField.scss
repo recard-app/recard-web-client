@@ -69,3 +69,12 @@
     button {
     }
 }
+
+// TOGGLE: Mobile-only overrides for prompt field
+@media (max-width: $mobile-breakpoint) {
+  .prompt-window {
+    .prompt-input-container {
+      padding: 0 $space-2 0 $space-2;
+    }
+  }
+}
