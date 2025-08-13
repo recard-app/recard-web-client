@@ -509,7 +509,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                             </>
                         ) : (
                             <>
-                                <Icon name="card" variant="outline" />
+                                <Icon name="card" variant="mini" color="#C9CED3" />
                                 <span className="label-text">Select a card to view</span>
                             </>
                         )}

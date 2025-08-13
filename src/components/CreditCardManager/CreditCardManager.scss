@@ -114,10 +114,10 @@
       flex-shrink: 0;
       background-color: $neutral-white;
       border-top: $border-full solid $neutral-light-gray;
-      padding: $space-3 $space-4 $space-4;
+      padding: $space-2 $space-4 $space-4 $space-4;
       display: flex;
       flex-direction: column;
-      gap: $space-3;
+      gap: $space-2;
 
       .view-card-select {
         @include default-select;
@@ -126,7 +126,7 @@
         display: flex;
         align-items: center;
         gap: $space-2;
-        background-color: $neutral-white;
+        background-color: $neutral-lightest-gray;
 
         .select-card-icon {
           flex-shrink: 0;
