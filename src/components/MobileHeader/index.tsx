@@ -179,10 +179,12 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             <Drawer.Content className="mobile-drawer-content" aria-label={`${APP_NAME} mobile navigation`} aria-describedby={undefined}>
               <div className="mobile-drawer-container">
                 <div className="mobile-drawer-header">
-                  <Link to={PAGES.HOME.PATH} className="mobile-drawer-brand" onClick={(e)=>e.stopPropagation()} aria-label={APP_NAME}>
-                    <img src={PAGE_ICONS.LOGO} alt="Logo" />
-                    <span className="brand-name">{APP_NAME}</span>
-                  </Link>
+                  <Drawer.Close asChild>
+                    <Link to={PAGES.HOME.PATH} className="mobile-drawer-brand" aria-label={APP_NAME}>
+                      <img src={PAGE_ICONS.LOGO} alt="Logo" />
+                      <span className="brand-name">{APP_NAME}</span>
+                    </Link>
+                  </Drawer.Close>
                   <Drawer.Title className="visually-hidden">Menu</Drawer.Title>
                   <Drawer.Description className="visually-hidden">Mobile navigation drawer</Drawer.Description>
                   <Drawer.Close asChild>

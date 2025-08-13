@@ -25,7 +25,7 @@
 
     // Base hover state
     &:hover {
-      background-color: $neutral-light-gray;
+      background-color: $neutral-lightest-gray;
 
       .entry-content .selected-card-display {
           border-color: $neutral-gray;
@@ -34,7 +34,7 @@
 
     // Current state takes precedence over has-selected-card
     &.current {
-        background-color: $primary-lightest;
+        background-color: $neutral-light-gray;
 
         .entry-content .selected-card-display {
             //background-color: $primary-lightest;

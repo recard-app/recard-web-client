@@ -507,3 +507,47 @@ $collapse-transition-duration: 0.15s;
         display: none;
     }
 }
+
+// Mobile-only: prevent selected-card chip from wrapping to next line
+@media (max-width: $mobile-breakpoint) {
+  .select-different-card {
+    flex-wrap: nowrap;
+    overflow: hidden;
+    gap: $space-1;
+    
+    .selection-label {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .selected-card-container {
+      flex: 1 1 auto;
+      min-width: 0; // allow inner content to shrink
+    }
+  }
+
+  .selected-card-container {
+    .selected-card-button {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: 100%;
+      
+      .selected-card-image {
+        flex-shrink: 0;
+      }
+      
+      .selected-card-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+      }
+    }
+
+    .deselect-button {
+      flex: 0 0 auto;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+  }
+}
