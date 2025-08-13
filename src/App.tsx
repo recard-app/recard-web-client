@@ -47,6 +47,12 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 import CreditCardDetailView from './components/CreditCardDetailView';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
 import PromptHelpModal from './components/PromptWindow/PromptHelpModal';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from './components/ui/drawer';
 import PageHeader from './components/PageHeader';
 import MobileHeader from './components/MobileHeader';
 import { InfoDisplay } from './elements';
@@ -140,6 +146,13 @@ function AppContent({}: AppContentProps) {
   const [cardSelectorSaveStatus, setCardSelectorSaveStatus] = useState<string>('');
   const [cardSelectorSaveSuccess, setCardSelectorSaveSuccess] = useState<boolean>(false);
   const [isSavingCards, setIsSavingCards] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(max-width: 780px)').matches;
+  });
+  // Local feature flags controlling drawer vs dialog
+  const USE_DRAWER_FOR_CARD_DETAILS_DESKTOP = true;
+  const USE_DRAWER_FOR_CARD_DETAILS_MOBILE = true;
   
   const creditCardSelectorRef = useRef<CreditCardSelectorRef>(null);
 
@@ -177,6 +190,36 @@ function AppContent({}: AppContentProps) {
 
     fetchCreditCards();
   }, [user]);
+
+  // Track viewport size to decide drawer vs dialog flags
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mediaQuery = window.matchMedia('(max-width: 780px)');
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      // Support initial call with MediaQueryList and subsequent events
+      const matches = 'matches' in e ? e.matches : (e as MediaQueryList).matches;
+      setIsMobileViewport(matches);
+    };
+    // Initial
+    handleChange(mediaQuery);
+    // Subscribe
+    try {
+      mediaQuery.addEventListener('change', handleChange as (ev: Event) => void);
+    } catch {
+      // Safari
+      // @ts-ignore
+      mediaQuery.addListener(handleChange);
+    }
+    return () => {
+      try {
+        mediaQuery.removeEventListener('change', handleChange as (ev: Event) => void);
+      } catch {
+        // Safari
+        // @ts-ignore
+        mediaQuery.removeListener(handleChange);
+      }
+    };
+  }, []);
 
   // Effect to fetch show completed only preference
   useEffect(() => {
@@ -649,21 +692,47 @@ function AppContent({}: AppContentProps) {
             </DialogContent>
           </Dialog>
 
-          <Dialog open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen}>
-            <DialogContent fullScreen>
-              <DialogHeader>
-                <DialogTitle className="sr-only">
-                  {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
-                </DialogTitle>
-              </DialogHeader>
-              <DialogBody>
-                <CreditCardDetailView 
-                  cardDetails={selectedCardDetails}
-                  isLoading={isLoadingCardDetails}
-                />
-              </DialogBody>
-            </DialogContent>
-          </Dialog>
+          {(() => {
+            const useDrawerForCardDetails = isMobileViewport
+              ? USE_DRAWER_FOR_CARD_DETAILS_MOBILE
+              : USE_DRAWER_FOR_CARD_DETAILS_DESKTOP;
+            if (useDrawerForCardDetails) {
+              return (
+                <Drawer open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen} direction="bottom">
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle className="sr-only">
+                        {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
+                      </DrawerTitle>
+                    </DrawerHeader>
+                    <div className="dialog-body">
+                      <CreditCardDetailView 
+                        cardDetails={selectedCardDetails}
+                        isLoading={isLoadingCardDetails}
+                      />
+                    </div>
+                  </DrawerContent>
+                </Drawer>
+              );
+            }
+            return (
+              <Dialog open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen}>
+                <DialogContent fullScreen>
+                  <DialogHeader>
+                    <DialogTitle className="sr-only">
+                      {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <DialogBody>
+                    <CreditCardDetailView 
+                      cardDetails={selectedCardDetails}
+                      isLoading={isLoadingCardDetails}
+                    />
+                  </DialogBody>
+                </DialogContent>
+              </Dialog>
+            );
+          })()}
           
           {(() => {
             const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH]);
