@@ -247,6 +247,23 @@
   border: none;
 }
 
+// Ghost-destructive (transparent background, red border/text, subtle hover bg)
+@mixin button-ghost-destructive {
+  @include button-outline;
+  border-color: $error;
+  color: $error;
+  
+  &:hover:not(:disabled) {
+    background-color: $neutral-light-gray;
+  }
+  
+  img, svg {
+    color: $error;
+    stroke: $error;
+    fill: $error;
+  }
+}
+
 // No-outline button (completely transparent with no background or border)
 @mixin button-no-outline {
   @include button-base;

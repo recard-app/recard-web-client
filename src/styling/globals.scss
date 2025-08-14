@@ -152,6 +152,12 @@ button, .button {
     @include button-ghost;
   }
 
+  // Ghost + destructive (red border/text, transparent bg)
+  &.ghost.destructive,
+  &.destructive.ghost {
+    @include button-ghost-destructive;
+  }
+
   &.no-outline {
     @include button-no-outline;
   }
@@ -211,6 +217,26 @@ button, .button {
         @include button-icon-with-text($icon-small, $space-4, $space-8);
       }
     }
+
+    // Force equal left/right padding to match top/bottom padding for sized icon buttons
+    &.square {
+      // Normal (default) size
+      padding: $space-2;
+    }
+    &.mini.square {
+      padding: $space-1;
+    }
+    &.small.square {
+      padding: $space-2;
+    }
+    &.large.square {
+      padding: $space-4;
+    }
+  }
+
+  // Ensure ghost destructive icon buttons keep a red border even with icon-only base
+  &.ghost.destructive.icon {
+    border: $border-half solid $error;
   }
 }
 

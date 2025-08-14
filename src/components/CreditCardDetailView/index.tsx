@@ -1,7 +1,7 @@
 import React from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, CardMultiplier } from '../../types/CreditCardTypes';
-import { ICON_WHITE, ICON_GRAY } from '../../types';
+import { ICON_WHITE, ICON_GRAY, ICON_RED } from '../../types';
 import { CardIcon } from '../../icons';
 import { InfoDisplay } from '../../elements';
 import { Icon } from '../../icons';
@@ -82,17 +82,20 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             )}
                             {onRemoveCard && (
                                 <button 
-                                    className="button destructive icon with-text"
+                                    className="button ghost destructive icon small square"
                                     onClick={onRemoveCard}
+                                    aria-label="Remove Card"
+                                    title="Remove Card"
+                                    type="button"
                                 >
                                     <Icon 
                                         name="delete"
                                         variant="mini"
-                                        size={16}
-                                        color={ICON_WHITE}
+                                        size={20}
+                                        color={ICON_RED}
                                         className="delete-icon"
+                                        aria-hidden="true"
                                     />
-                                    Remove Card
                                 </button>
                             )}
                         </div>

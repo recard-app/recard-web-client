@@ -72,11 +72,11 @@
       }
       
       .card-actions {
-        margin-top: $space-4;
+        margin-top: $space-3;
         
         .card-action-buttons {
           display: flex;
-          gap: $space-3;
+          gap: $space-2;
           align-items: center;
           
           .preferred-button {
@@ -84,7 +84,6 @@
             color: $neutral-black;
             border: $border-full solid $neutral-gray;
             border-radius: $radius-base;
-            padding: $space-1-5 $space-3;
             font-size: $font-xs;
             font-weight: $font-medium;
             cursor: pointer;
@@ -119,12 +118,7 @@
             }
           }
           
-          // Make remove card button match preferred button size
-          .button.destructive.icon.with-text {
-            padding: $space-1-5 $space-3;
-            font-size: $font-xs;
-            gap: $space-1-5;
-          }
+          // No local size overrides; use global `.preferred-size` when needed
         }
       }
     }
@@ -387,6 +381,30 @@
       margin-top: $space-2;
       padding-top: $space-2;
       border-top: $border-half dashed $neutral-gray;
+    }
+  }
+}
+
+/* Mobile: stack action buttons vertically */
+@media (max-width: $mobile-breakpoint) {
+  .card-details {
+    .card-header {
+      .card-header-info {
+        .card-actions {
+          .card-action-buttons {
+            flex-direction: row;
+            align-items: center;
+            gap: $space-2;
+
+            .preferred-button {
+              flex: 0 0 auto;
+            }
+            .button.ghost.icon {
+              flex: 0 0 auto;
+            }
+          }
+        }
+      }
     }
   }
 }
