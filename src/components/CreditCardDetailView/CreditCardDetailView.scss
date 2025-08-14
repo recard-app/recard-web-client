@@ -80,7 +80,8 @@
           align-items: center;
           
           .preferred-button {
-            background-color: $neutral-light-gray;
+            // Base: subtle neutral button
+            background-color: $neutral-lightest-gray;
             color: $neutral-black;
             border: $border-full solid $neutral-gray;
             border-radius: $radius-base;
@@ -91,28 +92,39 @@
             display: flex;
             align-items: center;
             gap: $space-1-5;
-            
+
+            .preferred-icon {
+              color: $neutral-medium-gray;
+              stroke: $neutral-medium-gray;
+              fill: $neutral-medium-gray;
+              opacity: 0.9;
+            }
+
             &:hover {
-              background-color: $neutral-gray;
+              background-color: $neutral-light-gray;
               border-color: $neutral-medium-gray;
             }
-            
+
+            // Active state: ghost button treatment
             &.is-preferred {
-              background-color: $primary-color;
-              color: $neutral-white;
-              border-color: $primary-color;
-              
+              background-color: $primary-lightest;
+              color: $primary-medium;
+              border-color: $primary-light;
+
               &:hover {
-                background-color: $primary-medium;
+                background-color: $primary-light;
                 border-color: $primary-medium;
               }
-              
+
               .preferred-icon {
-                filter: brightness(0) invert(1);
+                color: currentColor;
+                stroke: currentColor;
+                fill: currentColor;
                 opacity: 1;
+                filter: none;
               }
             }
-            
+
             &:hover .preferred-icon {
               opacity: 1;
             }

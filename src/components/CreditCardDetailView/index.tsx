@@ -1,7 +1,7 @@
 import React from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, CardMultiplier } from '../../types/CreditCardTypes';
-import { ICON_WHITE, ICON_GRAY, ICON_RED } from '../../types';
+import { ICON_RED } from '../../types';
 import { CardIcon } from '../../icons';
 import { InfoDisplay } from '../../elements';
 import { Icon } from '../../icons';
@@ -69,12 +69,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 <button 
                                     className={`preferred-button ${cardDetails.isDefaultCard ? 'is-preferred' : ''}`}
                                     onClick={onSetPreferred}
+                                    type="button"
                                 >
                                     <Icon 
                                         name="star"
                                         variant={cardDetails.isDefaultCard ? 'solid' : 'outline'}
                                         size={16}
-                                        color={cardDetails.isDefaultCard ? ICON_WHITE : ICON_GRAY}
                                         className="preferred-icon"
                                     />
                                     {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set as Preferred Card'}

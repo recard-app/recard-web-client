@@ -12,6 +12,9 @@
   overflow: hidden; // Prevent overall scroll, let middle section handle it
   background-color: $neutral-white;
   border-right: $border-half solid $neutral-light-gray;
+  // Subtle right-side drop shadow for desktop to separate sidebar from content
+  // Use directional shadow token for consistency across the app
+  box-shadow: $container-shadow-right;
   transition: transform $side-panel-speed ease-in-out;
   
   &.collapsed {
