@@ -3,6 +3,12 @@ import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
 import { ToggleSwitch, InfoDisplay } from '../../elements';
+import Icon from '../../icons';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle
+} from '../ui/drawer';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
 import {
   Conversation, 
@@ -13,7 +19,7 @@ import {
   SHOW_SUBSCRIPTION_MENTIONS
 } from '../../types';
 import { HISTORY_PAGE_SIZE, SUBSCRIPTION_PLAN } from '../../types';
-import { UserPreferencesService } from '../../services/UserService';
+// Note: Do not update user preferences from this page; the toggle here is a local filter override
 import {
   organizeHistoryByDate,
   getAvailableYears,
@@ -24,6 +30,15 @@ import {
   fetchFirstEntryDate,
   handleHistoryDelete
 } from './utils';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '../ui/pagination';
 
 // Define the page size limit as a constant
 const PAGE_SIZE_LIMIT = HISTORY_PAGE_SIZE;
@@ -39,6 +54,9 @@ export interface FullHistoryPanelProps {
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
   showCompletedOnlyPreference: ShowCompletedOnlyPreference;
+  // Mobile filters drawer control (optional; if not provided, component manages its own state)
+  filtersDrawerOpen?: boolean;
+  onFiltersDrawerOpenChange?: (open: boolean) => void;
 }
 
 function FullHistoryPanel({ 
@@ -48,7 +66,9 @@ function FullHistoryPanel({
   subscriptionPlan = SUBSCRIPTION_PLAN.FREE,
   creditCards,
   historyRefreshTrigger,
-  showCompletedOnlyPreference
+  showCompletedOnlyPreference,
+  filtersDrawerOpen,
+  onFiltersDrawerOpenChange
 }: FullHistoryPanelProps) {
   const { user } = useAuth();
   // Use scroll height for this component's scrollable area
@@ -68,23 +88,30 @@ function FullHistoryPanel({
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   // Date of the first entry in history
   const [firstEntryDate, setFirstEntryDate] = useState<Date | null>(null);
-  // Show completed only preference
-  const [showCompletedOnly, setShowCompletedOnly] = useState<boolean>(showCompletedOnlyPreference);
-  // Loading state for toggling completed only preference
-  const [isTogglingCompleted, setIsTogglingCompleted] = useState<boolean>(false);
+  // Local override for "Only show completed" filter.
+  // null means use the user preference value provided via props.
+  const [showCompletedOnlyFilter, setShowCompletedOnlyFilter] = useState<boolean | null>(null);
+  // Mobile filters drawer state (uncontrolled fallback)
+  const [isFiltersDrawerOpenInternal, setIsFiltersDrawerOpenInternal] = useState<boolean>(false);
+  const isFiltersDrawerOpen = typeof filtersDrawerOpen === 'boolean' ? filtersDrawerOpen : isFiltersDrawerOpenInternal;
+  const setIsFiltersDrawerOpen = (open: boolean) => {
+    if (onFiltersDrawerOpenChange) onFiltersDrawerOpenChange(open);
+    else setIsFiltersDrawerOpenInternal(open);
+  };
 
-  // Effect to update showCompletedOnly when the preference changes
-  useEffect(() => {
-    // Only update the local state if the preference changed
-    if (showCompletedOnly !== showCompletedOnlyPreference) {
-      setShowCompletedOnly(showCompletedOnlyPreference);
-    }
-  }, [showCompletedOnlyPreference]);
+  // Removed session storage persistence in favor of App-scoped state
+
+  // Compute effective value from local override or user preference
+  const effectiveShowCompletedOnly: boolean = (showCompletedOnlyFilter !== null)
+    ? showCompletedOnlyFilter
+    : showCompletedOnlyPreference;
 
   // Initial loading state
   useEffect(() => {
     setIsLoading(true);
   }, []);
+
+  // No external syncing
 
   /**
    * Effect hook to fetch history when page changes
@@ -103,7 +130,9 @@ function FullHistoryPanel({
       setCurrentPage(1); // Reset to first page when filters change
       fetchPagedHistoryData();
     }
-  }, [user, selectedMonth, selectedYear, showCompletedOnly]);
+  }, [user, selectedMonth, selectedYear, showCompletedOnlyFilter, showCompletedOnlyPreference]);
+
+  // No propagation
 
   /**
    * Effect hook to fetch first entry date on mount
@@ -122,6 +151,20 @@ function FullHistoryPanel({
   };
 
   /**
+   * Resets all filters to default state
+   * - Month cleared
+   * - Year set to current year
+   * - Completed toggle set to user preference default
+   */
+  const handleResetFilters = () => {
+    const currentYear = new Date().getFullYear();
+    setSelectedMonth('');
+    setSelectedYear(currentYear);
+    setShowCompletedOnlyFilter(null);
+    setCurrentPage(1);
+  };
+
+  /**
    * Wrapper function to fetch paginated history and update state
    */
   const fetchPagedHistoryData = async () => {
@@ -134,7 +177,7 @@ function FullHistoryPanel({
         pageSize: PAGE_SIZE_LIMIT,
         selectedMonth,
         selectedYear,
-        showCompletedOnly
+         showCompletedOnly: effectiveShowCompletedOnly
       });
       
       if (result.chatHistory) {
@@ -180,27 +223,8 @@ function FullHistoryPanel({
    * @param newValue The new toggle state
    */
   const handleCompletedToggle = async (newValue: boolean) => {
-    // Skip if already toggling or if the new value is the same as current
-    if (isTogglingCompleted || newValue === showCompletedOnly) return;
-    
-    try {
-      setIsTogglingCompleted(true);
-      // Update local state immediately for responsive UI
-      setShowCompletedOnly(newValue);
-      
-      // Update the preference on the server
-      await UserPreferencesService.updateShowCompletedOnlyPreference(newValue);
-      
-      // Use onHistoryUpdate to trigger the historyRefreshTrigger in App.tsx
-      // This causes App.tsx to re-fetch the preference from the database
-      onHistoryUpdate(prev => [...prev]);
-    } catch (error) {
-      // Revert the toggle if the update fails
-      setShowCompletedOnly(!newValue);
-      console.error('Failed to update show completed only preference:', error);
-    } finally {
-      setIsTogglingCompleted(false);
-    }
+    // Locally override the preference for this page until filters are reset
+    setShowCompletedOnlyFilter(newValue);
   };
 
   /**
@@ -235,48 +259,86 @@ function FullHistoryPanel({
       pageNumbers = Array.from({ length: end - start + 1 }, (_, i) => start + i);
     }
 
+    const handleAnchorClick = (
+      e: React.MouseEvent<HTMLAnchorElement>,
+      handler: () => void,
+      isDisabled?: boolean
+    ) => {
+      e.preventDefault();
+      if (isDisabled) return;
+      handler();
+    };
+
     return (
-      <div className="pagination-controls">
-        <button 
-          onClick={() => setCurrentPage(1)}
-          disabled={currentPage === 1}
-          className="pagination-edge-button"
-        >
-          &lt;&lt;
-        </button>
-        <button 
-          onClick={() => setCurrentPage(prev => prev - 1)}
-          disabled={!paginationData.has_previous}
-          className="pagination-nav-button"
-        >
-          &lt;
-        </button>
-        <div className="pagination-numbers">
-          {pageNumbers.map(pageNum => (
-            <button
-              key={pageNum}
-              onClick={() => setCurrentPage(pageNum)}
-              className={`pagination-number ${pageNum === currentPage ? 'active' : ''}`}
+      <Pagination className="history-pagination">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationLink
+              href="#"
+              aria-label="Go to first page"
+              onClick={(e) => handleAnchorClick(e, () => setCurrentPage(1), currentPage === 1)}
+              aria-disabled={currentPage === 1}
+              className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
             >
-              {pageNum}
-            </button>
+              «
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => handleAnchorClick(e, () => setCurrentPage(prev => Math.max(1, prev - 1)), !paginationData.has_previous)}
+              aria-disabled={!paginationData.has_previous}
+              className={!paginationData.has_previous ? 'pointer-events-none opacity-50' : ''}
+            />
+          </PaginationItem>
+
+          {/* Optional left ellipsis */}
+          {totalPages > 5 && pageNumbers[0] > 1 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+
+          {pageNumbers.map((pageNum) => (
+            <PaginationItem key={pageNum}>
+              <PaginationLink
+                href="#"
+                isActive={pageNum === currentPage}
+                onClick={(e) => handleAnchorClick(e, () => setCurrentPage(pageNum))}
+              >
+                {pageNum}
+              </PaginationLink>
+            </PaginationItem>
           ))}
-        </div>
-        <button 
-          onClick={() => setCurrentPage(prev => prev + 1)}
-          disabled={!paginationData.has_next}
-          className="pagination-nav-button"
-        >
-          &gt;
-        </button>
-        <button 
-          onClick={() => setCurrentPage(totalPages)}
-          disabled={currentPage === totalPages}
-          className="pagination-edge-button"
-        >
-          &gt;&gt;
-        </button>
-      </div>
+
+          {/* Optional right ellipsis */}
+          {totalPages > 5 && pageNumbers[pageNumbers.length - 1] < totalPages && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => handleAnchorClick(e, () => setCurrentPage(prev => Math.min(totalPages, prev + 1)), !paginationData.has_next)}
+              aria-disabled={!paginationData.has_next}
+              className={!paginationData.has_next ? 'pointer-events-none opacity-50' : ''}
+            />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink
+              href="#"
+              aria-label="Go to last page"
+              onClick={(e) => handleAnchorClick(e, () => setCurrentPage(totalPages), currentPage === totalPages)}
+              aria-disabled={currentPage === totalPages}
+              className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+            >
+              »
+            </PaginationLink>
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     );
   };
 
@@ -364,9 +426,8 @@ function FullHistoryPanel({
       <ToggleSwitch
         id="completedToggle"
         label="Only show completed transactions"
-        checked={showCompletedOnly}
+        checked={effectiveShowCompletedOnly}
         onChange={handleCompletedToggle}
-        disabled={isTogglingCompleted}
       />
     );
   };
@@ -375,8 +436,27 @@ function FullHistoryPanel({
     <div className="history-panel full-history">
       {/* Sticky header with filters and toggle */}
       <div className="history-panel-header">
-        {renderDateFilter()}
-        {renderCompletedToggle()}
+        <div className="header-controls desktop-only">
+          {renderDateFilter()}
+          {renderCompletedToggle()}
+        </div>
+        <div className="header-actions">
+          <button
+            className="button outline small desktop-only"
+            onClick={handleResetFilters}
+            aria-label="Reset filters to defaults"
+          >
+            Reset Filters
+          </button>
+          <button
+            className="button small mobile-only icon with-text"
+            onClick={() => setIsFiltersDrawerOpen(true)}
+            aria-label="Open filters drawer"
+          >
+            <Icon name="filter" variant="mini" size={16} />
+            Filters
+          </button>
+        </div>
       </div>
 
       {/* Scrollable content area */}
@@ -404,7 +484,7 @@ function FullHistoryPanel({
           <>
             {/* Show filtered results without categories */}
             {(selectedMonth !== '') ? (
-              <div className="history-entries">
+              <div className="section-entries">
                 {paginatedList.map(entry => (
                   <HistoryEntry 
                     key={entry.chatId} 
@@ -446,6 +526,41 @@ function FullHistoryPanel({
           </>
         )}
       </div>
+
+      {/* Mobile Filters Drawer */}
+      <Drawer open={isFiltersDrawerOpen} onOpenChange={setIsFiltersDrawerOpen}>
+        <DrawerContent className="mobile-history-filters-drawer" fitContent>
+          <DrawerTitle className="sr-only">Filters</DrawerTitle>
+          <div className="dialog-header drawer-sticky-header history-filters-header">
+            <h2>Filters</h2>
+            <div className="header-actions">
+              <span
+                className="reset-link"
+                onClick={handleResetFilters}
+                role="button"
+                tabIndex={0}
+                aria-label="Reset filters to defaults"
+              >
+                Reset
+              </span>
+            </div>
+          </div>
+          <div className="dialog-body">
+            {renderDateFilter()}
+            {renderCompletedToggle()}
+          </div>
+          <div className="dialog-footer">
+            <div className="button-group">
+              <button
+                className="button"
+                onClick={() => setIsFiltersDrawerOpen(false)}
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       {/* Sticky footer with pagination */}
       {paginationData && (

@@ -22,6 +22,9 @@ interface HistoryProps {
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
   showCompletedOnlyPreference: ShowCompletedOnlyPreference;
+  // Mobile filters drawer control (optional)
+  filtersDrawerOpen?: boolean;
+  onFiltersDrawerOpenChange?: (open: boolean) => void;
 }
 
 function History({ 
@@ -32,7 +35,9 @@ function History({
   subscriptionPlan,
   creditCards,
   historyRefreshTrigger,
-  showCompletedOnlyPreference
+  showCompletedOnlyPreference,
+  filtersDrawerOpen,
+  onFiltersDrawerOpenChange
 }: HistoryProps): React.ReactElement {
   // Use the full height hook for this page
   useFullHeight(true);
@@ -65,6 +70,8 @@ function History({
           creditCards={creditCards}
           historyRefreshTrigger={historyRefreshTrigger}
           showCompletedOnlyPreference={showCompletedOnlyPreference}
+          filtersDrawerOpen={filtersDrawerOpen}
+          onFiltersDrawerOpenChange={onFiltersDrawerOpenChange}
         />
       </div>
 

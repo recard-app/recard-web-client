@@ -32,6 +32,9 @@ import {
 import { UserHistoryService } from '../../../services';
 import { useState } from 'react';
 
+// Toggle timestamp visibility on mobile
+const SHOW_TIMESTAMP_ON_MOBILE = false;
+
 /**
  * Props interface for the HistoryEntry component
  * @property chatEntry - The conversation data to display
@@ -185,7 +188,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
   return (
     <>
       <div 
-        className={`history-entry ${variant === 'sidebar' ? 'sidebar-variant' : 'full-page-variant'} ${isCurrent ? 'current' : ''} ${displayCard ? 'has-selected-card' : ''}`}
+        className={`history-entry ${!SHOW_TIMESTAMP_ON_MOBILE ? 'hide-timestamp-on-mobile' : ''} ${variant === 'sidebar' ? 'sidebar-variant' : 'full-page-variant'} ${isCurrent ? 'current' : ''} ${displayCard ? 'has-selected-card' : ''}`}
         id={chatEntry.chatId}
         onClick={handleClick}
         style={{ cursor: 'pointer' }}

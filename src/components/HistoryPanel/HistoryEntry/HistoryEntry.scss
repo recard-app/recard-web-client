@@ -155,6 +155,13 @@
 
 // Mobile-only overrides for sidebar preview
 @media (max-width: $mobile-breakpoint) {
+  // Hide timestamps on mobile when the class is present
+  .history-entry.hide-timestamp-on-mobile {
+    .entry-content .entry-info .timestamp {
+      display: none !important;
+    }
+  }
+
   .mobile-drawer-content {
     .history-entry.current {
       background-color: $neutral-light-gray !important;

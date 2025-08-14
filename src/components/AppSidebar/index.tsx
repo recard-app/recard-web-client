@@ -237,10 +237,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
             {/* Right column - Expanded content (scrollable) */}
             <div className="expanded-content-column">
-              {/* Transaction History as SidebarItem */}
+              {/* Recent Transactions (expanded sidebar) */}
               <SidebarItem 
                 icon={PAGE_ICONS.TRANSACTION_HISTORY.INACTIVE}
-                name={PAGE_NAMES.TRANSACTION_HISTORY} 
+                name={"Recent Transactions"} 
                 isDropdown={true}
               >
                 <HistoryPanelPreview 

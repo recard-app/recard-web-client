@@ -67,3 +67,10 @@
     cursor: pointer;
   }
 }
+
+// Mobile-only spacing adjustment between label and toggle
+@media (max-width: $mobile-breakpoint) {
+  .toggle-container {
+    gap: $space-2; // add a small gap between label and switch only on mobile
+  }
+}

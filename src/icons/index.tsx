@@ -641,6 +641,34 @@ export const iconRegistry: IconDefinition = {
     }
   }
   ,
+  'filter': {
+    outline: {
+      viewBox: VIEWBOX.DEFAULT,
+      strokeWidth: 1.5,
+      paths: [
+        <path key="1" strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+      ]
+    },
+    solid: {
+      viewBox: VIEWBOX.DEFAULT,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 0 1 1.541 1.836v1.044a3 3 0 0 1-.879 2.121l-6.182 6.182a1.5 1.5 0 0 0-.439 1.061v2.927a3 3 0 0 1-1.658 2.684l-1.757.878A.75.75 0 0 1 9.75 21v-5.818a1.5 1.5 0 0 0-.44-1.06L3.13 7.938a3 3 0 0 1-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836Z" clipRule="evenodd" />
+      ]
+    },
+    mini: {
+      viewBox: VIEWBOX.MINI,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clipRule="evenodd" />
+      ]
+    },
+    micro: {
+      viewBox: VIEWBOX.MICRO,
+      paths: [
+        <path key="1" d="M14 2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v2.172a2 2 0 0 0 .586 1.414l2.828 2.828A2 2 0 0 1 6 9.828v4.363a.5.5 0 0 0 .724.447l2.17-1.085A2 2 0 0 0 10 11.763V9.829a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 0 14 4.172V2Z" />
+      ]
+    }
+  }
+  ,
   'exclamation-triangle': {
     solid: {
       viewBox: VIEWBOX.DEFAULT,
@@ -721,6 +749,34 @@ export const iconRegistry: IconDefinition = {
       viewBox: VIEWBOX.MICRO,
       paths: [
         <path key="1" fillRule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm3.844-8.791a.75.75 0 0 0-1.188-.918l-3.7 4.79-1.649-1.833a.75.75 0 1 0-1.114 1.004l2.25 2.5a.75.75 0 0 0 1.15-.043l4.25-5.5Z" clipRule="evenodd" />
+      ]
+    }
+  }
+  ,
+  'x-mark': {
+    outline: {
+      viewBox: VIEWBOX.DEFAULT,
+      strokeWidth: 1.5,
+      paths: [
+        <path key="1" strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+      ]
+    },
+    solid: {
+      viewBox: VIEWBOX.DEFAULT,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+      ]
+    },
+    mini: {
+      viewBox: VIEWBOX.MINI,
+      paths: [
+        <path key="1" d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+      ]
+    },
+    micro: {
+      viewBox: VIEWBOX.MICRO,
+      paths: [
+        <path key="1" d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z" />
       ]
     }
   }
