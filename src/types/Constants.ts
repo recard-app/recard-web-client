@@ -42,9 +42,9 @@ export type RoleType = typeof ROLE_TYPE[keyof typeof ROLE_TYPE];
  */
 
 export const APP_NAME = 'ReCard';
-export const APP_LOGO = '/bluecup3x-square.png';
+export const APP_LOGO = '/temp_logo.png';
 export const PLACEHOLDER_CARD_IMAGE = 'https://placehold.co/20x20';
-export const PLACEHOLDER_ASSISTANT_IMAGE = 'https://placehold.co/40x40';
+export const PLACEHOLDER_ASSISTANT_IMAGE = '/temp_avatar.png';
 export const HISTORY_PAGE_SIZE = 20;
 export const RECOMMENDED_MAX_CHAT_MESSAGES = 20;
 export const GLOBAL_QUICK_HISTORY_SIZE = 3;
