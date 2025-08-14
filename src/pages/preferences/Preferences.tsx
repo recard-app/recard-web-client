@@ -46,7 +46,7 @@ const Preferences: React.FC<PreferencesProps> = ({
                 onHelpClick={() => setIsHelpOpen(true)}
             />
             <div className="full-page-content">
-                <ContentContainer size="md" framed>
+                <ContentContainer size="md">
                     <PreferencesModule 
                         customInstructions={preferencesInstructions}
                         onInstructionsUpdate={setPreferencesInstructions}

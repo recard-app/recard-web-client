@@ -56,13 +56,19 @@
 // Main scrollable content area (default padding)
 .full-page-content {
   @extend %full-page-content-base;
-  padding: 24px;
+  padding: $space-3;
+  @media (max-width: $mobile-breakpoint) {
+    padding: $space-2;
+  }
 }
 
 // Compact padding variant
 .full-page-content--compact {
   @extend %full-page-content-base;
-  padding: 16px;
+  padding: $space-2;
+  @media (max-width: $mobile-breakpoint) {
+    padding: $space-1;
+  }
 }
 
 // No padding variant

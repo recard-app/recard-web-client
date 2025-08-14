@@ -48,7 +48,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
     <div className="full-page-layout">
       <PageHeader title={PAGE_NAMES.MY_ACCOUNT} icon={PAGE_ICONS.MY_ACCOUNT.MINI} />
       <div className="full-page-content">
-        <ContentContainer size="lg" framed>
+        <ContentContainer size="lg">
         {user ? (
           <div className="account-wrapper">
             <div className="account-header">

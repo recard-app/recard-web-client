@@ -15,15 +15,14 @@
 
   // Optional framed variant, matching auth cards
   &--framed {
-    background-color: $neutral-lightest-gray;
-    border: $border-half solid $neutral-gray;
+    background-color: $neutral-white;
+    border: $border-half solid $neutral-light-gray;
     border-radius: $radius-lg;
     box-shadow: $shadow-sm;
     padding: $space-6; // override to match auth-card spacing
 
     @media (max-width: $breakpoint-sm) {
-      padding: $space-4;
-      border-radius: $radius-xl;
+      padding: $space-3;
     }
   }
 }
