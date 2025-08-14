@@ -30,7 +30,7 @@ import HistoryHelpModal from './pages/history/HistoryHelpModal';
 import MyCardsHelpModal from './pages/my-cards/MyCardsHelpModal';
 import PreferencesHelpModal from './pages/preferences/PreferencesHelpModal';
 // Components
-import AppHeader from './components/AppHeader';
+
 import AppSidebar from './components/AppSidebar';
 import PromptWindow from './components/PromptWindow';
 import CreditCardSelector, { CreditCardSelectorRef } from './components/CreditCardSelector';
@@ -592,15 +592,6 @@ function AppContent({}: AppContentProps) {
             <title>{getPageTitle()}</title>
           </Helmet>
           
-          {/* AppHeader for unauthenticated pages */}
-          {!user && (
-            <AppHeader 
-              user={user}
-              onLogout={handleLogout}
-              isSidePanelOpen={false}
-              toggleSidePanel={toggleSidePanel}
-            />
-          )}
           
           {/* Universal Sidebar - shown on all pages when user is authenticated */}
           {user && (
@@ -834,6 +825,7 @@ function AppContent({}: AppContentProps) {
                 isSidePanelOpen={user ? isSidePanelOpen : false}
                 fullHeight={isAuthRoute ? true : needsFullHeight}
                 className={isAuthRoute ? 'center-content' : ''}
+                disableSidebarMargin={isAuthRoute}
               >
                 <Routes>
                   <Route path={PAGES.HOME.PATH} element={

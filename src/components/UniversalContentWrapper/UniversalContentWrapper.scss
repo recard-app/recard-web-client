@@ -6,12 +6,20 @@
   min-height: 0;
   transition: margin-left $side-panel-speed ease-in-out;
   
-  &.side-panel-open {
-    margin-left: $side-panel-width;
+  // Default behavior: apply sidebar margins
+  &:not(.no-sidebar-margin) {
+    &.side-panel-open {
+      margin-left: $side-panel-width;
+    }
+    
+    &.side-panel-closed {
+      margin-left: $mini-sidebar-width;
+    }
   }
   
-  &.side-panel-closed {
-    margin-left: $mini-sidebar-width;
+  // No margin when explicitly disabled
+  &.no-sidebar-margin {
+    margin-left: 0;
   }
 
   // Center content utility variant for simple pages (e.g., auth)
