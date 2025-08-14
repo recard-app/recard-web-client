@@ -2,7 +2,7 @@ import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthService } from '../../services';
-import { AuthResponse, PAGES } from '../../types';
+import { AuthResponse, PAGES, APP_NAME, APP_LOGO } from '../../types';
 import { InfoDisplay } from '../../elements';
 import './Auth.scss';
 
@@ -53,7 +53,12 @@ const SignIn: React.FC = () => {
     };
 
     return (
-        <div className="auth-card">
+        <div className="auth-page">
+            <div className="auth-brand">
+                <img src={APP_LOGO} alt={`${APP_NAME} logo`} className="brand-logo" />
+                <span className="brand-name">{APP_NAME}</span>
+            </div>
+            <div className="auth-card">
                 <div className="auth-header">
                     <h1>Sign in</h1>
                     <p className="subtitle">Welcome back. Please enter your details.</p>
@@ -101,6 +106,7 @@ const SignIn: React.FC = () => {
                         message={error}
                     />
                 )}
+            </div>
         </div>
     );
 };

@@ -3,6 +3,11 @@
 // Note: Centering is handled by UniversalContentWrapper's `.center-content` variant
 
 // Card wrapper for all auth screens
+.auth-page {
+  width: 100%;
+  max-width: 480px;
+}
+
 .auth-card {
   width: 100%;
   max-width: 480px;
@@ -11,6 +16,26 @@
   border-radius: $radius-2xl;
   box-shadow: $shadow-lg;
   padding: $space-8;
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-3;
+  margin: 0 auto $space-4 auto;
+
+  .brand-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-md;
+  }
+
+  .brand-name {
+    @include heading-5;
+    letter-spacing: 0.2px;
+  }
 }
 
 .auth-header {

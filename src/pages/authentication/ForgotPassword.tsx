@@ -1,7 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { PAGES } from '../../types';
+import { PAGES, APP_NAME, APP_LOGO } from '../../types';
 import { InfoDisplay } from '../../elements';
 import './Auth.scss';
 
@@ -23,7 +23,12 @@ const ForgotPassword: React.FC = () => {
     };
 
     return (
-        <div className="auth-card">
+        <div className="auth-page">
+            <div className="auth-brand">
+                <img src={APP_LOGO} alt={`${APP_NAME} logo`} className="brand-logo" />
+                <span className="brand-name">{APP_NAME}</span>
+            </div>
+            <div className="auth-card">
                 <div className="auth-header">
                     <h1>Reset your password</h1>
                     <p className="subtitle">Enter your email and we’ll send you a reset link.</p>
@@ -59,6 +64,7 @@ const ForgotPassword: React.FC = () => {
                         message={message}
                     />
                 )}
+            </div>
         </div>
     );
 };

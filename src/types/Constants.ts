@@ -42,6 +42,7 @@ export type RoleType = typeof ROLE_TYPE[keyof typeof ROLE_TYPE];
  */
 
 export const APP_NAME = 'ReCard';
+export const APP_LOGO = '/logo192.png';
 export const PLACEHOLDER_CARD_IMAGE = 'https://placehold.co/20x20';
 export const PLACEHOLDER_ASSISTANT_IMAGE = 'https://placehold.co/40x40';
 export const HISTORY_PAGE_SIZE = 20;
@@ -127,7 +128,7 @@ export const PAGE_ICONS = {
         INACTIVE: (props: any = {}) => createIconVariant('sign-out', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('sign-out', 'mini', ICON_GRAY, props.size)
     },
-    LOGO: TEMP_ICON,
+    LOGO: APP_LOGO,
     NEW_CHAT_PLUS: {
         NORMAL: (props: any = {}) => createIconVariant('plus-circle', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         HOVERED: (props: any = {}) => createIconVariant('plus-circle', 'solid', ICON_PRIMARY_MEDIUM, props.size)
