@@ -11,12 +11,30 @@
   line-height: 1.4;
 
   &.centered {
-    justify-content: center; // center the whole group
+    justify-content: center; // center the whole group horizontally
     text-align: center;
     width: 100%;
     
     .info-message {
-      flex: 0 0 auto; // don't stretch; keep together with icon
+      flex: 0 0 auto; // keep text sized to its content when centered
+    }
+  }
+
+  // Apply non-centered behavior only when not using the centered variant
+  &:not(.centered) {
+    align-items: flex-start;
+    max-width: 100%;
+
+    .info-icon-wrapper {
+      margin-top: 1px; // slight visual alignment tweak with multi-line text
+    }
+
+    .info-message {
+      flex: 1 1 0; // allow wrapping next to the icon
+      min-width: 0;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      white-space: normal;
     }
   }
   
@@ -46,8 +64,8 @@
   
   .info-message {
     color: inherit;
-    flex: 1 1 auto; // take remaining space by default
-    min-width: 0; // allow text to wrap without shrinking siblings
+    flex: 1 1 auto; // default behavior; non-centered overrides above
+    min-width: 0;
     overflow-wrap: anywhere;
     word-break: break-word;
   }

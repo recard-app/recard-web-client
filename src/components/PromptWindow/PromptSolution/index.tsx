@@ -164,9 +164,8 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
         setSolutions(incoming as ChatSolutionCard[]);
     }, [promptSolutions]);
 
-    // On route chat change, clear UI once; PromptWindow will repopulate promptSolutions and chatId later
+    // On route chat change, reset UI state; keep solutions intact and let parent control updates
     useEffect(() => {
-        setSolutions([]);
         setIsCardSelectorOpen(false);
         setIsExpanded(true);
         setSelectCardSearchTerm('');

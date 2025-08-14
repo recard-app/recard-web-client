@@ -99,7 +99,8 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
       style={{ 
         backgroundColor: getBackgroundColor(displayColor),
         color: displayColor,
-        textAlign: centered ? 'center' : undefined,
+        // Keep text left-aligned when not centered; let CSS control centered variant
+        textAlign: centered ? undefined : 'left',
         justifyContent: centered ? 'center' : undefined,
         width: centered ? '100%' : undefined
       }}

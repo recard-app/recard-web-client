@@ -58,6 +58,15 @@
     min-width: $icon-large; // to keep center alignment stable
     justify-content: flex-end;
 
+    .mobile-header__new-chat-button {
+      padding: 2px $space-2; // small height similar to desktop small button
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
+      white-space: nowrap;
+    }
+
     .mobile-header__help-button {
       background: none;
       border: none;
@@ -95,6 +104,13 @@
     align-items: center;
     justify-content: flex-start;
     min-width: $icon-large; // width to balance the right side for center title
+    gap: $space-2;
+    
+    .mobile-header__brand {
+      display: inline-flex;
+      align-items: center;
+      img { width: $icon-medium; height: $icon-medium; display: block; }
+    }
   }
 
   .mobile-header__center {

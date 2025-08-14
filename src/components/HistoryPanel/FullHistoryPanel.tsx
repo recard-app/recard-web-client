@@ -355,7 +355,6 @@ function FullHistoryPanel({
         message={getUpgradeMessageText(selectedMonth, selectedYear)}
         showTitle={false}
         transparent={false}
-        centered
       />
     );
   };

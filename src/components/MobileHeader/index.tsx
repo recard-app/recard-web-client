@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils } from '../../types';
+import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils } from '../../types';
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -139,18 +139,17 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 <Icon name="sidebar" variant="open" size={20} color={SIDEBAR_TOGGLE_ICON_COLOR} />
               </button>
             </Drawer.Trigger>
+            {isHomeOrChatRoute(location.pathname) ? (
+              <Link to={PAGES.HOME.PATH} className="mobile-header__brand" aria-label={APP_NAME}>
+                <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} />
+              </Link>
+            ) : null}
           </div>
 
           <div className="mobile-header__center">
             {(() => {
               const currentTitle = getCurrentPageTitle();
-              if (isHomeOrChatRoute(location.pathname) || currentTitle === PAGE_NAMES.HOME) {
-                return (
-                  <Link to={PAGES.HOME.PATH} className="mobile-header__brand" aria-label={APP_NAME}>
-                    <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} />
-                  </Link>
-                );
-              }
+              if (isHomeOrChatRoute(location.pathname) || currentTitle === PAGE_NAMES.HOME) return null;
               return (
                 <h1 className="mobile-header__title">
                   {getCurrentPageIcon()}
@@ -161,6 +160,17 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           </div>
 
           <div className="mobile-header__actions">
+            {isHomeOrChatRoute(location.pathname) && onNewChat ? (
+              <button 
+                className="button ghost small icon with-text mobile-header__new-chat-button"
+                onClick={handleNewChatClick}
+                aria-label="Start new chat"
+                title="New Chat"
+              >
+                <Icon name="chat-bubble" variant="micro" size={16} color={ICON_PRIMARY_MEDIUM} />
+                <span>New Chat</span>
+              </button>
+            ) : null}
             {showHelpButton && onHelpClick ? (
               <button 
                 className="button no-outline small icon-gray-hover mobile-header__help-button"
