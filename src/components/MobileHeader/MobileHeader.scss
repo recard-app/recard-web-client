@@ -306,7 +306,12 @@
     text-decoration: none;
     color: inherit;
     img { width: $icon-medium; height: $icon-medium; }
-    .brand-name { font-weight: $font-medium; }
+    .brand-name { 
+      font-weight: $font-medium; 
+      font-family: $font-cal-sans;
+      color: $neutral-black;
+      font-size: $font-h4;
+    }
   }
 
   .mobile-drawer-bottom {
