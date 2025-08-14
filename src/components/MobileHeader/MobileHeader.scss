@@ -8,7 +8,7 @@
   height: 48px;
   background-color: $neutral-white;
   border-bottom: $border-half solid $neutral-light-gray;
-  padding: 0 $space-3;
+  padding: 0 $space-2;
   box-sizing: border-box;
   display: none;
   align-items: center;
@@ -161,11 +161,11 @@
   .mobile-drawer-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: $space-2;
     height: 48px;
     min-height: 48px;
-    padding: 0 $space-3;
+    padding: 0 $space-2;
     border-bottom: $border-half solid $neutral-light-gray;
   }
 

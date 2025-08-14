@@ -140,9 +140,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
               </button>
             </Drawer.Trigger>
             {isHomeOrChatRoute(location.pathname) ? (
-              <Link to={PAGES.HOME.PATH} className="mobile-header__brand" aria-label={APP_NAME}>
+              <div className="mobile-header__brand" aria-label={APP_NAME}>
                 <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} />
-              </Link>
+              </div>
             ) : null}
           </div>
 
@@ -188,21 +188,21 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             <Drawer.Overlay className="mobile-drawer-overlay" />
             <Drawer.Content className="mobile-drawer-content" aria-label={`${APP_NAME} mobile navigation`} aria-describedby={undefined}>
               <div className="mobile-drawer-container">
-                <div className="mobile-drawer-header">
-                  <Drawer.Close asChild>
-                    <Link to={PAGES.HOME.PATH} className="mobile-drawer-brand" aria-label={APP_NAME}>
-                      <img src={PAGE_ICONS.LOGO} alt="Logo" />
-                      <span className="brand-name">{APP_NAME}</span>
-                    </Link>
-                  </Drawer.Close>
-                  <Drawer.Title className="visually-hidden">Menu</Drawer.Title>
-                  <Drawer.Description className="visually-hidden">Mobile navigation drawer</Drawer.Description>
-                  <Drawer.Close asChild>
-                    <button className="mobile-drawer-close button no-outline small icon-gray-hover" aria-label="Close menu">
-                      <Icon name="sidebar" variant="close" size={20} color={SIDEBAR_TOGGLE_ICON_COLOR} />
-                    </button>
-                  </Drawer.Close>
-                </div>
+              <div className="mobile-drawer-header">
+                <Drawer.Close asChild>
+                  <button className="mobile-drawer-close button no-outline small icon-gray-hover" aria-label="Close menu">
+                    <Icon name="sidebar" variant="close" size={20} color={SIDEBAR_TOGGLE_ICON_COLOR} />
+                  </button>
+                </Drawer.Close>
+                <Drawer.Close asChild>
+                  <Link to={PAGES.HOME.PATH} className="mobile-drawer-brand" aria-label={APP_NAME}>
+                    <img src={PAGE_ICONS.LOGO} alt="Logo" />
+                    <span className="brand-name">{APP_NAME}</span>
+                  </Link>
+                </Drawer.Close>
+                <Drawer.Title className="visually-hidden">Menu</Drawer.Title>
+                <Drawer.Description className="visually-hidden">Mobile navigation drawer</Drawer.Description>
+              </div>
 
                 <div className="mobile-drawer-body">
                   <nav className="mobile-drawer-nav" role="navigation">
