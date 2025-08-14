@@ -54,7 +54,7 @@ export const SHOW_HEADER_ICONS = true;
 export const FREE_PLAN_HISTORY_DAYS = 90;
 
 export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
-export const PLACEHOLDER_PROFILE_IMAGE = 'http://localhost:5173/account.png';
+export const PLACEHOLDER_PROFILE_IMAGE = '/temp_account.png';
 export const DEFAULT_CHAT_NAME_PLACEHOLDER = 'New Transaction Chat';
 
 export const TEMP_ICON = 'https://placehold.co/20x20';
