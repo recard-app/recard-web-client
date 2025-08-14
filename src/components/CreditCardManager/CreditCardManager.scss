@@ -28,9 +28,12 @@
       justify-content: stretch;
       align-items: center;
       padding: 16px;
-      border-bottom: $border-full solid $neutral-light-gray;
-      flex-shrink: 0;
+      border-top: $border-full solid $neutral-light-gray;
       background-color: $neutral-white;
+      flex-shrink: 0;
+      position: sticky;
+      bottom: 0;
+      z-index: 1;
       
       button {
         width: 100%;

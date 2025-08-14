@@ -465,13 +465,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     </div>
                 )}
                 
-                <div className="sidebar-action">
-                    <button className="icon with-text" onClick={handleAddCard}>
-                        <Icon name="card" variant="solid" />
-                        Add Card
-                    </button>
-                </div>
-                
                 <CreditCardPreviewList
                     cards={selectedCards}
                     selectedCardId={selectedCard?.id}
@@ -479,6 +472,13 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                     loading={isLoading}
                     variant="my-cards"
                 />
+
+                <div className="sidebar-action">
+                    <button className="icon with-text" onClick={handleAddCard}>
+                        <Icon name="card" variant="solid" />
+                        Add Card
+                    </button>
+                </div>
             </div>
             
             {/* Main content area for card details */}
