@@ -59,12 +59,18 @@
     justify-content: flex-end;
 
     .mobile-header__new-chat-button {
-      padding: 2px $space-2; // small height similar to desktop small button
+      padding: 2px $space-2; // base values
       height: 28px;
       display: inline-flex;
       align-items: center;
-      gap: $space-1;
+      gap: $space-half;
       white-space: nowrap;
+    }
+
+    // Increase specificity to override global .button.icon.small.with-text rule
+    .mobile-header__new-chat-button.button.icon.small.with-text {
+      padding: 2px $space-2 !important; // ensure our compact padding wins
+      gap: $space-1 !important; // tighter icon/text spacing
     }
 
     .mobile-header__help-button {
