@@ -14,7 +14,7 @@ import {
   //UserCredential
   sendPasswordResetEmail as firebaseSendPasswordResetEmail
 } from 'firebase/auth';
-import { PLACEHOLDER_PROFILE_IMAGE } from '../types';
+import { PLACEHOLDER_PROFILE_IMAGE, APP_NAME, PAGE_ICONS, LOADING_ICON } from '../types';
 
 interface AuthContextType {
   user: FirebaseUser | null;
@@ -194,7 +194,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#FFFFFF',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} style={{ width: 48, height: 48 }} />
+          <LOADING_ICON size={24} className="spinning" aria-label="Loading" />
+        </div>
+      </div>
+    );
   }
 
   const value: AuthContextType = {
