@@ -6,7 +6,7 @@ import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections, sortCards } from './utils';
 import { APP_NAME, PAGES } from '../../types';
 import { CardIcon } from '../../icons';
-import { InfoDisplay } from '../../elements';
+import { InfoDisplay, SearchField } from '../../elements';
 
 /**
  * Props interface for the CreditCardSelector component
@@ -144,18 +144,17 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
             
             {!hideInternalSearch && (
                 <div className="search-container">
-                    <input
+                    <SearchField
                         type="text"
                         placeholder="Search cards..."
                         value={effectiveSearchTerm}
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                             if (onExternalSearchTermChange) {
                                 onExternalSearchTermChange(e.target.value);
                             } else {
                                 setSearchTerm(e.target.value);
                             }
                         }}
-                        className="search-input default-input"
                         disabled={isSaving}
                     />
                 </div>

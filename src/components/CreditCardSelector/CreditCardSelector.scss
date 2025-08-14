@@ -142,7 +142,8 @@
       
       .search-input {
         width: 100%;
-        padding: 8px;
+        // Provide extra left padding to avoid overlap with the search icon
+        padding: 8px 8px 8px 32px;
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 0.9em;
@@ -233,7 +234,8 @@
       
       .search-input {
         width: 100%;
-        padding: 8px;
+        // Provide extra left padding to avoid overlap with the search icon
+        padding: 8px 8px 8px 32px;
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 0.9em;

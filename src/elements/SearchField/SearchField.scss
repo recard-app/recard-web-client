@@ -1,0 +1,21 @@
+@use '../../styling/variables' as *;
+
+.search-field {
+  position: relative;
+  width: 100%;
+
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: $neutral-medium-gray;
+    pointer-events: none;
+  }
+
+  // Ensure input has left padding to accommodate the icon
+  .search-input,
+  .search-input.default-input {
+    padding-left: 32px !important; // space for icon; override generic input padding
+  }
+}

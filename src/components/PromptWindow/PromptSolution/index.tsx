@@ -19,6 +19,7 @@ import {
   DrawerTitle,
 } from '../../ui/drawer';
 import './PromptSolution.scss';
+import { SearchField } from '../../../elements';
 
 /**
  * Props for the PromptSolution component.
@@ -285,12 +286,11 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                                     <div className="dialog-header drawer-sticky-header">
                                         <h2>Select a Credit Card</h2>
                                         <div className="search-container" style={{ marginTop: 6 }}>
-                                            <input
+                                            <SearchField
                                                 type="text"
                                                 placeholder="Search cards..."
                                                 value={selectCardSearchTerm}
-                                                onChange={(e) => setSelectCardSearchTerm(e.target.value)}
-                                                className="search-input default-input"
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectCardSearchTerm(e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -445,17 +445,16 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                         <Drawer open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen} direction="bottom">
                             <DrawerContent>
                                 <DrawerTitle className="sr-only">Select a Credit Card</DrawerTitle>
-                                <div className="dialog-header drawer-sticky-header">
+                                    <div className="dialog-header drawer-sticky-header">
                                     <h2>Select a Credit Card</h2>
-                                    <div className="search-container" style={{ marginTop: 6 }}>
-                                        <input
-                                            type="text"
-                                            placeholder="Search cards..."
-                                            value={selectCardSearchTerm}
-                                            onChange={(e) => setSelectCardSearchTerm(e.target.value)}
-                                            className="search-input default-input"
-                                        />
-                                    </div>
+                                        <div className="search-container" style={{ marginTop: 6 }}>
+                                            <SearchField
+                                                type="text"
+                                                placeholder="Search cards..."
+                                                value={selectCardSearchTerm}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectCardSearchTerm(e.target.value)}
+                                            />
+                                        </div>
                                 </div>
                                 <div className="dialog-body" style={{ overflowY: 'auto' }}>
                                     {creditCards && (

@@ -5,7 +5,7 @@ import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService } from '../../services';
 import CreditCardDetailView from '../CreditCardDetailView';
 import CreditCardPreviewList from '../CreditCardPreviewList';
-import { InfoDisplay } from '../../elements';
+import { InfoDisplay, SearchField } from '../../elements';
 import {
   Dialog,
   DialogContent,
@@ -554,12 +554,11 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                                                 <div className="dialog-header drawer-sticky-header">
                                                     <h2>Add Card</h2>
                                                     <div className="search-container" style={{ marginTop: 6 }}>
-                                                        <input
+                                                        <SearchField
                                                             type="text"
                                                             placeholder="Search cards..."
                                                             value={addCardSearchTerm}
-                                                            onChange={(e) => setAddCardSearchTerm(e.target.value)}
-                                                            className="search-input default-input"
+                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddCardSearchTerm(e.target.value)}
                                                             disabled={isAddingCard}
                                                         />
                                                     </div>

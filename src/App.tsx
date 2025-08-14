@@ -55,7 +55,7 @@ import {
 } from './components/ui/drawer';
 import PageHeader from './components/PageHeader';
 import MobileHeader from './components/MobileHeader';
-import { InfoDisplay } from './elements';
+import { InfoDisplay, SearchField } from './elements';
 
 // Context
 import { useAuth } from './context/AuthContext';
@@ -676,12 +676,11 @@ function AppContent({}: AppContentProps) {
                     <div className="dialog-header drawer-sticky-header">
                       <h2>Select Your Credit Cards</h2>
                       <div className="search-container" style={{ marginTop: 6 }}>
-                        <input
+                        <SearchField
                           type="text"
                           placeholder="Search cards..."
                           value={cardSelectorSearchTerm}
-                          onChange={(e) => setCardSelectorSearchTerm(e.target.value)}
-                          className="search-input default-input"
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCardSelectorSearchTerm(e.target.value)}
                           disabled={isSavingCards}
                         />
                       </div>

@@ -3,7 +3,7 @@ import './CreditCardSelector.scss';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, sortCards } from './utils';
 import { CardIcon } from '../../icons';
-import { InfoDisplay } from '../../elements';
+import { InfoDisplay, SearchField } from '../../elements';
 
 /**
  * Props interface for the SingleCardSelector component
@@ -144,18 +144,17 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
 
       {!hideInternalSearch && !onlyShowUserCards && (
         <div className="search-container">
-          <input
+          <SearchField
             type="text"
             placeholder="Search cards..."
             value={effectiveSearchTerm}
-            onChange={(e) => {
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               if (onExternalSearchTermChange) {
                 onExternalSearchTermChange(e.target.value);
               } else {
                 setSearchTerm(e.target.value);
               }
             }}
-            className="search-input default-input"
             disabled={disabled}
           />
         </div>
