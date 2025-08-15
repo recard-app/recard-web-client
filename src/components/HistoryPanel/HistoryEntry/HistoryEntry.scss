@@ -135,6 +135,8 @@
     // FULL-PAGE VARIANT - More detailed styling
     &.full-page-variant {
       border: $border-half solid $neutral-light-gray;
+      padding-left: $space-2;
+      padding-right: $space-2;
         &:hover { }
 
         &.has-selected-card { }
