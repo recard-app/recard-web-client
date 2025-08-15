@@ -11,8 +11,8 @@
     align-items: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    min-height: 48px;
-    line-height: 48px;
+    min-height: 42px;
+    line-height: 42px;
     
     p {
         margin: 0;
@@ -135,8 +135,16 @@
     // FULL-PAGE VARIANT - More detailed styling
     &.full-page-variant {
       border: $border-half solid $neutral-light-gray;
-      padding-left: $space-2;
-      padding-right: $space-2;
+      @media (max-width: $mobile-breakpoint) {
+        border-color: $neutral-lightest-gray;
+        //border-color: transparent;
+        .entry-info {
+          .entry-title {
+            font-weight: $font-medium;
+          }
+        }
+      }
+      
         &:hover { }
 
         &.has-selected-card { }

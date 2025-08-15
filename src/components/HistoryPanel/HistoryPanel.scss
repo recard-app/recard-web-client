@@ -16,13 +16,14 @@
             
             .section-title {
                 font-family: $font-inter;
-                font-size: $font-sm;
-                font-weight: $font-regular;
-                color: $neutral-dark-gray;
+                font-size: $font-xs;
+                font-weight: $font-bold;
+                color: $neutral-medium-gray;
                 padding: $space-1 0;
                 margin: 0;
                 text-align: right;
                 line-height: $leading-normal;
+                text-transform: uppercase;
             }
         }
 
