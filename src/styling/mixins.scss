@@ -350,7 +350,8 @@
 // Default input styling based on PromptField design
 @mixin default-input {
   font-family: inherit;
-  font-size: $font-chat;
+  // Ensure at least 16px to prevent iOS Safari/Chrome auto-zoom on focus
+  font-size: $font-base;
   color: $neutral-black;
   background-color: $neutral-white;
   border: $border-full solid $neutral-gray;
