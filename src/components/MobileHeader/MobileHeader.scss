@@ -6,6 +6,8 @@
   top: 0;
   z-index: 9; // below sidebar (10), above content
   height: 56px;
+  min-height: 56px;
+  line-height: 56px; // ensure perceived height on mobile browsers
   background-color: $neutral-white;
   border-bottom: $border-half solid $neutral-light-gray;
   padding: 0 $space-2;
@@ -112,6 +114,7 @@
     justify-content: flex-start;
     min-width: $icon-large; // width to balance the right side for center title
     gap: $space-2;
+    height: 100%;
     
     .mobile-header__brand {
       display: inline-flex;
@@ -125,6 +128,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
   }
 }
 
@@ -174,6 +178,7 @@
     min-height: 56px;
     padding: 0 $space-2;
     border-bottom: $border-half solid $neutral-light-gray;
+    box-shadow: $container-shadow-bottom;
   }
 
   .mobile-drawer-title {
@@ -319,6 +324,7 @@
     border-top: $border-half solid $neutral-light-gray;
     padding: $space-1;
     background: $neutral-white;
+    box-shadow: $container-shadow-top;
     .user-profile-section {
       // mirror expanded sidebar profile section
       .profile-trigger-button {

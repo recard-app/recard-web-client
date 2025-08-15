@@ -126,6 +126,11 @@ $container-shadow-right: 3px 0 10px -8px rgba(0, 0, 0, 0.16);
 $container-shadow-bottom: 0 3px 10px -8px rgba(0, 0, 0, 0.16);
 $container-shadow-left: -3px 0 10px -8px rgba(0, 0, 0, 0.16);
 
+$container-shadow-top-bigger: 0 -3px 10px -6px rgba(0, 0, 0, 0.16);
+$container-shadow-right-bigger: 3px 0 10px -6px rgba(0, 0, 0, 0.16);
+$container-shadow-bottom-bigger: 0 3px 10px -6px rgba(0, 0, 0, 0.16);
+$container-shadow-left-bigger: -3px 0 10px -6px rgba(0, 0, 0, 0.16);
+
 // Breakpoints
 $breakpoint-sm: 640px;
 $breakpoint-md: 768px;
