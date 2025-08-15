@@ -503,7 +503,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             {/* Mobile-only sticky footer controls */}
             {isMobileViewport && (
                 <div className="mobile-sticky-footer" role="region" aria-label="Card actions">
-                    {selectedCards.length === 0 ? (
+                    {!isLoading && selectedCards.length === 0 ? (
                         <>
                             <p className="caps-label">Add your credit cards</p>
                             <button className="button icon with-text add-card-button" onClick={handleAddCard} aria-haspopup="dialog">

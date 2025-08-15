@@ -558,9 +558,11 @@ function AppContent({}: AppContentProps) {
     const hasSelectedCards = Array.isArray(creditCards)
       ? creditCards.some((c: any) => c && c.selected === true)
       : false;
+    // While loading, assume user has cards so we don't flash the empty state
+    const shouldShowNewChat = isLoadingCreditCards || hasSelectedCards;
     const headerActions = (
       <>
-        {hasSelectedCards ? (
+        {shouldShowNewChat ? (
           <button 
             className="button ghost small icon with-text"
             onClick={handleClearChat}

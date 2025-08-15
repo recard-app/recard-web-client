@@ -75,6 +75,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   const hasSelectedCards = Array.isArray(creditCards)
     ? creditCards.some((c: any) => c && c.selected === true)
     : false;
+  // While loading, assume user has cards so we don't flash the empty state
+  const shouldShowNewChat = isLoadingCreditCards || hasSelectedCards;
 
   // Get the current page title for display in mobile header
   const getCurrentPageTitle = (): string => {
@@ -173,7 +175,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
           <div className="mobile-header__actions">
             {isHomeOrChatRoute(location.pathname) && (onNewChat || onOpenCardSelector) ? (
-              hasSelectedCards ? (
+              shouldShowNewChat ? (
                 <button 
                   className="button ghost small icon with-text mobile-header__new-chat-button"
                   onClick={handleNewChatClick}
