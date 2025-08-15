@@ -13,6 +13,7 @@
   display: none;
   align-items: center;
   justify-content: space-between;
+  box-shadow: $container-shadow-bottom;
 
   .mobile-header__title {
     font-size: $font-h6;
