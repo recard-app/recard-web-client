@@ -178,7 +178,7 @@
     min-height: 56px;
     padding: 0 $space-2;
     border-bottom: $border-half solid $neutral-light-gray;
-    box-shadow: $container-shadow-bottom;
+    box-shadow: $container-shadow-bottom-bigger;
   }
 
   .mobile-drawer-title {
@@ -324,7 +324,7 @@
     border-top: $border-half solid $neutral-light-gray;
     padding: $space-1;
     background: $neutral-white;
-    box-shadow: $container-shadow-top;
+    box-shadow: $container-shadow-top-bigger;
     .user-profile-section {
       // mirror expanded sidebar profile section
       .profile-trigger-button {
