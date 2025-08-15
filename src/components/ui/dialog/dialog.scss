@@ -14,7 +14,7 @@
   border-color: $neutral-gray !important;
   box-shadow: $shadow-xl !important;
   max-width: 600px;
-  max-height: calc(100vh - ($space-8 * 2));
+  max-height: calc((var(--app-vh, 1vh) * 100) - ($space-8 * 2));
   display: flex;
   flex-direction: column;
   overflow: hidden; // Prevent outer scroll, inner will handle it
@@ -28,9 +28,9 @@
   &.full-screen {
     // full-screen modal takes entire viewport minus $space-8 margins
     width: calc(100vw - ($space-8 * 2));
-    height: calc(100vh - ($space-8 * 2));
+    height: calc((var(--app-vh, 1vh) * 100) - ($space-8 * 2));
     max-width: var(--full-screen-max-width, 1000px); // fallback 1000px
-    max-height: calc(100vh - ($space-8 * 2));
+    max-height: calc((var(--app-vh, 1vh) * 100) - ($space-8 * 2));
   }
 }
 
@@ -38,13 +38,13 @@
 @media (max-width: $mobile-breakpoint) {
    .dialog-content {
     width: calc(100vw - ($space-4 * 2));
-    max-height: calc(100vh - ($space-4 * 2));
+    max-height: calc((var(--app-vh, 1vh) * 100) - ($space-4 * 2));
    }
    //.dialog-content.full-width { }
    .dialog-content.full-screen {
       width: calc(100vw - ($space-4 * 2));
-      height: calc(100vh - ($space-4 * 2));
-      max-height: calc(100vh - ($space-4 * 2));
+      height: calc((var(--app-vh, 1vh) * 100) - ($space-4 * 2));
+      max-height: calc((var(--app-vh, 1vh) * 100) - ($space-4 * 2));
     }
 }
 
@@ -240,13 +240,13 @@
 @media (max-width: $mobile-breakpoint) {
   .alert-dialog-content {
     width: calc(100vw - ($space-4 * 2));
-    max-height: calc(100vh - ($space-4 * 2));
+    max-height: calc((var(--app-vh, 1vh) * 100) - ($space-4 * 2));
   }
 
   .alert-dialog-content.full-screen {
     width: calc(100vw - ($space-4 * 2));
-    height: calc(100vh - ($space-4 * 2));
-    max-height: calc(100vh - ($space-4 * 2));
+    height: calc((var(--app-vh, 1vh) * 100) - ($space-4 * 2));
+    max-height: calc((var(--app-vh, 1vh) * 100) - ($space-4 * 2));
   }
 }
 

@@ -62,6 +62,7 @@ import { useAuth } from './context/AuthContext';
 
 // Hooks
 import { usePageBackground } from './hooks/usePageBackground';
+import { useViewportHeight } from './hooks/useViewportHeight';
 
 // Constants and Types
 import { 
@@ -98,6 +99,8 @@ function AppContent({}: AppContentProps) {
   
   // Enable dynamic page background colors
   usePageBackground();
+  // Ensure iOS Safari uses visible viewport height
+  useViewportHeight();
 
   // State for managing credit cards in the application
   const [creditCards, setCreditCards] = useState<CreditCard[]>([]);

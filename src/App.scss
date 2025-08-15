@@ -10,8 +10,20 @@
 .app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  max-height: 100vh;
+  // Default: iOS-safe CSS variable (set by useViewportHeight); fallback to classic 100vh
+  height: calc(var(--app-vh, 1vh) * 100);
+  max-height: calc(var(--app-vh, 1vh) * 100);
+  
+  // If browser supports dvh, prefer it
+  @supports (height: 100dvh) {
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+  // Otherwise, if svh is supported, use it
+  @supports (height: 100svh) {
+    height: 100svh;
+    max-height: 100svh;
+  }
 }
 
 // Generic full-page layout system
@@ -19,7 +31,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: 100vh;
+  max-height: calc(var(--app-vh, 1vh) * 100);
   box-sizing: border-box;
 }
 

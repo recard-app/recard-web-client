@@ -82,7 +82,7 @@
 .full-page-layout-with-footer {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(var(--app-vh, 1vh) * 100);
   padding-bottom: 70px; // Account for fixed footer
   
   .full-page-content {
