@@ -73,6 +73,9 @@
             max-width: $prompt-window-max-width;
             margin: 0 auto; // Center the content
             box-sizing: border-box;
+            @media (max-width: $mobile-breakpoint) {
+              padding: $space-3;
+            }
         }
     }
 
