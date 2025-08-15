@@ -309,7 +309,7 @@
 
 @mixin input-field {
   font-family: $font-inter;
-  font-size: $font-base;
+  font-size: $font-chat;
   color: $neutral-black;
   background-color: $neutral-white;
   border: $border-full solid $neutral-gray;
@@ -317,6 +317,10 @@
   padding: $space-3 $space-4;
   width: 100%;
   transition: all $transition-fast;
+
+  @media (max-width: $mobile-breakpoint) {
+    font-size: $font-base;
+  }
   
   &:hover {
     border-color: $neutral-medium-gray;
@@ -351,7 +355,7 @@
 @mixin default-input {
   font-family: inherit;
   // Ensure at least 16px to prevent iOS Safari/Chrome auto-zoom on focus
-  font-size: $font-base;
+  font-size: $font-chat;
   color: $neutral-black;
   background-color: $neutral-white;
   border: $border-full solid $neutral-gray;
@@ -365,6 +369,10 @@
   // Remove default styles
   outline: none !important;
   margin: 0;
+
+  @media (max-width: $mobile-breakpoint) {
+    font-size: $font-base;
+  }
   
   &:hover {
     border-color: $neutral-medium-gray;

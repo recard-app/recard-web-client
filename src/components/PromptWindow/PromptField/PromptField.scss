@@ -31,7 +31,7 @@
     textarea {
       min-height: 32px;
       max-height: 140px;
-      height: 34px;
+      height: 32px;
       padding: $space-1-5 $space-2;
       flex-grow: 1;
       resize: none;
@@ -41,7 +41,7 @@
       box-sizing: border-box;
       transition: height 0.1s ease;
       margin-bottom: 0;
-      font-size: $font-base;
+      font-size: $font-chat;
       color: $neutral-black;
       vertical-align: middle;
       
@@ -64,10 +64,15 @@
         border: none !important;
         box-shadow: none !important;
       }
+      @media (max-width: $mobile-breakpoint) {
+        font-size: $font-base;
+        height: 34px;
+      }
     }
-    
     button {
+        @media (max-width: $mobile-breakpoint) {
         height: 33px;
+      }
     }
 }
 
