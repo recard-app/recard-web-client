@@ -11,7 +11,7 @@ const RedirectIfAuthenticated = ({ children }: RedirectIfAuthenticatedProps): Re
   const { user } = useAuth();
 
   if (user) {
-    return <Navigate to={PAGES.ACCOUNT.PATH} replace />;
+    return <Navigate to={PAGES.HOME.PATH} replace />;
   }
 
   return <>{children}</>;
