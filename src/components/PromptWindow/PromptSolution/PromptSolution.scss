@@ -477,10 +477,9 @@ $collapse-transition-duration: 0.15s;
     .deselect-button {
         margin: 0;
         width: $space-5;
-        border: $border-full solid $neutral-dark-gray;
-        border-left: none;
-        background-color: $neutral-dark-gray;
-        color: $neutral-white;
+        border: $border-full solid $neutral-gray;
+        background-color: $neutral-white;
+        color: $neutral-black;
         cursor: pointer;
         display: flex;
         align-items: center;

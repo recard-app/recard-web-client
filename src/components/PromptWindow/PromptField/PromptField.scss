@@ -31,7 +31,7 @@
     textarea {
       min-height: 32px;
       max-height: 140px;
-      height: 32px;
+      height: 34px;
       padding: $space-1-5 $space-2;
       flex-grow: 1;
       resize: none;
@@ -67,6 +67,7 @@
     }
     
     button {
+        height: 33px;
     }
 }
 
