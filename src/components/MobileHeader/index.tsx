@@ -36,6 +36,7 @@ interface MobileHeaderProps {
   quickHistorySize?: number;
   user?: FirebaseUser | null;
   onNewChat?: () => void;
+  onOpenCardSelector?: () => void;
 }
 
 const MobileHeader: React.FC<MobileHeaderProps> = ({ 
@@ -56,7 +57,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   onCardSelect,
   quickHistorySize = 3,
   user = null,
-  onNewChat
+  onNewChat,
+  onOpenCardSelector
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -68,6 +70,11 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     if (currentChatId && pathname === `${PAGES.HOME.PATH}${currentChatId}`) return true;
     return false;
   };
+
+  // Determine if user has any selected cards (fallback to length > 0)
+  const hasSelectedCards = Array.isArray(creditCards)
+    ? creditCards.some((c: any) => c && c.selected === true)
+    : false;
 
   // Get the current page title for display in mobile header
   const getCurrentPageTitle = (): string => {
@@ -127,6 +134,11 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     setIsDrawerOpen(false);
   };
 
+  const handleAddCardsClick = () => {
+    onOpenCardSelector?.();
+    setIsDrawerOpen(false);
+  };
+
   // We no longer render a dynamic title in the mobile header
 
   return (
@@ -160,16 +172,28 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           </div>
 
           <div className="mobile-header__actions">
-            {isHomeOrChatRoute(location.pathname) && onNewChat ? (
-              <button 
-                className="button ghost small icon with-text mobile-header__new-chat-button"
-                onClick={handleNewChatClick}
-                aria-label="Start new chat"
-                title="New Chat"
-              >
-                <Icon name="chat-bubble" variant="micro" size={16} color={ICON_PRIMARY_MEDIUM} />
-                <span>New Chat</span>
-              </button>
+            {isHomeOrChatRoute(location.pathname) && (onNewChat || onOpenCardSelector) ? (
+              hasSelectedCards ? (
+                <button 
+                  className="button ghost small icon with-text mobile-header__new-chat-button"
+                  onClick={handleNewChatClick}
+                  aria-label="Start new chat"
+                  title="New Chat"
+                >
+                  <Icon name="chat-bubble" variant="micro" size={16} color={ICON_PRIMARY_MEDIUM} />
+                  <span>New Chat</span>
+                </button>
+              ) : (
+                <button 
+                  className="button ghost small icon with-text mobile-header__new-chat-button"
+                  onClick={handleAddCardsClick}
+                  aria-label="Add cards"
+                  title="Add Cards"
+                >
+                  <Icon name="card" variant="mini" size={16} color={ICON_PRIMARY_MEDIUM} />
+                  <span>Add Cards</span>
+                </button>
+              )
             ) : null}
             {showHelpButton && onHelpClick ? (
               <button 

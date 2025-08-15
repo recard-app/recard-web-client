@@ -11,13 +11,15 @@ interface CreditCardDetailViewProps {
     isLoading: boolean;
     onSetPreferred?: () => void;
     onRemoveCard?: () => void;
+    noCards?: boolean;
 }
 
 const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({ 
     cardDetails, 
     isLoading, 
     onSetPreferred, 
-    onRemoveCard 
+    onRemoveCard,
+    noCards = false
 }) => {
     // For initial load, show loading state
     if (isLoading) {
@@ -34,7 +36,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     }
     
     if (!cardDetails) {
-        return <div className="no-card-details">Select a card to view details</div>;
+        return <div className="no-card-details">{noCards ? 'Add your Credit Cards to get started' : 'Select a card to view details'}</div>;
     }
 
     return (

@@ -145,6 +145,7 @@ function AppContent({}: AppContentProps) {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [cardSelectorSaveStatus, setCardSelectorSaveStatus] = useState<string>('');
   const [cardSelectorSaveSuccess, setCardSelectorSaveSuccess] = useState<boolean>(false);
+  const [cardsVersion, setCardsVersion] = useState<number>(0);
   const [isSavingCards, setIsSavingCards] = useState(false);
   const [cardSelectorSearchTerm, setCardSelectorSearchTerm] = useState<string>('');
   const resetCardSelectorUI = () => {
@@ -490,6 +491,18 @@ function AppContent({}: AppContentProps) {
   const handleCardSelectorSaveComplete = (success: boolean, message: string) => {
     setCardSelectorSaveStatus(message);
     setCardSelectorSaveSuccess(success);
+    if (success) {
+      // Refresh global cards and bump version to trigger dependents
+      (async () => {
+        try {
+          const cards = await CardService.fetchCreditCards(true);
+          setCreditCards(cards);
+          setCardsVersion(v => v + 1);
+        } catch (err) {
+          console.error('Error refreshing cards after save:', err);
+        }
+      })();
+    }
   };
 
   const createTitle = (suffix?: string) => {
@@ -539,16 +552,30 @@ function AppContent({}: AppContentProps) {
   };
 
   const renderMainContent = () => {
+    const hasSelectedCards = Array.isArray(creditCards)
+      ? creditCards.some((c: any) => c && c.selected === true)
+      : false;
     const headerActions = (
       <>
-        <button 
-          className="button ghost small icon with-text"
-          onClick={handleClearChat}
-          aria-label="Start new transaction chat"
-        >
-          <Icon name="chat-bubble" variant="micro" color={ICON_PRIMARY_MEDIUM} size={16} />
-          New Transaction Chat
-        </button>
+        {hasSelectedCards ? (
+          <button 
+            className="button ghost small icon with-text"
+            onClick={handleClearChat}
+            aria-label="Start new transaction chat"
+          >
+            <Icon name="chat-bubble" variant="micro" color={ICON_PRIMARY_MEDIUM} size={16} />
+            New Transaction Chat
+          </button>
+        ) : (
+          <button 
+            className="button ghost small icon with-text"
+            onClick={() => setIsCardSelectorOpen(true)}
+            aria-label="Add cards"
+          >
+            <Icon name="card" variant="mini" color={ICON_PRIMARY_MEDIUM} size={16} />
+            Add Cards
+          </button>
+        )}
       </>
     );
 
@@ -637,6 +664,7 @@ function AppContent({}: AppContentProps) {
                 quickHistorySize={quick_history_size}
                 user={user}
                 onNewChat={handleClearChat}
+                onOpenCardSelector={() => setIsCardSelectorOpen(true)}
               />
             ) : null;
           })()}
@@ -890,7 +918,7 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.MY_CARDS.PATH} element={
                     <ProtectedRoute>
-                      <MyCards onCardsUpdate={getCreditCards} />
+                      <MyCards onCardsUpdate={getCreditCards} onOpenCardSelector={() => setIsCardSelectorOpen(true)} reloadTrigger={cardsVersion} />
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.DELETE_HISTORY.PATH} element={

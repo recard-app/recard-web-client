@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
@@ -40,9 +40,11 @@ import {
 
 interface CreditCardManagerProps {
     onCardsUpdate?: (cards: CreditCard[]) => void;
+    onOpenCardSelector?: () => void;
+    reloadTrigger?: number;
 }
 
-const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) => {
+const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, onOpenCardSelector, reloadTrigger }) => {
     const [userCards, setUserCards] = useState<CreditCard[]>([]);
     const [selectedCard, setSelectedCard] = useState<CreditCard | null>(null);
     const [cardDetails, setCardDetails] = useState<CreditCardDetails | null>(null);
@@ -69,6 +71,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
     const [isAddingCard, setIsAddingCard] = useState(false);
     const [selectedCardForAdding, setSelectedCardForAdding] = useState<CreditCard | null>(null);
     const [showAddNested, setShowAddNested] = useState(false);
+    // Ref to restore focus to the parent drawer when nested drawer closes
+    const parentDrawerHeaderRef = useRef<HTMLDivElement | null>(null);
     
     // Error message state
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -124,7 +128,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
         };
 
         loadUserCards();
-    }, []);
+    }, [reloadTrigger]);
 
     // Track viewport size
     useEffect(() => {
@@ -332,8 +336,15 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
 
     // Handle adding a new card via the CreditCardSelector
     const handleAddCard = () => {
+        if (onOpenCardSelector) {
+            onOpenCardSelector();
+            return;
+        }
         setSelectorMode('add');
         setShowSelector(true);
+        if (isMobileViewport) {
+            setShowAddNested(true);
+        }
     };
 
     // Open selector to choose a card to view (mobile-only footer control)
@@ -357,6 +368,9 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
         // Set loading state
         setIsAddingCard(true);
         setSelectedCardForAdding(card);
+        // Immediately close BOTH drawers for snappy UX while work continues
+        setShowAddNested(false);
+        setShowSelector(false);
         
         // Add the card to user's cards if not already present
         const isCardAlreadyAdded = userCards.some(c => c.id === card.id && c.selected);
@@ -415,15 +429,9 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             }
         }
         
-        // Clear loading state and close drawers appropriately
+        // Clear loading state
         setIsAddingCard(false);
         setSelectedCardForAdding(null);
-        if (isMobileViewport) {
-            // Close only the nested drawer, keep the outer drawer open
-            setShowAddNested(false);
-        } else {
-            setShowSelector(false);
-        }
     };
 
     // Handle selecting a card just for viewing (no DB changes)
@@ -476,7 +484,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 <div className="sidebar-action">
                     <button className="icon with-text" onClick={handleAddCard}>
                         <Icon name="card" variant="solid" />
-                        Add Card
+                        Add Cards
                     </button>
                 </div>
             </div>
@@ -486,6 +494,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                 <CreditCardDetailView 
                     cardDetails={cardDetails}
                     isLoading={isLoading}
+                    noCards={selectedCards.length === 0}
                     onSetPreferred={selectedCard ? () => handleSetPreferred(selectedCard) : undefined}
                     onRemoveCard={selectedCard ? () => handleRemoveCard(selectedCard) : undefined}
                 />
@@ -494,26 +503,38 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
             {/* Mobile-only sticky footer controls */}
             {isMobileViewport && (
                 <div className="mobile-sticky-footer" role="region" aria-label="Card actions">
-                    <p className="caps-label">View or Manage Cards</p>
-                    <button className="view-card-select" onClick={handleOpenViewSelector} aria-haspopup="dialog">
-                        {selectedCard ? (
-                            <>
-                                <CardIcon
-                                    title={`${selectedCard.CardName} card`}
-                                    size={24}
-                                    primary={selectedCard.CardPrimaryColor}
-                                    secondary={selectedCard.CardSecondaryColor}
-                                    className="select-card-icon"
-                                />
-                                <span className="label-text">{selectedCard.CardName}</span>
-                            </>
-                        ) : (
-                            <>
-                                <Icon name="card" variant="mini" color="#C9CED3" />
-                                <span className="label-text">Select a card to view</span>
-                            </>
-                        )}
-                    </button>
+                    {selectedCards.length === 0 ? (
+                        <>
+                            <p className="caps-label">Add your credit cards</p>
+                            <button className="button icon with-text add-card-button" onClick={handleAddCard} aria-haspopup="dialog">
+                                <Icon name="card" variant="solid" />
+                                Add Cards
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <p className="caps-label">View or Manage Cards</p>
+                            <button className="view-card-select" onClick={handleOpenViewSelector} aria-haspopup="dialog">
+                                {selectedCard ? (
+                                    <>
+                                        <CardIcon
+                                            title={`${selectedCard.CardName} card`}
+                                            size={24}
+                                            primary={selectedCard.CardPrimaryColor}
+                                            secondary={selectedCard.CardSecondaryColor}
+                                            className="select-card-icon"
+                                        />
+                                        <span className="label-text">{selectedCard.CardName}</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Icon name="card" variant="mini" color="#C9CED3" />
+                                        <span className="label-text">Select a card to view</span>
+                                    </>
+                                )}
+                            </button>
+                        </>
+                    )}
                 </div>
             )}
             
@@ -525,7 +546,11 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                         <Drawer open={showSelector} onOpenChange={handleSelectorDialogChange} direction="bottom">
                             <DrawerContent fitContent>
                                 <DrawerTitle className="sr-only">My Cards</DrawerTitle>
-                                <div className="dialog-header drawer-sticky-header">
+                                <div
+                                    className="dialog-header drawer-sticky-header"
+                                    ref={parentDrawerHeaderRef}
+                                    tabIndex={-1}
+                                >
                                     <h2>My Cards</h2>
                                 </div>
                                 <div className="dialog-body" style={{ overflowY: 'auto' }}>
@@ -540,7 +565,16 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate }) 
                                     />
                                 </div>
                                 <div className="dialog-footer">
-                                    <DrawerNestedRoot open={showAddNested} onOpenChange={setShowAddNested}>
+                                    <DrawerNestedRoot
+                                        open={showAddNested}
+                                        onOpenChange={(open) => {
+                                            setShowAddNested(open);
+                                            if (!open) {
+                                                // When nested closes (swipe down or programmatic), restore focus
+                                                setTimeout(() => parentDrawerHeaderRef.current?.focus(), 0);
+                                            }
+                                        }}
+                                    >
                                         <DrawerTrigger asChild>
                                             <button className="button icon with-text add-card-button">
                                                 <Icon name="card" variant="solid" />

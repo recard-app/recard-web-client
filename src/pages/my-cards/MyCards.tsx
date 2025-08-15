@@ -16,9 +16,11 @@ import './MyCards.scss';
 
 interface MyCardsProps {
     onCardsUpdate?: (cards: CreditCard[]) => void;
+    onOpenCardSelector?: () => void;
+    reloadTrigger?: number;
 }
 
-const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate }) => {
+const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate, onOpenCardSelector, reloadTrigger }) => {
     // Declare that this component needs full height behavior
     useFullHeight(true);
     
@@ -40,7 +42,11 @@ const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate }) => {
             />
             <div className="my-cards-page">
                 <div className="credit-card-manager-container">
-                    <CreditCardManager onCardsUpdate={handleCardsUpdate} />
+                    <CreditCardManager 
+                        onCardsUpdate={handleCardsUpdate} 
+                        onOpenCardSelector={onOpenCardSelector}
+                        reloadTrigger={reloadTrigger}
+                    />
                 </div>
             </div>
 
