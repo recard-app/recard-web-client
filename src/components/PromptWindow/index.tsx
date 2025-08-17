@@ -74,7 +74,6 @@ function PromptWindow({
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
     const promptHistoryRef = useRef<HTMLDivElement>(null);
-    const promptWindowRef = useRef<HTMLDivElement>(null);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     
     // Stores the current input value in the prompt field
@@ -428,59 +427,8 @@ function PromptWindow({
         }
     }, [urlChatId, chatHistory.length]);
 
-    // iOS Safari keyboard whitespace fix: dynamically match visible viewport
-    useEffect(() => {
-        const ua = typeof navigator !== 'undefined' ? navigator.userAgent || navigator.vendor : '';
-        const isIOS = /iPad|iPhone|iPod/.test(ua) && !('MSStream' in window);
-        if (!isIOS) return;
-
-        const adjustHeight = () => {
-            const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 780px)').matches;
-            const vv = window.visualViewport;
-            const rawHeight = vv?.height ?? window.innerHeight;
-            const headerEl = isMobile ? (document.querySelector('.mobile-header') as HTMLElement | null) : null;
-            const headerHeight = headerEl?.offsetHeight || 0;
-            const available = isMobile ? Math.max(0, rawHeight - headerHeight) : rawHeight;
-
-            if (promptWindowRef.current) {
-                // Only constrain on mobile; desktop remains unaffected
-                if (isMobile) {
-                    promptWindowRef.current.style.minHeight = `${available}px`;
-                } else {
-                    promptWindowRef.current.style.minHeight = '';
-                }
-            }
-            // Keep body height aligned to viewport height to avoid extra white space
-            document.body.style.height = `${rawHeight}px`;
-        };
-
-        // Initial and subscribe
-        adjustHeight();
-        window.addEventListener('resize', adjustHeight, { passive: true });
-        window.addEventListener('orientationchange', adjustHeight, { passive: true } as any);
-        window.addEventListener('pageshow', adjustHeight);
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener('resize', adjustHeight as EventListener, { passive: true } as any);
-            window.visualViewport.addEventListener('scroll', adjustHeight as EventListener, { passive: true } as any);
-        }
-
-        return () => {
-            window.removeEventListener('resize', adjustHeight as EventListener);
-            window.removeEventListener('orientationchange', adjustHeight as EventListener);
-            window.removeEventListener('pageshow', adjustHeight as EventListener);
-            if (window.visualViewport) {
-                window.visualViewport.removeEventListener('resize', adjustHeight as EventListener);
-                window.visualViewport.removeEventListener('scroll', adjustHeight as EventListener);
-            }
-            if (promptWindowRef.current) {
-                promptWindowRef.current.style.minHeight = '';
-            }
-            document.body.style.height = '';
-        };
-    }, []);
-
     return (
-        <div ref={promptWindowRef} className='prompt-window'>
+        <div className='prompt-window'>
             <div ref={promptHistoryRef} className="prompt-history-container">
 
                 <PromptHistory 
