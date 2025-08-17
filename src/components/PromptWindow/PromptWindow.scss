@@ -88,6 +88,13 @@
     }
 }
 
+.prompt-combined-container {
+  width: 100%;
+  //max-width: $prompt-window-max-width;
+  margin: 0 auto;
+  background-color: transparent;
+}
+
 .below-prompt-field-text {
     text-align: left;
     padding: $space-3 $space-1;

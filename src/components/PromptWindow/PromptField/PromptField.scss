@@ -2,12 +2,12 @@
 
 .prompt-input-container {
   padding: 0 $space-1;
-  background: white;
+  background: transparent;
   z-index: 2;
   flex-shrink: 0;
   width: 100%;
   max-width: $prompt-window-max-width;
-  margin: 0 auto; // Center the input container
+  margin: 0 auto;
   box-sizing: border-box;
 }
 

@@ -6,17 +6,16 @@ $collapse-transition-duration: 0.15s;
 .prompt-solutions-container {
   width: 100%;
   max-width: $prompt-window-max-width;
-  margin: 0 auto; // Center the solutions container
+  margin: 0 auto;
   box-sizing: border-box;
-  padding: 0 $space-1; // Add consistent padding
+  padding: 0 $space-1;
+  background-color: transparent;
 }
 
 
 // TOGGLE: Mobile-only overrides for prompt input container
 @media (max-width: $mobile-breakpoint) {
-  .prompt-solutions-container {
-    padding: 0 $space-2 0 $space-2;
-  }
+  .prompt-solutions-container { padding: 0 $space-2; }
 }
 
 .solutions-container {
