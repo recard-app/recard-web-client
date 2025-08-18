@@ -532,7 +532,7 @@ function AppContent({}: AppContentProps) {
 
   const shouldShowMobileHelp = (): boolean => {
     const path = location.pathname;
-    if (path === PAGES.HOME.PATH || PageUtils.isPage(path, 'HOME')) return true;
+    if (path === PAGES.HOME.PATH) return true;
     if (path === PAGES.HISTORY.PATH) return true;
     if (path === PAGES.MY_CARDS.PATH) return true;
     if (path === PAGES.PREFERENCES.PATH) return true;
@@ -542,7 +542,7 @@ function AppContent({}: AppContentProps) {
 
   const renderGlobalHelpContent = (): React.ReactNode => {
     const path = location.pathname;
-    if (path === PAGES.HOME.PATH || PageUtils.isPage(path, 'HOME')) {
+    if (path === PAGES.HOME.PATH) {
       return <PromptHelpModal />;
     }
     if (path === PAGES.HISTORY.PATH) {

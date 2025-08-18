@@ -217,7 +217,6 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           <Drawer.Portal>
             <Drawer.Overlay className="mobile-drawer-overlay" />
             <Drawer.Content className="mobile-drawer-content" aria-label={`${APP_NAME} mobile navigation`} aria-describedby={undefined}>
-              <div data-slot="drawer-handle" aria-hidden="true" />
               <div className="mobile-drawer-container">
               <div className="mobile-drawer-header">
                 <Drawer.Close asChild>
