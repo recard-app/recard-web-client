@@ -42,6 +42,10 @@ export const PAGES = {
     PATH: '/my-cards',
     TITLE: 'My Cards',
   },
+  MY_CREDITS: {
+    PATH: '/my-credits',
+    TITLE: 'My Credits',
+  },
   DELETE_HISTORY: {
     PATH: '/delete-history',
     TITLE: 'Delete History',
@@ -131,5 +135,6 @@ export const {
   ACCOUNT,
   HISTORY,
   MY_CARDS,
+  MY_CREDITS,
   DELETE_HISTORY,
 } = PAGES;

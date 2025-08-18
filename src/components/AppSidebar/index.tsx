@@ -14,7 +14,6 @@ import {
 import { 
   Conversation, 
   SubscriptionPlan,
-  ShowCompletedOnlyPreference,
   APP_NAME,
   PLAN_DISPLAY_TEXT,
   PAGE_NAMES,
@@ -26,7 +25,7 @@ import {
   PAGES
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
-import Icon, { IconRenderer } from '../../icons';
+import Icon from '../../icons';
 import './AppSidebar.scss';
 
 interface AppSidebarProps {
@@ -91,6 +90,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
   // Helper function to get the appropriate icon variant based on active state
   const getIconVariant = (iconVariants: any, routePath: string) => {
+    if (!iconVariants) {
+      // Fallback to a no-op icon renderer to avoid runtime errors during HMR or missing config
+      return () => null;
+    }
     return isRouteActive(routePath) ? iconVariants.ACTIVE : iconVariants.INACTIVE;
   };
   
@@ -124,6 +127,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       to: PAGES.MY_CARDS.PATH, 
       name: PAGE_NAMES.MY_CARDS, 
       icon: () => getIconVariant(PAGE_ICONS.MY_CARDS, PAGES.MY_CARDS.PATH)({ size: 20 })
+    },
+    {
+      to: PAGES.MY_CREDITS.PATH,
+      name: PAGE_NAMES.MY_CREDITS,
+      icon: () => getIconVariant(PAGE_ICONS.MY_CREDITS, PAGES.MY_CREDITS.PATH)({ size: 20 })
     }
   ];
 

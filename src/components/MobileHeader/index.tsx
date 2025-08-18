@@ -97,6 +97,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         return PAGE_NAMES.PREFERENCES;
       case PAGES.ACCOUNT.PATH:
         return PAGE_NAMES.MY_ACCOUNT;
+      case PAGES.MY_CREDITS.PATH:
+        return PAGE_NAMES.MY_CREDITS;
       default:
         // Use PageUtils as fallback
         const pageTitle = PageUtils.getTitleByPath(currentPath);
@@ -121,6 +123,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         return <Icon name="preferences" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       case PAGES.ACCOUNT.PATH:
         return <Icon name="account" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+      case PAGES.MY_CREDITS.PATH:
+        return <Icon name="banknotes" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       default:
         return null;
     }
@@ -265,6 +269,19 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                               color={SIDEBAR_INACTIVE_ICON_COLOR}
                             />
                             <span>{PAGE_NAMES.MY_CARDS}</span>
+                          </Link>
+                        </Drawer.Close>
+                      </li>
+                      <li className={isActive(PAGES.MY_CREDITS.PATH) ? 'active' : ''}>
+                        <Drawer.Close asChild>
+                          <Link to={PAGES.MY_CREDITS.PATH}>
+                            <Icon 
+                              name="banknotes" 
+                              variant={isActive(PAGES.MY_CREDITS.PATH) ? 'solid' : 'outline'} 
+                              size={16}
+                              color={SIDEBAR_INACTIVE_ICON_COLOR}
+                            />
+                            <span>{PAGE_NAMES.MY_CREDITS}</span>
                           </Link>
                         </Drawer.Close>
                       </li>

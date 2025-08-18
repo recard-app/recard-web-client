@@ -29,6 +29,8 @@ import MyCards from './pages/my-cards/MyCards';
 import HistoryHelpModal from './pages/history/HistoryHelpModal';
 import MyCardsHelpModal from './pages/my-cards/MyCardsHelpModal';
 import PreferencesHelpModal from './pages/preferences/PreferencesHelpModal';
+import MyCreditsHelpModal from './pages/my-credits/MyCreditsHelpModal';
+import MyCredits from './pages/my-credits/MyCredits';
 // Components
 
 import AppSidebar from './components/AppSidebar';
@@ -534,6 +536,7 @@ function AppContent({}: AppContentProps) {
     if (path === PAGES.HISTORY.PATH) return true;
     if (path === PAGES.MY_CARDS.PATH) return true;
     if (path === PAGES.PREFERENCES.PATH) return true;
+    if (path === PAGES.MY_CREDITS.PATH) return true;
     return false;
   };
 
@@ -550,6 +553,9 @@ function AppContent({}: AppContentProps) {
     }
     if (path === PAGES.PREFERENCES.PATH) {
       return <PreferencesHelpModal />;
+    }
+    if (path === PAGES.MY_CREDITS.PATH) {
+      return <MyCreditsHelpModal />;
     }
     return null;
   };
@@ -901,6 +907,11 @@ function AppContent({}: AppContentProps) {
                   <Route path={PAGES.WELCOME.PATH} element={
                     <ProtectedRoute>
                       <Welcome onModalOpen={() => setIsCardSelectorOpen(true)} />
+                    </ProtectedRoute>
+                  } />
+                  <Route path={PAGES.MY_CREDITS.PATH} element={
+                    <ProtectedRoute>
+                      <MyCredits />
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.ACCOUNT.PATH} element={
