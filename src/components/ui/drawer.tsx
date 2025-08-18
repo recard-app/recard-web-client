@@ -1,5 +1,6 @@
 import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
+import "./drawer/drawer.scss"
 
 import { cn } from "@/lib/utils"
 
@@ -76,6 +77,8 @@ const DrawerContent = React.forwardRef<
         )}
         {...props}
       >
+        {/* Universal handle for all drawers */}
+        <div data-slot="drawer-handle" aria-hidden="true" />
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>

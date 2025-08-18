@@ -1,0 +1,23 @@
+@use '../../../styling/globals' as *;
+
+// Drawer header min-height
+[data-slot="drawer-header"] {
+  //min-height: $space-4;
+}
+
+// Universal drawer handle
+[data-slot="drawer-handle"] {
+  width: 48px;
+  height: 6px;
+  border-radius: $radius-full;
+  background: $neutral-light-gray;
+  margin: $space-2 auto;
+}
+
+// Provide a bit more top spacing when the drawer opens from bottom
+[data-slot="drawer-content"][data-vaul-drawer-direction="bottom"] > [data-slot="drawer-handle"],
+[data-slot="drawer-content"][data-vaul-drawer-direction="top"] > [data-slot="drawer-handle"] {
+  margin-top: $space-3;
+}
+
+
