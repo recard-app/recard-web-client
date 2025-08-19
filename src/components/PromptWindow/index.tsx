@@ -466,18 +466,17 @@ function PromptWindow({
                         onCancel={handleCancel} 
                     />
                 </div>
+                {chatHistory.length >= MAX_CHAT_MESSAGES && (
+                    <div className="below-prompt-field-text">
+                        Remember to <button onClick={handleNewTransaction} className="inline-button">create a new transaction chat</button> for best results.
+                    </div>
+                )}
+                {CHAT_HISTORY_MESSAGES[chatHistoryPreference] && (
+                    <div className="below-prompt-field-text">
+                        {CHAT_HISTORY_MESSAGES[chatHistoryPreference]}
+                    </div>
+                )}
             </div>
-            
-            {chatHistory.length >= MAX_CHAT_MESSAGES && (
-                <div className="below-prompt-field-text">
-                    Remember to <button onClick={handleNewTransaction} className="inline-button">create a new transaction chat</button> for best results.
-                </div>
-            )}
-            {CHAT_HISTORY_MESSAGES[chatHistoryPreference] && (
-                <div className="below-prompt-field-text">
-                    {CHAT_HISTORY_MESSAGES[chatHistoryPreference]}
-                </div>
-            )}
         </div>
     );
 }

@@ -97,7 +97,7 @@
 
 .below-prompt-field-text {
     text-align: left;
-    padding: $space-3 $space-1;
+    padding: $space-1-5 $space-2;
     padding-bottom: 0;
     color: $neutral-dark-gray;
     font-size: $font-xs;
@@ -110,7 +110,7 @@
         background-color: $neutral-light-gray;
         border: $border-half solid $neutral-gray;
         border-radius: $radius-base;
-        padding: $space-half $space-1;
+        padding: 0 $space-1;
         color: $primary-medium;
         cursor: pointer;
         font: inherit;
