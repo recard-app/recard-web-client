@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES } from '../../types';
+import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits } from '../../types';
 import {
   Dialog,
   DialogContent,
@@ -10,31 +10,90 @@ import {
 } from '../../components/ui/dialog/dialog';
 import MyCreditsHelpModal from './MyCreditsHelpModal';
 import { UserCreditService } from '../../services/UserServices';
+import CreditsDisplay from '../../components/CreditsDisplay';
+import { CreditCardDetails } from '../../types/CreditCardTypes';
+import { InfoDisplay } from '../../elements';
 
-const MyCredits: React.FC = () => {
+interface MyCreditsProps {
+  calendar: CalendarUserCredits | null;
+  userCardDetails: CreditCardDetails[];
+  reloadTrigger?: number;
+}
+
+const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reloadTrigger }) => {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [localCalendar, setLocalCalendar] = useState<CalendarUserCredits | null>(calendar);
 
+  // Keep local state in sync with incoming props
   useEffect(() => {
-    let isMounted = true;
+    setLocalCalendar(calendar);
+  }, [calendar]);
+
+  // Load credits on mount and when reloadTrigger changes, similar to MyCards initial load behavior
+  useEffect(() => {
+    let mounted = true;
     (async () => {
+      setIsLoading(true);
       try {
-        // Check for existing credit history; if missing, create it
-        await UserCreditService.fetchCreditHistory();
+        const year = new Date().getFullYear();
+        // Quick fetch
+        const cal = await UserCreditService.fetchCreditHistoryForYear(year);
+        if (!mounted) return;
+        setLocalCalendar(cal);
+        // Immediately show data after quick fetch
+        setIsLoading(false);
+        // Background sync to resolve discrepancies (do not block UI)
+        (async () => {
+          try {
+            const result = await UserCreditService.syncCurrentYearCredits();
+            if (!mounted) return;
+            if (result.changed && result.creditHistory) {
+              const updated = result.creditHistory.Credits.find(c => c.Year === year) || null;
+              if (updated) setLocalCalendar(updated);
+            }
+          } catch (e) {
+            console.error('Credits sync failed:', e);
+          }
+        })();
       } catch (error) {
-        // If not found, try to generate it
+        // Ensure at least an empty structure exists
         try {
           await UserCreditService.generateCreditHistory();
+          const year = new Date().getFullYear();
+          const cal = await UserCreditService.fetchCreditHistoryForYear(year);
+          if (mounted) {
+            setLocalCalendar(cal);
+            setIsLoading(false);
+          }
         } catch (e) {
-          // Ignore errors here; page can handle empty state
-          console.error('Failed to ensure credit history exists:', e);
+          console.error('Failed to initialize credit history:', e);
+          if (mounted) {
+            setLocalCalendar(null);
+            setIsLoading(false);
+          }
         }
-      } finally {
-        if (isMounted) setIsInitializing(false);
       }
     })();
-    return () => { isMounted = false; };
-  }, []);
+    return () => { mounted = false; };
+  }, [reloadTrigger]);
+
+  // Build allowed pairs of (CardId:CreditId) from user's cards to filter displayed user credits
+  const allowedPairs = useMemo(() => {
+    const set = new Set<string>();
+    for (const card of userCardDetails || []) {
+      for (const credit of card.Credits || []) {
+        set.add(`${card.id}:${credit.id}`);
+      }
+    }
+    return set;
+  }, [userCardDetails]);
+
+  const filteredCalendar: CalendarUserCredits | null = useMemo(() => {
+    if (!localCalendar) return null;
+    const filtered = (localCalendar.Credits || []).filter(uc => allowedPairs.has(`${uc.CardId}:${uc.CreditId}`));
+    return { ...localCalendar, Credits: filtered };
+  }, [localCalendar, allowedPairs]);
 
   return (
     <div className="my-credits-wrapper">
@@ -45,10 +104,16 @@ const MyCredits: React.FC = () => {
         onHelpClick={() => setIsHelpOpen(true)}
       />
       <div className="page-content">
-        {isInitializing ? (
-          <p>Loading your credits...</p>
+        {isLoading ? (
+          <InfoDisplay
+            type="loading"
+            message="Loading credits..."
+            showTitle={false}
+            transparent={true}
+            centered
+          />
         ) : (
-          <p>Coming Soon...</p>
+          <CreditsDisplay calendar={filteredCalendar} isLoading={false} userCards={userCardDetails} />
         )}
       </div>
 

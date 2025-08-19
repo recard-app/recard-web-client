@@ -954,7 +954,7 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.MY_CREDITS.PATH} element={
                     <ProtectedRoute>
-                      <MyCredits />
+                      <MyCredits calendar={currentYearCredits} userCardDetails={userDetailedCardDetails} reloadTrigger={cardsVersion} />
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.ACCOUNT.PATH} element={

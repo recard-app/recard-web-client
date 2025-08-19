@@ -84,8 +84,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
      * Updates local state with fresh data after successful save
      */
     const handleSave = async (): Promise<void> => {
-        const previouslySelectedIds = creditCards.filter(c => c.selected).map(c => c.id);
-        const result = await saveUserCardSelections(creditCards, previouslySelectedIds);
+        const result = await saveUserCardSelections(creditCards);
         if (result.success && result.updatedCards) {
             setCreditCards(result.updatedCards);
         }
