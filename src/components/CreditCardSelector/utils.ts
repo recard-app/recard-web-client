@@ -1,5 +1,5 @@
 import { CreditCard } from '../../types/CreditCardTypes';
-import { CardService, UserCreditCardService } from '../../services';
+import { CardService, UserCreditCardService, UserCreditService } from '../../services';
 
 /**
  * Sorts credit cards by priority:
@@ -91,7 +91,7 @@ export const setDefaultCard = (cards: CreditCard[], cardId: string): CreditCard[
 /**
  * Saves user card selections and returns updated list
  */
-export const saveUserCardSelections = async (cards: CreditCard[]): Promise<{
+export const saveUserCardSelections = async (cards: CreditCard[], previouslySelectedIds: string[] = []): Promise<{
     success: boolean;
     message: string;
     updatedCards?: CreditCard[];
@@ -101,6 +101,24 @@ export const saveUserCardSelections = async (cards: CreditCard[]): Promise<{
         await UserCreditCardService.updateUserCards(cardsToSubmit);
         
         const updatedCards = await CardService.fetchCreditCards(true);
+
+        // Determine newly added cards by comparing updated selected IDs to previously saved selected IDs
+        const updatedSelectedIds = (updatedCards || []).filter(c => c.selected).map(c => c.id);
+        const addedIds = updatedSelectedIds.filter(id => !previouslySelectedIds.includes(id));
+
+        if (addedIds.length > 0) {
+            // Fire-and-forget: add credits for each newly added card to current year
+            // Do not block UI if any call fails; log errors for debugging
+            void Promise.allSettled(
+                addedIds.map(cardId => UserCreditService.addCardToCurrentYear(cardId))
+            ).then(results => {
+                results.forEach((r, idx) => {
+                    if (r.status === 'rejected') {
+                        console.error(`Failed to add credits for card ${addedIds[idx]}:`, r.reason);
+                    }
+                });
+            });
+        }
         return {
             success: true,
             message: 'Cards saved successfully!',

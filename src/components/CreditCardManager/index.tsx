@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
-import { CardService, UserCreditCardService } from '../../services';
+import { CardService, UserCreditCardService, UserCreditService } from '../../services';
 import CreditCardDetailView from '../CreditCardDetailView';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import { InfoDisplay, SearchField } from '../../elements';
@@ -424,6 +424,11 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                         await loadCardDetails(card.id);
                     }
                 }
+
+                // Fire-and-forget: ensure credits for the newly added card are added to current-year history
+                void UserCreditService.addCardToCurrentYear(card.id).catch((e) => {
+                    console.error('Failed to add card credits to current year:', e);
+                });
             } catch (error) {
                 console.error('Error adding card:', error);
             }

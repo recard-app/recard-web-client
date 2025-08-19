@@ -233,6 +233,25 @@ function AppContent({}: AppContentProps) {
     fetchCurrentYearCredits();
   }, [user]);
 
+  // Background reconciliation for current-year credits after quick fetch
+  useEffect(() => {
+    const runBackgroundSync = async () => {
+      if (!user) return;
+      try {
+        const result = await UserCreditService.syncCurrentYearCredits();
+        if (result.changed && result.creditHistory) {
+          const year = new Date().getFullYear();
+          const calendar = result.creditHistory.Credits.find(c => c.Year === year) || null;
+          if (calendar) setCurrentYearCredits(calendar);
+        }
+      } catch (e) {
+        console.error('Background credit history sync failed:', e);
+      }
+    };
+
+    runBackgroundSync();
+  }, [user]);
+
   // Track viewport size to decide drawer vs dialog flags
   useEffect(() => {
     if (typeof window === 'undefined') return;

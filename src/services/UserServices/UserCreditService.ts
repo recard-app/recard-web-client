@@ -82,6 +82,20 @@ export const UserCreditService = {
             { headers }
         );
         return response.data;
+    },
+
+    /**
+     * Background reconciliation for current-year credits: ensures all selected cards and their credits
+     * exist in the user's current year's CalendarUserCredits. Returns { changed, creditHistory? }.
+     */
+    async syncCurrentYearCredits(): Promise<{ changed: boolean; creditHistory?: CreditHistory }> {
+        const headers = await getAuthHeaders();
+        const response = await axios.post<{ changed: boolean; creditHistory?: CreditHistory }>(
+            `${apiurl}/users/cards/credits/sync`,
+            undefined,
+            { headers }
+        );
+        return response.data;
     }
 };
 
