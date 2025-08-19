@@ -18,7 +18,7 @@ export const getAuthHeaders = async () => {
 };
 
 // Export all services
-export * from './UserService';
+export * from './UserServices';
 export * from './AuthService';
 export * from './ChatService';
 export * from './CardService';

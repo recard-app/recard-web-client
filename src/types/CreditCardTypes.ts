@@ -26,6 +26,7 @@ export interface CreditCard {
  * Represents a perk associated with a credit card
  */
 export interface CardPerk {
+    id: string;
     Title: string;
     Category: string;
     SubCategory: string;
@@ -38,6 +39,7 @@ export interface CardPerk {
  * Represents a credit/benefit associated with a credit card
  */
 export interface CardCredit {
+    id: string;
     Title: string;
     Category: string;
     SubCategory: string;
@@ -52,6 +54,7 @@ export interface CardCredit {
  * Represents a rewards multiplier for specific spending categories
  */
 export interface CardMultiplier {
+    id: string;
     Name: string;
     Category: string;
     SubCategory: string;
