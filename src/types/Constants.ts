@@ -120,33 +120,33 @@ export const PAGE_ICONS = {
     HOME: {
         ACTIVE: (props: any = {}) => createIconVariant('home', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('home', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
-        MINI: (props: any = {}) => createIconVariant('home', 'mini', ICON_GRAY, props.size)
+        MINI: (props: any = {}) => createIconVariant('home', 'mini', ICON_PRIMARY, props.size)
     },
     TRANSACTION_HISTORY: {
         ACTIVE: (props: any = {}) => createIconVariant('history', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('history', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
-        MINI: (props: any = {}) => createIconVariant('history', 'mini', ICON_GRAY, props.size)
+        MINI: (props: any = {}) => createIconVariant('history', 'mini', ICON_PRIMARY, props.size)
     },
     MY_CARDS: {
         ACTIVE: (props: any = {}) => createIconVariant('card', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('card', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
-        MINI: (props: any = {}) => createIconVariant('card', 'mini', ICON_GRAY, props.size)
+        MINI: (props: any = {}) => createIconVariant('card', 'mini', ICON_PRIMARY, props.size)
     },
     MY_CREDITS: {
         ACTIVE: (props: any = {}) => createIconVariant('banknotes', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('banknotes', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
-        MINI: (props: any = {}) => createIconVariant('banknotes', 'mini', ICON_GRAY, props.size)
+        MINI: (props: any = {}) => createIconVariant('banknotes', 'mini', ICON_PRIMARY, props.size)
     },
     NEW_TRANSACTION_CHAT: TEMP_ICON,
     PREFERENCES: {
         ACTIVE: (props: any = {}) => createIconVariant('preferences', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('preferences', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
-        MINI: (props: any = {}) => createIconVariant('preferences', 'mini', ICON_GRAY, props.size)
+        MINI: (props: any = {}) => createIconVariant('preferences', 'mini', ICON_PRIMARY, props.size)
     },
     MY_ACCOUNT: {
         ACTIVE: (props: any = {}) => createIconVariant('account', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('account', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
-        MINI: (props: any = {}) => createIconVariant('account', 'mini', ICON_GRAY, props.size)
+        MINI: (props: any = {}) => createIconVariant('account', 'mini', ICON_PRIMARY, props.size)
     },
     SIGN_OUT: {
         ACTIVE: (props: any = {}) => createIconVariant('sign-out', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
