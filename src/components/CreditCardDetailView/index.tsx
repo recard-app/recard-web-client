@@ -149,7 +149,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                     <div className="category-title">{category}</div>
                                     <div className="table">
                                         {mainItems.map((m, idx) => (
-                                            <div key={`main-${idx}`} className="table-row main-row">
+                                            <div key={m.id ?? `main-${idx}`} className="table-row main-row">
                                                 <div className="cell subcategory">{m.Name}</div>
                                                 <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
                                                 <div className="cell description">
@@ -161,7 +161,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                             </div>
                                         ))}
                                         {subItems.map((m, idx) => (
-                                            <div key={`sub-${idx}-${m.SubCategory}`} className="table-row sub-row">
+                                            <div key={m.id ?? `sub-${idx}-${m.SubCategory}`} className="table-row sub-row">
                                                 <div className="cell subcategory">{m.Name}</div>
                                                 <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
                                                 <div className="cell description">

@@ -9,7 +9,8 @@ import {
   UserService, 
   UserCreditCardService, 
   UserHistoryService, 
-  UserPreferencesService 
+  UserPreferencesService,
+  UserCreditService
 } from './services';
 
 // Styles
@@ -117,6 +118,8 @@ function AppContent({}: AppContentProps) {
   const [selectedCardDetails, setSelectedCardDetails] = useState<CreditCardDetails | null>(null);
   // State for loading card details
   const [isLoadingCardDetails, setIsLoadingCardDetails] = useState<boolean>(false);
+  // State for storing user's current year credit history
+  const [currentYearCredits, setCurrentYearCredits] = useState<import('./types').CalendarUserCredits | null>(null);
   // State for storing chat history/conversations
   const [chatHistory, setChatHistory] = useState<Conversation[]>([]);
   // State for tracking the current active chat ID
@@ -208,6 +211,26 @@ function AppContent({}: AppContentProps) {
     };
 
     fetchCreditCards();
+  }, [user]);
+
+  // Effect to fetch user's current year credit history on launch/auth change
+  useEffect(() => {
+    const fetchCurrentYearCredits = async () => {
+      if (!user) {
+        setCurrentYearCredits(null);
+        return;
+      }
+      try {
+        const year = new Date().getFullYear();
+        const credits = await UserCreditService.fetchCreditHistoryForYear(year);
+        setCurrentYearCredits(credits);
+      } catch (error) {
+        console.error('Error fetching current year credit history:', error);
+        setCurrentYearCredits(null);
+      }
+    };
+
+    fetchCurrentYearCredits();
   }, [user]);
 
   // Track viewport size to decide drawer vs dialog flags
@@ -402,6 +425,7 @@ function AppContent({}: AppContentProps) {
     // Reset all states to their initial values
     setUserCardDetails([]);
     setUserDetailedCardDetails([]);
+    setCurrentYearCredits(null);
     setCurrentChatId(null);
     setChatHistory([]);
     setCreditCards([]);
