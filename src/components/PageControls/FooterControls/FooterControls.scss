@@ -1,0 +1,15 @@
+@use '@/styling/globals' as *;
+
+.footer-controls-container {
+  padding: $space-2;
+  background: $neutral-white;
+  border-top: $border-half solid $neutral-light-gray;
+  box-shadow: $container-shadow-top-bigger;
+  flex-shrink: 0;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+

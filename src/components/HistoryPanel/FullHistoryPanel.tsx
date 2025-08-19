@@ -39,6 +39,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../ui/pagination';
+import HeaderControls from '@/components/PageControls/HeaderControls';
+import FooterControls from '@/components/PageControls/FooterControls';
 
 // Define the page size limit as a constant
 const PAGE_SIZE_LIMIT = HISTORY_PAGE_SIZE;
@@ -434,7 +436,7 @@ function FullHistoryPanel({
   return (
     <div className="history-panel full-history">
       {/* Sticky header with filters and toggle */}
-      <div className="history-panel-header">
+      <HeaderControls className="history-panel-header">
         <div className="header-controls desktop-only">
           {renderDateFilter()}
           {renderCompletedToggle()}
@@ -456,7 +458,7 @@ function FullHistoryPanel({
             Filters
           </button>
         </div>
-      </div>
+      </HeaderControls>
 
       {/* Scrollable content area */}
       <div className="history-panel-content">
@@ -563,9 +565,9 @@ function FullHistoryPanel({
 
       {/* Sticky footer with pagination */}
       {paginationData && (
-        <div className="history-panel-footer">
+        <FooterControls className="history-panel-footer">
           {renderPagination()}
-        </div>
+        </FooterControls>
       )}
     </div>
   );

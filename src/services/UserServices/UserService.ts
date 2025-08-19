@@ -22,6 +22,24 @@ export const UserService = {
         }
 
         return SUBSCRIPTION_PLAN.FREE;
+    },
+    /**
+     * Fetches the authenticated user's account creation date as a Date
+     */
+    async fetchAccountCreationDate(): Promise<Date | null> {
+        try {
+            const headers = await getAuthHeaders();
+            const response = await axios.get<{ createdAt: string }>(
+                `${apiurl}/users/account-created`,
+                { headers }
+            );
+            if (response.data?.createdAt) {
+                return new Date(response.data.createdAt);
+            }
+            return null;
+        } catch (error) {
+            return null;
+        }
     }
 };
 

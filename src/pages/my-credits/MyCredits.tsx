@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits } from '../../types';
+import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS } from '../../types';
 import {
   Dialog,
   DialogContent,
@@ -10,9 +10,19 @@ import {
 } from '../../components/ui/dialog/dialog';
 import MyCreditsHelpModal from './MyCreditsHelpModal';
 import { UserCreditService } from '../../services/UserServices';
+import { UserService } from '../../services/UserServices';
 import CreditsDisplay from '../../components/CreditsDisplay';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
 import { InfoDisplay } from '../../elements';
+import HeaderControls from '@/components/PageControls/HeaderControls';
+import Icon from '@/icons';
+import {
+  buildYearOptions,
+  clampMonthForYear,
+  getNextYearMonth as utilGetNextYearMonth,
+  getPrevYearMonth as utilGetPrevYearMonth,
+  isAllowedYearMonth as utilIsAllowedYearMonth,
+} from './utils';
 
 interface MyCreditsProps {
   calendar: CalendarUserCredits | null;
@@ -24,6 +34,9 @@ const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reload
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [localCalendar, setLocalCalendar] = useState<CalendarUserCredits | null>(calendar);
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
+  const [accountCreatedAt, setAccountCreatedAt] = useState<Date | null>(null);
 
   // Keep local state in sync with incoming props
   useEffect(() => {
@@ -36,7 +49,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reload
     (async () => {
       setIsLoading(true);
       try {
-        const year = new Date().getFullYear();
+        const year = selectedYear;
         // Quick fetch
         const cal = await UserCreditService.fetchCreditHistoryForYear(year);
         if (!mounted) return;
@@ -60,7 +73,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reload
         // Ensure at least an empty structure exists
         try {
           await UserCreditService.generateCreditHistory();
-          const year = new Date().getFullYear();
+          const year = selectedYear;
           const cal = await UserCreditService.fetchCreditHistoryForYear(year);
           if (mounted) {
             setLocalCalendar(cal);
@@ -76,7 +89,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reload
       }
     })();
     return () => { mounted = false; };
-  }, [reloadTrigger]);
+  }, [reloadTrigger, selectedYear]);
 
   // Build allowed pairs of (CardId:CreditId) from user's cards to filter displayed user credits
   const allowedPairs = useMemo(() => {
@@ -95,6 +108,50 @@ const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reload
     return { ...localCalendar, Credits: filtered };
   }, [localCalendar, allowedPairs]);
 
+  
+
+  const [yearOptions, setYearOptions] = useState<number[]>([]);
+
+  // On mount, compute allowed years from account creation date
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const createdAt = await UserService.fetchAccountCreationDate();
+      if (mounted) setAccountCreatedAt(createdAt);
+      if (mounted) setYearOptions(buildYearOptions(createdAt));
+      // Clamp selectedYear to range if needed
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const minYear = (createdAt ?? now).getFullYear();
+      if (mounted && (selectedYear < minYear || selectedYear > currentYear)) {
+        setSelectedYear(currentYear);
+        setSelectedMonth(clampMonthForYear(currentYear, selectedMonth, createdAt));
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const isAllowedYearMonth = (year: number, month: number): boolean =>
+    utilIsAllowedYearMonth(year, month, accountCreatedAt);
+
+  const incrementMonth = () => {
+    const { y, m } = utilGetNextYearMonth(selectedYear, selectedMonth);
+    if (isAllowedYearMonth(y, m)) {
+      setSelectedYear(y);
+      setSelectedMonth(m);
+    }
+  };
+
+  const decrementMonth = () => {
+    const { y, m } = utilGetPrevYearMonth(selectedYear, selectedMonth);
+    if (isAllowedYearMonth(y, m)) {
+      setSelectedYear(y);
+      setSelectedMonth(m);
+    }
+  };
+
+  // Navigation helpers moved to utils
+
   return (
     <div className="my-credits-wrapper">
       <PageHeader 
@@ -103,6 +160,61 @@ const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reload
         showHelpButton={true}
         onHelpClick={() => setIsHelpOpen(true)}
       />
+      <HeaderControls>
+        <div className="header-controls">
+          <div className="date-picker">
+            <label className="filter-label">Year</label>
+            <select
+              className="year-select default-select"
+              value={selectedYear}
+              onChange={(e) => {
+                const newYear = parseInt(e.target.value);
+                setSelectedYear(newYear);
+                setSelectedMonth(clampMonthForYear(newYear, selectedMonth, accountCreatedAt));
+              }}
+            >
+              {yearOptions.map(y => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+          </div>
+          <div className="date-picker">
+            <label className="filter-label">Month</label>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                aria-label="Previous month"
+                className="button outline small px-2"
+                onClick={decrementMonth}
+                disabled={!isAllowedYearMonth(utilGetPrevYearMonth(selectedYear, selectedMonth).y, utilGetPrevYearMonth(selectedYear, selectedMonth).m)}
+              >
+                <Icon name="chevron-down" variant="mini" size={16} className="rotate-90" />
+              </button>
+              <select
+                className="month-select default-select"
+                value={selectedMonth}
+                onChange={(e) => {
+                  const m = parseInt(e.target.value);
+                  if (isAllowedYearMonth(selectedYear, m)) setSelectedMonth(m);
+                }}
+              >
+                {MONTH_OPTIONS.map(m => (
+                  <option key={m.value} value={m.value}>{m.label}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                aria-label="Next month"
+                className="button outline small px-2"
+                onClick={incrementMonth}
+                disabled={!isAllowedYearMonth(utilGetNextYearMonth(selectedYear, selectedMonth).y, utilGetNextYearMonth(selectedYear, selectedMonth).m)}
+              >
+                <Icon name="chevron-down" variant="mini" size={16} className="-rotate-90" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </HeaderControls>
       <div className="page-content">
         {isLoading ? (
           <InfoDisplay
