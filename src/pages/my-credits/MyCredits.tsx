@@ -225,7 +225,30 @@ const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reload
             centered
           />
         ) : (
-          <CreditsDisplay calendar={filteredCalendar} isLoading={false} userCards={userCardDetails} />
+          <CreditsDisplay
+            calendar={filteredCalendar}
+            isLoading={false}
+            userCards={userCardDetails}
+            now={new Date(selectedYear, selectedMonth - 1, 15)}
+            onUpdateHistoryEntry={({ cardId, creditId, periodNumber, creditUsage, valueUsed }) => {
+              // Optimistically update localCalendar in place
+              setLocalCalendar((prev) => {
+                if (!prev) return prev;
+                if (prev.Year !== selectedYear) return prev;
+                const next = { ...prev, Credits: prev.Credits.map((uc) => {
+                  if (uc.CardId === cardId && uc.CreditId === creditId) {
+                    const existing = uc.History.find((h) => h.PeriodNumber === periodNumber);
+                    if (existing) {
+                      existing.CreditUsage = creditUsage;
+                      existing.ValueUsed = valueUsed;
+                    }
+                  }
+                  return uc;
+                }) };
+                return next;
+              });
+            }}
+          />
         )}
       </div>
 

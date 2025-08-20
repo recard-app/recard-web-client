@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import './CreditPeriodGroup.scss';
-import { CalendarUserCredits, CreditPeriodType } from '../../../types';
+import { CalendarUserCredits, CreditPeriodType, CreditUsageType } from '../../../types';
 import CreditList from '../CreditList';
 import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
 
@@ -10,9 +10,16 @@ export interface CreditPeriodGroupProps {
   now: Date;
   cardById: Map<string, CreditCardDetails>;
   creditByPair: Map<string, CardCredit>;
+  onUpdateHistoryEntry?: (update: {
+    cardId: string;
+    creditId: string;
+    periodNumber: number;
+    creditUsage: CreditUsageType;
+    valueUsed: number;
+  }) => void;
 }
 
-const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar, now, cardById, creditByPair }) => {
+const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar, now, cardById, creditByPair, onUpdateHistoryEntry }) => {
   const creditsForPeriod = useMemo(() => {
     return (calendar.Credits || []).filter((c) => c.AssociatedPeriod === period);
   }, [calendar, period]);
@@ -26,7 +33,7 @@ const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar,
   return (
     <section className="credit-period-group" aria-labelledby={`period-${period}`}>
       <h3 id={`period-${period}`} className="period-title">{title}</h3>
-      <CreditList credits={creditsForPeriod} now={now} cardById={cardById} creditByPair={creditByPair} />
+      <CreditList credits={creditsForPeriod} now={now} cardById={cardById} creditByPair={creditByPair} onUpdateHistoryEntry={onUpdateHistoryEntry} />
     </section>
   );
 };

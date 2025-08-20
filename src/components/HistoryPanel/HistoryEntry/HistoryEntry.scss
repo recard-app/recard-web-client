@@ -1,4 +1,5 @@
 @use '../../../styling/variables' as *;
+@use '../../../styling/globals' as *;
 
 .history-entry {
     // Base styles - common to all variants
@@ -19,11 +20,6 @@
     }
 
     // Base states that apply to all variants
-    &.has-selected-card {
-        &:hover {
-          // to add if needed
-        }
-    }
 
     // Base hover state
     &:hover {
@@ -53,6 +49,7 @@
         min-width: 0;
 
         .entry-info {
+            margin-bottom: $space-1-5;
             .entry-title {
                 font-weight: $font-semibold;
                 font-size: $font-sm;
@@ -65,26 +62,7 @@
         }
 
         .selected-card-display {
-            display: flex;
-            align-items: center;
-            gap: $space-1;
-            margin: 0;
-            margin-top: $space-1-5;
-            font-size: $font-xs;
-            color: $neutral-dark-gray;
-            font-weight: $font-regular;
-            //background-color: $neutral-light-gray;
-            width: fit-content;
-            align-self: flex-start;
-            padding: $space-half $space-2;
-            border-radius: $radius-full;
-            border: $border-half solid $neutral-light-gray;
-
-            .card-thumbnail {
-                width: auto;
-                height: $icon-micro;
-                flex-shrink: 0;
-            }
+            @extend .card-bubble-display;
         }
     }
     

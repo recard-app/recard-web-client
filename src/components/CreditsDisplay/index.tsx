@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import './CreditsDisplay.scss';
-import { CalendarUserCredits, CREDIT_PERIODS, CreditPeriodType } from '../../types';
+import { CalendarUserCredits, CREDIT_PERIODS, CreditPeriodType, CreditUsageType } from '../../types';
 import CreditPeriodGroup from './CreditPeriodGroup';
 import { CreditCardDetails, CardCredit } from '../../types/CreditCardTypes';
 
@@ -10,9 +10,16 @@ export interface CreditsDisplayProps {
   // Allows callers to override the notion of "now" (useful for tests)
   now?: Date;
   userCards?: CreditCardDetails[];
+  onUpdateHistoryEntry?: (update: {
+    cardId: string;
+    creditId: string;
+    periodNumber: number;
+    creditUsage: CreditUsageType;
+    valueUsed: number;
+  }) => void;
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [] }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onUpdateHistoryEntry }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
 
   const periodOrder: CreditPeriodType[] = useMemo(() => {
@@ -59,6 +66,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           now={effectiveNow}
           cardById={cardById}
           creditByPair={creditByPair}
+          onUpdateHistoryEntry={onUpdateHistoryEntry}
         />
       ))}
     </div>

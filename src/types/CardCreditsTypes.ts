@@ -35,7 +35,7 @@ export const CREDIT_USAGE = {
     USED: 'used',
     NOT_USED: 'not_used',
     PARTIALLY_USED: 'partially_used',
-    UNKNOWN: 'unknown'
+    INACTIVE: 'inactive'
 } as const;
 export type CreditUsageType = typeof CREDIT_USAGE[keyof typeof CREDIT_USAGE];
 

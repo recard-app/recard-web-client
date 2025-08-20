@@ -269,3 +269,41 @@ button, .button {
   font-family: $font-inter;
   margin: 0;
 }
+
+// Card bubble display used across components (e.g., history entries, credit entries)
+.card-bubble-display {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  margin: 0;
+  font-size: $font-xs;
+  color: $neutral-dark-gray;
+  font-weight: $font-regular;
+  width: fit-content;
+  align-self: flex-start;
+  padding: $space-half $space-2;
+  border-radius: $radius-full;
+  border: $border-half solid $neutral-light-gray;
+
+  .card-thumbnail {
+    width: auto;
+    height: $icon-micro;
+    flex-shrink: 0;
+  }
+}
+
+// Credit slider color variables driven by SCSS design tokens
+:root {
+  // Base palette mapped from SCSS vars so you can change colors in variables.scss
+  --credit-bar-untracked: #{$neutral-gray};
+  --credit-bar-inactive: #{$neutral-medium-gray};
+  --credit-bar-unused: #{$neutral-dark-gray};
+  --credit-bar-partial: #{$primary-color};
+  --credit-bar-used: #{$primary-medium};
+
+  // Slider-specific aliases, so components can target stable names
+  --slider-range-color-used: var(--credit-bar-used);
+  --slider-range-color-partial: var(--credit-bar-partial);
+  --slider-range-color-unused: var(--credit-bar-unused);
+  --slider-range-color-inactive: var(--credit-bar-inactive);
+}
