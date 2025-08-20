@@ -1,0 +1,23 @@
+@use '../../styling/globals' as *;
+
+.my-credits-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: calc(var(--app-vh, 1vh) * 100);
+  background-color: $neutral-lightest-gray;
+  box-sizing: border-box;
+  min-height: 0;
+
+  .page-content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: $space-5;
+  }
+}
+.year-select {
+    width: auto;
+}

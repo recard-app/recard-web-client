@@ -6,13 +6,15 @@
   border-bottom: $border-half solid $neutral-light-gray;
   box-shadow: $container-shadow-bottom-bigger;
   flex-shrink: 0;
-  z-index: 2;
+  z-index: 5;
   display: flex;
   flex-direction: row;
   gap: $space-6;
   width: 100%;
   align-items: flex-start;
   justify-content: flex-start;
+  position: sticky;
+  top: 0;
 }
 
 

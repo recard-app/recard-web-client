@@ -23,6 +23,7 @@ import {
   getPrevYearMonth as utilGetPrevYearMonth,
   isAllowedYearMonth as utilIsAllowedYearMonth,
 } from './utils';
+import './MyCredits.scss';
 
 interface MyCreditsProps {
   calendar: CalendarUserCredits | null;

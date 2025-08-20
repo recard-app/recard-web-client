@@ -13,7 +13,7 @@ export const CREDIT_PERIODS = {
     Monthly: 'monthly',
     Quarterly: 'quarterly',
     Semiannually: 'semiannually',
-    Annual: 'annual'
+    Annually: 'annually'
 } as const;
 export type CreditPeriodType = typeof CREDIT_PERIODS[keyof typeof CREDIT_PERIODS];
 
@@ -24,7 +24,7 @@ export const CREDIT_INTERVALS = {
     Monthly: 12,
     Quarterly: 4,
     Semiannually: 2,
-    Annual: 1
+    Annually: 1
 } as const;
 export type CreditIntervalType = typeof CREDIT_INTERVALS[keyof typeof CREDIT_INTERVALS];
 
@@ -38,6 +38,17 @@ export const CREDIT_USAGE = {
     INACTIVE: 'inactive'
 } as const;
 export type CreditUsageType = typeof CREDIT_USAGE[keyof typeof CREDIT_USAGE];
+
+/**
+ * Represents the different credit usage types
+ */
+export const CREDIT_USAGE_DISPLAY_NAMES = {
+    USED: 'Redeemed',
+    NOT_USED: 'Not Used',
+    PARTIALLY_USED: 'Partially Used',
+    INACTIVE: 'Not Tracked'
+} as const;
+export type CreditUsageDisplayNameType = typeof CREDIT_USAGE_DISPLAY_NAMES[keyof typeof CREDIT_USAGE_DISPLAY_NAMES];
 
 /**
  * Represents the credit history for a user

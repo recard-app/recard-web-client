@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import './CreditEntry.scss';
-import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, UserCredit, CreditUsageType } from '../../../../types';
+import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType } from '../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
 import { Slider } from '../../../ui/slider';
 import { CardIcon } from '../../../../icons';
@@ -143,10 +143,10 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
             onChange={(e) => handleSelectChange(e.target.value as CreditUsageType)}
             style={{ color: SELECT_COLOR[usage], borderColor: SELECT_COLOR[usage] }}
           >
-            <option value={CREDIT_USAGE.USED}>Used</option>
-            <option value={CREDIT_USAGE.PARTIALLY_USED}>Partially Used</option>
-            <option value={CREDIT_USAGE.NOT_USED}>Not Used</option>
-            <option value={CREDIT_USAGE.INACTIVE}>Inactive</option>
+            <option value={CREDIT_USAGE.USED}>{CREDIT_USAGE_DISPLAY_NAMES.USED}</option>
+            <option value={CREDIT_USAGE.PARTIALLY_USED}>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</option>
+            <option value={CREDIT_USAGE.NOT_USED}>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</option>
+            <option value={CREDIT_USAGE.INACTIVE}>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</option>
           </select>
         </div>
         <div className="credit-value-used" style={{ minWidth: 120 }}>
