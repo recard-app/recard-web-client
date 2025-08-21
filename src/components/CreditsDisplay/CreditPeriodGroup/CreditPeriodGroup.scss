@@ -12,9 +12,8 @@
 }
 
 .period-bar {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
+  display: flex;
+  align-items: center;
   gap: $space-1;
   margin-bottom: $space-3;
 }
@@ -26,33 +25,32 @@
   gap: $space-1;
   border: $border-full solid $neutral-light-gray;
   border-radius: $radius-md;
-  padding: $space-1;
+  padding: $space-1 $space-2;
   text-align: center;
-  font-size: $font-xxs;
+  font-size: $font-xs;
   color: $neutral-dark-gray;
   background-color: $neutral-white;
   font-weight: $font-semibold;
   text-transform: uppercase;
 }
 
-.period-cell.past {
-  color: $neutral-medium-gray;
-  border-color: $neutral-light-gray;
-  opacity: 0.75;
-}
-
-.period-cell.active {
+.period-cell.current {
   border-color: $primary-medium;
   background-color: $primary-lightest;
   color: $primary-dark;
-  opacity: 1;
 }
 
-.period-cell.current::before {
-  content: '';
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  border-radius: $radius-full;
-  background-color: currentColor;
+.period-icon {
+  color: $primary-dark;
+}
+
+.period-cell.past .period-icon {
+  color: $neutral-medium-gray;
+}
+
+.period-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
 }

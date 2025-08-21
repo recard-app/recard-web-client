@@ -143,10 +143,18 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
             onChange={(e) => handleSelectChange(e.target.value as CreditUsageType)}
             style={{ color: SELECT_COLOR[usage], borderColor: SELECT_COLOR[usage] }}
           >
-            <option value={CREDIT_USAGE.USED}>{CREDIT_USAGE_DISPLAY_NAMES.USED}</option>
-            <option value={CREDIT_USAGE.PARTIALLY_USED}>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</option>
-            <option value={CREDIT_USAGE.NOT_USED}>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</option>
-            <option value={CREDIT_USAGE.INACTIVE}>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</option>
+            <option value={CREDIT_USAGE.USED}>
+              {CREDIT_USAGE_DISPLAY_NAMES.USED}
+            </option>
+            <option value={CREDIT_USAGE.PARTIALLY_USED}>
+              {CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
+            </option>
+            <option value={CREDIT_USAGE.NOT_USED}>
+              {CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
+            </option>
+            <option value={CREDIT_USAGE.INACTIVE}>
+              {CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
+            </option>
           </select>
         </div>
         <div className="credit-value-used" style={{ minWidth: 120 }}>

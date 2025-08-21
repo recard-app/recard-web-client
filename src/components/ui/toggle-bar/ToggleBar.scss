@@ -1,0 +1,51 @@
+@use '../../../styling/variables' as *;
+
+.toggle-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.toggle-bar-button {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-1 $space-2;
+  font-size: $font-xs;
+  font-weight: $font-semibold;
+  border-radius: $radius-md;
+  border: $border-full solid $neutral-light-gray;
+  color: $neutral-dark-gray;
+  background-color: $neutral-white;
+  cursor: pointer;
+
+  &.mini {
+    padding: $space-half $space-1;
+    font-size: $font-xxs;
+  }
+  &.small {
+    padding: $space-1 $space-2;
+    font-size: $font-xs;
+  }
+
+  // Off state
+  &[data-pressed='false'] {
+    opacity: 0.8;
+  }
+
+  // On state
+  &.active,
+  &[data-pressed='true'] {
+    border-color: $primary-medium;
+    background-color: $primary-lightest;
+    color: $primary-dark;
+  }
+
+  // Icon-only sizing support; when only an svg exists inside
+  &:has(svg):not(:has(span)) {
+    padding-left: $space-1;
+    padding-right: $space-1;
+  }
+}
+
+

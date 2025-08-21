@@ -10,6 +10,14 @@ export interface CreditsDisplayProps {
   // Allows callers to override the notion of "now" (useful for tests)
   now?: Date;
   userCards?: CreditCardDetails[];
+  // Navigation helpers provided by parent (MyCredits)
+  onJumpMonths?: (deltaMonths: number) => void;
+  canJumpMonths?: (deltaMonths: number) => boolean;
+  // Visibility filters
+  showUsed?: boolean;
+  showNotUsed?: boolean;
+  showPartiallyUsed?: boolean;
+  showInactive?: boolean;
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -19,7 +27,7 @@ export interface CreditsDisplayProps {
   }) => void;
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onUpdateHistoryEntry }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, onUpdateHistoryEntry }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
 
   const periodOrder: CreditPeriodType[] = useMemo(() => {
@@ -66,6 +74,12 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           now={effectiveNow}
           cardById={cardById}
           creditByPair={creditByPair}
+          onJumpMonths={onJumpMonths}
+          canJumpMonths={canJumpMonths}
+          showUsed={showUsed}
+          showNotUsed={showNotUsed}
+          showPartiallyUsed={showPartiallyUsed}
+          showInactive={showInactive}
           onUpdateHistoryEntry={onUpdateHistoryEntry}
         />
       ))}

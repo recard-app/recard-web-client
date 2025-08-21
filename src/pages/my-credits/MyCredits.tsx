@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS } from '../../types';
+import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES } from '../../types';
 import {
   Dialog,
   DialogContent,
@@ -15,6 +15,7 @@ import CreditsDisplay from '../../components/CreditsDisplay';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
 import { InfoDisplay } from '../../elements';
 import HeaderControls from '@/components/PageControls/HeaderControls';
+import { ToggleBar, ToggleBarButton } from '@/components/ui/toggle-bar/toggle-bar';
 import Icon from '@/icons';
 import {
   buildYearOptions,
@@ -153,6 +154,65 @@ const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reload
 
   // Navigation helpers moved to utils
 
+  // Generic month offset helper for jumping multiple months
+  const getYearMonthOffset = (y: number, m: number, deltaMonths: number): { y: number; m: number } => {
+    // m is 1-12 in state; convert to 0-based for math
+    const zeroBased = m - 1;
+    const total = y * 12 + zeroBased + deltaMonths;
+    const newYear = Math.floor(total / 12);
+    const newMonthZero = total % 12;
+    const normalizedMonthZero = newMonthZero < 0 ? newMonthZero + 12 : newMonthZero;
+    const normalizedYear = newMonthZero < 0 ? newYear - 1 : newYear;
+    return { y: normalizedYear, m: normalizedMonthZero + 1 };
+  };
+
+  const canJumpMonths = (deltaMonths: number): boolean => {
+    const { y, m } = getYearMonthOffset(selectedYear, selectedMonth, deltaMonths);
+    return isAllowedYearMonth(y, m);
+  };
+
+  const onJumpMonths = (deltaMonths: number) => {
+    const { y, m } = getYearMonthOffset(selectedYear, selectedMonth, deltaMonths);
+    if (isAllowedYearMonth(y, m)) {
+      setSelectedYear(y);
+      setSelectedMonth(m);
+    }
+  };
+
+  // Current-month helpers
+  const isOnCurrentMonth = useMemo(() => {
+    const now = new Date();
+    return selectedYear === now.getFullYear() && selectedMonth === (now.getMonth() + 1);
+  }, [selectedYear, selectedMonth]);
+  const goToCurrentPeriod = () => {
+    const now = new Date();
+    let targetYear = now.getFullYear();
+    let targetMonth = now.getMonth() + 1;
+    if (!isAllowedYearMonth(targetYear, targetMonth)) {
+      // Step back until we find an allowed month (safety)
+      let probeY = targetYear;
+      let probeM = targetMonth;
+      for (let i = 0; i < 36; i++) {
+        const prev = utilGetPrevYearMonth(probeY, probeM);
+        if (isAllowedYearMonth(prev.y, prev.m)) {
+          targetYear = prev.y;
+          targetMonth = prev.m;
+          break;
+        }
+        probeY = prev.y;
+        probeM = prev.m;
+      }
+    }
+    setSelectedYear(targetYear);
+    setSelectedMonth(targetMonth);
+  };
+
+  // Toggles for filtering/visibility
+  const [showUsed, setShowUsed] = useState<boolean>(true);
+  const [showNotUsed, setShowNotUsed] = useState<boolean>(true);
+  const [showPartiallyUsed, setShowPartiallyUsed] = useState<boolean>(true);
+  const [showInactive, setShowInactive] = useState<boolean>(true);
+
   return (
     <div className="my-credits-wrapper">
       <PageHeader 
@@ -213,7 +273,37 @@ const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reload
                 <Icon name="chevron-down" variant="mini" size={16} className="-rotate-90" />
               </button>
             </div>
+            {!isOnCurrentMonth && (
+              <button
+                type="button"
+                aria-label="Go to current period"
+                className="button outline small icon with-text"
+                onClick={goToCurrentPeriod}
+              >
+                <Icon name="map-pin" variant="micro" size={16} />
+                <span>Back to Today</span>
+              </button>
+            )}
           </div>
+          <ToggleBar className="items-center gap-2">
+            <span className="caps-label">Credits to Show</span>
+            <ToggleBarButton pressed={showUsed} onPressedChange={setShowUsed} className="small icon with-text">
+              <Icon name="used-icon" variant="micro" size={14} />
+              <span>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
+            </ToggleBarButton>
+            <ToggleBarButton pressed={showNotUsed} onPressedChange={setShowNotUsed} className="small icon with-text">
+              <Icon name="not-used-icon" variant="micro" size={14} />
+              <span>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
+            </ToggleBarButton>
+            <ToggleBarButton pressed={showPartiallyUsed} onPressedChange={setShowPartiallyUsed} className="small icon with-text">
+              <Icon name="partially-used-icon" variant="micro" size={14} />
+              <span>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
+            </ToggleBarButton>
+            <ToggleBarButton pressed={showInactive} onPressedChange={setShowInactive} className="small icon with-text">
+              <Icon name="inactive" variant="micro" size={14} />
+              <span>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</span>
+            </ToggleBarButton>
+          </ToggleBar>
         </div>
       </HeaderControls>
       <div className="page-content">
@@ -231,6 +321,12 @@ const MyCredits: React.FC<MyCreditsProps> = ({ calendar, userCardDetails, reload
             isLoading={false}
             userCards={userCardDetails}
             now={new Date(selectedYear, selectedMonth - 1, 15)}
+            onJumpMonths={onJumpMonths}
+            canJumpMonths={canJumpMonths}
+            showUsed={showUsed}
+            showNotUsed={showNotUsed}
+            showPartiallyUsed={showPartiallyUsed}
+            showInactive={showInactive}
             onUpdateHistoryEntry={({ cardId, creditId, periodNumber, creditUsage, valueUsed }) => {
               // Optimistically update localCalendar in place
               setLocalCalendar((prev) => {
