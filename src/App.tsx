@@ -32,6 +32,7 @@ import MyCardsHelpModal from './pages/my-cards/MyCardsHelpModal';
 import PreferencesHelpModal from './pages/preferences/PreferencesHelpModal';
 import MyCreditsHelpModal from './pages/my-credits/MyCreditsHelpModal';
 import MyCredits from './pages/my-credits/MyCredits';
+import CreditsHistory from './pages/my-credits/history/CreditsHistory';
 // Components
 
 import AppSidebar from './components/AppSidebar';
@@ -954,7 +955,12 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.MY_CREDITS.PATH} element={
                     <ProtectedRoute>
-                      <MyCredits calendar={currentYearCredits} userCardDetails={userDetailedCardDetails} reloadTrigger={cardsVersion} />
+                      <MyCredits />
+                    </ProtectedRoute>
+                  } />
+                  <Route path={PAGES.MY_CREDITS_HISTORY.PATH} element={
+                    <ProtectedRoute>
+                      <CreditsHistory calendar={currentYearCredits} userCardDetails={userDetailedCardDetails} reloadTrigger={cardsVersion} />
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.ACCOUNT.PATH} element={

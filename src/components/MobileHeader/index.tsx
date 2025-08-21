@@ -99,6 +99,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         return PAGE_NAMES.MY_ACCOUNT;
       case PAGES.MY_CREDITS.PATH:
         return PAGE_NAMES.MY_CREDITS;
+      case PAGES.MY_CREDITS_HISTORY.PATH:
+        return PAGE_NAMES.MY_CREDITS;
       default:
         // Use PageUtils as fallback
         const pageTitle = PageUtils.getTitleByPath(currentPath);
@@ -124,6 +126,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       case PAGES.ACCOUNT.PATH:
         return <Icon name="account" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       case PAGES.MY_CREDITS.PATH:
+        return <Icon name="banknotes" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+      case PAGES.MY_CREDITS_HISTORY.PATH:
         return <Icon name="banknotes" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       default:
         return null;

@@ -34,10 +34,20 @@
   text-transform: uppercase;
 }
 
-.period-cell.current {
+.period-cell.past {
+  //color: $neutral-medium-gray;
+}
+
+.period-cell.future {
+  color: $neutral-gray;
+}
+
+// Highlight the actively selected period (based on the page's selected date)
+.period-cell.active {
   border-color: $primary-medium;
   background-color: $primary-lightest;
   color: $primary-dark;
+  opacity: 1;
 }
 
 .period-icon {
@@ -53,4 +63,13 @@
   align-items: center;
   justify-content: center;
   height: 24px;
+}
+
+// Clickable state for showAllPeriods mode
+.period-cell.clickable {
+  cursor: pointer;
+}
+.period-cell.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }

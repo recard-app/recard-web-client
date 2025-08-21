@@ -4,6 +4,8 @@ import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NA
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
 import { Slider } from '../../../ui/slider';
 import { CardIcon } from '../../../../icons';
+import Icon from '@/icons';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu/dropdown-menu';
 import { clampValue, getMaxValue, getValueForUsage, getUsageForValue } from './utils';
 import { UserCreditService } from '../../../../services/UserServices';
 
@@ -29,7 +31,13 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     [CREDIT_USAGE.PARTIALLY_USED]: 'var(--slider-range-color-partial)',
     [CREDIT_USAGE.USED]: 'var(--slider-range-color-used)'
   };
-  const SELECT_COLOR: Record<CreditUsageType, string> = BAR_COLOR;
+  // const SELECT_COLOR: Record<CreditUsageType, string> = BAR_COLOR;
+  const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
+    [CREDIT_USAGE.USED]: 'used-icon',
+    [CREDIT_USAGE.PARTIALLY_USED]: 'partially-used-icon',
+    [CREDIT_USAGE.NOT_USED]: 'not-used-icon',
+    [CREDIT_USAGE.INACTIVE]: 'inactive',
+  };
   const [valueUsed, setValueUsed] = useState<number>(
     userCredit.History?.[0]?.ValueUsed ?? 0
   );
@@ -137,25 +145,45 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       <div className="credit-line">
         <div className="credit-id">{cardCredit?.Title ?? userCredit.CreditId}</div>
         <div className="credit-usage">
-          <select
-            className="default-select"
-            value={usage}
-            onChange={(e) => handleSelectChange(e.target.value as CreditUsageType)}
-            style={{ color: SELECT_COLOR[usage], borderColor: SELECT_COLOR[usage] }}
-          >
-            <option value={CREDIT_USAGE.USED}>
-              {CREDIT_USAGE_DISPLAY_NAMES.USED}
-            </option>
-            <option value={CREDIT_USAGE.PARTIALLY_USED}>
-              {CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
-            </option>
-            <option value={CREDIT_USAGE.NOT_USED}>
-              {CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
-            </option>
-            <option value={CREDIT_USAGE.INACTIVE}>
-              {CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
-            </option>
-          </select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className="flex items-center gap-2 h-8 px-3 rounded-md border bg-transparent text-sm">
+                <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
+                <span>
+                  {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
+                  {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
+                  {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
+                  {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.USED); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.USED]} variant="micro" size={14} />
+                  <span>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.PARTIALLY_USED); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.PARTIALLY_USED]} variant="micro" size={14} />
+                  <span>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.NOT_USED); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.NOT_USED]} variant="micro" size={14} />
+                  <span>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.INACTIVE); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.INACTIVE]} variant="micro" size={14} />
+                  <span>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</span>
+                </span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="credit-value-used" style={{ minWidth: 120 }}>
           <Slider

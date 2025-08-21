@@ -18,6 +18,7 @@ export interface CreditsDisplayProps {
   showNotUsed?: boolean;
   showPartiallyUsed?: boolean;
   showInactive?: boolean;
+  showAllPeriods?: boolean;
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -27,7 +28,7 @@ export interface CreditsDisplayProps {
   }) => void;
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, onUpdateHistoryEntry }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, onUpdateHistoryEntry }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
 
   const periodOrder: CreditPeriodType[] = useMemo(() => {
@@ -80,6 +81,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           showNotUsed={showNotUsed}
           showPartiallyUsed={showPartiallyUsed}
           showInactive={showInactive}
+          showAllPeriods={showAllPeriods}
           onUpdateHistoryEntry={onUpdateHistoryEntry}
         />
       ))}

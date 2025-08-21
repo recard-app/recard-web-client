@@ -17,6 +17,8 @@ export interface CreditPeriodGroupProps {
   showNotUsed?: boolean;
   showPartiallyUsed?: boolean;
   showInactive?: boolean;
+  // When true, show all period cells; when false, only show the active cell
+  showAllPeriods?: boolean;
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -26,7 +28,7 @@ export interface CreditPeriodGroupProps {
   }) => void;
 }
 
-const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar, now, cardById, creditByPair, onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, onUpdateHistoryEntry }) => {
+const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar, now, cardById, creditByPair, onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = false, onUpdateHistoryEntry }) => {
   // Build period cells across top using MONTH_LABEL_ABBREVIATIONS and math
   const title = period.charAt(0).toUpperCase() + period.slice(1);
   const monthLabels = MONTH_LABEL_ABBREVIATIONS.map(m => m.label);
@@ -101,30 +103,41 @@ const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar,
           const activeIdx = cells.findIndex((cell) =>
             (groupYear === selectedYear) && (selectedMonthIdx >= cell.startMonthIndex && selectedMonthIdx <= cell.endMonthIndex)
           );
-          const cell = activeIdx >= 0 ? cells[activeIdx] : null;
-          if (!cell) return null;
-          const isActive = true;
-          const isPast = (groupYear < realYear) || (groupYear === realYear && cell.endMonthIndex < realMonthIdx);
-          const isCurrent = (groupYear === realYear) && (realMonthIdx >= cell.startMonthIndex && realMonthIdx <= cell.endMonthIndex);
-          const iconName = isCurrent ? 'map-pin' : (isPast ? 'history-clock' : null);
           const jumpSize = period === CREDIT_PERIODS.Monthly ? 1
             : period === CREDIT_PERIODS.Quarterly ? 3
             : period === CREDIT_PERIODS.Semiannually ? 6
             : 12;
           const canBack = canJumpMonths ? canJumpMonths(-jumpSize) : false;
           const canForward = canJumpMonths ? canJumpMonths(jumpSize) : false;
-          return (
-            <>
-              <button
-                type="button"
-                aria-label="Previous period"
-                className="button outline small px-2 period-nav"
-                disabled={!canBack}
-                onClick={() => onJumpMonths && onJumpMonths(-jumpSize)}
+
+          const renderCell = (cell: Cell, idx: number) => {
+            const isActive = idx === activeIdx;
+            const isPast = (groupYear < realYear) || (groupYear === realYear && cell.endMonthIndex < realMonthIdx);
+            const isCurrent = (groupYear === realYear) && (realMonthIdx >= cell.startMonthIndex && realMonthIdx <= cell.endMonthIndex);
+            const isFuture = (groupYear > realYear) || (groupYear === realYear && cell.startMonthIndex > realMonthIdx);
+
+            const iconName = showAllPeriods
+              ? (isCurrent ? 'map-pin' : null)
+              : (isCurrent ? 'map-pin' : (isPast ? 'history-clock' : null));
+
+            // If showing all periods: make cells clickable to jump to the start month of that period
+            const targetDeltaMonths = (groupYear - selectedYear) * 12 + (cell.startMonthIndex - selectedMonthIdx);
+            const canJumpToCell = !!(showAllPeriods && canJumpMonths && canJumpMonths(targetDeltaMonths));
+            const handleCellClick = () => {
+              if (showAllPeriods && onJumpMonths && canJumpToCell) {
+                onJumpMonths(targetDeltaMonths);
+              }
+            };
+
+            return (
+              <div
+                key={idx}
+                className={`period-cell ${isActive ? 'active' : ''} ${isPast ? 'past' : ''} ${isFuture ? 'future' : ''} ${isCurrent ? 'current' : ''} ${showAllPeriods ? 'clickable' : ''} ${showAllPeriods && !canJumpToCell ? 'disabled' : ''}`}
+                onClick={handleCellClick}
+                role={showAllPeriods ? 'button' : undefined}
+                aria-disabled={showAllPeriods && !canJumpToCell ? true : undefined}
+                tabIndex={showAllPeriods ? 0 : undefined}
               >
-                <Icon name="chevron-down" variant="mini" size={16} className="rotate-90" />
-              </button>
-              <div key={activeIdx} className={`period-cell ${isActive ? 'active' : ''} ${isPast ? 'past' : ''} ${isCurrent ? 'current' : ''}`}>
                 {iconName ? (
                   <span className="period-icon">
                     <Icon name={iconName} variant="micro" size={16} />
@@ -132,15 +145,40 @@ const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar,
                 ) : null}
                 <span>{cell.label}</span>
               </div>
-              <button
-                type="button"
-                aria-label="Next period"
-                className="button outline small px-2 period-nav"
-                disabled={!canForward}
-                onClick={() => onJumpMonths && onJumpMonths(jumpSize)}
-              >
-                <Icon name="chevron-down" variant="mini" size={16} className="-rotate-90" />
-              </button>
+            );
+          };
+
+          if (activeIdx < 0) return null;
+
+          return (
+            <>
+              {!showAllPeriods && (
+                <button
+                  type="button"
+                  aria-label="Previous period"
+                  className="button outline small px-2 period-nav"
+                  disabled={!canBack}
+                  onClick={() => onJumpMonths && onJumpMonths(-jumpSize)}
+                >
+                  <Icon name="chevron-down" variant="mini" size={16} className="rotate-90" />
+                </button>
+              )}
+              {showAllPeriods ? (
+                cells.map((c, i) => renderCell(c, i))
+              ) : (
+                renderCell(cells[activeIdx], activeIdx)
+              )}
+              {!showAllPeriods && (
+                <button
+                  type="button"
+                  aria-label="Next period"
+                  className="button outline small px-2 period-nav"
+                  disabled={!canForward}
+                  onClick={() => onJumpMonths && onJumpMonths(jumpSize)}
+                >
+                  <Icon name="chevron-down" variant="mini" size={16} className="-rotate-90" />
+                </button>
+              )}
             </>
           );
         })()}
