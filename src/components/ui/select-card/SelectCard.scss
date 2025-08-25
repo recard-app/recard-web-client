@@ -1,0 +1,262 @@
+@use '../../../styling/variables' as *;
+
+$collapse-transition-duration: 0.15s;
+
+.select-different-card {
+  margin: 0;
+  padding: 0;
+  height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  opacity: 0;
+  transition: opacity $transition-base, height $transition-base, margin $transition-base;
+  
+  // When used in expanded state (like in PromptSolution)
+  &.expanded {
+    opacity: 1;
+    height: 24px;
+    margin-top: $space-1;
+    transition: opacity $collapse-transition-duration ease-in 0.1s, height $collapse-transition-duration ease-in, margin $collapse-transition-duration ease-in;
+  }
+
+  // When used standalone (like in CreditsHistory)
+  &.standalone {
+    opacity: 1;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+  }
+  
+  .selection-label {
+    font-size: $font-xs;
+    font-family: $font-inter;
+    font-weight: $font-medium;
+    color: $neutral-dark-gray;
+    margin-right: $space-2;
+  }
+  
+  .select-card-button {
+    background-color: $neutral-white;
+    border: $border-full solid $neutral-gray;
+    padding: $space-1 $space-2;
+    border-radius: $radius-base;
+    cursor: pointer;
+    font-size: $font-xs;
+    font-family: $font-inter;
+    font-weight: $font-medium;
+    color: $neutral-black;
+    transition: all $transition-base;
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+
+    &.loading.icon.with-text {
+      // Target button with all these classes: selected-card-button loading icon with-text
+      font-size: $font-xs;
+      padding: 3px $space-1;
+      border: $border-full solid $neutral-gray;
+      gap: $space-1;
+      transition: none; // Disable transition to prevent flashing
+      border-radius: $radius-base;
+
+      p {
+        height: 14px;
+      }
+    }
+    
+    &:hover {
+      background-color: $neutral-light-gray;
+      border-color: $neutral-medium-gray;
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    // Ensure spinner is visible when loading
+    &.loading {
+      svg {
+        color: $neutral-dark-gray !important;
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+  
+  .selected-card-button {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: $neutral-white;
+    border: $border-full solid $neutral-gray;
+    padding: $space-1 $space-2;
+    border-radius: $radius-base;
+    cursor: pointer;
+    transition: all $transition-base;
+    gap: $space-1;
+    font-family: $font-inter;
+    
+    &:hover {
+      background-color: $neutral-light-gray;
+      border-color: $neutral-medium-gray;
+
+      .deselect-x {
+        opacity: 1;
+      }
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    // Ensure spinner is visible when loading
+    &.loading {
+      svg {
+        color: $neutral-dark-gray !important;
+        animation: spin 1s linear infinite;
+      }
+    }
+    
+    .selected-card-image {
+      height: auto;
+      width: auto;
+    }
+    
+    .selected-card-name {
+      font-size: $font-xs;
+      font-weight: $font-medium;
+      color: $neutral-black;
+      margin-right: $space-1;
+    }
+
+    .deselect-x {
+      font-size: $font-xs;
+      opacity: 0.6;
+      padding-left: $space-1;
+      border-left: $border-full solid rgba($neutral-black, 0.1);
+      transition: opacity $transition-base;
+    }
+  }
+}
+
+.selected-card-container {
+    display: flex;
+    align-items: stretch;
+    
+    .selected-card-button {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-right: none;
+
+        &.loading.icon.with-text {
+            // Target button with all these classes: selected-card-button loading icon with-text
+            font-size: $font-xs;
+            padding: 3px $space-1;
+            border: $border-full solid $neutral-gray;
+            gap: $space-1;
+            transition: none; // Disable transition to prevent flashing
+            border-radius: $radius-base;
+
+            p {
+              height: 14px;
+            }
+        }
+    }
+
+    .deselect-button {
+        margin: 0;
+        width: $space-5;
+        border: $border-full solid $neutral-gray;
+        background-color: $neutral-white;
+        color: $neutral-black;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $font-xs;
+        font-weight: $font-bold;
+        padding: 0 $space-3;
+        transition: all $transition-base;
+        border-top-right-radius: $radius-base;
+        border-bottom-right-radius: $radius-base;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+
+        &:hover {
+            background-color: $neutral-black;
+            border-color: $neutral-black;
+            color: $neutral-white;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    // Hide deselect button when the selected-card-button is loading
+    .selected-card-button.loading + .deselect-button {
+        display: none;
+    }
+}
+
+// Mobile-only: prevent selected-card chip from wrapping to next line
+@media (max-width: $mobile-breakpoint) {
+  .select-different-card {
+    flex-wrap: nowrap;
+    overflow: hidden;
+    gap: $space-1;
+    
+    .selection-label {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .selected-card-container {
+      flex: 1 1 auto;
+      min-width: 0; // allow inner content to shrink
+    }
+  }
+
+  .selected-card-container {
+    .selected-card-button {
+      /* Shrink to content but cap so it doesn't wrap */
+      flex: 0 1 auto;
+      width: auto;
+      max-width: calc(100% - #{$space-5});
+      min-width: 0;
+      
+      .selected-card-image {
+        flex-shrink: 0;
+      }
+      
+      .selected-card-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+      }
+    }
+
+    .deselect-button {
+      flex: 0 0 auto;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+  }
+}
+
+// Keyframe animation for loading spinner
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import './CreditEntry.scss';
 import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType } from '../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
+import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
 import { Slider } from '../../../ui/slider';
 import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
@@ -25,12 +26,7 @@ export interface CreditEntryProps {
 }
 
 const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, onUpdateHistoryEntry }) => {
-  const BAR_COLOR: Record<CreditUsageType, string> = {
-    [CREDIT_USAGE.NOT_USED]: 'var(--slider-range-color-unused)',
-    [CREDIT_USAGE.INACTIVE]: 'var(--slider-range-color-inactive)',
-    [CREDIT_USAGE.PARTIALLY_USED]: 'var(--slider-range-color-partial)',
-    [CREDIT_USAGE.USED]: 'var(--slider-range-color-used)'
-  };
+  // Slider color now syncs with CREDIT_USAGE_DISPLAY_COLORS via CSS var injection
   // const SELECT_COLOR: Record<CreditUsageType, string> = BAR_COLOR;
   const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
     [CREDIT_USAGE.USED]: 'used-icon',
@@ -74,6 +70,35 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   const maxValue = getMaxValue(creditMaxValue);
   const isSliderDisabled = usage === CREDIT_USAGE.INACTIVE;
 
+  const USAGE_COLOR_BY_STATE: Record<CreditUsageType, string> = {
+    [CREDIT_USAGE.USED]: CREDIT_USAGE_DISPLAY_COLORS.USED,
+    [CREDIT_USAGE.PARTIALLY_USED]: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
+    [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_DISPLAY_COLORS.NOT_USED,
+    [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE,
+  };
+
+  const parseHexToRgb = (hex: string): { r: number; g: number; b: number } => {
+    const normalized = hex.replace('#', '');
+    const value = normalized.length === 3 ? normalized.split('').map((c) => c + c).join('') : normalized;
+    const r = parseInt(value.substring(0, 2), 16);
+    const g = parseInt(value.substring(2, 4), 16);
+    const b = parseInt(value.substring(4, 6), 16);
+    return { r, g, b };
+  };
+
+  const tintHexColor = (hex: string, tintFactor: number): string => {
+    const { r, g, b } = parseHexToRgb(hex);
+    const mix = (channel: number) => Math.round(channel + (255 - channel) * tintFactor);
+    const nr = mix(r);
+    const ng = mix(g);
+    const nb = mix(b);
+    return `#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`;
+  };
+
+  const usageColor = USAGE_COLOR_BY_STATE[usage];
+  const lineTintBackground = tintHexColor(usageColor, 0.95);
+  const lineTintHover = tintHexColor(usageColor, 0.8);
+
   const persistUpdate = async (nextUsage: CreditUsageType, nextValue: number) => {
     try {
       await UserCreditService.updateCreditHistoryEntry({
@@ -101,12 +126,12 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     setUsage(newUsage);
     // Update slider according to the rules and (un)disable
     if (newUsage === CREDIT_USAGE.INACTIVE) {
-      // Disable slider and set to lowest value
-      setValueUsed(0);
-      void persistUpdate(newUsage, 0);
+      // Disable slider but RETAIN existing value; persist same value
+      void persistUpdate(newUsage, valueUsed);
       return;
     }
     if (newUsage === CREDIT_USAGE.NOT_USED) {
+      // Keep value at 0, reflect NOT_USED state
       setValueUsed(0);
       void persistUpdate(newUsage, 0);
       return;
@@ -142,63 +167,11 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
 
   return (
     <div className="credit-entry" data-period={userCredit.AssociatedPeriod}>
-      <div className="credit-line">
+      <div className="credit-description">
         <div className="credit-id">{cardCredit?.Title ?? userCredit.CreditId}</div>
-        <div className="credit-usage">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button type="button" className="flex items-center gap-2 h-8 px-3 rounded-md border bg-transparent text-sm">
-                <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
-                <span>
-                  {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
-                  {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
-                  {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
-                  {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
-                </span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.USED); }}>
-                <span className="flex items-center gap-2">
-                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.USED]} variant="micro" size={14} />
-                  <span>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.PARTIALLY_USED); }}>
-                <span className="flex items-center gap-2">
-                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.PARTIALLY_USED]} variant="micro" size={14} />
-                  <span>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.NOT_USED); }}>
-                <span className="flex items-center gap-2">
-                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.NOT_USED]} variant="micro" size={14} />
-                  <span>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.INACTIVE); }}>
-                <span className="flex items-center gap-2">
-                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.INACTIVE]} variant="micro" size={14} />
-                  <span>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</span>
-                </span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <div className="credit-value-used" style={{ minWidth: 120 }}>
-          <Slider
-            min={0}
-            max={maxValue}
-            value={[valueUsed]}
-            onValueChange={handleSliderChange}
-            onValueCommit={handleSliderCommit}
-            disabled={isSliderDisabled}
-            className="w-32"
-            style={{ ['--slider-range-color' as any]: BAR_COLOR[usage] }}
-          />
-          <span className="ml-2 text-sm text-muted-foreground">${valueUsed} / ${maxValue}</span>
-        </div>
-      </div>
+      {cardCredit?.Description && (
+        <div className="credit-desc">{cardCredit.Description}</div>
+      )}
       {card && (
         <p className="card-bubble-display" style={{ marginTop: 6 }}>
           <CardIcon 
@@ -211,9 +184,66 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           {card.CardName}
         </p>
       )}
-      {cardCredit?.Description && (
-        <div className="credit-desc">{cardCredit.Description}</div>
-      )}
+      </div>
+      <div className="credit-line" style={{ backgroundColor: lineTintBackground, ['--usage-tint-hover' as any]: lineTintHover }}>
+        <div className="credit-value-used">
+          <span className="credit-amount mr-2 text-sm text-muted-foreground">${valueUsed} / ${maxValue}</span>
+          <div className="credit-slider">
+            <Slider
+              min={0}
+              max={maxValue}
+              value={[valueUsed]}
+              onValueChange={handleSliderChange}
+              onValueCommit={handleSliderCommit}
+              disabled={isSliderDisabled}
+              className="w-full"
+              style={{ ['--slider-range-color' as any]: usageColor, width: '100%' }}
+            />
+          </div>
+        </div>
+        <div className="credit-usage">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className="flex items-center gap-2 h-8 px-3 rounded-md border bg-transparent text-sm" style={{ color: usageColor, borderColor: usageColor }}>
+                <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
+                <span>
+                  {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
+                  {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
+                  {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
+                  {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
+                </span>
+                <Icon name="chevron-down" variant="mini" size={16} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.USED); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.USED] }} />
+                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.PARTIALLY_USED); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.PARTIALLY_USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.PARTIALLY_USED] }} />
+                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.PARTIALLY_USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.NOT_USED); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.NOT_USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.NOT_USED] }} />
+                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.NOT_USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.INACTIVE); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.INACTIVE]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.INACTIVE] }} />
+                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.INACTIVE] }}>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</span>
+                </span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
     </div>
   );
 };

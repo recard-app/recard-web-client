@@ -84,3 +84,22 @@ export interface SingleCreditHistory {
     CreditUsage: CreditUsageType;
     ValueUsed: number;
 }
+
+/**
+ * ------------------------------------------------------------------------------------------------
+ * 
+ * CLIENT-SPECIFIC TYPES
+ * 
+ * ------------------------------------------------------------------------------------------------
+ */
+
+/**
+ * Represents the different credit usage display colors
+ */
+export const CREDIT_USAGE_DISPLAY_COLORS = {
+    USED: '#007B53',
+    NOT_USED: '#0B0D0F',
+    PARTIALLY_USED: '#005DCF',
+    INACTIVE: '#B5BBC2'
+} as const;
+export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[keyof typeof CREDIT_USAGE_DISPLAY_COLORS];

@@ -1,23 +1,103 @@
+@use '../../../../styling/variables' as *;
+@use '../../../../styling/mixins' as *;
+
 .credit-entry {
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  @include card-panel;
+  padding: 0;
+  //max-width: 500px;
+  width: 100%;
+  margin: 0; // let grid alignment control positioning
+  display: flex;
+  flex-direction: column;
+  min-height: 164px;
+}
+
+.credit-description {
+  padding: $space-3;
 }
 
 .credit-line {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  column-gap: 12px;
+  padding: $space-1-5 $space-3;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  border-top: $border-half solid $neutral-light-gray;
 }
 
-.credit-id { font-weight: 500; }
-.credit-usage { font-size: 12px; opacity: 0.75; }
-.credit-value-used { font-variant-numeric: tabular-nums; text-align: right; }
+.credit-line:last-of-type {
+  margin-top: auto;
+}
+
+.credit-value-used {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.credit-usage {
+  flex: 0 0 auto;
+}
+
+.credit-slider {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.credit-amount {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  //font-size: $font-xs;
+  //font-weight: $font-semibold;
+  color: $neutral-dark-gray;
+}
+
+// Dropdown button styling: no background, hover shows neutral light gray
+.credit-usage button {
+  background: transparent;
+  //border: $border-half solid currentColor;
+  padding: $space-1-5 $space-2;
+  min-width: 160px;
+}
+
+// Increase specificity and add !important to override global button hover
+.credit-entry .credit-line .credit-usage button:hover:not(:disabled) {
+  background-color: var(--usage-tint-hover, $neutral-light-gray) !important;
+}
+
+// Override active/focus states to prevent global dark-green flash
+.credit-entry .credit-line .credit-usage button:active:not(:disabled) {
+  background-color: var(--usage-tint-hover, $neutral-light-gray) !important;
+  transform: none !important;
+}
+
+.credit-entry .credit-line .credit-usage button:focus,
+.credit-entry .credit-line .credit-usage button:focus-visible {
+  background-color: var(--usage-tint-hover, $neutral-light-gray) !important;
+  box-shadow: none !important;
+}
+
+// Make the unused track area stand out with a border
+.credit-entry .credit-line .credit-slider [data-slot="slider-track"] {
+  border: $border-half solid $neutral-gray;
+}
+
+.credit-id { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.credit-usage { font-size: 12px; }
+.credit-value-used { font-variant-numeric: tabular-nums; text-align: left; }
 
 .credit-desc {
   margin-top: 6px;
   font-size: 12px;
   opacity: 0.8;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .credit-card-ref {

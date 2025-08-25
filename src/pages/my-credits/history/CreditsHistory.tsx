@@ -19,7 +19,7 @@ import { ToggleBar, ToggleBarButton } from '@/components/ui/toggle-bar/toggle-ba
 import Icon from '@/icons';
 import SingleCardSelector from '../../../components/CreditCardSelector/SingleCardSelector';
 import { Drawer, DrawerContent, DrawerTitle } from '../../../components/ui/drawer';
-import { CardIcon } from '../../../icons';
+import { SelectCard } from '../../../components/ui/select-card/select-card';
 import { CreditCard } from '../../../types/CreditCardTypes';
 import {
   buildYearOptions,
@@ -328,47 +328,25 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
           {/* Card Filter */}
           <div className="date-picker">
             <label className="filter-label">Card</label>
-            {(() => {
-              const card = (userCardDetails || []).find(c => c.id === selectedFilterCardId) || null;
-              if (card) {
-                return (
-                  <div className="selected-card-container">
-                    <button
-                      type="button"
-                      className="selected-card-button icon with-text"
-                      onClick={handleOpenCardFilter}
-                      aria-haspopup="dialog"
-                    >
-                      <CardIcon
-                        title={`${card.CardName} card`}
-                        size={20}
-                        primary={card.CardPrimaryColor}
-                        secondary={card.CardSecondaryColor}
-                        className="selected-card-image"
-                      />
-                      <span className="selected-card-name">{card.CardName}</span>
-                      <span className="deselect-x" aria-hidden>
-                        |
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className="deselect-button"
-                      onClick={() => setSelectedFilterCardId(null)}
-                      aria-label="Clear card filter"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                );
-              }
-              return (
-                <button type="button" className="view-card-select" onClick={handleOpenCardFilter} aria-haspopup="dialog">
-                  <Icon name="card" variant="mini" color="#C9CED3" />
-                  <span className="label-text">All cards</span>
-                </button>
-              );
-            })()}
+            <SelectCard
+              selectedCardId={selectedFilterCardId || undefined}
+              creditCards={userCardDetails.map(card => ({
+                id: card.id,
+                CardName: card.CardName,
+                CardPrimaryColor: card.CardPrimaryColor,
+                CardSecondaryColor: card.CardSecondaryColor,
+                CardIssuer: card.CardIssuer || '',
+                CardNetwork: card.CardNetwork || '',
+                CardDetails: card.CardDetails || ''
+              }))}
+              isUpdating={false}
+              onSelectCardClick={handleOpenCardFilter}
+              onDeselectCard={() => setSelectedFilterCardId(null)}
+              selectLabel=""
+              selectedLabel=""
+              unselectedIcon={<Icon name="card" variant="micro" color="#C9CED3" size={14} />}
+              className="standalone"
+            />
           </div>
         </div>
       </HeaderControls>

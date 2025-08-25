@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CreditCard } from '../../../types/CreditCardTypes';
-import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage, ICON_GRAY } from '../../../types';
-import { LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
+import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage } from '../../../types';
 import { CardIcon, Icon } from '../../../icons';
 import { UserHistoryService } from '../../../services';
 import { CheckIcon } from 'lucide-react';
@@ -18,6 +17,7 @@ import {
   DrawerContent,
   DrawerTitle,
 } from '../../ui/drawer';
+import { SelectCard } from '../../ui/select-card/select-card';
 import './PromptSolution.scss';
 import { SearchField } from '../../../elements';
 
@@ -39,92 +39,7 @@ interface PromptSolutionProps {
     chatHistory: ChatMessage[];
 }
 
-interface CardSelectionProps {
-    activeCardId: string;
-    creditCards?: CreditCard[];
-    solutions: ChatSolutionCard[];
-    isUpdating: boolean;
-    onCardSelectorOpen: () => void;
-    noSolutionsMode?: boolean;
-    handleCardSelection: (cardId: string) => Promise<void>;
-}
 
-const CardSelection: React.FC<CardSelectionProps> = ({
-    activeCardId,
-    creditCards,
-    solutions,
-    isUpdating,
-    onCardSelectorOpen,
-    noSolutionsMode,
-    handleCardSelection
-}) => {
-    // Show selected card if there is an activeCardId and matching card in creditCards
-    const selectedCard = creditCards?.find(card => card.id === activeCardId);
-    const hasSelectedCard = activeCardId && selectedCard;
-    
-    return (
-        <div className="select-different-card" data-solutions-count={solutions ? solutions.length : 0}>
-            {hasSelectedCard ? (
-                <>
-                    <span className="selection-label">Selected card:</span>
-                    <div className="selected-card-container">
-                        <button 
-                            className={`selected-card-button ${isUpdating ? 'loading icon with-text' : ''}`}
-                            onClick={onCardSelectorOpen}
-                            disabled={isUpdating}
-                        >
-                            {isUpdating ? (
-                                <LOADING_ICON size={LOADING_ICON_SIZE} />
-                            ) : (
-                                <CardIcon 
-                                    title={selectedCard.CardName} 
-                                    size={24} 
-                                    primary={selectedCard.CardPrimaryColor}
-                                    secondary={selectedCard.CardSecondaryColor}
-                                    className="selected-card-image"
-                                />
-                            )}
-                            <span className="selected-card-name">
-                                {isUpdating ? 'Updating...' : selectedCard.CardName}
-                            </span>
-                        </button>
-                        <button 
-                            className="deselect-button"
-                            onClick={() => handleCardSelection(activeCardId)}
-                            disabled={isUpdating}
-                            aria-label="Deselect card"
-                        >
-                            ✕
-                        </button>
-                    </div>
-                </>
-            ) : (
-                <>
-                    <span className="selection-label">
-                        {noSolutionsMode ? 'Select card for purchase:' : 'Select a different card:'}
-                    </span>
-                    <button 
-                        className={`select-card-button ${isUpdating ? 'loading' : ''}`}
-                        onClick={onCardSelectorOpen}
-                        disabled={isUpdating}
-                    >
-                        {isUpdating ? (
-                            <LOADING_ICON size={LOADING_ICON_SIZE} />
-                        ) : (
-                            <Icon 
-                                name="card"
-                                variant="micro"
-                                color={ICON_GRAY}
-                                size={14}
-                            />
-                        )}
-                        {isUpdating ? 'Updating...' : 'Select Card'}
-                    </button>
-                </>
-            )}
-        </div>
-    );
-};
 
 function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, onHistoryUpdate, chatHistory }: PromptSolutionProps): React.ReactElement | null {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
@@ -264,15 +179,15 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
         return (
             <div className="solutions-container">
                 {chatHistory.length >= 2 && (
-                        <CardSelection
-                            activeCardId={activeCardId}
-                            creditCards={creditCards}
-                            solutions={solutions}
-                            isUpdating={isUpdating}
-                            onCardSelectorOpen={() => setIsCardSelectorOpen(true)}
-                            noSolutionsMode={true}
-                            handleCardSelection={handleCardSelection}
-                        />
+                    <SelectCard
+                        selectedCardId={activeCardId}
+                        creditCards={creditCards || []}
+                        isUpdating={isUpdating}
+                        onSelectCardClick={() => setIsCardSelectorOpen(true)}
+                        onDeselectCard={() => handleCardSelection(activeCardId)}
+                        selectLabel="Select card for purchase:"
+                        className="expanded"
+                    />
                 )}
 
                 {(() => {
@@ -426,13 +341,14 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                         })}
                 </div>
 
-                <CardSelection
-                    activeCardId={activeCardId}
-                    creditCards={creditCards}
-                    solutions={solutions}
+                <SelectCard
+                    selectedCardId={activeCardId}
+                    creditCards={creditCards || []}
                     isUpdating={isUpdating}
-                    onCardSelectorOpen={() => setIsCardSelectorOpen(true)}
-                    handleCardSelection={handleCardSelection}
+                    onSelectCardClick={() => setIsCardSelectorOpen(true)}
+                    onDeselectCard={() => handleCardSelection(activeCardId)}
+                    selectLabel="Select a different card:"
+                    className="expanded"
                 />
 
             </div>
