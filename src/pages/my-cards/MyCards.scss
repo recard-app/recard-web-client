@@ -1,26 +1,9 @@
 @use '../../styling/variables' as *;
 
-// MyCards-specific styles
-.my-cards-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  max-height: calc(var(--app-vh, 1vh) * 100);
-  box-sizing: border-box;
-}
-
-.my-cards-page {
+// Page-specific styles only (layout now handled by global classes)
+.credit-card-manager-container {
   flex: 1;
   min-height: 0; // This is crucial for flex children that need to scroll
   display: flex;
   flex-direction: column;
-  //padding: $space-2;
-  box-sizing: border-box;
-
-  .credit-card-manager-container {
-    flex: 1;
-    min-height: 0; // This is crucial for flex children that need to scroll
-    display: flex;
-    flex-direction: column;
-  }
 }

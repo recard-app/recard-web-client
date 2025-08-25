@@ -6,12 +6,12 @@ import './MyCredits.scss';
 
 const MyCredits: React.FC = () => {
   return (
-    <div className="my-credits-wrapper">
+    <div className="standard-page-layout">
       <PageHeader 
         title={PAGE_NAMES.MY_CREDITS}
         icon={PAGE_ICONS.MY_CREDITS.MINI}
       />
-      <div className="my-credits-page" style={{ paddingTop: 12 }}>
+      <div className="standard-page-content--padded" style={{ paddingTop: 12 }}>
         <Link to={`${PAGES.MY_CREDITS.PATH}/history`} className="button icon with-text">See Credits History</Link>
       </div>
     </div>

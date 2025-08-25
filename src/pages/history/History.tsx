@@ -53,7 +53,7 @@ function History({
   };
 
   return (
-    <div className="history-page-wrapper">
+    <div className="standard-page-layout">
       <PageHeader 
         title={PAGE_NAMES.TRANSACTION_HISTORY} 
         icon={PAGE_ICONS.TRANSACTION_HISTORY.MINI}
@@ -61,7 +61,7 @@ function History({
         showHelpButton={true}
         onHelpClick={() => setIsHelpOpen(true)}
       />
-      <div className="history-page-content">
+      <div className="standard-page-content--no-padding">
         <FullHistoryPanel 
           currentChatId={currentChatId}
           returnCurrentChatId={returnCurrentChatId}

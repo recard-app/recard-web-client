@@ -1,19 +1,4 @@
 @use '../../styling/globals' as *;
 
-.history-page-wrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  max-height: calc(var(--app-vh, 1vh) * 100);
-  box-sizing: border-box;
-
-  .history-page-content {
-    flex: 1;
-    min-height: 0; // Critical for nested flex scrolling
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-  }
-}
+// History page specific styles (if any needed in the future)
+// Layout is now handled by global .standard-page-layout classes

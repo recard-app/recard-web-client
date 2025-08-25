@@ -33,14 +33,14 @@ const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate, onOpenCardSelector, re
     }, [onCardsUpdate]);
 
     return (
-        <div className="my-cards-wrapper">
+        <div className="standard-page-layout">
             <PageHeader 
                 title={PAGE_NAMES.MY_CARDS}
                 icon={PAGE_ICONS.MY_CARDS.MINI}
                 showHelpButton={true}
                 onHelpClick={() => setIsHelpOpen(true)}
             />
-            <div className="my-cards-page">
+            <div className="standard-page-content--no-padding">
                 <div className="credit-card-manager-container">
                     <CreditCardManager 
                         onCardsUpdate={handleCardsUpdate} 

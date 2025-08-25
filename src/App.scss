@@ -92,3 +92,43 @@ html {
   @extend %full-page-content-base;
   padding: 0;
 }
+
+// Standard page layout for pages with PageHeader + content
+.standard-page-layout {
+  @extend .full-page-layout;
+}
+
+// Standard page content area (for pages that need flex containers)
+.standard-page-content {
+  flex: 1;
+  min-height: 0; // Crucial for flex children that need to scroll
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+// Standard page content with padding (most common use case)
+.standard-page-content--padded {
+  @extend .standard-page-content;
+  padding: $space-3;
+  
+  @media (max-width: $mobile-breakpoint) {
+    padding: $space-2;
+  }
+}
+
+// Standard page content with compact padding
+.standard-page-content--compact {
+  @extend .standard-page-content;
+  padding: $space-2;
+  
+  @media (max-width: $mobile-breakpoint) {
+    padding: $space-1;
+  }
+}
+
+// Standard page content with no padding (for complex layouts)
+.standard-page-content--no-padding {
+  @extend .standard-page-content;
+  padding: 0;
+}

@@ -234,7 +234,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
   };
 
   return (
-    <div className="my-credits-wrapper">
+    <div className="standard-page-layout">
       <PageHeader 
         title={PAGE_NAMES.MY_CREDITS}
         icon={PAGE_ICONS.MY_CREDITS.MINI}
@@ -385,7 +385,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
           </DialogContent>
         </Dialog>
       )}
-      <div className="page-content">
+      <div className="standard-page-content--no-padding">
         {isLoading ? (
           <InfoDisplay
             type="loading"
