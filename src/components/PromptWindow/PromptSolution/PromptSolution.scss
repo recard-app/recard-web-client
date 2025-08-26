@@ -103,7 +103,22 @@ $collapse-transition-duration: 0.15s;
       transition: opacity $collapse-transition-duration ease-in 0.1s;
     }
 
+    .select-different-card {
+      opacity: 0;
+      height: 0;
+      margin: 0;
+      overflow: hidden;
+      transition: opacity $transition-base, height $transition-base, margin $transition-base;
+    }
 
+    &.expanded .select-different-card {
+      opacity: 1;
+      height: auto;
+      margin-top: $space-1;
+      transition: opacity $collapse-transition-duration ease-in 0.1s, 
+                  height $collapse-transition-duration ease-in, 
+                  margin $collapse-transition-duration ease-in;
+    }
   }
 
   .solution-cards {
@@ -325,6 +340,6 @@ $collapse-transition-duration: 0.15s;
 // Styling for SelectCard component when used in PromptSolution context
 .select-different-card {
   &.expanded {
-    margin-top: $space-1 !important;
+    margin-top: $space-1;
   }
 }
