@@ -254,7 +254,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             <div key={index} className="credit-item">
                                 <div className="credit-header">
                                     <span className="credit-title">{credit.Title}</span>
-                                    <span className="credit-value">{credit.Value}</span>
+                                    <span className="credit-value">{`$${credit.Value}`}</span>
                                 </div>
                                 <div className="credit-period">{credit.TimePeriod}</div>
                                 <div className="credit-description">{credit.Description}</div>

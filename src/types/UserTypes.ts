@@ -41,6 +41,7 @@ export interface User {
     preferencesShowCompletedOnly?: ShowCompletedOnlyPreference;
     subscriptionPlan: SubscriptionPlan;
     userCreditsTrackingPreferences: UserCreditsTrackingPreferences;
+    userWalletHistory: UserWalletHistory;
     role: RoleType;
     accountCreatedAt?: string;
     accountUpdatedAt?: string;
@@ -125,6 +126,32 @@ export interface PaginationData {
     has_next: boolean;
     has_previous: boolean;
 }
+
+/**
+ * Represents the history of wallet events for a user
+ */
+export interface UserWalletHistory {
+    events: UserWalletEvent[];
+  }
+  
+  /**
+   * Represents a wallet event for a user
+   */
+  export interface UserWalletEvent {
+    cardId: string;
+    month: string;
+    year: string;
+    action: string;
+  }
+  
+  /**
+   * Represents the type of wallet event
+   */
+  export const WALLET_EVENT_TYPE = {
+    ADD: 'add',
+    REMOVE: 'remove'
+  } as const;
+  export type WalletEventType = typeof WALLET_EVENT_TYPE[keyof typeof WALLET_EVENT_TYPE];
 
 /**
  * ------------------------------------------------------------------------------------------------

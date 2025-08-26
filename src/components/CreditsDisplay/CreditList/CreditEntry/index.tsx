@@ -1,12 +1,14 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
-import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType } from '../../../../types';
+import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType, MOBILE_BREAKPOINT } from '../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
 import { Slider } from '../../../ui/slider';
 import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog/dialog';
+import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { clampValue, getMaxValue, getValueForUsage, getUsageForValue } from './utils';
 import { UserCreditService } from '../../../../services/UserServices';
 
@@ -25,7 +27,28 @@ export interface CreditEntryProps {
   }) => void;
 }
 
+// Simple hook to detect mobile screen size
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT); // $mobile-breakpoint
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  return isMobile;
+};
+
 const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, onUpdateHistoryEntry }) => {
+  const isMobile = useIsMobile();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   // Slider color now syncs with CREDIT_USAGE_DISPLAY_COLORS via CSS var injection
   // const SELECT_COLOR: Record<CreditUsageType, string> = BAR_COLOR;
   const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
@@ -165,13 +188,12 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     void persistUpdate(status, v);
   };
 
-  return (
-    <div className="credit-entry" data-period={userCredit.AssociatedPeriod}>
-      <div className="credit-description">
-        <div className="credit-id">{cardCredit?.Title ?? userCredit.CreditId}</div>
-      {cardCredit?.Description && (
-        <div className="credit-desc">{cardCredit.Description}</div>
-      )}
+  const renderModalContent = () => (
+    <div className="credit-detail-content">
+      {/* Credit title */}
+      <div className="credit-id">{cardCredit?.Title ?? userCredit.CreditId}</div>
+      
+      {/* Card directly below title */}
       {card && (
         <p className="card-bubble-display" style={{ marginTop: 6 }}>
           <CardIcon 
@@ -184,7 +206,32 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           {card.CardName}
         </p>
       )}
-      </div>
+
+      {/* Description */}
+      {cardCredit?.Description && (
+        <div className="credit-desc">{cardCredit.Description}</div>
+      )}
+
+      {/* Details section below description */}
+      {cardCredit?.TimePeriod && (
+        <div className="credit-detail-field">
+          <strong>Time Period:</strong> {cardCredit.TimePeriod}
+        </div>
+      )}
+
+      {cardCredit?.Details && (
+        <div className="credit-detail-field">
+          <strong>Details:</strong> {cardCredit.Details}
+        </div>
+      )}
+
+      {(cardCredit?.Category || cardCredit?.SubCategory) && (
+        <div className="credit-detail-field">
+          <strong>Category:</strong> {cardCredit.Category}{cardCredit.SubCategory ? ` › ${cardCredit.SubCategory}` : ''}
+        </div>
+      )}
+
+      {/* Slider and Select Controls - reuse existing styles */}
       <div className="credit-line" style={{ backgroundColor: lineTintBackground, ['--usage-tint-hover' as any]: lineTintHover }}>
         <div className="credit-value-used">
           <span className="credit-amount mr-2 text-sm text-muted-foreground">${valueUsed} / ${maxValue}</span>
@@ -245,6 +292,121 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      <div className="credit-entry" data-period={userCredit.AssociatedPeriod}>
+        <div className="credit-description" onClick={() => setIsModalOpen(true)} style={{ cursor: 'pointer' }}>
+          <div className="credit-id">{cardCredit?.Title ?? userCredit.CreditId}</div>
+        {cardCredit?.Description && (
+          <div className="credit-desc">{cardCredit.Description}</div>
+        )}
+        {card && (
+          <p className="card-bubble-display" style={{ marginTop: 6 }}>
+            <CardIcon 
+              title={card.CardName}
+              size={12}
+              primary={card.CardPrimaryColor}
+              secondary={card.CardSecondaryColor}
+              className="card-thumbnail"
+            />
+            {card.CardName}
+          </p>
+        )}
+        </div>
+      <div className="credit-line" style={{ backgroundColor: lineTintBackground, ['--usage-tint-hover' as any]: lineTintHover }}>
+        <div className="credit-value-used">
+          <span className="credit-amount mr-2 text-sm text-muted-foreground">${valueUsed} / ${maxValue}</span>
+          <div className="credit-slider">
+            <Slider
+              min={0}
+              max={maxValue}
+              value={[valueUsed]}
+              onValueChange={handleSliderChange}
+              onValueCommit={handleSliderCommit}
+              disabled={isSliderDisabled}
+              className="w-full"
+              style={{ ['--slider-range-color' as any]: usageColor, width: '100%' }}
+            />
+          </div>
+        </div>
+        <div className="credit-usage">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className="flex items-center gap-2 h-8 px-3 rounded-md border bg-transparent text-sm" style={{ color: usageColor, borderColor: usageColor }}>
+                <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
+                <span>
+                  {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
+                  {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
+                  {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
+                  {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
+                </span>
+                <Icon name="chevron-down" variant="mini" size={16} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.USED); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.USED] }} />
+                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.PARTIALLY_USED); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.PARTIALLY_USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.PARTIALLY_USED] }} />
+                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.PARTIALLY_USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.NOT_USED); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.NOT_USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.NOT_USED] }} />
+                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.NOT_USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.INACTIVE); }}>
+                <span className="flex items-center gap-2">
+                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.INACTIVE]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.INACTIVE] }} />
+                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.INACTIVE] }}>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</span>
+                </span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      </div>
+
+      {/* Responsive Modal/Drawer */}
+      {isMobile ? (
+        <Drawer open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DrawerContent fitContent>
+            <DrawerTitle className="sr-only">Credit Details</DrawerTitle>
+            <div className="dialog-header drawer-sticky-header">
+              <h2>Credit Details</h2>
+            </div>
+            <div className="drawer-content-scroll" style={{ padding: '0 16px 16px', overflow: 'auto' }}>
+              {renderModalContent()}
+            </div>
+            <div className="dialog-footer">
+              <button className="button outline" onClick={() => setIsModalOpen(false)}>
+                Close
+              </button>
+            </div>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent width="600px">
+            <DialogHeader>
+              <DialogTitle>Credit Details</DialogTitle>
+            </DialogHeader>
+            <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
+              {renderModalContent()}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
 

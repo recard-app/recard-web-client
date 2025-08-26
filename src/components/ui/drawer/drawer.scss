@@ -1,10 +1,5 @@
 @use '../../../styling/globals' as *;
 
-// Drawer header min-height
-[data-slot="drawer-header"] {
-  //min-height: $space-4;
-}
-
 // Universal drawer handle
 [data-slot="drawer-handle"] {
   width: 48px;
@@ -19,5 +14,3 @@
 [data-slot="drawer-content"][data-vaul-drawer-direction="top"] > [data-slot="drawer-handle"] {
   margin-top: $space-3;
 }
-
-

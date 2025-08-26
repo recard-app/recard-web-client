@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { CardDetailsList } from '../../types';
+import { CardDetailsList, UserWalletHistory } from '../../types';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
 
 export const UserCreditCardService = {
@@ -41,6 +41,19 @@ export const UserCreditCardService = {
                 headers,
                 params: { userCardsOnly: true } 
             }
+        );
+        return response.data;
+    },
+
+    /**
+     * Fetches the user's wallet history (card add/remove events)
+     * @returns Promise containing the user's wallet history
+     */
+    async fetchUserWalletHistory(): Promise<UserWalletHistory> {
+        const headers = await getAuthHeaders();
+        const response = await axios.get<UserWalletHistory>(
+            `${apiurl}/users/cards/wallet-history`,
+            { headers }
         );
         return response.data;
     }

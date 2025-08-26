@@ -86,6 +86,7 @@ export const CHAT_MAX_FIELD_HEIGHT = 250;
 export const SHOW_SUBSCRIPTION_MENTIONS = true;
 export const SHOW_HEADER_ICONS = true;
 export const FREE_PLAN_HISTORY_DAYS = 90;
+export const MOBILE_BREAKPOINT = 780;
 
 export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
 export const PLACEHOLDER_PROFILE_IMAGE = '/temp_account.png';
