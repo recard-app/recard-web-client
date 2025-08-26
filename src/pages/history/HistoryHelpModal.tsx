@@ -1,4 +1,5 @@
 import React from 'react';
+import { PAGE_NAMES } from '../../types';
 
 const HistoryHelpModal: React.FC = () => {
   return (
@@ -17,7 +18,7 @@ const HistoryHelpModal: React.FC = () => {
       </section>
 
       <section>
-        <h3>Show Completed Transactions Only</h3>
+        <h3>Show Completed Only</h3>
         <p>
           Toggle this option to filter your view to show only completed transactions. 
           This helps focus on finalized purchases and exclude pending or cancelled transactions.
@@ -27,7 +28,7 @@ const HistoryHelpModal: React.FC = () => {
       <section>
         <h3>Navigation</h3>
         <p>
-          Navigate through your transaction history using the pagination controls at the bottom:
+          Navigate through your {PAGE_NAMES.TRANSACTION_HISTORY.toLowerCase()} using the pagination controls at the bottom:
         </p>
         <ul>
           <li><strong>«« / »»</strong> - Jump to first/last page</li>
@@ -37,7 +38,7 @@ const HistoryHelpModal: React.FC = () => {
       </section>
 
       <section>
-        <h3>Transaction Details</h3>
+        <h3>Details</h3>
         <p>
           Each transaction entry shows key information about your chat conversations, 
           including timestamps, recommendations made, and any credit cards discussed. 
@@ -48,8 +49,8 @@ const HistoryHelpModal: React.FC = () => {
       <section>
         <h3>Subscription Limits</h3>
         <p>
-          Free accounts can view the last 7 days of transaction history. 
-          Upgrade to access your complete transaction history and advanced filtering options.
+          Free accounts can view a limited recent window. 
+          Upgrade to access your complete {PAGE_NAMES.TRANSACTION_HISTORY.toLowerCase()} and advanced filtering options.
         </p>
       </section>
     </div>

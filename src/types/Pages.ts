@@ -1,4 +1,5 @@
 // Centralized page configuration for routes, titles, and metadata
+import { PAGE_NAMES } from './Constants';
 export const PAGES = {
   // Home/Chat pages
   HOME: {
@@ -36,7 +37,7 @@ export const PAGES = {
   },
   HISTORY: {
     PATH: '/history',
-    TITLE: 'History',
+    TITLE: PAGE_NAMES.TRANSACTION_HISTORY,
   },
   MY_CARDS: {
     PATH: '/my-cards',

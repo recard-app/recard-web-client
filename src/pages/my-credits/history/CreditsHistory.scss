@@ -1,4 +1,18 @@
 @use '../../../styling/variables' as *;
 
-// Credits History page specific styles (if any needed in the future)
-// Layout is now handled by global .standard-page-layout classes
+// Credits History page layout - mimics HistoryPanel structure
+.credits-history-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
+  .credits-history-content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}

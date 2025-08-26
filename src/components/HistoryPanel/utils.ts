@@ -4,7 +4,7 @@ import {
   HistoryParams, 
   PaginationData
 } from '../../types';
-import { MONTH_OPTIONS, MONTH_NAMES, SUBSCRIPTION_PLAN } from '../../types';
+import { MONTH_OPTIONS, MONTH_NAMES, SUBSCRIPTION_PLAN, TERMINOLOGY } from '../../types';
 import { UserHistoryService } from '../../services';
 
 /**
@@ -287,7 +287,7 @@ export const getUpgradeMessageText = (
   selectedYear: number
 ): string => {
   if (!selectedMonth) {
-    return 'Unlock your complete transaction history with Premium';
+    return `Unlock your complete ${TERMINOLOGY.nounSingular} history with Premium`;
   }
 
   const now = new Date();
@@ -300,9 +300,9 @@ export const getUpgradeMessageText = (
 
   // If the selected month is close to the 90-day cutoff (within 1 month)
   if (monthsDiff <= 1 && selectedDate < cutoffDate) {
-    return 'Any transactions older than 90 days may be hidden from this statement. Unlock all transaction history with Premium';
+    return `Any ${TERMINOLOGY.nounPlural} older than 90 days may be hidden from this statement. Unlock all ${TERMINOLOGY.nounSingular} history with Premium`;
   }
 
   // If the selected month is well beyond the 90-day cutoff
-  return `Access your complete ${MONTH_OPTIONS.find(m => m.value === parseInt(selectedMonth))?.label} ${selectedYear} transaction history with Premium`;
+  return `Access your complete ${MONTH_OPTIONS.find(m => m.value === parseInt(selectedMonth))?.label} ${selectedYear} ${TERMINOLOGY.nounSingular} history with Premium`;
 };

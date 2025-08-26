@@ -3,7 +3,7 @@ import showdown from 'showdown';
 import { ChatMessage } from '../../../types/ChatTypes';
 import { InfoDisplay } from '../../../elements';
 import './PromptHistory.scss';
-import { PLACEHOLDER_ASSISTANT_IMAGE } from '../../../types';
+import { PLACEHOLDER_ASSISTANT_IMAGE, TERMINOLOGY } from '../../../types';
 
 /**
  * Props for the PromptHistory component.
@@ -109,7 +109,7 @@ function PromptHistory({ chatHistory, isNewChat = false, isLoading = false, isLo
           <div className="loading-message">
             <InfoDisplay
               type="loading"
-              message="Loading transaction chat history..."
+              message={TERMINOLOGY.promptHistoryLoading}
               showTitle={false}
               transparent={true}
             />

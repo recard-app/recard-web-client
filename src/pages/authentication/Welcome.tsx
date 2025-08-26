@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { PAGES, PAGE_ICONS } from '../../types';
+import { PAGES, PAGE_ICONS, PAGE_NAMES } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import ContentContainer from '../../components/ContentContainer';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
@@ -42,7 +42,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
                 </button>
                 <button className="secondary icon with-text" onClick={() => navigate(PAGES.HOME.PATH)}>
                   <Icon name="chat-bubble" variant="mini" size={16} />
-                  <span>Start a Chat</span>
+                  <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
                 </button>
               </div>
             </div>

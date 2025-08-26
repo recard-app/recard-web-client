@@ -78,7 +78,7 @@ function History({
       <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Transaction History Help</DialogTitle>
+            <DialogTitle>{PAGE_NAMES.TRANSACTION_HISTORY} Help</DialogTitle>
           </DialogHeader>
           <DialogBody>
             <HistoryHelpModal />

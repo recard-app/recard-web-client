@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils } from '../../types';
+import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY } from '../../types';
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -187,11 +187,11 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 <button 
                   className="button ghost small icon with-text mobile-header__new-chat-button"
                   onClick={handleNewChatClick}
-                  aria-label="Start new chat"
-                  title="New Chat"
+                  aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
+                  title={PAGE_NAMES.NEW_TRANSACTION_CHAT}
                 >
                   <Icon name="chat-bubble" variant="micro" size={16} color={ICON_PRIMARY_MEDIUM} />
-                  <span>New Chat</span>
+                  <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
                 </button>
               ) : (
                 <button 
@@ -243,9 +243,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                     <ul className="primary-links">
                       <li className="nav-item-new-chat">
                         <Drawer.Close asChild>
-                          <button onClick={handleNewChatClick} aria-label="Start new transaction chat">
+                          <button onClick={handleNewChatClick} aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}>
                             <Icon name="chat-bubble" variant="micro" size={16} />
-                            <span>New Transaction Chat</span>
+                            <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
                           </button>
                         </Drawer.Close>
                       </li>
@@ -292,7 +292,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                   </nav>
 
                   <div className="mobile-drawer-section">
-                    <div className="section-title">Recent Transactions</div>
+                    <div className="section-title">{TERMINOLOGY.recentSectionTitle}</div>
                     <div
                       onClick={(e) => {
                         const target = e.target as HTMLElement;

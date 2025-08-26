@@ -21,7 +21,7 @@ import {
   DROPDOWN_ICONS,
   SIDEBAR_TOGGLE_ICON_COLOR,
   ICON_GRAY,
-  ICON_PRIMARY,
+  TERMINOLOGY,
   PAGES
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
@@ -221,7 +221,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 onClick={handleNewChat}
                 onMouseEnter={handleNewChatHover}
                 onMouseLeave={() => hideTooltip()}
-                aria-label="Start new transaction chat"
+                aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
               >
                 <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
               </button>
@@ -245,10 +245,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
             {/* Right column - Expanded content (scrollable) */}
             <div className="expanded-content-column">
-              {/* Recent Transactions (expanded sidebar) */}
+              {/* Recent Chats/Transactions (expanded sidebar) */}
               <SidebarItem 
                 icon={PAGE_ICONS.TRANSACTION_HISTORY.INACTIVE}
-                name={"Recent Transactions"} 
+                name={TERMINOLOGY.recentSectionTitle} 
                 isDropdown={true}
               >
                 <HistoryPanelPreview 
@@ -289,7 +289,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 onClick={handleNewChat}
                 onMouseEnter={handleNewChatHover}
                 onMouseLeave={() => hideTooltip()}
-                aria-label="Start new transaction chat"
+                aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
               >
                 <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
               </button>

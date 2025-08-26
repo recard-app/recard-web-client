@@ -16,9 +16,11 @@ import {
   CreditCard,
   SubscriptionPlan,
   ShowCompletedOnlyPreference,
-  SHOW_SUBSCRIPTION_MENTIONS
+  SHOW_SUBSCRIPTION_MENTIONS,
+  TERMINOLOGY,
+  HISTORY_PAGE_SIZE,
+  SUBSCRIPTION_PLAN
 } from '../../types';
-import { HISTORY_PAGE_SIZE, SUBSCRIPTION_PLAN } from '../../types';
 // Note: Do not update user preferences from this page; the toggle here is a local filter override
 import {
   organizeHistoryByDate,
@@ -41,6 +43,7 @@ import {
 } from '../ui/pagination';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import FooterControls from '@/components/PageControls/FooterControls';
+ 
 
 // Define the page size limit as a constant
 const PAGE_SIZE_LIMIT = HISTORY_PAGE_SIZE;
@@ -426,7 +429,7 @@ function FullHistoryPanel({
     return (
       <ToggleSwitch
         id="completedToggle"
-        label="Only show completed transactions"
+        label={`Only show completed ${TERMINOLOGY.nounPlural}`}
         checked={effectiveShowCompletedOnly}
         onChange={handleCompletedToggle}
       />
@@ -466,7 +469,7 @@ function FullHistoryPanel({
           <div className="loading-history">
             <InfoDisplay
               type="loading"
-              message="Loading transaction history..."
+              message={TERMINOLOGY.loadingHistory}
               showTitle={false}
               transparent={true}
               centered
@@ -475,7 +478,7 @@ function FullHistoryPanel({
         ) : paginatedList.length === 0 ? (
           <InfoDisplay
             type="default"
-            message="No transaction history available for this period"
+            message={TERMINOLOGY.emptyHistoryForPeriod}
             showTitle={false}
             transparent={true}
             showIcon={false}

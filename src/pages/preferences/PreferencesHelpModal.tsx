@@ -1,4 +1,5 @@
 import React from 'react';
+import { PAGE_NAMES } from '../../types';
 
 const PreferencesHelpModal: React.FC = () => {
   return (
@@ -26,7 +27,7 @@ const PreferencesHelpModal: React.FC = () => {
       <section>
         <h3>Show Completed Only</h3>
         <p>
-          Toggle this option to filter your transaction history to show only completed transactions. 
+          Toggle this option to filter your {PAGE_NAMES.TRANSACTION_HISTORY.toLowerCase()} to show only completed items. 
           This affects what appears in your history view and can help focus on finalized purchases.
         </p>
       </section>

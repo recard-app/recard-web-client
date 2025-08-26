@@ -89,7 +89,26 @@ export const FREE_PLAN_HISTORY_DAYS = 90;
 
 export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
 export const PLACEHOLDER_PROFILE_IMAGE = '/temp_account.png';
-export const DEFAULT_CHAT_NAME_PLACEHOLDER = 'New Transaction Chat';
+// Terminology toggle: set to 'chat' for Chat-centric wording, or 'transaction' for Transaction-centric wording
+export type TerminologyMode = 'chat' | 'transaction';
+export const TERMINOLOGY_MODE: TerminologyMode = 'chat';
+
+export const TERMINOLOGY = {
+    mode: TERMINOLOGY_MODE,
+    nounSingular: TERMINOLOGY_MODE === 'chat' ? 'chat' : 'transaction',
+    nounPlural: TERMINOLOGY_MODE === 'chat' ? 'chats' : 'transactions',
+    historyTitle: TERMINOLOGY_MODE === 'chat' ? 'Chat History' : 'Transaction History',
+    newChatButton: TERMINOLOGY_MODE === 'chat' ? 'New Chat' : 'New Transaction Chat',
+    newChatAria: TERMINOLOGY_MODE === 'chat' ? 'Start new chat' : 'Start new transaction chat',
+    recentSectionTitle: TERMINOLOGY_MODE === 'chat' ? 'Recent Chats' : 'Recent Transactions',
+    loadingHistory: TERMINOLOGY_MODE === 'chat' ? 'Loading chat history...' : 'Loading transaction history...',
+    emptyHistory: TERMINOLOGY_MODE === 'chat' ? 'No chat history available' : 'No transaction history available',
+    emptyHistoryForPeriod: TERMINOLOGY_MODE === 'chat' ? 'No chat history available for this period' : 'No transaction history available for this period',
+    promptHistoryLoading: TERMINOLOGY_MODE === 'chat' ? 'Loading chat history...' : 'Loading transaction chat history...',
+    inlineNewChatReminder: TERMINOLOGY_MODE === 'chat' ? 'create a new chat' : 'create a new transaction chat',
+} as const;
+
+export const DEFAULT_CHAT_NAME_PLACEHOLDER = TERMINOLOGY.newChatButton;
 
 export const TEMP_ICON = 'https://placehold.co/20x20';
 export const DROPDOWN_ICON = 'https://placehold.co/16x16';
@@ -106,10 +125,10 @@ export const LOADING_ICON_SIZE = 12;
 // Page names and navigation constants
 export const PAGE_NAMES = {
     HOME: 'Home',
-    TRANSACTION_HISTORY: 'Transaction History',
+    TRANSACTION_HISTORY: TERMINOLOGY.historyTitle,
     MY_CARDS: 'My Cards', 
     MY_CREDITS: 'My Credits',
-    NEW_TRANSACTION_CHAT: 'New Transaction Chat',
+    NEW_TRANSACTION_CHAT: TERMINOLOGY.newChatButton,
     PREFERENCES: 'Preferences',
     MY_ACCOUNT: 'My Account',
     SIGN_OUT: 'Sign Out'

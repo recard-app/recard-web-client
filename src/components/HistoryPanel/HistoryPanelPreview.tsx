@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import HistoryEntry from './HistoryEntry';
 import { InfoDisplay } from '../../elements';
+import { TERMINOLOGY } from '../../types';
 import './HistoryPanel.scss';
 import {
   Conversation, 
@@ -79,7 +80,7 @@ function HistoryPanelPreview({
         <div className="loading-history">
           <InfoDisplay
             type="loading"
-            message="Loading transaction history..."
+            message={TERMINOLOGY.loadingHistory}
             showTitle={false}
             transparent={true}
           />
@@ -87,7 +88,7 @@ function HistoryPanelPreview({
       ) : displayList.length === 0 ? (
         <InfoDisplay
           type="default"
-          message="No transaction history available"
+          message={TERMINOLOGY.emptyHistory}
           showTitle={false}
           transparent={true}
           showIcon={false}

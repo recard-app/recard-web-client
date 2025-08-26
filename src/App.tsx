@@ -616,10 +616,10 @@ function AppContent({}: AppContentProps) {
           <button 
             className="button ghost small icon with-text"
             onClick={handleClearChat}
-            aria-label="Start new transaction chat"
+            aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
           >
             <Icon name="chat-bubble" variant="micro" color={ICON_PRIMARY_MEDIUM} size={16} />
-            New Transaction Chat
+            {PAGE_NAMES.NEW_TRANSACTION_CHAT}
           </button>
         ) : (
           <button 
