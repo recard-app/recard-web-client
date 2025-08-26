@@ -61,6 +61,7 @@
   //border: $border-half solid currentColor;
   padding: $space-1-5 $space-2;
   min-width: 160px;
+  justify-content: flex-end;
 }
 
 // Increase specificity and add !important to override global button hover
