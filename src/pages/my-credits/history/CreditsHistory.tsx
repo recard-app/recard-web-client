@@ -22,6 +22,7 @@ import SingleCardSelector from '../../../components/CreditCardSelector/SingleCar
 import { Drawer, DrawerContent, DrawerTitle } from '../../../components/ui/drawer';
 import { SelectCard } from '../../../components/ui/select-card/select-card';
 import { CreditCard } from '../../../types/CreditCardTypes';
+import { useFullHeight } from '../../../hooks/useFullHeight';
 import {
   buildYearOptions,
   clampMonthForYear,
@@ -39,6 +40,9 @@ interface CreditsHistoryProps {
 }
 
 const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetails, reloadTrigger, trackingPreferences }) => {
+  // Use the full height hook for this page
+  useFullHeight(true);
+  
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [localCalendar, setLocalCalendar] = useState<CalendarUserCredits | null>(calendar);
