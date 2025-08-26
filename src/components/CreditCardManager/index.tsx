@@ -42,9 +42,10 @@ interface CreditCardManagerProps {
     onCardsUpdate?: (cards: CreditCard[]) => void;
     onOpenCardSelector?: () => void;
     reloadTrigger?: number;
+    onPreferencesUpdate?: () => Promise<void>;
 }
 
-const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, onOpenCardSelector, reloadTrigger }) => {
+const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, onOpenCardSelector, reloadTrigger, onPreferencesUpdate }) => {
     const [userCards, setUserCards] = useState<CreditCard[]>([]);
     const [selectedCard, setSelectedCard] = useState<CreditCard | null>(null);
     const [cardDetails, setCardDetails] = useState<CreditCardDetails | null>(null);
@@ -498,6 +499,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                     noCards={selectedCards.length === 0}
                     onSetPreferred={selectedCard ? () => handleSetPreferred(selectedCard) : undefined}
                     onRemoveCard={selectedCard ? () => handleRemoveCard(selectedCard) : undefined}
+                    showTrackingPreferences={true}
+                    onPreferencesUpdate={onPreferencesUpdate}
                 />
             </div>
 

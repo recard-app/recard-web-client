@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { CalendarUserCredits, CreditHistory, CreditUsageType } from '../../types';
+import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType } from '../../types';
 
 export const UserCreditService = {
     /**
@@ -93,6 +93,36 @@ export const UserCreditService = {
         const response = await axios.post<{ changed: boolean; creditHistory?: CreditHistory }>(
             `${apiurl}/users/cards/credits/sync`,
             undefined,
+            { headers }
+        );
+        return response.data;
+    },
+
+    /**
+     * Returns the authenticated user's credit tracking preferences
+     */
+    async fetchCreditTrackingPreferences(): Promise<UserCreditsTrackingPreferences> {
+        const headers = await getAuthHeaders();
+        const response = await axios.get<UserCreditsTrackingPreferences>(
+            `${apiurl}/users/cards/credits/preferences`,
+            { headers }
+        );
+        return response.data;
+    },
+
+    /**
+     * Updates the hide preference for a specific credit
+     * Returns the updated UserCreditsTrackingPreferences
+     */
+    async updateCreditHidePreference(params: {
+        cardId: string;
+        creditId: string;
+        hidePreference: CreditHidePreferenceType;
+    }): Promise<UserCreditsTrackingPreferences> {
+        const headers = await getAuthHeaders();
+        const response = await axios.put<UserCreditsTrackingPreferences>(
+            `${apiurl}/users/cards/credits/preferences`,
+            params,
             { headers }
         );
         return response.data;

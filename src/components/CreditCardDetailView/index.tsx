@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, CardMultiplier } from '../../types/CreditCardTypes';
+import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES, CreditHidePreferenceType } from '../../types/CardCreditsTypes';
 import { ICON_RED } from '../../types';
 import { CardIcon } from '../../icons';
 import { InfoDisplay } from '../../elements';
 import { Icon } from '../../icons';
+import { UserCreditService } from '../../services/UserServices';
 
 interface CreditCardDetailViewProps {
     cardDetails: CreditCardDetails | null;
@@ -12,6 +14,8 @@ interface CreditCardDetailViewProps {
     onSetPreferred?: () => void;
     onRemoveCard?: () => void;
     noCards?: boolean;
+    showTrackingPreferences?: boolean; // Controls whether to show credit tracking preferences
+    onPreferencesUpdate?: () => Promise<void>; // Called when preferences are updated
 }
 
 const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({ 
@@ -19,8 +23,70 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     isLoading, 
     onSetPreferred, 
     onRemoveCard,
-    noCards = false
+    noCards = false,
+    showTrackingPreferences = false,
+    onPreferencesUpdate
 }) => {
+    const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
+    const [isLoadingPreferences, setIsLoadingPreferences] = useState(false);
+
+    // Fetch tracking preferences when component mounts or when cardDetails changes
+    useEffect(() => {
+        const fetchPreferences = async () => {
+            if (!cardDetails || !showTrackingPreferences) return;
+            
+            setIsLoadingPreferences(true);
+            try {
+                const preferences = await UserCreditService.fetchCreditTrackingPreferences();
+                setTrackingPreferences(preferences);
+            } catch (error) {
+                console.error('Failed to fetch credit tracking preferences:', error);
+                // Set empty preferences if fetch fails
+                setTrackingPreferences({ Cards: [] });
+            } finally {
+                setIsLoadingPreferences(false);
+            }
+        };
+
+        fetchPreferences();
+    }, [cardDetails?.id, showTrackingPreferences]);
+
+    // Get the current hide preference for a specific credit
+    const getCreditHidePreference = (creditId: string): CreditHidePreferenceType => {
+        if (!trackingPreferences || !cardDetails) {
+            return CREDIT_HIDE_PREFERENCE.DO_NOT_HIDE; // Default to showing
+        }
+
+        const cardPrefs = trackingPreferences.Cards.find(card => card.CardId === cardDetails.id);
+        if (!cardPrefs) {
+            return CREDIT_HIDE_PREFERENCE.DO_NOT_HIDE;
+        }
+
+        const creditPref = cardPrefs.Credits.find(credit => credit.CreditId === creditId);
+        return creditPref?.HidePreference || CREDIT_HIDE_PREFERENCE.DO_NOT_HIDE;
+    };
+
+    // Update the hide preference for a specific credit
+    const handleCreditHidePreferenceChange = async (creditId: string, hidePreference: CreditHidePreferenceType) => {
+        if (!cardDetails) return;
+
+        try {
+            const updatedPreferences = await UserCreditService.updateCreditHidePreference({
+                cardId: cardDetails.id,
+                creditId,
+                hidePreference
+            });
+            setTrackingPreferences(updatedPreferences);
+            
+            // Notify parent components to refresh their preferences
+            if (onPreferencesUpdate) {
+                await onPreferencesUpdate();
+            }
+        } catch (error) {
+            console.error('Failed to update credit hide preference:', error);
+            // TODO: Show user-friendly error message
+        }
+    };
     // For initial load, show loading state
     if (isLoading) {
         return (
@@ -198,6 +264,27 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 {(credit.Category || credit.SubCategory) && (
                                     <div className="credit-category">
                                         {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
+                                    </div>
+                                )}
+                                {showTrackingPreferences && (
+                                    <div className="credit-tracking-preference">
+                                        <label htmlFor={`credit-tracking-${credit.id}`} className="preference-label">
+                                            Tracking Preference:
+                                        </label>
+                                        <select
+                                            id={`credit-tracking-${credit.id}`}
+                                            className="tracking-preference-select"
+                                            value={getCreditHidePreference(credit.id)}
+                                            onChange={(e) => handleCreditHidePreferenceChange(credit.id, e.target.value as CreditHidePreferenceType)}
+                                            disabled={isLoadingPreferences}
+                                        >
+                                            <option value={CREDIT_HIDE_PREFERENCE.DO_NOT_HIDE}>
+                                                {CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES.DO_NOT_HIDE}
+                                            </option>
+                                            <option value={CREDIT_HIDE_PREFERENCE.HIDE_ALL}>
+                                                {CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES.HIDE}
+                                            </option>
+                                        </select>
                                     </div>
                                 )}
                             </div>

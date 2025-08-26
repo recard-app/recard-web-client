@@ -86,6 +86,38 @@ export interface SingleCreditHistory {
 }
 
 /**
+ * Represents the different credit tracking preferences. This is correlated to the active/inactive status of the credit.
+ */
+export const CREDIT_HIDE_PREFERENCE = {
+    HIDE_ALL: 'hide',
+    DO_NOT_HIDE: 'do_not_hide'
+} as const;
+export type CreditHidePreferenceType = typeof CREDIT_HIDE_PREFERENCE[keyof typeof CREDIT_HIDE_PREFERENCE];
+
+/**
+ * Represents the credit tracking preferences for a user
+ */
+export interface UserCreditsTrackingPreferences {
+    Cards: CardTrackingPreference[];
+}
+
+/**
+ * Represents the credit tracking preferences for a card
+ */
+export interface CardTrackingPreference {
+    CardId: string;
+    Credits: CreditTrackingPreference[];
+}
+
+/**
+ * Represents the credit tracking preferences for a credit
+ */
+export interface CreditTrackingPreference {
+    CreditId: string;
+    HidePreference: CreditHidePreferenceType;
+}
+
+/**
  * ------------------------------------------------------------------------------------------------
  * 
  * CLIENT-SPECIFIC TYPES
@@ -103,3 +135,12 @@ export const CREDIT_USAGE_DISPLAY_COLORS = {
     INACTIVE: '#B5BBC2'
 } as const;
 export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[keyof typeof CREDIT_USAGE_DISPLAY_COLORS];
+
+/**
+ * Represents the different credit tracking preferences. This is correlated to the active/inactive status of the credit.
+ */
+export const CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES = {
+    HIDE: 'Hide Credit',
+    DO_NOT_HIDE: 'Show on Credits Page'
+} as const;
+export type CreditHidePreferenceDisplayNameType = typeof CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES[keyof typeof CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES];

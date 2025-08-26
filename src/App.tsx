@@ -89,6 +89,7 @@ import {
   CreditCard, 
   CreditCardDetails 
 } from './types/CreditCardTypes';
+import { UserCreditsTrackingPreferences } from './types/CardCreditsTypes';
 import { FullHeightContext } from './hooks/useFullHeight';
 import { ScrollHeightContext } from './hooks/useScrollHeight';
 
@@ -121,6 +122,8 @@ function AppContent({}: AppContentProps) {
   const [isLoadingCardDetails, setIsLoadingCardDetails] = useState<boolean>(false);
   // State for storing user's current year credit history
   const [currentYearCredits, setCurrentYearCredits] = useState<import('./types').CalendarUserCredits | null>(null);
+  // State for storing user's credit tracking preferences
+  const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
   // State for storing chat history/conversations
   const [chatHistory, setChatHistory] = useState<Conversation[]>([]);
   // State for tracking the current active chat ID
@@ -252,6 +255,27 @@ function AppContent({}: AppContentProps) {
 
     runBackgroundSync();
   }, [user]);
+
+  // Effect to fetch user's credit tracking preferences
+  useEffect(() => {
+    const fetchTrackingPreferences = async () => {
+      if (!user) {
+        setTrackingPreferences(null);
+        return;
+      }
+      
+      try {
+        const preferences = await UserCreditService.fetchCreditTrackingPreferences();
+        setTrackingPreferences(preferences);
+      } catch (error) {
+        console.error('Error fetching credit tracking preferences:', error);
+        // Set empty preferences if fetch fails
+        setTrackingPreferences({ Cards: [] });
+      }
+    };
+
+    fetchTrackingPreferences();
+  }, [user, cardsVersion]); // Refresh when cards change
 
   // Track viewport size to decide drawer vs dialog flags
   useEffect(() => {
@@ -415,6 +439,18 @@ function AppContent({}: AppContentProps) {
     }
   };
 
+  // Function to refresh tracking preferences when they're updated
+  const refreshTrackingPreferences = async (): Promise<void> => {
+    if (!user) return;
+    
+    try {
+      const preferences = await UserCreditService.fetchCreditTrackingPreferences();
+      setTrackingPreferences(preferences);
+    } catch (error) {
+      console.error('Error refreshing credit tracking preferences:', error);
+    }
+  };
+
   // Effect to fetch user's subscription plan
   useEffect(() => {
     const fetchSubscriptionPlan = async () => {
@@ -446,6 +482,7 @@ function AppContent({}: AppContentProps) {
     setUserCardDetails([]);
     setUserDetailedCardDetails([]);
     setCurrentYearCredits(null);
+    setTrackingPreferences(null);
     setCurrentChatId(null);
     setChatHistory([]);
     setCreditCards([]);
@@ -960,7 +997,12 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.MY_CREDITS_HISTORY.PATH} element={
                     <ProtectedRoute>
-                      <CreditsHistory calendar={currentYearCredits} userCardDetails={userDetailedCardDetails} reloadTrigger={cardsVersion} />
+                      <CreditsHistory 
+                        calendar={currentYearCredits} 
+                        userCardDetails={userDetailedCardDetails} 
+                        reloadTrigger={cardsVersion}
+                        trackingPreferences={trackingPreferences}
+                      />
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.ACCOUNT.PATH} element={
@@ -983,7 +1025,12 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.MY_CARDS.PATH} element={
                     <ProtectedRoute>
-                      <MyCards onCardsUpdate={getCreditCards} onOpenCardSelector={() => setIsCardSelectorOpen(true)} reloadTrigger={cardsVersion} />
+                      <MyCards 
+                        onCardsUpdate={getCreditCards} 
+                        onOpenCardSelector={() => setIsCardSelectorOpen(true)} 
+                        reloadTrigger={cardsVersion}
+                        onPreferencesUpdate={refreshTrackingPreferences}
+                      />
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.DELETE_HISTORY.PATH} element={

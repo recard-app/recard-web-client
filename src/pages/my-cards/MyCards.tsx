@@ -18,9 +18,10 @@ interface MyCardsProps {
     onCardsUpdate?: (cards: CreditCard[]) => void;
     onOpenCardSelector?: () => void;
     reloadTrigger?: number;
+    onPreferencesUpdate?: () => Promise<void>;
 }
 
-const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate, onOpenCardSelector, reloadTrigger }) => {
+const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate, onOpenCardSelector, reloadTrigger, onPreferencesUpdate }) => {
     // Declare that this component needs full height behavior
     useFullHeight(true);
     
@@ -46,6 +47,7 @@ const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate, onOpenCardSelector, re
                         onCardsUpdate={handleCardsUpdate} 
                         onOpenCardSelector={onOpenCardSelector}
                         reloadTrigger={reloadTrigger}
+                        onPreferencesUpdate={onPreferencesUpdate}
                     />
                 </div>
             </div>

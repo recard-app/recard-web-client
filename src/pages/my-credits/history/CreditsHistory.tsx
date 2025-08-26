@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES } from '../../../types';
+import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE } from '../../../types/CardCreditsTypes';
 import {
   Dialog,
   DialogContent,
@@ -34,9 +35,10 @@ interface CreditsHistoryProps {
   calendar: CalendarUserCredits | null;
   userCardDetails: CreditCardDetails[];
   reloadTrigger?: number;
+  trackingPreferences?: UserCreditsTrackingPreferences | null;
 }
 
-const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetails, reloadTrigger }) => {
+const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetails, reloadTrigger, trackingPreferences }) => {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [localCalendar, setLocalCalendar] = useState<CalendarUserCredits | null>(calendar);
@@ -109,6 +111,17 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
     return () => { mounted = false; };
   }, [reloadTrigger, selectedYear]);
 
+  // Helper function to check if a credit should be hidden based on tracking preferences
+  const isCreditHidden = (cardId: string, creditId: string): boolean => {
+    if (!trackingPreferences) return false;
+    
+    const cardPrefs = trackingPreferences.Cards.find(card => card.CardId === cardId);
+    if (!cardPrefs) return false;
+    
+    const creditPref = cardPrefs.Credits.find(credit => credit.CreditId === creditId);
+    return creditPref?.HidePreference === CREDIT_HIDE_PREFERENCE.HIDE_ALL;
+  };
+
   // Build allowed pairs of (CardId:CreditId) from user's cards
   const allowedPairs = useMemo(() => {
     const set = new Set<string>();
@@ -123,12 +136,15 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
   const [selectedFilterCardId, setSelectedFilterCardId] = useState<string | null>(null);
   const filteredCalendar: CalendarUserCredits | null = useMemo(() => {
     if (!localCalendar) return null;
-    let filtered = (localCalendar.Credits || []).filter(uc => allowedPairs.has(`${uc.CardId}:${uc.CreditId}`));
+    let filtered = (localCalendar.Credits || [])
+      .filter(uc => allowedPairs.has(`${uc.CardId}:${uc.CreditId}`))
+      .filter(uc => !isCreditHidden(uc.CardId, uc.CreditId)); // Filter out hidden credits
+    
     if (selectedFilterCardId) {
       filtered = filtered.filter(uc => uc.CardId === selectedFilterCardId);
     }
     return { ...localCalendar, Credits: filtered };
-  }, [localCalendar, allowedPairs, selectedFilterCardId]);
+  }, [localCalendar, allowedPairs, selectedFilterCardId, trackingPreferences]);
 
   const [yearOptions, setYearOptions] = useState<number[]>([]);
 

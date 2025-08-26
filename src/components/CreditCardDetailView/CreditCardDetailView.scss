@@ -395,6 +395,27 @@
       border-top: $border-half dashed $neutral-gray;
     }
   }
+  
+  .credit-tracking-preference {
+    margin-top: $space-3;
+    padding-top: $space-2;
+    border-top: $border-half solid $neutral-light-gray;
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    
+    .preference-label {
+      font-size: $font-xs;
+      font-weight: $font-medium;
+      color: $neutral-dark-gray;
+      margin: 0;
+      white-space: nowrap;
+    }
+    
+    .tracking-preference-select {
+      // To add to 
+    }
+  }
 }
 
 /* Mobile: stack action buttons vertically */
