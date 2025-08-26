@@ -18,7 +18,7 @@ import {
 import axios from 'axios';
 
 // Import types
-import { CreditCard, PAGES } from '../../types';
+import { CreditCard, PAGES, TERMINOLOGY } from '../../types';
 import { ChatMessage, ChatSolution, ChatSolutionSelectedCardId, Conversation } from '../../types';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types';
 import { aiClient, userClient, MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
@@ -468,7 +468,7 @@ function PromptWindow({
                 </div>
                 {chatHistory.length >= MAX_CHAT_MESSAGES && (
                     <div className="below-prompt-field-text">
-                        Remember to <button onClick={handleNewTransaction} className="inline-button">{import('../../types').then(m => m.TERMINOLOGY.inlineNewChatReminder)}</button> for best results.
+                        Remember to <button onClick={handleNewTransaction} className="inline-button">{TERMINOLOGY.inlineNewChatReminder}</button> for best results.
                     </div>
                 )}
                 {CHAT_HISTORY_MESSAGES[chatHistoryPreference] && (
