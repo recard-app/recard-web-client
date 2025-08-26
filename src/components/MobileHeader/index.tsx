@@ -66,9 +66,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
   const isActive = (path: string): boolean => location.pathname === path;
   const isHomeOrChatRoute = (pathname: string) => {
-    if (pathname === PAGES.HOME.PATH) return true;
-    if (currentChatId && pathname === `${PAGES.HOME.PATH}${currentChatId}`) return true;
-    return false;
+    return PageUtils.isPage(pathname, 'HOME');
   };
 
   // Determine if user has any selected cards (fallback to length > 0)
