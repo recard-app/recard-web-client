@@ -18,6 +18,7 @@ export interface CreditEntryProps {
   card: CreditCardDetails | null;
   cardCredit: CardCredit | null;
   creditMaxValue?: number; // value of the credit in dollars
+  hideSlider?: boolean; // flag to hide the slider in card view
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -45,7 +46,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, onUpdateHistoryEntry }) => {
+const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, onUpdateHistoryEntry }) => {
   const isMobile = useIsMobile();
   const [isModalOpen, setIsModalOpen] = useState(false);
   
@@ -231,64 +232,67 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         </div>
       )}
 
-      {/* Slider and Select Controls - reuse existing styles */}
-      <div className="credit-line" style={{ backgroundColor: lineTintBackground, ['--usage-tint-hover' as any]: lineTintHover }}>
-        <div className="credit-value-used">
-          <span className="credit-amount mr-2 text-sm text-muted-foreground">${valueUsed} / ${maxValue}</span>
-          <div className="credit-slider">
-            <Slider
-              min={0}
-              max={maxValue}
-              value={[valueUsed]}
-              onValueChange={handleSliderChange}
-              onValueCommit={handleSliderCommit}
-              disabled={isSliderDisabled}
-              className="w-full"
-              style={{ ['--slider-range-color' as any]: usageColor, width: '100%' }}
-            />
-          </div>
+      {/* Slider and Select Controls - modal layout with full-width slider */}
+      <div className="credit-modal-controls" style={{ backgroundColor: lineTintBackground, ['--usage-tint-hover' as any]: lineTintHover }}>
+        {/* Full-width slider */}
+        <div className="credit-modal-slider">
+          <Slider
+            min={0}
+            max={maxValue}
+            value={[valueUsed]}
+            onValueChange={handleSliderChange}
+            onValueCommit={handleSliderCommit}
+            disabled={isSliderDisabled}
+            className="w-full"
+            style={{ ['--slider-range-color' as any]: usageColor, width: '100%' }}
+          />
         </div>
-        <div className="credit-usage">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button type="button" className="flex items-center gap-2 h-8 px-3 rounded-md border bg-transparent text-sm" style={{ color: usageColor, borderColor: usageColor }}>
-                <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
-                <span>
-                  {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
-                  {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
-                  {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
-                  {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
-                </span>
-                <Icon name="chevron-down" variant="mini" size={16} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.USED); }}>
-                <span className="flex items-center gap-2">
-                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.USED] }} />
-                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.PARTIALLY_USED); }}>
-                <span className="flex items-center gap-2">
-                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.PARTIALLY_USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.PARTIALLY_USED] }} />
-                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.PARTIALLY_USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.NOT_USED); }}>
-                <span className="flex items-center gap-2">
-                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.NOT_USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.NOT_USED] }} />
-                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.NOT_USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
-                </span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.INACTIVE); }}>
-                <span className="flex items-center gap-2">
-                  <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.INACTIVE]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.INACTIVE] }} />
-                  <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.INACTIVE] }}>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</span>
-                </span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        
+        {/* Amount and dropdown on separate row */}
+        <div className="credit-modal-bottom-row">
+          <span className="credit-amount mr-2 text-sm text-muted-foreground">${valueUsed} / ${maxValue}</span>
+          <div className="credit-usage">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button type="button" className="flex items-center gap-2 h-8 px-3 rounded-md border bg-transparent text-sm" style={{ color: usageColor, borderColor: usageColor }}>
+                  <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
+                  <span>
+                    {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
+                    {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
+                    {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
+                    {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
+                  </span>
+                  <Icon name="chevron-down" variant="mini" size={16} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.USED); }}>
+                  <span className="flex items-center gap-2">
+                    <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.USED] }} />
+                    <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.PARTIALLY_USED); }}>
+                  <span className="flex items-center gap-2">
+                    <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.PARTIALLY_USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.PARTIALLY_USED] }} />
+                    <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.PARTIALLY_USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.NOT_USED); }}>
+                  <span className="flex items-center gap-2">
+                    <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.NOT_USED]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.NOT_USED] }} />
+                    <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.NOT_USED] }}>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
+                  </span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleSelectChange(CREDIT_USAGE.INACTIVE); }}>
+                  <span className="flex items-center gap-2">
+                    <Icon name={USAGE_ICON_NAME[CREDIT_USAGE.INACTIVE]} variant="micro" size={14} style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.INACTIVE] }} />
+                    <span style={{ color: USAGE_COLOR_BY_STATE[CREDIT_USAGE.INACTIVE] }}>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</span>
+                  </span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </div>
@@ -318,18 +322,20 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       <div className="credit-line" style={{ backgroundColor: lineTintBackground, ['--usage-tint-hover' as any]: lineTintHover }}>
         <div className="credit-value-used">
           <span className="credit-amount mr-2 text-sm text-muted-foreground">${valueUsed} / ${maxValue}</span>
-          <div className="credit-slider">
-            <Slider
-              min={0}
-              max={maxValue}
-              value={[valueUsed]}
-              onValueChange={handleSliderChange}
-              onValueCommit={handleSliderCommit}
-              disabled={isSliderDisabled}
-              className="w-full"
-              style={{ ['--slider-range-color' as any]: usageColor, width: '100%' }}
-            />
-          </div>
+          {!hideSlider && (
+            <div className="credit-slider">
+              <Slider
+                min={0}
+                max={maxValue}
+                value={[valueUsed]}
+                onValueChange={handleSliderChange}
+                onValueCommit={handleSliderCommit}
+                disabled={isSliderDisabled}
+                className="w-full"
+                style={{ ['--slider-range-color' as any]: usageColor, width: '100%' }}
+              />
+            </div>
+          )}
         </div>
         <div className="credit-usage">
           <DropdownMenu>

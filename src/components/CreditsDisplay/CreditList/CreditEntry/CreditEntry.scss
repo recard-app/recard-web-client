@@ -52,6 +52,7 @@
   //font-size: $font-xs;
   //font-weight: $font-semibold;
   color: $neutral-dark-gray;
+  font-variant-numeric: tabular-nums;
 }
 
 // Dropdown button styling: no background, hover shows neutral light gray
@@ -80,7 +81,8 @@
 }
 
 // Make the unused track area stand out with a border
-.credit-entry .credit-line .credit-slider [data-slot="slider-track"] {
+.credit-entry .credit-line .credit-slider [data-slot="slider-track"],
+.credit-modal-slider [data-slot="slider-track"] {
   border: $border-half solid $neutral-gray;
 }
 
@@ -128,5 +130,28 @@
   }
 
   transition: background-color 0.2s ease;
+}
+
+// Modal-specific layout for full-width slider
+.credit-modal-controls {
+  padding: $space-3;
+  border-radius: $radius-md;
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.credit-modal-slider {
+  width: 100%;
+}
+
+.credit-modal-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  
+  // Use existing styles - no custom overrides needed
+  // .credit-amount and .credit-usage will inherit their existing styles
 }
 
