@@ -76,10 +76,16 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
             : promptSolutions
             ? [promptSolutions]
             : [];
-        setSolutions(incoming as ChatSolutionCard[]);
+        
+        // Remove duplicates based on card ID to prevent accumulation
+        const uniqueSolutions = incoming.filter((solution, index, array) => 
+            array.findIndex(s => s.id === solution.id) === index
+        );
+        
+        setSolutions(uniqueSolutions as ChatSolutionCard[]);
     }, [promptSolutions]);
 
-    // On route chat change, reset UI state; keep solutions intact and let parent control updates
+    // On route chat change, reset UI state and clear solutions to prevent accumulation
     useEffect(() => {
         setIsCardSelectorOpen(false);
         setIsExpanded(true);
@@ -87,6 +93,8 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
         setUpdatingCardId(null);
         setIsUpdating(false);
         setActiveCardId(selectedCardId || '');
+        // Clear solutions when switching chats to prevent accumulation
+        setSolutions([]);
     }, [urlChatId]);
 
     // Track viewport size

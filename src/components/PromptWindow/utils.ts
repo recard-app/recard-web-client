@@ -99,10 +99,17 @@ export const processChatAndSolutions = async (
 
     if (signal.aborted) throw new Error('Request aborted');
     
-    // If new solutions are empty, keep existing solutions
-    const solutions = Array.isArray(newSolutions) && newSolutions.length === 0 
-        ? existingSolutions 
-        : newSolutions;
+    // Always use new solutions when available. Only preserve existing solutions if:
+    // 1. New solutions are empty/undefined/null
+    // 2. We have valid existing solutions 
+    // 3. This is a continuing conversation (has previous chat messages)
+    const hasValidNewSolutions = Array.isArray(newSolutions) && newSolutions.length > 0;
+    const hasValidExistingSolutions = Array.isArray(existingSolutions) && existingSolutions.length > 0;
+    const isContinuingConversation = chatHistory.length > 0;
+    
+    const solutions = hasValidNewSolutions 
+        ? newSolutions 
+        : (hasValidExistingSolutions && isContinuingConversation ? existingSolutions : []);
     
     return { updatedHistory, solutions };
 };

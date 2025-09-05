@@ -212,15 +212,26 @@ function PromptWindow({
     useEffect(() => {
         if (user) {
             const loadHistory = async () => {
-                if (!user || !urlChatId) return;
+                if (!user) return;
+                
+                // If there's no urlChatId, we're on the home page - clear everything for a new chat
+                if (!urlChatId) {
+                    setSelectedCardId('');
+                    setPromptSolutions([]);
+                    setChatHistory([]);
+                    setChatId('');
+                    setIsNewChat(true);
+                    returnCurrentChatId('');
+                    return;
+                }
                 
                 // Return early if the URL chat ID is the same as the current chat ID
                 if (urlChatId === chatId) return;
                 
-                // Always reset selectedCardId when loading a new chat
+                // Always reset state when loading a new chat - do this first before any async operations
                 setSelectedCardId('');
-                // Reset solutions when changing chats
                 setPromptSolutions([]);
+                setChatHistory([]);
 
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
                 
