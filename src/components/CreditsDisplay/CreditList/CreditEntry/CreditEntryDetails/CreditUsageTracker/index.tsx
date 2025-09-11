@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types';
-import { MONTH_LETTERS } from '../../../../types/Constants';
+import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_COLORS } from '../../../../../../types';
+import { MONTH_LETTERS } from '../../../../../../types/Constants';
 import Icon from '@/icons';
 import './CreditUsageTracker.scss';
 
@@ -38,23 +38,10 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
     const totalPeriods = CREDIT_INTERVALS[periodKey] ?? 1;
     const periodsInfo: PeriodInfo[] = [];
 
-    // Calculate current period number for live updates
-    let currentPeriodNumber = 1;
-    if (isCurrentYear) {
-      if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
-        currentPeriodNumber = currentMonth;
-      } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
-        currentPeriodNumber = Math.ceil(currentMonth / 3);
-      } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
-        currentPeriodNumber = Math.ceil(currentMonth / 6);
-      } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Annually) {
-        currentPeriodNumber = 1;
-      }
-    }
 
     for (let i = 1; i <= totalPeriods; i++) {
       // Find the historical data for this period
-      const historyEntry = userCredit.History.find(h => h.PeriodNumber === i);
+      const historyEntry = userCredit.History.find((h: any) => h.PeriodNumber === i);
       
       // Use current usage/value if this is the selected period and we have live data
       const isSelectedPeriod = selectedPeriodNumber === i;
