@@ -1,4 +1,4 @@
-@use '../../../../styling/variables' as *;
+@use '../../../../styling/globals' as *;
 
 .credit-usage-tracker {
 
@@ -9,19 +9,9 @@
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
-    // Standard scrollbar styling
-    &::-webkit-scrollbar {
-      width: $space-2;
-    }
-    
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba($neutral-dark-gray, 0.3);
-      border-radius: $radius-base;
-    }
+    padding-bottom: $space-2; // Small margin to prevent scrollbar from covering content
+    // Universal scrollbar styling
+    @include universal-scrollbar;
   }
 
   .tracker-period {
