@@ -81,10 +81,6 @@ const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar,
       });
   }, [calendar, period, now, showUsed, showNotUsed, showPartiallyUsed, showInactive]);
 
-  if (creditsForPeriod.length === 0) {
-    return null;
-  }
-
   // Selected/browsed time from props (moves as user browses)
   const selectedMonthIdx = now.getMonth(); // 0-11
   const selectedYear = now.getFullYear();
@@ -102,6 +98,10 @@ const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar,
     );
     return activeIdx >= 0 ? cells[activeIdx].label : '';
   }, [cells, groupYear, selectedYear, selectedMonthIdx]);
+
+  if (creditsForPeriod.length === 0) {
+    return null;
+  }
 
   return (
     <section className="credit-period-group" aria-labelledby={`period-${period}`}>
