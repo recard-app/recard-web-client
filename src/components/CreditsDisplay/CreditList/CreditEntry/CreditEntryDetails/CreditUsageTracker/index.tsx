@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useRef } from 'react';
 import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_COLORS, MONTH_LABEL_ABBREVIATIONS } from '../../../../../../types';
 import Icon from '@/icons';
 import './CreditUsageTracker.scss';
@@ -22,6 +22,9 @@ interface PeriodInfo {
 }
 
 const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, currentYear, currentUsage, currentValueUsed, selectedPeriodNumber, onPeriodSelect }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const periodRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+
   const periods = useMemo(() => {
     const now = new Date();
     const currentMonth = now.getMonth() + 1; // 1-based month
@@ -106,6 +109,20 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
     return periodsInfo;
   }, [userCredit, currentYear, currentUsage, currentValueUsed, selectedPeriodNumber]);
 
+  // Scroll selected period into view when it changes
+  useEffect(() => {
+    if (selectedPeriodNumber && containerRef.current) {
+      const selectedElement = periodRefs.current.get(selectedPeriodNumber);
+      if (selectedElement) {
+        selectedElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center'
+        });
+      }
+    }
+  }, [selectedPeriodNumber]);
+
   const getUsageIcon = (usage: CreditUsageType): string => {
     switch (usage) {
       case CREDIT_USAGE.USED:
@@ -174,7 +191,10 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
 
   return (
     <div className="credit-usage-tracker">
-      <div className={`tracker-periods ${userCredit.AssociatedPeriod}`}>
+      <div 
+        ref={containerRef}
+        className={`tracker-periods ${userCredit.AssociatedPeriod}`}
+      >
         {periods.map((period) => {
           const usageColor = getUsageColor(period.usage, period.isFuture);
           const backgroundColor = tintHexColor(usageColor, 0.95);
@@ -183,7 +203,14 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
           return (
             <div
               key={period.periodNumber}
-              className={`tracker-period ${period.isFuture ? 'future' : ''} ${onPeriodSelect ? 'clickable' : ''}`}
+              ref={(el) => {
+                if (el) {
+                  periodRefs.current.set(period.periodNumber, el);
+                } else {
+                  periodRefs.current.delete(period.periodNumber);
+                }
+              }}
+              className={`tracker-period ${period.isFuture ? 'future' : ''} ${onPeriodSelect ? 'clickable' : ''} ${isSelected ? 'selected' : ''}`}
               style={{
                 backgroundColor: backgroundColor,
                 color: usageColor,
