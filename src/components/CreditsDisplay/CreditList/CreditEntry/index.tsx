@@ -76,6 +76,9 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
   }, [now, userCredit.AssociatedPeriod]);
 
+  // Shared selected period state for modal editing
+  const [selectedPeriodNumber, setSelectedPeriodNumber] = useState<number>(currentPeriodNumber);
+
   // Get current period history for main list display (always uses current period)
   const currentHistory = useMemo(() => {
     return userCredit.History.find((h) => h.PeriodNumber === currentPeriodNumber) ?? userCredit.History[0];
@@ -230,6 +233,8 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 currentYear={now.getFullYear()}
                 onUpdateHistoryEntry={onUpdateHistoryEntry}
                 hideControls={false}
+                selectedPeriodNumber={selectedPeriodNumber}
+                onPeriodSelect={setSelectedPeriodNumber}
               />
             </div>
             <DrawerFooter>
@@ -239,6 +244,8 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 creditMaxValue={creditMaxValue}
                 currentYear={now.getFullYear()}
                 onUpdateHistoryEntry={onUpdateHistoryEntry}
+                selectedPeriodNumber={selectedPeriodNumber}
+                onPeriodSelect={setSelectedPeriodNumber}
               />
             </DrawerFooter>
           </DrawerContent>
@@ -259,6 +266,8 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 currentYear={now.getFullYear()}
                 onUpdateHistoryEntry={onUpdateHistoryEntry}
                 hideControls={false}
+                selectedPeriodNumber={selectedPeriodNumber}
+                onPeriodSelect={setSelectedPeriodNumber}
               />
             </div>
             <DialogFooter>
@@ -268,6 +277,8 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 creditMaxValue={creditMaxValue}
                 currentYear={now.getFullYear()}
                 onUpdateHistoryEntry={onUpdateHistoryEntry}
+                selectedPeriodNumber={selectedPeriodNumber}
+                onPeriodSelect={setSelectedPeriodNumber}
               />
             </DialogFooter>
           </DialogContent>

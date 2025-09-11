@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_COLORS } from '../../../../../../types';
-import { MONTH_LETTERS } from '../../../../../../types/Constants';
+import { MONTH_ABBREVIATIONS } from '../../../../../../types/Constants';
 import Icon from '@/icons';
 import './CreditUsageTracker.scss';
 
@@ -74,7 +74,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
       // Generate period name - shorter for better fit
       let periodName = '';
       if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
-        periodName = MONTH_LETTERS[i - 1] || `${i}`;
+        periodName = MONTH_ABBREVIATIONS[i - 1] || `${i}`;
       } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
         periodName = `Q${i}`;
       } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
@@ -186,12 +186,14 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
                 }
               }}
             >
-              <span className="period-name">{period.name}</span>
-              <Icon
-                name={getUsageIcon(period.usage)}
-                variant="micro"
-                size={10}
-              />
+              <div className="period-content">
+                <span className="period-name">{period.name}</span>
+                <Icon
+                  name={getUsageIcon(period.usage)}
+                  variant="micro"
+                  size={12}
+                />
+              </div>
             </div>
           );
         })}

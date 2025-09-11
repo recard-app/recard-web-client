@@ -4,7 +4,7 @@ import { CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
 import { Slider } from '../../../ui/slider';
 import Icon from '@/icons';
-import { getMaxValue, clampValue, getUsageForValue } from './utils';
+import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './utils';
 import UsageDropdown from './UsageDropdown';
 
 interface CreditModalControlsProps {
@@ -19,6 +19,8 @@ interface CreditModalControlsProps {
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => void;
+  selectedPeriodNumber?: number;
+  onPeriodSelect?: (periodNumber: number) => void;
 }
 
 const CreditModalControls: React.FC<CreditModalControlsProps> = ({
@@ -26,10 +28,12 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   cardCredit,
   creditMaxValue,
   currentYear,
-  onUpdateHistoryEntry
+  onUpdateHistoryEntry,
+  selectedPeriodNumber: propSelectedPeriodNumber,
+  onPeriodSelect: propOnPeriodSelect
 }) => {
-  // Initialize with current period
-  const [selectedPeriodNumber, setSelectedPeriodNumber] = useState<number>(() => {
+  // Calculate default current period
+  const defaultCurrentPeriod = (() => {
     const currentMonth = new Date().getMonth() + 1;
     
     if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
@@ -42,7 +46,11 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
       return 1;
     }
     return 1;
-  });
+  })();
+
+  // Use props if provided, otherwise fall back to local state
+  const [localSelectedPeriodNumber, setLocalSelectedPeriodNumber] = useState<number>(defaultCurrentPeriod);
+  const selectedPeriodNumber = propSelectedPeriodNumber ?? localSelectedPeriodNumber;
 
   // Get the selected period's history entry
   const selectedHistory = useMemo(() => {
@@ -120,45 +128,103 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   const persistUpdate = async (newUsage: CreditUsageType, val: number) => {
     if (!onUpdateHistoryEntry) return;
     
-    onUpdateHistoryEntry({
-      cardId: userCredit.CardId,
-      creditId: userCredit.CreditId,
-      periodNumber: selectedPeriodNumber,
-      creditUsage: newUsage,
-      valueUsed: val,
-    });
+    try {
+      onUpdateHistoryEntry({
+        cardId: userCredit.CardId,
+        creditId: userCredit.CreditId,
+        periodNumber: selectedPeriodNumber,
+        creditUsage: newUsage,
+        valueUsed: val,
+      });
+    } catch (e) {
+      // Swallow errors for now; caller controls UI state already
+      console.error('Failed to update credit history entry', e);
+    }
   };
 
   const handleUsageSelect = async (newUsage: CreditUsageType) => {
     setUsage(newUsage);
-    let val = valueUsed;
-    if (newUsage === CREDIT_USAGE.USED) {
-      val = maxValue;
-      setValueUsed(val);
-    } else if (newUsage === CREDIT_USAGE.NOT_USED) {
-      val = 0;
-      setValueUsed(val);
-    } else if (newUsage === CREDIT_USAGE.INACTIVE) {
-      val = 0;
-      setValueUsed(val);
-      void persistUpdate(newUsage, val);
-      return;
+    // Update slider according to the rules and (un)disable
+    try {
+      if (newUsage === CREDIT_USAGE.INACTIVE) {
+        // Disable slider but RETAIN existing value; persist same value
+        await persistUpdate(newUsage, valueUsed);
+        return;
+      }
+      if (newUsage === CREDIT_USAGE.NOT_USED) {
+        // Keep value at 0, reflect NOT_USED state
+        setValueUsed(0);
+        await persistUpdate(newUsage, 0);
+        return;
+      }
+      if (newUsage === CREDIT_USAGE.PARTIALLY_USED) {
+        const val = getValueForUsage(CREDIT_USAGE.PARTIALLY_USED, maxValue);
+        setValueUsed(val);
+        await persistUpdate(newUsage, val);
+        return;
+      }
+      if (newUsage === CREDIT_USAGE.USED) {
+        const val = maxValue;
+        setValueUsed(val);
+        await persistUpdate(newUsage, val);
+        return;
+      }
+    } catch (e) {
+      console.error('Failed to update credit via usage select:', e);
     }
   };
 
   const handleSliderChange = (vals: number[]) => {
-    if (isSliderDisabled) return;
+    if (isSliderDisabled) return; // Only undisable via select
     const v = clampValue(vals[0] ?? 0, maxValue);
+    // Only update local state during dragging for visual feedback
     setValueUsed(v);
     const status = getUsageForValue(v, maxValue);
     setUsage(status);
   };
 
-  const handleSliderCommit = (vals: number[]) => {
+  const handleSliderCommit = async (vals: number[]) => {
     if (isSliderDisabled) return;
     const v = clampValue(vals[0] ?? 0, maxValue);
-    const status = getUsageForValue(v, maxValue);
-    void persistUpdate(status, v);
+    
+    // Use the current local state values instead of recalculating
+    // This ensures consistency with what the user sees
+    const finalValue = valueUsed;
+    const finalStatus = usage;
+    
+    console.log('[CreditModalControls] Slider commit:', {
+      sliderValue: v,
+      localValue: finalValue,
+      localStatus: finalStatus,
+      maxValue,
+      difference: Math.abs(finalValue - v)
+    });
+    
+    // Double-check that our local state matches the slider value
+    // This handles any edge cases with precision
+    if (Math.abs(finalValue - v) > 0.01) {
+      // If there's a discrepancy, use the slider value and recalculate
+      const correctedStatus = getUsageForValue(v, maxValue);
+      console.log('[CreditModalControls] State discrepancy detected, correcting:', {
+        correctedStatus,
+        correctedValue: v
+      });
+      setValueUsed(v);
+      setUsage(correctedStatus);
+      
+      try {
+        await persistUpdate(correctedStatus, v);
+      } catch (e) {
+        console.error('Failed to update credit via slider:', e);
+      }
+    } else {
+      // Use the consistent local state values
+      try {
+        await persistUpdate(finalStatus, finalValue);
+      } catch (e) {
+        console.error('Failed to update credit via slider:', e);
+      }
+    }
   };
 
   const getCurrentPeriodName = (): string => {
