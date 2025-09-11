@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { clampValue, getMaxValue, getValueForUsage, getUsageForValue } from './utils';
 import { UserCreditService } from '../../../../services/UserServices';
+import CreditUsageTracker from './CreditUsageTracker';
+import { MONTH_NAMES } from '../../../../types/Constants';
 
 export interface CreditEntryProps {
   userCredit: UserCredit;
@@ -78,6 +80,30 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     const segmentLength = 12 / intervals;
     return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
   }, [now, userCredit.AssociatedPeriod]);
+
+  // Generate current period name for display
+  const getCurrentPeriodName = () => {
+    if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
+      return MONTH_NAMES[currentPeriodNumber - 1] || `Month ${currentPeriodNumber}`;
+    } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
+      const quarterRanges = [
+        'Jan - Mar (Q1)',
+        'Apr - Jun (Q2)', 
+        'Jul - Sep (Q3)',
+        'Oct - Dec (Q4)'
+      ];
+      return quarterRanges[currentPeriodNumber - 1] || `Quarter ${currentPeriodNumber}`;
+    } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
+      const halfRanges = [
+        'Jan - Jun (H1)',
+        'Jul - Dec (H2)'
+      ];
+      return halfRanges[currentPeriodNumber - 1] || (currentPeriodNumber === 1 ? 'First Half' : 'Second Half');
+    } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Annually) {
+      return now.getFullYear().toString();
+    }
+    return `Period ${currentPeriodNumber}`;
+  };
 
   const currentHistory = useMemo(() => {
     return userCredit.History.find((h) => h.PeriodNumber === currentPeriodNumber) ?? userCredit.History[0];
@@ -232,8 +258,21 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         </div>
       )}
 
+      {/* Usage Tracker */}
+      <CreditUsageTracker 
+        userCredit={userCredit} 
+        currentYear={now.getFullYear()} 
+        currentUsage={usage}
+        currentValueUsed={valueUsed}
+      />
+
       {/* Slider and Select Controls - modal layout with full-width slider */}
       <div className="credit-modal-controls" style={{ backgroundColor: lineTintBackground, ['--usage-tint-hover' as any]: lineTintHover }}>
+        {/* Current period label */}
+        <div className="current-period-label">
+          <strong>Period:</strong> {getCurrentPeriodName()}
+        </div>
+        
         {/* Full-width slider */}
         <div className="credit-modal-slider">
           <Slider

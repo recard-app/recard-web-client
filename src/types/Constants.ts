@@ -228,6 +228,11 @@ export const MONTH_ABBREVIATIONS = [
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ] as const;
 
+export const MONTH_LETTERS = [
+    'J', 'F', 'M', 'A', 'M', 'J',
+    'J', 'A', 'S', 'O', 'N', 'D'
+] as const;
+
 // Info component constants
 export const INFO_COLORS = {
     DEFAULT: ICON_GRAY,

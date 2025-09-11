@@ -1,0 +1,67 @@
+.credit-usage-tracker {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+
+  .tracker-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+  }
+
+  .tracker-periods {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scrollbar-width: none; // Firefox
+    -ms-overflow-style: none; // IE/Edge
+    
+    &::-webkit-scrollbar {
+      display: none; // Chrome/Safari
+    }
+  }
+
+  .tracker-period {
+    border-radius: 6px;
+    border: 1px solid;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    min-width: 32px;
+    justify-content: space-between;
+
+    &.future {
+      opacity: 0.4;
+      filter: grayscale(0.5);
+    }
+
+    .period-name {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+
+    // Icons inherit the text color (usage color)
+    svg {
+      flex-shrink: 0;
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .credit-usage-tracker {
+    border-top-color: #374151;
+
+    .tracker-label {
+      color: #f3f4f6;
+    }
+  }
+}
