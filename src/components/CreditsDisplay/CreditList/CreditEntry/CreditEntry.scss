@@ -93,14 +93,14 @@
     // New full-height button styling
     .credit-usage-button {
       display: flex;
+      padding: $space-1-5;
       flex-direction: column;
       align-items: flex-end;
       justify-content: center;
       gap: $space-half;
-      padding: $space-1-5;
       height: 100%;
       min-height: 50px;
-      border: $border-half solid;
+      width: auto; // Let button size to content
       border-radius: $radius-base;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -108,12 +108,12 @@
       text-align: right;
       
       &:hover {
+        outline: none;
         background-color: var(--button-hover-bg) !important;
       }
       
       &:focus {
         outline: none;
-        box-shadow: 0 0 0 2px rgba($primary-medium, 0.2);
       }
       
       .credit-amount-large {
@@ -133,6 +133,11 @@
         
         span {
           font-size: $font-xs;
+          
+          // Hide text on mobile, keep icon and chevron
+          @media (max-width: $mobile-breakpoint) {
+            display: none;
+          }
         }
       }
     }
@@ -202,7 +207,7 @@
   background: transparent;
   //border: $border-half solid currentColor;
   padding: $space-1-5 $space-2;
-  min-width: 160px;
+  width: auto; // Let button size to content
   justify-content: flex-end;
 }
 
@@ -393,6 +398,32 @@
 // Custom hover for modal dropdown buttons to use tinted colors instead of global button styles
 .credit-modal-controls button:hover {
   background-color: var(--button-hover-bg) !important;
+}
+
+// Target the dropdown content for mobile drawer - make it full width to match button
+// Only apply when the drawer is open (more specific selector)
+body:has(.mobile-credit-details-drawer) [data-radix-popper-content-wrapper] .usage-dropdown-content {
+  width: var(--radix-popper-anchor-width) !important;
+  min-width: var(--radix-popper-anchor-width) !important;
+  max-width: var(--radix-popper-anchor-width) !important;
+}
+
+// Mobile-specific dropdown item styling for better touch targets
+@media (max-width: $mobile-breakpoint) {
+  [data-slot="dropdown-menu-item"].usage-dropdown-item {
+    padding: $space-3 $space-4;
+    min-height: 44px;
+    font-size: $font-base;
+    
+    .usage-dropdown-text {
+      font-size: $font-base;
+    }
+    
+    .usage-dropdown-icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
 }
 
 .amount-input {

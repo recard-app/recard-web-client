@@ -39,7 +39,12 @@ const UsageDropdown: React.FC<UsageDropdownProps> = ({
       <DropdownMenuTrigger asChild>
         {trigger}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={align} className="usage-dropdown-content">
+      <DropdownMenuContent 
+        align={align} 
+        className="usage-dropdown-content"
+        sideOffset={4}
+        alignOffset={0}
+      >
         {Object.entries(CREDIT_USAGE_DISPLAY_NAMES).map(([key, label]) => {
           const usageKey = CREDIT_USAGE[key as keyof typeof CREDIT_USAGE];
           const isSelected = usage === usageKey;
@@ -47,7 +52,10 @@ const UsageDropdown: React.FC<UsageDropdownProps> = ({
           return (
             <DropdownMenuItem
               key={key}
-              onClick={() => onUsageSelect(usageKey)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUsageSelect(usageKey);
+              }}
               className={`usage-dropdown-item ${isSelected ? 'selected' : ''}`}
             >
               <Icon 
@@ -62,17 +70,6 @@ const UsageDropdown: React.FC<UsageDropdownProps> = ({
               <span className="usage-dropdown-text" style={{ color: USAGE_COLOR_BY_STATE[usageKey] }}>
                 {label}
               </span>
-              {isSelected && (
-                <Icon 
-                  name="check" 
-                  variant="micro" 
-                  size={12}
-                  className="usage-dropdown-check"
-                  style={{ 
-                    color: usageColor
-                  }}
-                />
-              )}
             </DropdownMenuItem>
           );
         })}

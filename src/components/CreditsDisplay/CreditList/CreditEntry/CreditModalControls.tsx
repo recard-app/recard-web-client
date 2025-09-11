@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType } from '../../../../types';
+import { CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType, MOBILE_BREAKPOINT } from '../../../../types';
 import { CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
 import { Slider } from '../../../ui/slider';
@@ -63,6 +63,20 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
 
   const maxValue = getMaxValue(creditMaxValue);
   const isSliderDisabled = usage === CREDIT_USAGE.INACTIVE;
+  
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const USAGE_COLOR_BY_STATE: Record<CreditUsageType, string> = {
     [CREDIT_USAGE.USED]: CREDIT_USAGE_DISPLAY_COLORS.USED,
@@ -162,7 +176,13 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   };
 
   return (
-    <div className="credit-modal-controls" style={{ backgroundColor: lineTintBackground, '--usage-tint-hover': lineTintHover } as React.CSSProperties}>
+    <div 
+      className="credit-modal-controls" 
+      style={{ 
+        backgroundColor: lineTintBackground, 
+        '--usage-tint-hover': lineTintHover
+      } as React.CSSProperties}
+    >
       {/* Period and amount display */}
       <div className="credit-period-row">
         <div className="period-name">{getCurrentPeriodName()}</div>
@@ -191,6 +211,7 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
           usage={usage}
           usageColor={usageColor}
           onUsageSelect={handleUsageSelect}
+          align="start"
           trigger={
             <button 
               className="button outline small" 
@@ -201,7 +222,15 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: '8px',
-                '--button-hover-bg': lineTintHover
+                '--button-hover-bg': lineTintHover,
+                // Mobile-specific styling
+                ...(isMobile && {
+                  width: '100%',
+                  minHeight: '48px',
+                  fontSize: '16px',
+                  padding: '12px 16px',
+                  justifyContent: 'space-between'
+                })
               } as React.CSSProperties}
             >
               <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />

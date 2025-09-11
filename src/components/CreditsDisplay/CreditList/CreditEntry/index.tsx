@@ -187,10 +187,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 <button 
                   className="credit-usage-button"
                   style={{ 
-                    backgroundColor: buttonBackgroundColor, 
-                    color: usageColor,
-                    borderColor: usageColor,
-                    '--button-hover-bg': buttonHoverColor
+                    color: usageColor
                   } as React.CSSProperties}
                   onClick={(e) => e.stopPropagation()} // Prevent card click from opening modal
                 >
@@ -215,7 +212,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       {/* Responsive Modal/Drawer */}
       {isMobile ? (
         <Drawer open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DrawerContent fitContent maxHeight="80vh">
+          <DrawerContent fitContent maxHeight="80vh" className="mobile-credit-details-drawer">
             <DrawerTitle className="sr-only">Credit Details</DrawerTitle>
             <div className="dialog-header drawer-sticky-header">
               <h2>Credit Details</h2>

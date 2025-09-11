@@ -3,6 +3,13 @@
 // Usage dropdown specific styling
 .usage-dropdown-content {
   min-width: 180px;
+  
+  // Force wider dropdown on mobile to prevent text wrapping
+  @media (max-width: $mobile-breakpoint) {
+    min-width: 200px !important;
+    width: 200px !important;
+    max-width: 200px !important;
+  }
 }
 
 // Strong overrides for usage dropdown items
@@ -29,9 +36,9 @@
     background-color: $neutral-lightest-gray !important;
   }
   
-  // Selected state styling
+  // Selected state styling - removed bold font weight
   &.selected {
-    font-weight: $font-semibold;
+    // No special font weight for selected items
   }
   
   // Icon styling
@@ -74,3 +81,6 @@
   flex-direction: row !important;
   gap: 0 !important; // Remove gap, use margin instead
 }
+
+// Remove mobile specific overrides from here - they're now in CreditEntry.scss
+// using data attribute selectors for better specificity
