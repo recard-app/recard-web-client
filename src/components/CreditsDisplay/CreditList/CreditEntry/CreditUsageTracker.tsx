@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_COLORS, MONTH_LETTERS } from '../../../../types';
+import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types';
+import { MONTH_LETTERS } from '../../../../types/Constants';
 import Icon from '@/icons';
 import './CreditUsageTracker.scss';
 
@@ -8,6 +9,8 @@ interface CreditUsageTrackerProps {
   currentYear: number;
   currentUsage?: CreditUsageType;
   currentValueUsed?: number;
+  selectedPeriodNumber?: number;
+  onPeriodSelect?: (periodNumber: number) => void;
 }
 
 interface PeriodInfo {
@@ -19,7 +22,7 @@ interface PeriodInfo {
   isActive: boolean;
 }
 
-const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, currentYear, currentUsage, currentValueUsed }) => {
+const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, currentYear, currentUsage, currentValueUsed, selectedPeriodNumber, onPeriodSelect }) => {
   const periods = useMemo(() => {
     const now = new Date();
     const currentMonth = now.getMonth() + 1; // 1-based month
@@ -53,12 +56,12 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
       // Find the historical data for this period
       const historyEntry = userCredit.History.find(h => h.PeriodNumber === i);
       
-      // Use current usage/value if this is the current period and we have live data
-      const isCurrentPeriod = isCurrentYear && i === currentPeriodNumber;
-      const usage = isCurrentPeriod && currentUsage !== undefined 
+      // Use current usage/value if this is the selected period and we have live data
+      const isSelectedPeriod = selectedPeriodNumber === i;
+      const usage = isSelectedPeriod && currentUsage !== undefined 
         ? currentUsage 
         : (historyEntry?.CreditUsage as CreditUsageType ?? CREDIT_USAGE.INACTIVE);
-      const valueUsed = isCurrentPeriod && currentValueUsed !== undefined 
+      const valueUsed = isSelectedPeriod && currentValueUsed !== undefined 
         ? currentValueUsed 
         : (historyEntry?.ValueUsed ?? 0);
       
@@ -104,7 +107,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
     }
 
     return periodsInfo;
-  }, [userCredit, currentYear, currentUsage, currentValueUsed]);
+  }, [userCredit, currentYear, currentUsage, currentValueUsed, selectedPeriodNumber]);
 
   const getUsageIcon = (usage: CreditUsageType): string => {
     switch (usage) {
@@ -137,33 +140,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
     }
   };
 
-  // Calculate current period for pin icon
-  const getCurrentPeriodNumber = () => {
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1; // 1-based month
-    const isCurrentYear = currentYear === now.getFullYear();
-    
-    if (!isCurrentYear) return null;
 
-    const periodKey = (Object.keys(CREDIT_PERIODS) as Array<keyof typeof CREDIT_PERIODS>).find(
-      (k) => CREDIT_PERIODS[k] === userCredit.AssociatedPeriod
-    ) as keyof typeof CREDIT_INTERVALS | undefined;
-
-    if (!periodKey) return null;
-
-    if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
-      return currentMonth;
-    } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
-      return Math.ceil(currentMonth / 3);
-    } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
-      return Math.ceil(currentMonth / 6);
-    } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Annually) {
-      return 1;
-    }
-    return null;
-  };
-
-  const currentPeriodNumber = getCurrentPeriodNumber();
 
   // Tinting functions from CreditEntry
   const parseHexToRgb = (hex: string): { r: number; g: number; b: number } => {
@@ -204,17 +181,23 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         {periods.map((period) => {
           const usageColor = getUsageColor(period.usage, period.isFuture);
           const backgroundColor = tintHexColor(usageColor, 0.95);
+          const isSelected = selectedPeriodNumber === period.periodNumber;
           
           return (
             <div
               key={period.periodNumber}
-              className={`tracker-period ${period.isFuture ? 'future' : ''}`}
+              className={`tracker-period ${period.isFuture ? 'future' : ''} ${onPeriodSelect ? 'clickable' : ''}`}
               style={{
                 backgroundColor: backgroundColor,
                 color: usageColor,
                 borderColor: usageColor
               }}
-              title={`${period.name}: ${period.isFuture ? 'Future period' : getUsageLabel(period.usage)}${!period.isFuture && period.valueUsed > 0 ? ` ($${period.valueUsed})` : ''}`}
+              title={`${period.name}: ${period.isFuture ? 'Future period' : getUsageLabel(period.usage)}${!period.isFuture && period.valueUsed > 0 ? ` ($${period.valueUsed})` : ''}${onPeriodSelect ? ' (Click to edit)' : ''}${isSelected ? ' [EDITING]' : ''}`}
+              onClick={() => {
+                if (onPeriodSelect && !period.isFuture) {
+                  onPeriodSelect(period.periodNumber);
+                }
+              }}
             >
               <span className="period-name">{period.name}</span>
               <Icon

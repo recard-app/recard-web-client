@@ -12,7 +12,7 @@ import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { clampValue, getMaxValue, getValueForUsage, getUsageForValue } from './utils';
 import { UserCreditService } from '../../../../services/UserServices';
 import CreditUsageTracker from './CreditUsageTracker';
-import { MONTH_NAMES } from '../../../../types/Constants';
+import { MONTH_NAMES, MONTH_ABBREVIATIONS } from '../../../../types/Constants';
 
 export interface CreditEntryProps {
   userCredit: UserCredit;
@@ -66,6 +66,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   const [usage, setUsage] = useState<CreditUsageType>(
     (userCredit.History?.[0]?.CreditUsage as CreditUsageType) ?? CREDIT_USAGE.INACTIVE
   );
+  
   // Compute the current period number based on AssociatedPeriod and now
   const currentPeriodNumber = useMemo(() => {
     const periodKey = (Object.keys(CREDIT_PERIODS) as Array<keyof typeof CREDIT_PERIODS>).find(
@@ -81,33 +82,54 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
   }, [now, userCredit.AssociatedPeriod]);
 
-  // Generate current period name for display
-  const getCurrentPeriodName = () => {
+  // Track which period is selected for editing (defaults to current period)
+  const [selectedPeriodNumber, setSelectedPeriodNumber] = useState<number | null>(null);
+  
+  // Initialize selected period to current period when modal opens, reset when closed
+  useEffect(() => {
+    if (isModalOpen && selectedPeriodNumber === null) {
+      console.log('[CreditEntry] Initializing selectedPeriodNumber to currentPeriodNumber:', currentPeriodNumber);
+      setSelectedPeriodNumber(currentPeriodNumber);
+    } else if (!isModalOpen) {
+      setSelectedPeriodNumber(null);
+    }
+  }, [isModalOpen, selectedPeriodNumber, currentPeriodNumber]);
+
+  // Generate period name for display (dynamically calculated using CREDIT_INTERVALS)
+  const getPeriodName = (periodNumber: number) => {
     if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
-      return MONTH_NAMES[currentPeriodNumber - 1] || `Month ${currentPeriodNumber}`;
+      return MONTH_NAMES[periodNumber - 1] || `Month ${periodNumber}`;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
-      const quarterRanges = [
-        'Jan - Mar (Q1)',
-        'Apr - Jun (Q2)', 
-        'Jul - Sep (Q3)',
-        'Oct - Dec (Q4)'
-      ];
-      return quarterRanges[currentPeriodNumber - 1] || `Quarter ${currentPeriodNumber}`;
+      // Calculate month range for this quarter (3 months per quarter)
+      const monthsPerQuarter = 12 / CREDIT_INTERVALS.Quarterly;
+      const startMonth = (periodNumber - 1) * monthsPerQuarter;
+      const endMonth = startMonth + monthsPerQuarter - 1;
+      const startMonthName = MONTH_ABBREVIATIONS[startMonth];
+      const endMonthName = MONTH_ABBREVIATIONS[endMonth];
+      return `${startMonthName} - ${endMonthName} (Q${periodNumber})`;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
-      const halfRanges = [
-        'Jan - Jun (H1)',
-        'Jul - Dec (H2)'
-      ];
-      return halfRanges[currentPeriodNumber - 1] || (currentPeriodNumber === 1 ? 'First Half' : 'Second Half');
+      // Calculate month range for this half (6 months per half)
+      const monthsPerHalf = 12 / CREDIT_INTERVALS.Semiannually;
+      const startMonth = (periodNumber - 1) * monthsPerHalf;
+      const endMonth = startMonth + monthsPerHalf - 1;
+      const startMonthName = MONTH_ABBREVIATIONS[startMonth];
+      const endMonthName = MONTH_ABBREVIATIONS[endMonth];
+      return `${startMonthName} - ${endMonthName} (H${periodNumber})`;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Annually) {
       return now.getFullYear().toString();
     }
-    return `Period ${currentPeriodNumber}`;
+    return `Period ${periodNumber}`;
   };
+  
+  // Generate selected period name for display
+  const getSelectedPeriodName = () => getPeriodName(effectivePeriodNumber);
 
+  // Get the effective period number (selected period if available, otherwise current period)
+  const effectivePeriodNumber = selectedPeriodNumber ?? currentPeriodNumber;
+  
   const currentHistory = useMemo(() => {
-    return userCredit.History.find((h) => h.PeriodNumber === currentPeriodNumber) ?? userCredit.History[0];
-  }, [userCredit, currentPeriodNumber]);
+    return userCredit.History.find((h) => h.PeriodNumber === effectivePeriodNumber) ?? userCredit.History[0];
+  }, [userCredit, effectivePeriodNumber]);
   
   // Sync local UI state when the active period changes
   React.useEffect(() => {
@@ -150,11 +172,19 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   const lineTintHover = tintHexColor(usageColor, 0.8);
 
   const persistUpdate = async (nextUsage: CreditUsageType, nextValue: number) => {
+    console.log('[CreditEntry] persistUpdate called with:', {
+      effectivePeriodNumber,
+      selectedPeriodNumber,
+      currentPeriodNumber,
+      nextUsage,
+      nextValue,
+      creditId: userCredit.CreditId
+    });
     try {
       await UserCreditService.updateCreditHistoryEntry({
         cardId: userCredit.CardId,
         creditId: userCredit.CreditId,
-        periodNumber: currentPeriodNumber,
+        periodNumber: effectivePeriodNumber,
         creditUsage: nextUsage,
         valueUsed: nextValue,
       });
@@ -162,7 +192,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       onUpdateHistoryEntry?.({
         cardId: userCredit.CardId,
         creditId: userCredit.CreditId,
-        periodNumber: currentPeriodNumber,
+        periodNumber: effectivePeriodNumber,
         creditUsage: nextUsage,
         valueUsed: nextValue,
       });
@@ -203,16 +233,28 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   const handleSliderChange = (vals: number[]) => {
     if (isSliderDisabled) return; // Only undisable via select
     const v = clampValue(vals[0] ?? 0, maxValue);
+    // Only update local state during dragging for visual feedback
     setValueUsed(v);
     const status = getUsageForValue(v, maxValue);
     setUsage(status);
   };
 
-  const handleSliderCommit = (vals: number[]) => {
+  const handleSliderCommit = async (vals: number[]) => {
     if (isSliderDisabled) return;
     const v = clampValue(vals[0] ?? 0, maxValue);
     const status = getUsageForValue(v, maxValue);
-    void persistUpdate(status, v);
+    
+    // Wait for backend confirmation like the usage counter does
+    try {
+      await persistUpdate(status, v);
+      // Backend update succeeded, state is already updated via the callback
+    } catch (e) {
+      // Revert to previous state if backend update failed
+      if (currentHistory) {
+        setUsage((currentHistory.CreditUsage as CreditUsageType) ?? CREDIT_USAGE.INACTIVE);
+        setValueUsed(currentHistory.ValueUsed ?? 0);
+      }
+    }
   };
 
   const renderModalContent = () => (
@@ -263,7 +305,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         <div className="usage-tracker-header">
           <span className="usage-tracker-title">Usage This Year</span>
           <span className="usage-tracker-stats">
-            ${userCredit.History.reduce((total, entry) => total + (entry.ValueUsed || 0), 0)} / ${(cardCredit?.Value || 0) * userCredit.History.length} used
+            ${userCredit.History.reduce((total, entry) => total + (entry.ValueUsed || 0), 0)} / ${(Number(cardCredit?.Value) || 0) * userCredit.History.length} used
           </span>
         </div>
         <CreditUsageTracker 
@@ -271,14 +313,19 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           currentYear={now.getFullYear()} 
           currentUsage={usage}
           currentValueUsed={valueUsed}
+          selectedPeriodNumber={selectedPeriodNumber ?? undefined}
+          onPeriodSelect={(periodNumber) => {
+            console.log('[CreditEntry] Period selected:', periodNumber);
+            setSelectedPeriodNumber(periodNumber);
+          }}
         />
       </div>
 
       {/* Slider and Select Controls - modal layout with full-width slider */}
-      <div className="credit-modal-controls" style={{ backgroundColor: lineTintBackground, ['--usage-tint-hover' as any]: lineTintHover }}>
-        {/* Current period label */}
+      <div className="credit-modal-controls" style={{ backgroundColor: lineTintBackground, '--usage-tint-hover': lineTintHover } as React.CSSProperties}>
+        {/* Selected period label */}
         <div className="current-period-label">
-          <strong>Period:</strong> {getCurrentPeriodName()}
+          <strong>Editing Period:</strong> {getSelectedPeriodName()}
         </div>
         
         {/* Full-width slider */}
@@ -291,7 +338,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
             onValueCommit={handleSliderCommit}
             disabled={isSliderDisabled}
             className="w-full"
-            style={{ ['--slider-range-color' as any]: usageColor, width: '100%' }}
+            style={{ '--slider-range-color': usageColor, width: '100%' } as React.CSSProperties}
           />
         </div>
         
