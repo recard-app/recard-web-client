@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
-import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_COLORS } from '../../../../../../types';
-import { MONTH_ABBREVIATIONS } from '../../../../../../types/Constants';
+import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_COLORS, MONTH_LABEL_ABBREVIATIONS } from '../../../../../../types';
 import Icon from '@/icons';
 import './CreditUsageTracker.scss';
 
@@ -38,6 +37,9 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
     const totalPeriods = CREDIT_INTERVALS[periodKey] ?? 1;
     const periodsInfo: PeriodInfo[] = [];
 
+    // Generate month labels for date ranges (same logic as CreditPeriodGroup)
+    const monthLabels = MONTH_LABEL_ABBREVIATIONS.map(m => m.label);
+
 
     for (let i = 1; i <= totalPeriods; i++) {
       // Find the historical data for this period
@@ -71,21 +73,29 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         isFuture = true;
       }
 
-      // Generate period name - shorter for better fit
+      // Generate period name using date ranges (same logic as CreditPeriodGroup)
       let periodName = '';
       if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
-        periodName = MONTH_ABBREVIATIONS[i - 1] || `${i}`;
+        periodName = monthLabels[i - 1] || `${i}`;
       } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
-        periodName = `Q${i}`;
+        const quarterSize = 3;
+        const startIdx = (i - 1) * quarterSize;
+        const endIdx = startIdx + quarterSize - 1;
+        periodName = `${monthLabels[startIdx]} - ${monthLabels[endIdx]}`;
       } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
-        periodName = i === 1 ? 'H1' : 'H2';
+        const halfSize = 6;
+        if (i === 1) {
+          periodName = `${monthLabels[0]} - ${monthLabels[halfSize - 1]}`;
+        } else {
+          periodName = `${monthLabels[halfSize]} - ${monthLabels[11]}`;
+        }
       } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Annually) {
-        periodName = currentYear.toString();
+        periodName = `${monthLabels[0]} - ${monthLabels[11]}`;
       }
 
       periodsInfo.push({
         periodNumber: i,
-        name: periodName,
+        name: periodName.toUpperCase(),
         usage,
         valueUsed,
         isFuture,
