@@ -269,20 +269,20 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 {showTrackingPreferences && (
                                     <div className="credit-tracking-preference">
                                         <label htmlFor={`credit-tracking-${credit.id}`} className="preference-label">
-                                            Tracking Preference:
+                                            Do you want to track this credit?
                                         </label>
                                         <select
                                             id={`credit-tracking-${credit.id}`}
-                                            className="tracking-preference-select"
+                                            className="default-select"
                                             value={getCreditHidePreference(credit.id)}
                                             onChange={(e) => handleCreditHidePreferenceChange(credit.id, e.target.value as CreditHidePreferenceType)}
                                             disabled={isLoadingPreferences}
                                         >
                                             <option value={CREDIT_HIDE_PREFERENCE.DO_NOT_HIDE}>
-                                                {CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES.DO_NOT_HIDE}
+                                                Yes, track this credit
                                             </option>
                                             <option value={CREDIT_HIDE_PREFERENCE.HIDE_ALL}>
-                                                {CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES.HIDE}
+                                                No, do not track
                                             </option>
                                         </select>
                                     </div>
