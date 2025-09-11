@@ -4,6 +4,42 @@
   display: inline-flex;
   align-items: center;
   gap: $space-2;
+  
+  // Candy bar styling - connected buttons
+  &.connected {
+    gap: 0;
+    border-radius: $radius-md;
+    overflow: hidden;
+    
+    .toggle-bar-button {
+      border-radius: 0;
+      border-right: none;
+      
+      &:first-child {
+        border-top-left-radius: $radius-md;
+        border-bottom-left-radius: $radius-md;
+      }
+      
+      &:last-child {
+        border-top-right-radius: $radius-md;
+        border-bottom-right-radius: $radius-md;
+        border-right: $border-full solid $neutral-light-gray;
+      }
+      
+      // Override active state border for seamless appearance
+      &.active,
+      &[data-pressed='true'] {
+        border-color: $primary-medium;
+        border-right-color: $primary-medium;
+        z-index: 1;
+        position: relative;
+        
+        &:not(:last-child) {
+          border-right: $border-full solid $primary-medium;
+        }
+      }
+    }
+  }
 }
 
 .toggle-bar-button {

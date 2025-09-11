@@ -16,3 +16,11 @@
     -webkit-overflow-scrolling: touch;
   }
 }
+
+// Filter section styling to match other controls
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  align-items: flex-start;
+}

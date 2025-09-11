@@ -363,7 +363,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
                   </button>
                 )}
               </div>
-              <ToggleBar className="items-center gap-2">
+              <ToggleBar className="connected items-center gap-2">
                 <span className="caps-label">Credits to Show</span>
                 <ToggleBarButton pressed={showUsed} onPressedChange={setShowUsed} className="small icon with-text">
                   <Icon name="used-icon" variant="micro" size={14} />
@@ -383,8 +383,8 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
                 </ToggleBarButton>
               </ToggleBar>
               {/* Card Filter */}
-              <div className="date-picker">
-                <label className="filter-label">Card</label>
+              <div className="filter-section">
+                <label className="caps-label">Filter by Card</label>
                 <SelectCard
                   selectedCardId={selectedFilterCardId || undefined}
                   creditCards={userCardDetails.map(card => ({
