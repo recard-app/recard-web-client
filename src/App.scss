@@ -49,23 +49,22 @@ html {
   // Ensure smooth scrolling
   scroll-behavior: smooth;
   
-  // Custom scrollbar styling for webkit browsers
+  // Modern scrollbar styling for all browsers
+  scrollbar-width: thin;
+  scrollbar-color: rgba($neutral-dark-gray, 0.3) transparent;
+  
+  // Webkit-specific thin scrollbar styling
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
   
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
+    background: transparent;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-    
-    &:hover {
-      background: #a8a8a8;
-    }
+    background-color: rgba($neutral-dark-gray, 0.3);
+    border-radius: $radius-base;
   }
 }
 

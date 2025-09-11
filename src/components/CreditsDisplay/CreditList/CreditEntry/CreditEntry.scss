@@ -1,6 +1,106 @@
 @use '../../../../styling/variables' as *;
 @use '../../../../styling/mixins' as *;
+@use '../../../../styling/globals' as *;
 
+// New row-based layout - matches history entry pattern
+.credit-entry-row {
+  background-color: $neutral-white;
+  padding: $space-2;
+  margin-bottom: 1px;
+  border-radius: $radius-md;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 42px;
+  border: $border-half solid $neutral-light-gray;
+  
+  &:hover {
+    background-color: $neutral-lightest-gray;
+    border-color: $neutral-gray;
+  }
+  
+  // Mobile styling
+  @media (max-width: $mobile-breakpoint) {
+    border-color: $neutral-lightest-gray;
+    padding: $space-1-5;
+  }
+}
+
+.credit-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  min-width: 0; // Allow text truncation
+  padding-right: 32px; // Space for controls like history entries
+  
+  .credit-name {
+    font-weight: $font-semibold;
+    font-size: $font-sm;
+    color: $neutral-black;
+    line-height: 1.2;
+    
+    // Mobile adjustment
+    @media (max-width: $mobile-breakpoint) {
+      font-weight: $font-medium;
+    }
+  }
+  
+  .card-info {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+    @extend .card-bubble-display;
+    margin-top: 0;
+    
+    .card-name {
+      font-size: $font-xs;
+      color: $neutral-dark-gray;
+      font-weight: $font-medium;
+    }
+    
+    .card-thumbnail {
+      flex-shrink: 0;
+    }
+  }
+}
+
+.credit-controls {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  align-items: flex-end;
+  z-index: 1;
+  
+  .credit-amount {
+    font-size: $font-xs;
+    font-weight: $font-semibold;
+    color: $neutral-dark-gray;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+  
+  .credit-usage {
+    // Inherit existing dropdown styling
+    button {
+      font-size: $font-xs;
+      padding: $space-1 $space-1-5;
+      height: auto;
+      min-height: 24px;
+    }
+  }
+}
+
+// Legacy styles for modal view (keep existing)
 .credit-entry {
   @include card-panel;
   padding: 0;
@@ -172,6 +272,34 @@
   
   strong {
     font-weight: $font-semibold;
+  }
+}
+
+.usage-tracker-section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.usage-tracker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  
+  .usage-tracker-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #374151;
+  }
+  
+  .usage-tracker-stats {
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+    background-color: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
   }
 }
 

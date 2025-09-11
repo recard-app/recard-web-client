@@ -97,8 +97,13 @@
               padding: $space-2;
             }
             
+            // Modern scrollbar styling for all browsers
+            scrollbar-width: thin;
+            scrollbar-color: rgba($neutral-dark-gray, 0.3) transparent;
+            
+            // Webkit-specific thin scrollbar styling
             &::-webkit-scrollbar {
-                width: $space-2;
+                width: 6px;
             }
             
             &::-webkit-scrollbar-track {

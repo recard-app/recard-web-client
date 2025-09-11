@@ -2,10 +2,8 @@
 @use '../../../styling/mixins' as *;
 
 .credit-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 500px));
-  gap: $space-3;
-  justify-content: start;
-  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 1px; // Match history entry spacing
 }
 

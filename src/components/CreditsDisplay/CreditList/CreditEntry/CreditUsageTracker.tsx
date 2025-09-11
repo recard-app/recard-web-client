@@ -200,7 +200,6 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
 
   return (
     <div className="credit-usage-tracker">
-      <div className="tracker-label">Usage This Year</div>
       <div className={`tracker-periods ${userCredit.AssociatedPeriod}`}>
         {periods.map((period) => {
           const usageColor = getUsageColor(period.usage, period.isFuture);

@@ -72,9 +72,14 @@
     overflow-y: auto;
     min-height: 0;
     
-    /* Scrollbar styling for better appearance */
+    /* Standard scrollbar styling */
+    // Modern scrollbar styling for all browsers
+    scrollbar-width: thin;
+    scrollbar-color: rgba($neutral-dark-gray, 0.3) transparent;
+    
+    // Webkit-specific thin scrollbar styling
     &::-webkit-scrollbar {
-      width: 8px;
+      width: 6px;
     }
 
     &::-webkit-scrollbar-track {
@@ -82,12 +87,8 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: $neutral-medium-gray;
+      background-color: rgba($neutral-dark-gray, 0.3);
       border-radius: $radius-base;
-    }
-
-    &::-webkit-scrollbar-thumb:hover {
-      background: $neutral-dark-gray;
     }
   }
 }

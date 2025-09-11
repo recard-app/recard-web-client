@@ -15,6 +15,11 @@
   align-items: center;
   gap: $space-1;
   margin-bottom: $space-3;
+  
+  // Hide period bar on mobile
+  @media (max-width: $mobile-breakpoint) {
+    display: none;
+  }
 }
 
 .period-cell {

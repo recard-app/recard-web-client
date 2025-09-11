@@ -204,7 +204,12 @@
   overflow-y: auto;
   padding: $space-4 $space-6 $space-4 $space-6;
   
-  // Ensure proper scrolling behavior
+  // Standard scrollbar styling
+  // Modern scrollbar styling for all browsers
+  scrollbar-width: thin;
+  scrollbar-color: rgba($neutral-dark-gray, 0.3) transparent;
+  
+  // Webkit-specific thin scrollbar styling
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -214,12 +219,8 @@
   }
   
   &::-webkit-scrollbar-thumb {
-    background: $neutral-gray;
+    background-color: rgba($neutral-dark-gray, 0.3);
     border-radius: $radius-base;
-  }
-  
-  &::-webkit-scrollbar-thumb:hover {
-    background: $neutral-dark-gray;
   }
 }
 

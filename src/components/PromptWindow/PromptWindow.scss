@@ -53,8 +53,13 @@
         -webkit-overflow-scrolling: touch; // For better iOS scrolling
         width: 100%; // Full width for scrollbar positioning
         
+        // Modern scrollbar styling for all browsers
+        scrollbar-width: thin;
+        scrollbar-color: rgba($neutral-dark-gray, 0.3) transparent;
+        
+        // Webkit-specific thin scrollbar styling
         &::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         
         &::-webkit-scrollbar-track {
@@ -62,8 +67,8 @@
         }
         
         &::-webkit-scrollbar-thumb {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
+            background-color: rgba($neutral-dark-gray, 0.3);
+            border-radius: $radius-base;
         }
         
         .prompt-history {

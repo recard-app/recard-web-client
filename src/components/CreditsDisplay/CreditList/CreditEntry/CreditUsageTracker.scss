@@ -1,14 +1,6 @@
-.credit-usage-tracker {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid #e5e7eb;
+@use '../../../../styling/variables' as *;
 
-  .tracker-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 8px;
-  }
+.credit-usage-tracker {
 
   .tracker-periods {
     display: flex;
@@ -17,11 +9,18 @@
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
-    scrollbar-width: none; // Firefox
-    -ms-overflow-style: none; // IE/Edge
-    
+    // Standard scrollbar styling
     &::-webkit-scrollbar {
-      display: none; // Chrome/Safari
+      width: $space-2;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba($neutral-dark-gray, 0.3);
+      border-radius: $radius-base;
     }
   }
 
