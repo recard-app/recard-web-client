@@ -95,9 +95,28 @@ const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar,
   const realMonthIdx = realNow.getMonth();
   const realYear = realNow.getFullYear();
 
+  // Get the active period label for mobile display
+  const activePeriodLabel = useMemo(() => {
+    const activeIdx = cells.findIndex((cell) =>
+      (groupYear === selectedYear) && (selectedMonthIdx >= cell.startMonthIndex && selectedMonthIdx <= cell.endMonthIndex)
+    );
+    return activeIdx >= 0 ? cells[activeIdx].label : '';
+  }, [cells, groupYear, selectedYear, selectedMonthIdx]);
+
   return (
     <section className="credit-period-group" aria-labelledby={`period-${period}`}>
-      <h3 id={`period-${period}`} className="period-title">{title}</h3>
+      <div className="period-header">
+        <h3 id={`period-${period}`} className="period-title">{title}</h3>
+        
+        {/* Mobile period label */}
+        {activePeriodLabel && (
+          <div className="mobile-period-label">
+            <Icon name="calendar" variant="micro" size={12} />
+            <span className="period-label">{activePeriodLabel}</span>
+          </div>
+        )}
+      </div>
+      
       <div className="period-bar">
         {(() => {
           const activeIdx = cells.findIndex((cell) =>
