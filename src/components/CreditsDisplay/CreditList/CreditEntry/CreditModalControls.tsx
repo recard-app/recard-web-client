@@ -1,16 +1,14 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType } from '../../../../../types';
-import { CardCredit } from '../../../../../types/CreditCardTypes';
-import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../../types/CardCreditsTypes';
-import { Slider } from '../../../../ui/slider';
+import { CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType } from '../../../../types';
+import { CardCredit } from '../../../../types/CreditCardTypes';
+import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
+import { Slider } from '../../../ui/slider';
 import Icon from '@/icons';
-import CreditUsageTracker from './CreditUsageTracker';
-import { getMaxValue, clampValue, getUsageForValue } from '../utils';
-import UsageDropdown from '../UsageDropdown';
+import { getMaxValue, clampValue, getUsageForValue } from './utils';
+import UsageDropdown from './UsageDropdown';
 
-interface CreditEntryDetailsProps {
+interface CreditModalControlsProps {
   userCredit: UserCredit;
-  now: Date;
   cardCredit: CardCredit | null;
   creditMaxValue?: number;
   currentYear: number;
@@ -21,27 +19,18 @@ interface CreditEntryDetailsProps {
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => void;
-  renderControls?: boolean;
-  renderControlsOnly?: boolean;
 }
 
-const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({ 
-  userCredit, 
-  now, 
-  cardCredit, 
+const CreditModalControls: React.FC<CreditModalControlsProps> = ({
+  userCredit,
+  cardCredit,
   creditMaxValue,
   currentYear,
-  onUpdateHistoryEntry,
-  renderControls = true,
-  renderControlsOnly = false
+  onUpdateHistoryEntry
 }) => {
-  // Separate state for modal view - independent from the main list view
+  // Initialize with current period
   const [selectedPeriodNumber, setSelectedPeriodNumber] = useState<number>(() => {
-    // Initialize with current period
-    const currentMonth = now.getMonth() + 1;
-    const isCurrentYear = currentYear === now.getFullYear();
-    
-    if (!isCurrentYear) return 1;
+    const currentMonth = new Date().getMonth() + 1;
     
     if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
       return currentMonth;
@@ -60,7 +49,7 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
     return userCredit.History.find(h => h.PeriodNumber === selectedPeriodNumber) || userCredit.History[0];
   }, [userCredit.History, selectedPeriodNumber]);
 
-  // State for the selected period (independent from main view)
+  // State for the selected period
   const [usage, setUsage] = useState<CreditUsageType>(CREDIT_USAGE.INACTIVE);
   const [valueUsed, setValueUsed] = useState<number>(0);
 
@@ -84,6 +73,13 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
 
   const usageColor = USAGE_COLOR_BY_STATE[usage];
 
+  const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
+    [CREDIT_USAGE.USED]: 'used-icon',
+    [CREDIT_USAGE.PARTIALLY_USED]: 'partially-used-icon',
+    [CREDIT_USAGE.NOT_USED]: 'not-used-icon',
+    [CREDIT_USAGE.INACTIVE]: 'inactive',
+  };
+
   // Tinting functions
   const parseHexToRgb = (hex: string): { r: number; g: number; b: number } => {
     const normalized = hex.replace('#', '');
@@ -105,8 +101,7 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
 
   const lineTintBackground = tintHexColor(usageColor, 0.95);
   const lineTintHover = tintHexColor(usageColor, 0.85);
-
-  // Helper functions are imported from utils
+  const buttonBackgroundColor = tintHexColor(usageColor, 0.9);
 
   const persistUpdate = async (newUsage: CreditUsageType, val: number) => {
     if (!onUpdateHistoryEntry) return;
@@ -154,7 +149,7 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
 
   const getCurrentPeriodName = (): string => {
     if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       return monthNames[selectedPeriodNumber - 1] || `Month ${selectedPeriodNumber}`;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
       return `Q${selectedPeriodNumber} ${currentYear}`;
@@ -167,86 +162,57 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
   };
 
   return (
-    <>
-      <div className="usage-tracker-section">
-        <div className="usage-tracker-header">
-          <span className="usage-tracker-title">Usage This Year</span>
-          <span className="usage-tracker-stats">
-            ${userCredit.History.reduce((total, entry) => total + (entry.ValueUsed || 0), 0)} / ${Number(cardCredit?.Value || 0) * userCredit.History.length} used
-          </span>
+    <div className="credit-modal-controls" style={{ backgroundColor: lineTintBackground, '--usage-tint-hover': lineTintHover } as React.CSSProperties}>
+      {/* Period and amount display */}
+      <div className="credit-period-row">
+        <div className="period-name">{getCurrentPeriodName()}</div>
+        <div className="amount-display">
+          <span className="amount-text">${valueUsed} / ${maxValue}</span>
         </div>
-        <CreditUsageTracker 
-          userCredit={userCredit}
-          currentYear={currentYear}
-          selectedPeriodNumber={selectedPeriodNumber}
-          onPeriodSelect={setSelectedPeriodNumber}
-          currentUsage={usage}
-          currentValueUsed={valueUsed}
+      </div>
+      
+      {/* Full-width slider */}
+      <div className="credit-modal-slider">
+        <Slider
+          min={0}
+          max={maxValue}
+          value={[valueUsed]}
+          onValueChange={handleSliderChange}
+          onValueCommit={handleSliderCommit}
+          disabled={isSliderDisabled}
+          className="w-full"
+          style={{ '--slider-range-color': usageColor, width: '100%' } as React.CSSProperties}
         />
       </div>
 
-      {/* Slider and Select Controls - modal layout with full-width slider */}
-      <div className="credit-modal-controls" style={{ backgroundColor: lineTintBackground, ['--usage-tint-hover' as any]: lineTintHover }}>
-        {/* Current period label */}
-        <div className="current-period-label">
-          <strong>Period:</strong> {getCurrentPeriodName()}
-        </div>
-        
-        {/* Full-width slider */}
-        <div className="credit-modal-slider">
-          <Slider
-            min={0}
-            max={maxValue}
-            value={[valueUsed]}
-            onValueChange={handleSliderChange}
-            onValueCommit={handleSliderCommit}
-            disabled={isSliderDisabled}
-            className="w-full"
-            style={{ ['--slider-range-color' as any]: usageColor, width: '100%' }}
-          />
-        </div>
-
-        {/* Bottom row with amount and usage selector */}
-        <div className="credit-modal-bottom-row">
-          <div className="amount-input">
-            <span className="amount-label">$</span>
-            <input
-              type="number"
-              min="0"
-              max={maxValue}
-              step="0.01"
-              value={valueUsed.toFixed(2)}
-              onChange={(e) => {
-                const v = clampValue(parseFloat(e.target.value) || 0, maxValue);
-                setValueUsed(v);
-                const status = getUsageForValue(v, maxValue);
-                setUsage(status);
-              }}
-              onBlur={(e) => {
-                const v = clampValue(parseFloat(e.target.value) || 0, maxValue);
-                const status = getUsageForValue(v, maxValue);
-                void persistUpdate(status, v);
-              }}
-              disabled={isSliderDisabled}
-              className="amount-input-field"
-            />
-          </div>
-
-          <UsageDropdown
-            usage={usage}
-            usageColor={usageColor}
-            onUsageSelect={handleUsageSelect}
-            trigger={
-              <button className="button outline small" style={{ color: usageColor, borderColor: usageColor }}>
-                {CREDIT_USAGE_DISPLAY_NAMES[usage.toUpperCase() as keyof typeof CREDIT_USAGE_DISPLAY_NAMES]}
-                <Icon name="chevron-down" variant="mini" size={16} />
-              </button>
-            }
-          />
-        </div>
+      {/* Usage selector */}
+      <div className="credit-modal-bottom-row">
+        <UsageDropdown
+          usage={usage}
+          usageColor={usageColor}
+          onUsageSelect={handleUsageSelect}
+          trigger={
+            <button 
+              className="button outline small" 
+              style={{ 
+                color: usageColor, 
+                borderColor: usageColor, 
+                backgroundColor: buttonBackgroundColor,
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px',
+                '--button-hover-bg': lineTintHover
+              } as React.CSSProperties}
+            >
+              <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
+              {CREDIT_USAGE_DISPLAY_NAMES[usage.toUpperCase() as keyof typeof CREDIT_USAGE_DISPLAY_NAMES]}
+              <Icon name="chevron-down" variant="micro" size={12} />
+            </button>
+          }
+        />
       </div>
-    </>
+    </div>
   );
 };
 
-export default CreditEntryDetails;
+export default CreditModalControls;

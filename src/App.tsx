@@ -782,7 +782,7 @@ function AppContent({}: AppContentProps) {
                   }
                   setIsCardSelectorOpen(open);
                 }} direction="bottom">
-                  <DrawerContent className="mobile-card-selector-drawer">
+                  <DrawerContent className="mobile-card-selector-drawer" fitContent maxHeight="80vh">
                     <DrawerTitle className="sr-only">Select Your Credit Cards</DrawerTitle>
                     <div className="dialog-header drawer-sticky-header">
                       <h2>Select Your Credit Cards</h2>
@@ -902,7 +902,7 @@ function AppContent({}: AppContentProps) {
             if (useDrawerForCardDetails) {
               return (
                 <Drawer open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen} direction="bottom">
-                  <DrawerContent>
+                  <DrawerContent fitContent maxHeight="80vh">
                     <DrawerHeader>
                       <DrawerTitle className="sr-only">
                         {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}

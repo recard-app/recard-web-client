@@ -90,15 +90,57 @@
   }
   
   .credit-usage {
-    // Inherit existing dropdown styling
-    button {
-      font-size: $font-xs;
-      padding: $space-1 $space-1-5;
-      height: auto;
-      min-height: 24px;
+    // New full-height button styling
+    .credit-usage-button {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: $space-half;
+      padding: $space-1-5;
+      height: 100%;
+      min-height: 50px;
+      border: $border-half solid;
+      border-radius: $radius-base;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: none;
+      text-align: right;
+      
+      &:hover {
+        background-color: var(--button-hover-bg) !important;
+      }
+      
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba($primary-medium, 0.2);
+      }
+      
+      .credit-amount-large {
+        font-size: $font-sm;
+        font-weight: $font-bold;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.4;
+      }
+      
+      .credit-usage-label {
+        display: flex;
+        align-items: center;
+        gap: $space-half;
+        font-size: $font-xs;
+        font-weight: $font-medium;
+        opacity: 0.8;
+        
+        span {
+          font-size: $font-xs;
+        }
+      }
     }
   }
 }
+
+// === SHARED USAGE DROPDOWN STYLING ===
+// (Moved to UsageDropdown.scss)
 
 // Legacy styles for modal view (keep existing)
 .credit-entry {
@@ -208,6 +250,62 @@
 
 // === CREDIT ENTRY DETAILS MODAL STYLING ===
 
+// Credit header combining title and card bubble
+.credit-header {
+  margin-bottom: $space-3;
+  
+  .credit-id {
+    margin-bottom: $space-1;
+  }
+  
+  .card-bubble-display {
+    margin-top: 0 !important;
+    margin-bottom: 0;
+  }
+}
+
+// Stacked label system for credit details
+.credit-details-section {
+  margin: $space-3 0;
+  display: flex;
+  gap: $space-4;
+  
+  @media (max-width: $mobile-breakpoint) {
+    flex-direction: column;
+    gap: $space-3;
+  }
+}
+
+.credit-detail-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.credit-detail-item {
+  margin-bottom: $space-2;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.credit-detail-label {
+  font-size: $font-xs;
+  font-weight: $font-semibold;
+  color: $neutral-medium-gray;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-bottom: $space-half;
+  display: block;
+}
+
+.credit-detail-value {
+  font-size: $font-sm;
+  color: $neutral-dark-gray;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
 // Usage tracker section styling
 .usage-tracker-section {
   margin-bottom: $space-4;
@@ -235,11 +333,9 @@
 // Modal controls styling
 .credit-modal-controls {
   padding: $space-3;
-  border-radius: $radius-md;
   display: flex;
   flex-direction: column;
   gap: $space-2;
-  border: $border-half solid $neutral-light-gray;
 }
 
 .current-period-label {
@@ -264,12 +360,39 @@
   }
 }
 
-.credit-modal-bottom-row {
+.credit-period-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: $space-2;
+  
+  .period-name {
+    font-size: $font-sm;
+    color: $neutral-dark-gray;
+    font-weight: $font-medium;
+  }
+}
+
+.credit-modal-bottom-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   gap: $space-3;
   margin-top: $space-3;
+}
+
+.amount-display {
+  .amount-text {
+    font-size: $font-sm;
+    font-weight: $font-semibold;
+    color: $neutral-dark-gray;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// Custom hover for modal dropdown buttons to use tinted colors instead of global button styles
+.credit-modal-controls button:hover {
+  background-color: var(--button-hover-bg) !important;
 }
 
 .amount-input {

@@ -203,7 +203,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                     if (useDrawer) {
                         return (
                             <Drawer open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen} direction="bottom">
-                                <DrawerContent>
+                                <DrawerContent fitContent maxHeight="80vh">
                                     <DrawerTitle className="sr-only">Select a Credit Card</DrawerTitle>
                                     <div className="dialog-header drawer-sticky-header">
                                         <h2>Select a Credit Card</h2>
@@ -366,7 +366,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
                 if (useDrawer) {
                     return (
                         <Drawer open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen} direction="bottom">
-                            <DrawerContent>
+                            <DrawerContent fitContent maxHeight="80vh">
                                 <DrawerTitle className="sr-only">Select a Credit Card</DrawerTitle>
                                     <div className="dialog-header drawer-sticky-header">
                                     <h2>Select a Credit Card</h2>

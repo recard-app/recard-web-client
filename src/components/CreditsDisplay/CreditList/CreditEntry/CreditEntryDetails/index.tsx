@@ -19,6 +19,7 @@ export interface CreditEntryDetailsProps {
   card: CreditCardDetails | null;
   cardCredit: CardCredit | null;
   creditMaxValue?: number;
+  currentYear: number;
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -26,6 +27,7 @@ export interface CreditEntryDetailsProps {
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => void;
+  hideControls?: boolean;
 }
 
 const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({ 
@@ -34,7 +36,8 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
   card, 
   cardCredit, 
   creditMaxValue, 
-  onUpdateHistoryEntry 
+  onUpdateHistoryEntry,
+  hideControls = false
 }) => {
   // Compute the current period number based on AssociatedPeriod and now
   const currentPeriodNumber = useMemo(() => {
@@ -236,54 +239,71 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
 
   return (
     <div className="credit-detail-content">
-      {/* Credit title */}
-      <div className="credit-id">{cardCredit?.Title ?? userCredit.CreditId}</div>
-      
-      {/* Card directly below title */}
-      {card && (
-        <p className="card-bubble-display" style={{ marginTop: 6 }}>
-          <CardIcon 
-            title={card.CardName}
-            size={12}
-            primary={card.CardPrimaryColor}
-            secondary={card.CardSecondaryColor}
-            className="card-thumbnail"
-          />
-          {card.CardName}
-        </p>
-      )}
+      {/* Credit title and card info combined */}
+      <div className="credit-header">
+        <div className="credit-id">{cardCredit?.Title ?? userCredit.CreditId}</div>
+        {card && (
+          <p className="card-bubble-display">
+            <CardIcon 
+              title={card.CardName}
+              size={12}
+              primary={card.CardPrimaryColor}
+              secondary={card.CardSecondaryColor}
+              className="card-thumbnail"
+            />
+            {card.CardName}
+          </p>
+        )}
+      </div>
 
-      {/* Description */}
+      {/* Description with stacked label */}
       {cardCredit?.Description && (
-        <div className="credit-desc">{cardCredit.Description}</div>
-      )}
-
-      {/* Details section below description */}
-      {cardCredit?.TimePeriod && (
-        <div className="credit-detail-field">
-          <strong>Time Period:</strong> {cardCredit.TimePeriod}
+        <div className="credit-detail-item">
+          <span className="credit-detail-label">Description</span>
+          <div className="credit-detail-value">{cardCredit.Description}</div>
         </div>
       )}
 
+      {/* Details with stacked label - full width */}
       {cardCredit?.Details && (
-        <div className="credit-detail-field">
-          <strong>Details:</strong> {cardCredit.Details}
+        <div className="credit-detail-item">
+          <span className="credit-detail-label">Details</span>
+          <div className="credit-detail-value">{cardCredit.Details}</div>
         </div>
       )}
 
-      {(cardCredit?.Category || cardCredit?.SubCategory) && (
-        <div className="credit-detail-field">
-          <strong>Category:</strong> {cardCredit.Category}{cardCredit.SubCategory ? ` › ${cardCredit.SubCategory}` : ''}
+      {/* Time Period and Category side-by-side */}
+      {(cardCredit?.TimePeriod || cardCredit?.Category || cardCredit?.SubCategory) && (
+        <div className="credit-details-section">
+          <div className="credit-detail-group">
+            {cardCredit?.TimePeriod && (
+              <div className="credit-detail-item">
+                <span className="credit-detail-label">Time Period</span>
+                <div className="credit-detail-value">{cardCredit.TimePeriod}</div>
+              </div>
+            )}
+          </div>
+          
+          <div className="credit-detail-group">
+            {(cardCredit?.Category || cardCredit?.SubCategory) && (
+              <div className="credit-detail-item">
+                <span className="credit-detail-label">Category</span>
+                <div className="credit-detail-value">
+                  {cardCredit.Category}{cardCredit.SubCategory ? ` › ${cardCredit.SubCategory}` : ''}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
       {/* Usage Tracker with Statistics */}
       <div className="usage-tracker-section">
-        <div className="usage-tracker-header">
-          <span className="usage-tracker-title">Usage This Year</span>
-          <span className="usage-tracker-stats">
+        <div className="credit-detail-item">
+          <span className="credit-detail-label">Usage This Year</span>
+          <div className="credit-detail-value">
             ${userCredit.History.reduce((total: any, entry: any) => total + (entry.ValueUsed || 0), 0)} / ${(Number(cardCredit?.Value) || 0) * userCredit.History.length} used
-          </span>
+          </div>
         </div>
         <CreditUsageTracker 
           userCredit={userCredit} 
@@ -299,10 +319,12 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
       </div>
 
       {/* Slider and Select Controls - modal layout with full-width slider */}
-      <div className="credit-modal-controls" style={{ backgroundColor: lineTintBackground, '--usage-tint-hover': lineTintHover } as React.CSSProperties}>
+      {!hideControls && (
+        <div className="credit-modal-controls" style={{ backgroundColor: lineTintBackground, '--usage-tint-hover': lineTintHover } as React.CSSProperties}>
         {/* Selected period label */}
-        <div className="current-period-label">
-          <strong>Editing Period:</strong> {getSelectedPeriodName()}
+        <div className="credit-detail-item">
+          <span className="credit-detail-label">Editing Period</span>
+          <div className="credit-detail-value">{getSelectedPeriodName()}</div>
         </div>
         
         {/* Full-width slider */}
@@ -366,6 +388,7 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };

@@ -5,10 +5,12 @@ import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes
 import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
 import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog/dialog';
-import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
-import { getMaxValue } from './utils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
+import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
+import { getMaxValue, clampValue, getUsageForValue } from './utils';
 import CreditEntryDetails from './CreditEntryDetails';
+import CreditModalControls from './CreditModalControls';
+import UsageDropdown from './UsageDropdown';
 
 export interface CreditEntryProps {
   userCredit: UserCredit;
@@ -48,6 +50,10 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   const isMobile = useIsMobile();
   const [isModalOpen, setIsModalOpen] = useState(false);
   
+  // State for the main card's usage editing
+  const [cardUsage, setCardUsage] = useState<CreditUsageType>(CREDIT_USAGE.INACTIVE);
+  const [cardValueUsed, setCardValueUsed] = useState<number>(0);
+  
   const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
     [CREDIT_USAGE.USED]: 'used-icon',
     [CREDIT_USAGE.PARTIALLY_USED]: 'partially-used-icon',
@@ -75,9 +81,17 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     return userCredit.History.find((h) => h.PeriodNumber === currentPeriodNumber) ?? userCredit.History[0];
   }, [userCredit, currentPeriodNumber]);
 
+  // Sync card state with current period history
+  useEffect(() => {
+    if (currentHistory) {
+      setCardUsage((currentHistory.CreditUsage as CreditUsageType) ?? CREDIT_USAGE.INACTIVE);
+      setCardValueUsed(currentHistory.ValueUsed ?? 0);
+    }
+  }, [currentHistory]);
+
   // Main list display state (always shows current period)
-  const valueUsed = currentHistory?.ValueUsed ?? 0;
-  const usage = (currentHistory?.CreditUsage as CreditUsageType) ?? CREDIT_USAGE.INACTIVE;
+  const valueUsed = cardValueUsed;
+  const usage = cardUsage;
 
   const maxValue = getMaxValue(creditMaxValue);
 
@@ -90,6 +104,56 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
 
 
   const usageColor = USAGE_COLOR_BY_STATE[usage];
+
+  // Tinting functions for card styling
+  const parseHexToRgb = (hex: string): { r: number; g: number; b: number } => {
+    const normalized = hex.replace('#', '');
+    const value = normalized.length === 3 ? normalized.split('').map((c) => c + c).join('') : normalized;
+    const r = parseInt(value.substring(0, 2), 16);
+    const g = parseInt(value.substring(2, 4), 16);
+    const b = parseInt(value.substring(4, 6), 16);
+    return { r, g, b };
+  };
+
+  const tintHexColor = (hex: string, tintFactor: number): string => {
+    const { r, g, b } = parseHexToRgb(hex);
+    const mix = (channel: number) => Math.round(channel + (255 - channel) * tintFactor);
+    const nr = mix(r);
+    const ng = mix(g);
+    const nb = mix(b);
+    return `#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`;
+  };
+
+  const buttonBackgroundColor = tintHexColor(usageColor, 0.9);
+  const buttonHoverColor = tintHexColor(usageColor, 0.85);
+
+  // Update handlers for card dropdown
+  const handleCardUsageSelect = async (newUsage: CreditUsageType) => {
+    setCardUsage(newUsage);
+    let val = cardValueUsed;
+    
+    if (newUsage === CREDIT_USAGE.USED) {
+      val = maxValue;
+      setCardValueUsed(val);
+    } else if (newUsage === CREDIT_USAGE.NOT_USED) {
+      val = 0;
+      setCardValueUsed(val);
+    } else if (newUsage === CREDIT_USAGE.INACTIVE) {
+      val = 0;
+      setCardValueUsed(val);
+    }
+    
+    // Persist the update immediately
+    if (onUpdateHistoryEntry) {
+      onUpdateHistoryEntry({
+        cardId: userCredit.CardId,
+        creditId: userCredit.CreditId,
+        periodNumber: currentPeriodNumber,
+        creditUsage: newUsage,
+        valueUsed: val,
+      });
+    }
+  };
 
 
   return (
@@ -112,19 +176,38 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           )}
         </div>
         
-        {/* Right side: Usage display (read-only for list view) */}
+        {/* Right side: Usage dropdown (interactive for list view) */}
         <div className="credit-controls">
-          <div className="credit-amount">${valueUsed} / ${maxValue}</div>
           <div className="credit-usage">
-            <div className="flex items-center gap-2 h-8 px-3 rounded-md border bg-transparent text-sm" style={{ color: usageColor, borderColor: usageColor }}>
-              <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
-              <span>
-                {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
-                {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
-                {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
-                {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
-              </span>
-            </div>
+            <UsageDropdown
+              usage={usage}
+              usageColor={usageColor}
+              onUsageSelect={handleCardUsageSelect}
+              trigger={
+                <button 
+                  className="credit-usage-button"
+                  style={{ 
+                    backgroundColor: buttonBackgroundColor, 
+                    color: usageColor,
+                    borderColor: usageColor,
+                    '--button-hover-bg': buttonHoverColor
+                  } as React.CSSProperties}
+                  onClick={(e) => e.stopPropagation()} // Prevent card click from opening modal
+                >
+                  <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
+                  <div className="credit-usage-label">
+                    <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={12} />
+                    <span>
+                      {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
+                      {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
+                      {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
+                      {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
+                    </span>
+                    <Icon name="chevron-down" variant="micro" size={12} />
+                  </div>
+                </button>
+              }
+            />
           </div>
         </div>
       </div>
@@ -132,7 +215,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       {/* Responsive Modal/Drawer */}
       {isMobile ? (
         <Drawer open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DrawerContent fitContent>
+          <DrawerContent fitContent maxHeight="80vh">
             <DrawerTitle className="sr-only">Credit Details</DrawerTitle>
             <div className="dialog-header drawer-sticky-header">
               <h2>Credit Details</h2>
@@ -144,14 +227,20 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 card={card}
                 cardCredit={cardCredit}
                 creditMaxValue={creditMaxValue}
+                currentYear={now.getFullYear()}
                 onUpdateHistoryEntry={onUpdateHistoryEntry}
+                hideControls={true}
               />
             </div>
-            <div className="dialog-footer">
-              <button className="button outline" onClick={() => setIsModalOpen(false)}>
-                Close
-              </button>
-            </div>
+            <DrawerFooter>
+              <CreditModalControls
+                userCredit={userCredit}
+                cardCredit={cardCredit}
+                creditMaxValue={creditMaxValue}
+                currentYear={now.getFullYear()}
+                onUpdateHistoryEntry={onUpdateHistoryEntry}
+              />
+            </DrawerFooter>
           </DrawerContent>
         </Drawer>
       ) : (
@@ -167,9 +256,20 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 card={card}
                 cardCredit={cardCredit}
                 creditMaxValue={creditMaxValue}
+                currentYear={now.getFullYear()}
                 onUpdateHistoryEntry={onUpdateHistoryEntry}
+                hideControls={true}
               />
             </div>
+            <DialogFooter>
+              <CreditModalControls
+                userCredit={userCredit}
+                cardCredit={cardCredit}
+                creditMaxValue={creditMaxValue}
+                currentYear={now.getFullYear()}
+                onUpdateHistoryEntry={onUpdateHistoryEntry}
+              />
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       )}

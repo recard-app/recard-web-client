@@ -1,0 +1,76 @@
+@use '../../../../styling/variables' as *;
+
+// Usage dropdown specific styling
+.usage-dropdown-content {
+  min-width: 180px;
+}
+
+// Strong overrides for usage dropdown items
+.usage-dropdown-item {
+  // Force flex layout with high specificity
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  padding: $space-2 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease;
+  width: 100% !important;
+  
+  // Override any potential block display
+  &[data-slot="dropdown-menu-item"] {
+    display: flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+  }
+  
+  // Ensure hover state works
+  &:hover {
+    background-color: $neutral-lightest-gray !important;
+  }
+  
+  // Selected state styling
+  &.selected {
+    font-weight: $font-semibold;
+  }
+  
+  // Icon styling
+  .usage-dropdown-icon {
+    flex-shrink: 0 !important;
+    width: 14px !important;
+    height: 14px !important;
+    margin-right: 8px !important;
+    display: inline-flex !important;
+  }
+  
+  // Text styling
+  .usage-dropdown-text {
+    flex: 1 !important;
+    display: inline-block !important;
+    text-align: left !important;
+  }
+  
+  // Check icon styling
+  .usage-dropdown-check {
+    flex-shrink: 0 !important;
+    width: 12px !important;
+    height: 12px !important;
+    margin-left: auto !important;
+    display: inline-flex !important;
+  }
+}
+
+// Additional overrides for any conflicting dropdown menu styles
+[data-slot="dropdown-menu-content"] .usage-dropdown-item {
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+}
+
+// Override any potential UI component styles
+.dropdown-menu-item-with-icon.usage-dropdown-item {
+  display: flex !important;
+  align-items: center !important;
+  flex-direction: row !important;
+  gap: 0 !important; // Remove gap, use margin instead
+}

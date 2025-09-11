@@ -196,6 +196,17 @@
       }
     }
   }
+  
+  // Controls styling within dialog footer
+  .credit-modal-controls {
+    width: 100%;
+    // Remove background since footer already has proper background
+    background: none !important;
+    // Remove padding since footer handles spacing
+    padding: 0;
+    // Ensure it takes full width and stacks properly
+    order: -2; // Place before InfoDisplay (which has order: -1)
+  }
 }
 
 // Base scrollable content styling for both dialog types
@@ -379,4 +390,50 @@
 // Auto-apply scrollable content to children that are not header/footer
 .alert-dialog-inner > *:not(.alert-dialog-header):not(.alert-dialog-footer):not(.alert-dialog-body) {
   @extend %dialog-scrollable-content-base;
+}
+
+// === DRAWER SPECIFIC STYLES ===
+
+// Sticky footer for drawers (similar to dialog footers but with drawer-specific styling)
+[data-slot="drawer-footer"] {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background: $neutral-white;
+  border-top: 1px solid $neutral-light-gray;
+  padding: 0; // Remove padding to let controls handle their own
+  margin-top: auto; // Push to bottom
+  display: flex;
+  flex-direction: column;
+  gap: 0; // Remove gap to let controls handle spacing
+  flex-shrink: 0; // Prevent footer from shrinking
+  
+  // Controls styling within drawer footer
+  .credit-modal-controls {
+    // Override sticky positioning since drawer footer is already sticky
+    position: static;
+    border-top: none; // Remove duplicate border
+    margin-top: 0;
+    // Keep background in drawer since it's part of the content
+    background: inherit;
+  }
+  
+  // Button styling within drawer footer
+  .button-group {
+    display: flex;
+    gap: $space-2;
+    width: 100%;
+    padding: $space-4;
+    
+    button {
+      flex: 1;
+    }
+  }
+  
+  // Direct button children (fallback when not using button-group)
+  > button {
+    width: 100%;
+    padding: $space-4;
+    margin: 0;
+  }
 }

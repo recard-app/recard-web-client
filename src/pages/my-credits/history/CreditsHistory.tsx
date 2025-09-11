@@ -265,7 +265,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
       {/* Card Filter Selector: drawer on mobile, dialog on desktop */}
       {isMobileViewport ? (
         <Drawer open={isCardFilterOpen} onOpenChange={setIsCardFilterOpen} direction="bottom">
-          <DrawerContent>
+          <DrawerContent fitContent maxHeight="80vh">
             <DrawerTitle className="sr-only">Select Card</DrawerTitle>
             <div className="dialog-header drawer-sticky-header"><h2>Select Card</h2></div>
             <div className="dialog-body" style={{ overflowY: 'auto' }}>

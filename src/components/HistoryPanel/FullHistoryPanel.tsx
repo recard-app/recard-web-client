@@ -533,7 +533,7 @@ function FullHistoryPanel({
 
       {/* Mobile Filters Drawer */}
       <Drawer open={isFiltersDrawerOpen} onOpenChange={setIsFiltersDrawerOpen}>
-        <DrawerContent className="mobile-history-filters-drawer" fitContent>
+        <DrawerContent className="mobile-history-filters-drawer" fitContent maxHeight="80vh">
           <DrawerTitle className="sr-only">Filters</DrawerTitle>
           <div className="dialog-header drawer-sticky-header history-filters-header">
             <h2>Filters</h2>
