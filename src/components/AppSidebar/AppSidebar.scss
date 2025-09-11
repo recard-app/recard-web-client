@@ -204,24 +204,8 @@
     padding: 0;
     padding-left: calc($mini-sidebar-width); // Leave space for mini nav column
 
-    // Standard scrollbar styling
-    // Modern scrollbar styling for all browsers
-    scrollbar-width: thin;
-    scrollbar-color: rgba($neutral-dark-gray, 0.3) transparent;
-    
-    // Webkit-specific thin scrollbar styling
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba($neutral-dark-gray, 0.3);
-      border-radius: $radius-base;
-    }
+    // Universal scrollbar styling
+    @include universal-scrollbar;
 
     // Specifically for HistoryPanel and other components that might have their own scrolling
     .history-panel,
