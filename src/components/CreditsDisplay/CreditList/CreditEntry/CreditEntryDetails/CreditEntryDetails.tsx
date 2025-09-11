@@ -5,7 +5,7 @@ import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../../types/CardCreditsTyp
 import { Slider } from '../../../../ui/slider';
 import Icon from '@/icons';
 import CreditUsageTracker from './CreditUsageTracker';
-import { getMaxValue, clampValue, getUsageForValue } from '../utils';
+import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from '../utils';
 import UsageDropdown from '../UsageDropdown';
 
 interface CreditEntryDetailsProps {
@@ -125,6 +125,9 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
     let val = valueUsed;
     if (newUsage === CREDIT_USAGE.USED) {
       val = maxValue;
+      setValueUsed(val);
+    } else if (newUsage === CREDIT_USAGE.PARTIALLY_USED) {
+      val = getValueForUsage(newUsage, maxValue);
       setValueUsed(val);
     } else if (newUsage === CREDIT_USAGE.NOT_USED) {
       val = 0;

@@ -37,9 +37,10 @@ interface CreditsHistoryProps {
   userCardDetails: CreditCardDetails[];
   reloadTrigger?: number;
   trackingPreferences?: UserCreditsTrackingPreferences | null;
+  onRefreshCredits?: (year?: number) => Promise<void>;
 }
 
-const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetails, reloadTrigger, trackingPreferences }) => {
+const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetails, reloadTrigger, trackingPreferences, onRefreshCredits }) => {
   // Use the full height hook for this page
   useFullHeight(true);
   
@@ -429,8 +430,8 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
                 showPartiallyUsed={showPartiallyUsed}
                 showInactive={showInactive}
                 showAllPeriods={!isMobileViewport}
-                onUpdateHistoryEntry={({ cardId, creditId, periodNumber, creditUsage, valueUsed }) => {
-                  // Optimistically update localCalendar in place
+                onUpdateHistoryEntry={async ({ cardId, creditId, periodNumber, creditUsage, valueUsed }) => {
+                  // Optimistically update localCalendar in place for immediate feedback
                   setLocalCalendar((prev) => {
                     if (!prev) return prev;
                     if (prev.Year !== selectedYear) return prev;
@@ -446,6 +447,33 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
                     }) };
                     return next;
                   });
+
+                  // Persist the change to the database and refresh parent state
+                  try {
+                    await UserCreditService.updateCreditHistoryEntry({
+                      cardId,
+                      creditId,
+                      periodNumber,
+                      creditUsage,
+                      valueUsed
+                    });
+                    // Refresh the parent's credit data to ensure consistency across all views
+                    if (onRefreshCredits) {
+                      await onRefreshCredits(selectedYear);
+                    }
+                  } catch (error) {
+                    console.error('Failed to update credit history entry:', error);
+                    // On error, reload both local and parent state to get correct data
+                    try {
+                      const updatedCalendar = await UserCreditService.fetchCreditHistoryForYear(selectedYear);
+                      setLocalCalendar(updatedCalendar);
+                      if (onRefreshCredits) {
+                        await onRefreshCredits(selectedYear);
+                      }
+                    } catch (reloadError) {
+                      console.error('Failed to reload credit history after update error:', reloadError);
+                    }
+                  }
                 }}
               />
             )}

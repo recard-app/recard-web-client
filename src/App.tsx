@@ -217,24 +217,25 @@ function AppContent({}: AppContentProps) {
     fetchCreditCards();
   }, [user]);
 
+  // Function to refresh current year credits
+  const refreshCurrentYearCredits = async (year?: number): Promise<void> => {
+    if (!user) {
+      setCurrentYearCredits(null);
+      return;
+    }
+    try {
+      const targetYear = year || new Date().getFullYear();
+      const credits = await UserCreditService.fetchCreditHistoryForYear(targetYear);
+      setCurrentYearCredits(credits);
+    } catch (error) {
+      console.error('Error fetching current year credit history:', error);
+      setCurrentYearCredits(null);
+    }
+  };
+
   // Effect to fetch user's current year credit history on launch/auth change
   useEffect(() => {
-    const fetchCurrentYearCredits = async () => {
-      if (!user) {
-        setCurrentYearCredits(null);
-        return;
-      }
-      try {
-        const year = new Date().getFullYear();
-        const credits = await UserCreditService.fetchCreditHistoryForYear(year);
-        setCurrentYearCredits(credits);
-      } catch (error) {
-        console.error('Error fetching current year credit history:', error);
-        setCurrentYearCredits(null);
-      }
-    };
-
-    fetchCurrentYearCredits();
+    refreshCurrentYearCredits();
   }, [user]);
 
   // Background reconciliation for current-year credits after quick fetch
@@ -1002,6 +1003,7 @@ function AppContent({}: AppContentProps) {
                         userCardDetails={userDetailedCardDetails} 
                         reloadTrigger={cardsVersion}
                         trackingPreferences={trackingPreferences}
+                        onRefreshCredits={refreshCurrentYearCredits}
                       />
                     </ProtectedRoute>
                   } />

@@ -7,7 +7,7 @@ import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
-import { getMaxValue, clampValue, getUsageForValue } from './utils';
+import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './utils';
 import CreditEntryDetails from './CreditEntryDetails';
 import CreditModalControls from './CreditModalControls';
 import UsageDropdown from './UsageDropdown';
@@ -135,6 +135,9 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     if (newUsage === CREDIT_USAGE.USED) {
       val = maxValue;
       setCardValueUsed(val);
+    } else if (newUsage === CREDIT_USAGE.PARTIALLY_USED) {
+      val = getValueForUsage(newUsage, maxValue);
+      setCardValueUsed(val);
     } else if (newUsage === CREDIT_USAGE.NOT_USED) {
       val = 0;
       setCardValueUsed(val);
@@ -226,7 +229,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 creditMaxValue={creditMaxValue}
                 currentYear={now.getFullYear()}
                 onUpdateHistoryEntry={onUpdateHistoryEntry}
-                hideControls={true}
+                hideControls={false}
               />
             </div>
             <DrawerFooter>
@@ -255,7 +258,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 creditMaxValue={creditMaxValue}
                 currentYear={now.getFullYear()}
                 onUpdateHistoryEntry={onUpdateHistoryEntry}
-                hideControls={true}
+                hideControls={false}
               />
             </div>
             <DialogFooter>
