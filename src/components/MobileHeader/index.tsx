@@ -99,6 +99,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         return PAGE_NAMES.MY_CREDITS;
       case PAGES.MY_CREDITS_HISTORY.PATH:
         return PAGE_NAMES.MY_CREDITS;
+      case PAGES.DELETE_HISTORY.PATH:
+        return 'Delete History';
       default:
         // Use PageUtils as fallback
         const pageTitle = PageUtils.getTitleByPath(currentPath);
@@ -127,6 +129,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         return <Icon name="banknotes" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       case PAGES.MY_CREDITS_HISTORY.PATH:
         return <Icon name="banknotes" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+      case PAGES.DELETE_HISTORY.PATH:
+        return <Icon name="delete" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       default:
         return null;
     }
@@ -169,7 +173,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           <div className="mobile-header__center">
             {(() => {
               const currentTitle = getCurrentPageTitle();
-              if (isHomeOrChatRoute(location.pathname) || currentTitle === PAGE_NAMES.HOME) return null;
+              if (isHomeOrChatRoute(location.pathname)) return null;
               return (
                 <h1 className="mobile-header__title">
                   {getCurrentPageIcon()}

@@ -248,10 +248,21 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
   const [showInactive, setShowInactive] = useState<boolean>(true);
 
   const [isCardFilterOpen, setIsCardFilterOpen] = useState(false);
+  const [isFiltersDrawerOpen, setIsFiltersDrawerOpen] = useState(false);
+  
   const handleOpenCardFilter = () => setIsCardFilterOpen(true);
   const handleSelectFilterCard = (card: CreditCard) => {
     setSelectedFilterCardId(card?.id || null);
     setIsCardFilterOpen(false);
+  };
+
+  // Filter reset function
+  const handleResetFilters = () => {
+    setShowUsed(true);
+    setShowNotUsed(true);
+    setShowPartiallyUsed(true);
+    setShowInactive(true);
+    setSelectedFilterCardId(null);
   };
 
   return (
@@ -301,7 +312,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
       <div className="standard-page-content--no-padding">
         <div className="credits-history-panel">
           <HeaderControls>
-            <div className="header-controls">
+            <div className="header-controls desktop-only">
               <div className="date-picker">
                 <label className="filter-label">Year</label>
                 <select
@@ -407,6 +418,41 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
                 />
               </div>
             </div>
+            <div className="header-controls mobile-only">
+              <div className="date-picker">
+                <label className="filter-label">Year</label>
+                <select
+                  className="year-select default-select"
+                  value={selectedYear}
+                  onChange={(e) => {
+                    const newYear = parseInt(e.target.value);
+                    setSelectedYear(newYear);
+                    setSelectedMonth(clampMonthForYear(newYear, selectedMonth, accountCreatedAt));
+                  }}
+                >
+                  {yearOptions.map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="header-actions">
+              <button
+                className="button outline small desktop-only"
+                onClick={handleResetFilters}
+                aria-label="Reset filters to defaults"
+              >
+                Reset Filters
+              </button>
+              <button
+                className="button small mobile-only icon with-text"
+                onClick={() => setIsFiltersDrawerOpen(true)}
+                aria-label="Open filters drawer"
+              >
+                <Icon name="filter" variant="mini" size={16} />
+                Filters
+              </button>
+            </div>
           </HeaderControls>
           <div className="credits-history-content">
             {isLoading ? (
@@ -480,6 +526,136 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
           </div>
         </div>
       </div>
+
+      {/* Mobile Filters Drawer */}
+      <Drawer open={isFiltersDrawerOpen} onOpenChange={setIsFiltersDrawerOpen}>
+        <DrawerContent className="mobile-credits-filters-drawer" fitContent maxHeight="80vh">
+          <DrawerTitle className="sr-only">Filters</DrawerTitle>
+          <div className="dialog-header drawer-sticky-header history-filters-header">
+            <h2>Filters</h2>
+            <div className="header-actions">
+              <span
+                className="reset-link"
+                onClick={handleResetFilters}
+                role="button"
+                tabIndex={0}
+                aria-label="Reset filters to defaults"
+              >
+                Reset
+              </span>
+            </div>
+          </div>
+          <div className="dialog-body">
+            <ToggleBar className="connected items-center gap-2">
+              <span className="caps-label">Credits to Show</span>
+              <ToggleBarButton pressed={showUsed} onPressedChange={setShowUsed} className="small icon with-text">
+                <Icon name="used-icon" variant="micro" size={14} />
+                <span>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
+              </ToggleBarButton>
+              <ToggleBarButton pressed={showNotUsed} onPressedChange={setShowNotUsed} className="small icon with-text">
+                <Icon name="not-used-icon" variant="micro" size={14} />
+                <span>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
+              </ToggleBarButton>
+              <ToggleBarButton pressed={showPartiallyUsed} onPressedChange={setShowPartiallyUsed} className="small icon with-text">
+                <Icon name="partially-used-icon" variant="micro" size={14} />
+                <span>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
+              </ToggleBarButton>
+              <ToggleBarButton pressed={showInactive} onPressedChange={setShowInactive} className="small icon with-text">
+                <Icon name="inactive" variant="micro" size={14} />
+                <span>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</span>
+              </ToggleBarButton>
+            </ToggleBar>
+            
+            {/* Card Filter */}
+            <div className="filter-section">
+              <label className="caps-label">Filter by Card</label>
+              <SelectCard
+                selectedCardId={selectedFilterCardId || undefined}
+                creditCards={userCardDetails.map(card => ({
+                  id: card.id,
+                  CardName: card.CardName,
+                  CardPrimaryColor: card.CardPrimaryColor,
+                  CardSecondaryColor: card.CardSecondaryColor,
+                  CardIssuer: card.CardIssuer || '',
+                  CardNetwork: card.CardNetwork || '',
+                  CardDetails: card.CardDetails || ''
+                }))}
+                isUpdating={false}
+                onSelectCardClick={handleOpenCardFilter}
+                onDeselectCard={() => setSelectedFilterCardId(null)}
+                selectLabel=""
+                selectedLabel=""
+                unselectedIcon={<Icon name="card" variant="micro" color="#C9CED3" size={14} />}
+                className="standalone"
+              />
+            </div>
+          </div>
+          <div className="dialog-footer">
+            <div className="button-group">
+              <button
+                className="button"
+                onClick={() => setIsFiltersDrawerOpen(false)}
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Mobile-only sticky footer controls */}
+      {isMobileViewport && (
+        <div className="mobile-sticky-footer" role="region" aria-label="Month navigation">
+          <div className="footer-date-controls">
+            <div className="date-control-group">
+              <label className="caps-label">Month</label>
+              <div className="month-controls">
+                <button
+                  type="button"
+                  aria-label="Previous month"
+                  className="button outline small px-2"
+                  onClick={decrementMonth}
+                  disabled={!isAllowedYearMonth(utilGetPrevYearMonth(selectedYear, selectedMonth).y, utilGetPrevYearMonth(selectedYear, selectedMonth).m)}
+                >
+                  <Icon name="chevron-down" variant="mini" size={16} className="rotate-90" />
+                </button>
+                <select
+                  className="month-select default-select"
+                  value={selectedMonth}
+                  onChange={(e) => {
+                    const m = parseInt(e.target.value);
+                    if (isAllowedYearMonth(selectedYear, m)) setSelectedMonth(m);
+                  }}
+                >
+                  {MONTH_OPTIONS.map(m => (
+                    <option key={m.value} value={m.value}>{m.label}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  aria-label="Next month"
+                  className="button outline small px-2"
+                  onClick={incrementMonth}
+                  disabled={!isAllowedYearMonth(utilGetNextYearMonth(selectedYear, selectedMonth).y, utilGetNextYearMonth(selectedYear, selectedMonth).m)}
+                >
+                  <Icon name="chevron-down" variant="mini" size={16} className="-rotate-90" />
+                </button>
+              </div>
+            </div>
+            {!isOnCurrentMonth && (
+              <button
+                type="button"
+                aria-label="Go to current period"
+                className="button outline small icon with-text current-period-btn"
+                onClick={goToCurrentPeriod}
+              >
+                <Icon name="map-pin" variant="micro" size={16} />
+                <span>Back to Today</span>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
         <DialogContent>

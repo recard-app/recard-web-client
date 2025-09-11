@@ -56,7 +56,7 @@ const DeleteHistory: React.FC<DeleteHistoryProps> = ({ setChatHistory, setHistor
 
   return (
     <div className="full-page-layout">
-      <PageHeader title="Delete History" icon={PAGE_ICONS.TRANSACTION_HISTORY.MINI} />
+      <PageHeader title="Delete History" icon={PAGE_ICONS.DELETE_HISTORY.MINI} />
       <div className="full-page-content">
         <ContentContainer size="sm">
           <section className="danger-zone">

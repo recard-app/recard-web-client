@@ -27,3 +27,87 @@
   gap: $space-1;
   align-items: flex-start;
 }
+
+// Desktop/Mobile visibility classes
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: $mobile-breakpoint) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: block;
+  }
+
+  // Override specific display types for different elements
+  .header-actions .mobile-only {
+    display: inline-flex;
+  }
+
+  .button.mobile-only {
+    display: inline-flex;
+  }
+
+  .mobile-sticky-footer {
+    position: relative;
+    flex-shrink: 0;
+    background-color: $neutral-white;
+    border-top: $border-full solid $neutral-light-gray;
+    padding: $space-3 $space-4 $space-4 $space-4;
+    box-shadow: $container-shadow-top-bigger;
+
+    .footer-date-controls {
+      display: flex;
+      flex-direction: column;
+      gap: $space-3;
+      width: 100%;
+
+      .date-control-group {
+        display: flex;
+        flex-direction: column;
+        gap: $space-1;
+
+        .caps-label {
+          font-size: $font-xs;
+          font-weight: $font-semibold;
+          text-transform: uppercase;
+          color: $neutral-dark-gray;
+          letter-spacing: 0.025em;
+        }
+
+        .year-select, .month-select {
+          @include default-select;
+          width: 100%;
+          padding: $space-3 $space-4;
+          font-size: $font-base;
+        }
+
+        .month-controls {
+          display: flex;
+          align-items: center;
+          gap: $space-2;
+
+          .month-select {
+            flex: 1;
+          }
+
+          .button {
+            flex-shrink: 0;
+          }
+        }
+      }
+
+      .current-period-btn {
+        align-self: flex-start;
+        margin-top: $space-1;
+      }
+    }
+  }
+}

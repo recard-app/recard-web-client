@@ -188,6 +188,11 @@ export const PAGE_ICONS = {
         INACTIVE: (props: any = {}) => createIconVariant('sign-out', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('sign-out', 'mini', ICON_GRAY, props.size)
     },
+    DELETE_HISTORY: {
+        ACTIVE: (props: any = {}) => createIconVariant('delete', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('delete', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('delete', 'mini', ICON_PRIMARY, props.size)
+    },
     LOGO: APP_LOGO,
     NEW_CHAT_PLUS: {
         NORMAL: (props: any = {}) => createIconVariant('plus-circle', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
