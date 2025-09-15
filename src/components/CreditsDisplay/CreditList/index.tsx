@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './CreditList.scss';
-import { CreditUsageType, UserCredit } from '../../../types';
+import { CreditUsageType, UserCredit, MOBILE_BREAKPOINT } from '../../../types';
 import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
 import CreditEntry from './CreditEntry';
 
@@ -18,7 +18,27 @@ export interface CreditListProps {
   }) => void;
 }
 
+// Simple hook to detect mobile screen size
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  return isMobile;
+};
+
 const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, onUpdateHistoryEntry }) => {
+  const isMobile = useIsMobile();
+  
   if (!credits || credits.length === 0) return null;
   return (
     <div className="credit-list">
@@ -34,6 +54,7 @@ const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditB
             card={card}
             cardCredit={cardCredit}
             creditMaxValue={typeof creditMaxValue === 'string' ? Number(creditMaxValue.replace(/[^0-9.]/g, '')) : (creditMaxValue as unknown as number) }
+            disableDropdown={isMobile} // Disable dropdown on mobile
             onUpdateHistoryEntry={onUpdateHistoryEntry}
           />
         );

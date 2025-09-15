@@ -19,6 +19,7 @@ export interface CreditEntryProps {
   cardCredit: CardCredit | null;
   creditMaxValue?: number; // value of the credit in dollars
   hideSlider?: boolean; // flag to hide the slider in card view
+  disableDropdown?: boolean; // flag to disable the dropdown functionality
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -46,8 +47,9 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, onUpdateHistoryEntry }) => {
+const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, onUpdateHistoryEntry }) => {
   const isMobile = useIsMobile();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   
   // State for the main card's usage editing
@@ -182,35 +184,57 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           )}
         </div>
         
-        {/* Right side: Usage dropdown (interactive for list view) */}
+        {/* Right side: Usage dropdown (interactive for list view) or static display */}
         <div className="credit-controls">
           <div className="credit-usage">
-            <UsageDropdown
-              usage={usage}
-              usageColor={usageColor}
-              onUsageSelect={handleCardUsageSelect}
-              trigger={
-                <button 
-                  className="credit-usage-button"
-                  style={{ 
-                    color: usageColor
-                  } as React.CSSProperties}
-                  onClick={(e) => e.stopPropagation()} // Prevent card click from opening modal
-                >
-                  <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
-                  <div className="credit-usage-label">
-                    <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={12} />
-                    <span>
-                      {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
-                      {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
-                      {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
-                      {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
-                    </span>
-                    <Icon name="chevron-down" variant="micro" size={12} />
-                  </div>
-                </button>
-              }
-            />
+            {disableDropdown ? (
+              // Static display when dropdown is disabled
+              <div 
+                className="credit-usage-button static"
+                style={{ 
+                  color: usageColor
+                } as React.CSSProperties}
+              >
+                <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
+                <div className="credit-usage-label">
+                  <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={12} />
+                  <span>
+                    {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
+                    {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
+                    {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
+                    {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
+                  </span>
+                  {/* No chevron icon for static display */}
+                </div>
+              </div>
+            ) : (
+              <UsageDropdown
+                usage={usage}
+                usageColor={usageColor}
+                onUsageSelect={handleCardUsageSelect}
+                trigger={
+                  <button 
+                    className="credit-usage-button"
+                    style={{ 
+                      color: usageColor
+                    } as React.CSSProperties}
+                    onClick={(e) => e.stopPropagation()} // Prevent card click from opening modal
+                  >
+                    <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
+                    <div className="credit-usage-label">
+                      <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={12} />
+                      <span>
+                        {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
+                        {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
+                        {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
+                        {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
+                      </span>
+                      <Icon name="chevron-down" variant="micro" size={12} />
+                    </div>
+                  </button>
+                }
+              />
+            )}
           </div>
         </div>
       </div>

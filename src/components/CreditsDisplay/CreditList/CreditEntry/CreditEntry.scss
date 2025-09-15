@@ -140,6 +140,15 @@
           }
         }
       }
+      
+      // Static version when dropdown is disabled (mobile)
+      &.static {
+        cursor: default;
+        
+        &:hover {
+          background: none !important;
+        }
+      }
     }
   }
 }
