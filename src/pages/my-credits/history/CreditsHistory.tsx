@@ -34,25 +34,23 @@ import {
 import './CreditsHistory.scss';
 
 interface CreditsHistoryProps {
-  calendar: CalendarUserCredits | null;
   userCardDetails: CreditCardDetails[];
   reloadTrigger?: number;
-  trackingPreferences?: UserCreditsTrackingPreferences | null;
-  onRefreshCredits?: (year?: number) => Promise<void>;
 }
 
-const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetails, reloadTrigger, trackingPreferences, onRefreshCredits }) => {
+const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reloadTrigger }) => {
   // Use the full height hook for this page
   useFullHeight(true);
 
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMonth, setIsLoadingMonth] = useState(false);
-  const [localCalendar, setLocalCalendar] = useState<CalendarUserCredits | null>(calendar);
+  const [localCalendar, setLocalCalendar] = useState<CalendarUserCredits | null>(null);
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
   const [accountCreatedAt, setAccountCreatedAt] = useState<Date | null>(null);
   const [selectedFilterCardId, setSelectedFilterCardId] = useState<string | null>(null);
+  const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
 
   // Clear cache when card filter changes to avoid stale data
   useEffect(() => {
@@ -85,12 +83,8 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
     return () => { try { mq.removeEventListener('change', handler as unknown as EventListener); } catch { mq.removeListener(handler as any); } };
   }, []);
 
-  // Keep local state in sync with incoming props
-  useEffect(() => {
-    setLocalCalendar(calendar);
-  }, [calendar]);
 
-  // Load credits using optimized month-by-month strategy
+  // Load credits: current month immediately + full year in background (2 API calls)
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -110,7 +104,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
           filterOptions.cardIds = [selectedFilterCardId];
         }
 
-        // Use optimized loading: load only the current month
+        // API Call #1: Load current month immediately for quick display
         const currentMonthData = await OptimizedCreditService.loadMonthData(
           selectedYear,
           selectedMonth,
@@ -120,34 +114,27 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
         if (!mounted) return;
         setLocalCalendar(currentMonthData);
         setIsLoading(false);
-        setIsLoadingMonth(false);
 
-        // Disable progressive year loading to avoid unwanted requests
-        // Only load what the user explicitly requests
-
-        // Background sync
-        (async () => {
+        // API Call #2: Load full year in background for complete navigation
+        setTimeout(async () => {
           try {
-            const result = await OptimizedCreditService.syncCurrentYearCredits();
             if (!mounted) return;
-            if (result.changed && result.creditHistory) {
-              // Re-fetch current month with current filters after sync
-              const refreshedCal = await OptimizedCreditService.loadMonthData(
-                selectedYear,
-                selectedMonth,
-                filterOptions
-              );
-              if (mounted) setLocalCalendar(refreshedCal);
+            const fullYearData = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
+            if (mounted && fullYearData) {
+              setLocalCalendar(fullYearData);
             }
-          } catch (e) {
-            console.error('Credits sync failed:', e);
+          } catch (yearError) {
+            console.error('Background year loading failed:', yearError);
+            // Continue with current month data if year load fails
           }
-        })();
+        }, 100); // Small delay to prioritize current month display
+
+        setIsLoadingMonth(false);
       } catch (error) {
+        // Fallback: generate credit history and try again
         try {
           await UserCreditService.generateCreditHistory();
 
-          // Same filtering options for fallback
           const fallbackFilterOptions: {
             cardIds?: string[];
             excludeHidden?: boolean;
@@ -159,7 +146,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
             fallbackFilterOptions.cardIds = [selectedFilterCardId];
           }
 
-          // Try optimized loading after history generation
+          // Try loading current month after history generation
           const cal = await OptimizedCreditService.loadMonthData(
             selectedYear,
             selectedMonth,
@@ -181,7 +168,22 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
       }
     })();
     return () => { mounted = false; };
-  }, [reloadTrigger, selectedYear, selectedMonth, selectedFilterCardId]); // Added selectedMonth to dependencies
+  }, [reloadTrigger, selectedYear, selectedMonth, selectedFilterCardId]);
+
+  // Load tracking preferences on mount
+  useEffect(() => {
+    const fetchTrackingPreferences = async () => {
+      try {
+        const preferences = await OptimizedCreditService.fetchCreditTrackingPreferences();
+        setTrackingPreferences(preferences);
+      } catch (error) {
+        console.error('Error fetching credit tracking preferences:', error);
+        setTrackingPreferences(null);
+      }
+    };
+
+    fetchTrackingPreferences();
+  }, []);
 
   // Helper function to check if a credit should be hidden based on tracking preferences
   const isCreditHidden = (cardId: string, creditId: string): boolean => {
@@ -713,7 +715,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
                     return next;
                   });
 
-                  // Persist the change to the database and refresh parent state
+                  // Persist the change to the database and refresh data
                   try {
                     await OptimizedCreditService.updateCreditHistoryEntry({
                       cardId,
@@ -722,10 +724,33 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
                       creditUsage,
                       valueUsed
                     });
-                    // Refresh the parent's credit data to ensure consistency across all views
-                    if (onRefreshCredits) {
-                      await onRefreshCredits(selectedYear);
+
+                    // After successful update, refresh the data from backend
+                    const filterOptions: {
+                      cardIds?: string[];
+                      excludeHidden?: boolean;
+                    } = {
+                      excludeHidden: true,
+                    };
+                    if (selectedFilterCardId) {
+                      filterOptions.cardIds = [selectedFilterCardId];
                     }
+
+                    // Load current month immediately, then full year in background
+                    const currentMonthData = await OptimizedCreditService.loadMonthData(selectedYear, selectedMonth, filterOptions);
+                    setLocalCalendar(currentMonthData);
+
+                    // Load full year in background to refresh navigation
+                    setTimeout(async () => {
+                      try {
+                        const fullYearData = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
+                        if (fullYearData) {
+                          setLocalCalendar(fullYearData);
+                        }
+                      } catch (yearError) {
+                        console.error('Background year refresh failed:', yearError);
+                      }
+                    }, 50);
                   } catch (error) {
                     console.error('Failed to update credit history entry:', error);
                     // On error, reload current month data
@@ -742,9 +767,6 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
 
                       const updatedCalendar = await OptimizedCreditService.loadMonthData(selectedYear, selectedMonth, filterOptions);
                       setLocalCalendar(updatedCalendar);
-                      if (onRefreshCredits) {
-                        await onRefreshCredits(selectedYear);
-                      }
                     } catch (reloadError) {
                       console.error('Failed to reload credit history after update error:', reloadError);
                     }

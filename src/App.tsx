@@ -120,8 +120,6 @@ function AppContent({}: AppContentProps) {
   const [selectedCardDetails, setSelectedCardDetails] = useState<CreditCardDetails | null>(null);
   // State for loading card details
   const [isLoadingCardDetails, setIsLoadingCardDetails] = useState<boolean>(false);
-  // State for storing user's current year credit history
-  const [currentYearCredits, setCurrentYearCredits] = useState<import('./types').CalendarUserCredits | null>(null);
   // State for storing user's credit tracking preferences
   const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
   // State for storing chat history/conversations
@@ -217,45 +215,6 @@ function AppContent({}: AppContentProps) {
     fetchCreditCards();
   }, [user]);
 
-  // Function to refresh current year credits
-  const refreshCurrentYearCredits = async (year?: number): Promise<void> => {
-    if (!user) {
-      setCurrentYearCredits(null);
-      return;
-    }
-    try {
-      const targetYear = year || new Date().getFullYear();
-      const credits = await UserCreditService.fetchCreditHistoryForYear(targetYear);
-      setCurrentYearCredits(credits);
-    } catch (error) {
-      console.error('Error fetching current year credit history:', error);
-      setCurrentYearCredits(null);
-    }
-  };
-
-  // Effect to fetch user's current year credit history on launch/auth change
-  useEffect(() => {
-    refreshCurrentYearCredits();
-  }, [user]);
-
-  // Background reconciliation for current-year credits after quick fetch
-  useEffect(() => {
-    const runBackgroundSync = async () => {
-      if (!user) return;
-      try {
-        const result = await UserCreditService.syncCurrentYearCredits();
-        if (result.changed && result.creditHistory) {
-          const year = new Date().getFullYear();
-          const calendar = result.creditHistory.Credits.find(c => c.Year === year) || null;
-          if (calendar) setCurrentYearCredits(calendar);
-        }
-      } catch (e) {
-        console.error('Background credit history sync failed:', e);
-      }
-    };
-
-    runBackgroundSync();
-  }, [user]);
 
   // Effect to fetch user's credit tracking preferences
   useEffect(() => {
@@ -482,7 +441,6 @@ function AppContent({}: AppContentProps) {
     // Reset all states to their initial values
     setUserCardDetails([]);
     setUserDetailedCardDetails([]);
-    setCurrentYearCredits(null);
     setTrackingPreferences(null);
     setCurrentChatId(null);
     setChatHistory([]);
@@ -998,12 +956,9 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.MY_CREDITS_HISTORY.PATH} element={
                     <ProtectedRoute>
-                      <CreditsHistory 
-                        calendar={currentYearCredits} 
-                        userCardDetails={userDetailedCardDetails} 
+                      <CreditsHistory
+                        userCardDetails={userDetailedCardDetails}
                         reloadTrigger={cardsVersion}
-                        trackingPreferences={trackingPreferences}
-                        onRefreshCredits={refreshCurrentYearCredits}
                       />
                     </ProtectedRoute>
                   } />
