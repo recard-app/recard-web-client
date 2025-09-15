@@ -21,7 +21,7 @@
 .period-title {
   font-weight: $font-regular;
   margin: 0;
-  
+
   // On mobile, remove bottom margin since it's handled by the header container
   @media (max-width: $mobile-breakpoint) {
     margin: 0;
@@ -41,6 +41,7 @@
     
     .period-label {
       font-weight: $font-semibold;
+      text-transform: uppercase;
     }
     
     svg {
