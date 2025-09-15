@@ -3,4 +3,3 @@ export * from './UserCreditCardService';
 export * from './UserHistoryService';
 export * from './UserPreferencesService';
 export * from './UserCreditService';
-export * from './OptimizedCreditService';
