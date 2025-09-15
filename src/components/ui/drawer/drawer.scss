@@ -14,3 +14,22 @@
 [data-slot="drawer-content"][data-vaul-drawer-direction="top"] > [data-slot="drawer-handle"] {
   margin-top: $space-3;
 }
+
+// Remove blue focus/outline from drawer content and all focusable elements inside
+[data-slot="drawer-content"],
+[data-slot="drawer-content"]:focus,
+[data-slot="drawer-content"]:focus-visible,
+[data-slot="drawer-content"] *:focus,
+[data-slot="drawer-content"] *:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+// Remove any browser default focus styles from the drawer overlay as well
+[data-slot="drawer-overlay"],
+[data-slot="drawer-overlay"]:focus,
+[data-slot="drawer-overlay"]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
