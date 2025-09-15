@@ -49,7 +49,7 @@ export const UserCreditService = {
         excludeHidden?: boolean;
     }): Promise<CalendarUserCredits> {
         const headers = await getAuthHeaders();
-        
+
         // Build query parameters
         const params = new URLSearchParams();
         if (options?.cardIds && options.cardIds.length > 0) {
@@ -58,11 +58,40 @@ export const UserCreditService = {
         if (options?.excludeHidden) {
             params.set('excludeHidden', 'true');
         }
-        
+
         const queryString = params.toString();
         const url = `${apiurl}/users/cards/credits/year/${year}${queryString ? `?${queryString}` : ''}`;
-        
+
         const response = await axios.get<CalendarUserCredits>(url, { headers });
+        return response.data;
+    },
+
+    /**
+     * Fetches detailed credit information for CreditEntryDetails modal
+     * Returns enriched data with full metadata and complete usage history
+     */
+    async fetchCreditDetails(cardId: string, creditId: string, year: number, options?: {
+        excludeHidden?: boolean;
+    }): Promise<{
+        credit: any;
+        cardDetails: any;
+        yearContext: {
+            totalCredits: number;
+            yearData: CalendarUserCredits;
+        };
+    }> {
+        const headers = await getAuthHeaders();
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (options?.excludeHidden) {
+            params.set('excludeHidden', 'true');
+        }
+
+        const queryString = params.toString();
+        const url = `${apiurl}/users/cards/credits/details/${cardId}/${creditId}/${year}${queryString ? `?${queryString}` : ''}`;
+
+        const response = await axios.get(url, { headers });
         return response.data;
     },
 

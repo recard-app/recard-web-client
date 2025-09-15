@@ -8,6 +8,7 @@ import Icon from '@/icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './utils';
+import { OptimizedCreditService } from '../../../../services/UserServices/OptimizedCreditService';
 import CreditEntryDetails from './CreditEntryDetails';
 import CreditModalControls from './CreditModalControls';
 import UsageDropdown from './UsageDropdown';
@@ -49,8 +50,9 @@ const useIsMobile = () => {
 
 const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, onUpdateHistoryEntry }) => {
   const isMobile = useIsMobile();
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [enrichedCredit, setEnrichedCredit] = useState<any>(null);
   
   // State for the main card's usage editing
   const [cardUsage, setCardUsage] = useState<CreditUsageType>(CREDIT_USAGE.INACTIVE);
@@ -92,6 +94,35 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       setSelectedPeriodNumber(currentPeriodNumber);
     }
   }, [isModalOpen, currentPeriodNumber]);
+
+  // Fetch full year credit data when modal opens for "Usage This Year" section
+  useEffect(() => {
+    if (isModalOpen) {
+      const fetchFullYearCredit = async () => {
+        try {
+          const fullYearCredit = await OptimizedCreditService.getCreditWithFullHistory(
+            userCredit.CardId,
+            userCredit.CreditId,
+            now.getFullYear(),
+            { excludeHidden: true }
+          );
+
+          if (fullYearCredit) {
+            setEnrichedCredit(fullYearCredit);
+          } else {
+            // Fallback to original credit if fetch fails
+            setEnrichedCredit(userCredit);
+          }
+        } catch (error) {
+          console.error('Failed to fetch full year credit:', error);
+          // Fallback to original credit if fetch fails
+          setEnrichedCredit(userCredit);
+        }
+      };
+
+      fetchFullYearCredit();
+    }
+  }, [isModalOpen, userCredit.CardId, userCredit.CreditId, now, userCredit]);
 
   // Get current period history for main list display (always uses current period)
   const currentHistory = useMemo(() => {
@@ -144,11 +175,44 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   const buttonBackgroundColor = tintHexColor(usageColor, 0.9);
   const buttonHoverColor = tintHexColor(usageColor, 0.85);
 
+  // Create a wrapper for onUpdateHistoryEntry that also updates enrichedCredit
+  const handleUpdateHistoryEntry = async (update: {
+    cardId: string;
+    creditId: string;
+    periodNumber: number;
+    creditUsage: CreditUsageType;
+    valueUsed: number;
+  }) => {
+    // Update enrichedCredit optimistically
+    if (enrichedCredit && enrichedCredit.CardId === update.cardId && enrichedCredit.CreditId === update.creditId) {
+      setEnrichedCredit((prev: any) => {
+        if (!prev) return prev;
+        const updated = { ...prev };
+        updated.History = updated.History.map((h: any) => {
+          if (h.PeriodNumber === update.periodNumber) {
+            return {
+              ...h,
+              CreditUsage: update.creditUsage,
+              ValueUsed: update.valueUsed
+            };
+          }
+          return h;
+        });
+        return updated;
+      });
+    }
+
+    // Call the original handler
+    if (onUpdateHistoryEntry) {
+      await onUpdateHistoryEntry(update);
+    }
+  };
+
   // Update handlers for card dropdown
   const handleCardUsageSelect = async (newUsage: CreditUsageType) => {
     setCardUsage(newUsage);
     let val = cardValueUsed;
-    
+
     if (newUsage === CREDIT_USAGE.USED) {
       val = maxValue;
       setCardValueUsed(val);
@@ -162,7 +226,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       val = 0;
       setCardValueUsed(val);
     }
-    
+
     // Persist the update immediately
     if (onUpdateHistoryEntry) {
       onUpdateHistoryEntry({
@@ -260,29 +324,33 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               <h2>Credit Details</h2>
             </div>
             <div className="drawer-content-scroll" style={{ padding: '0 16px 16px', overflow: 'auto' }}>
-              <CreditEntryDetails
-                userCredit={userCredit}
-                now={now}
-                card={card}
-                cardCredit={cardCredit}
-                creditMaxValue={creditMaxValue}
-                currentYear={now.getFullYear()}
-                onUpdateHistoryEntry={onUpdateHistoryEntry}
-                hideControls={false}
-                selectedPeriodNumber={selectedPeriodNumber}
-                onPeriodSelect={setSelectedPeriodNumber}
-              />
+              {enrichedCredit && (
+                <CreditEntryDetails
+                  userCredit={enrichedCredit}
+                  now={now}
+                  card={card}
+                  cardCredit={cardCredit}
+                  creditMaxValue={creditMaxValue}
+                  currentYear={now.getFullYear()}
+                  onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                  hideControls={false}
+                  selectedPeriodNumber={selectedPeriodNumber}
+                  onPeriodSelect={setSelectedPeriodNumber}
+                />
+              )}
             </div>
             <DrawerFooter>
-              <CreditModalControls
-                userCredit={userCredit}
-                cardCredit={cardCredit}
-                creditMaxValue={creditMaxValue}
-                now={now}
-                onUpdateHistoryEntry={onUpdateHistoryEntry}
-                selectedPeriodNumber={selectedPeriodNumber}
-                onPeriodSelect={setSelectedPeriodNumber}
-              />
+              {enrichedCredit && (
+                <CreditModalControls
+                  userCredit={enrichedCredit}
+                  cardCredit={cardCredit}
+                  creditMaxValue={creditMaxValue}
+                  now={now}
+                  onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                  selectedPeriodNumber={selectedPeriodNumber}
+                  onPeriodSelect={setSelectedPeriodNumber}
+                />
+              )}
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
@@ -293,29 +361,33 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               <DialogTitle>Credit Details</DialogTitle>
             </DialogHeader>
             <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
-              <CreditEntryDetails
-                userCredit={userCredit}
-                now={now}
-                card={card}
-                cardCredit={cardCredit}
-                creditMaxValue={creditMaxValue}
-                currentYear={now.getFullYear()}
-                onUpdateHistoryEntry={onUpdateHistoryEntry}
-                hideControls={false}
-                selectedPeriodNumber={selectedPeriodNumber}
-                onPeriodSelect={setSelectedPeriodNumber}
-              />
+              {enrichedCredit && (
+                <CreditEntryDetails
+                  userCredit={enrichedCredit}
+                  now={now}
+                  card={card}
+                  cardCredit={cardCredit}
+                  creditMaxValue={creditMaxValue}
+                  currentYear={now.getFullYear()}
+                  onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                  hideControls={false}
+                  selectedPeriodNumber={selectedPeriodNumber}
+                  onPeriodSelect={setSelectedPeriodNumber}
+                />
+              )}
             </div>
             <DialogFooter>
-              <CreditModalControls
-                userCredit={userCredit}
-                cardCredit={cardCredit}
-                creditMaxValue={creditMaxValue}
-                now={now}
-                onUpdateHistoryEntry={onUpdateHistoryEntry}
-                selectedPeriodNumber={selectedPeriodNumber}
-                onPeriodSelect={setSelectedPeriodNumber}
-              />
+              {enrichedCredit && (
+                <CreditModalControls
+                  userCredit={enrichedCredit}
+                  cardCredit={cardCredit}
+                  creditMaxValue={creditMaxValue}
+                  now={now}
+                  onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                  selectedPeriodNumber={selectedPeriodNumber}
+                  onPeriodSelect={setSelectedPeriodNumber}
+                />
+              )}
             </DialogFooter>
           </DialogContent>
         </Dialog>

@@ -1,4 +1,4 @@
-import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType } from '../../types';
+import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, CREDIT_PERIODS } from '../../types';
 import { UserCreditService } from './UserCreditService';
 
 interface CacheEntry {
@@ -136,7 +136,26 @@ export class OptimizedCreditService {
       this.setCachedData(year, month, data, options);
 
       return data;
-    } catch (error) {
+    } catch (error: any) {
+      // Handle specific case where year data doesn't exist
+      if (error?.response?.status === 404 ||
+          (error?.response?.data?.error && error.response.data.error.includes('Credit history for specified year not found'))) {
+        console.log(`No credit history found for year ${year}, attempting to sync...`);
+
+        try {
+          // Attempt to sync/create the current year's credit data
+          const syncResult = await this.syncCurrentYearCredits();
+          if (syncResult.changed) {
+            // Retry the month request after sync
+            const data = await UserCreditService.fetchCreditHistoryForMonth(year, month, options);
+            this.setCachedData(year, month, data, options);
+            return data;
+          }
+        } catch (syncError) {
+          console.error('Failed to sync current year credits:', syncError);
+        }
+      }
+
       // Silently handle month endpoint failures
       console.debug(`Month endpoint failed for ${year}/${month} - returning empty data`);
       const emptyData: CalendarUserCredits = {
@@ -209,6 +228,7 @@ export class OptimizedCreditService {
   static clearCache(): void {
     this.cache.clear();
     this.loadingStates.clear();
+    this.yearCache.clear();
     this.hasCleanedNonCurrentYearCache = false;
   }
 
@@ -251,6 +271,172 @@ export class OptimizedCreditService {
       this.cache.delete(key);
       this.loadingStates.delete(key);
     });
+  }
+
+  // Additional cache for full year data (needed for detailed views)
+  private static yearCache = new Map<string, { data: CalendarUserCredits; timestamp: number }>();
+
+  /**
+   * Populate cache with year data broken down by months
+   * This allows background year loading without overwriting current month display
+   */
+  static populateCacheFromYearData(yearData: CalendarUserCredits, options?: {
+    cardIds?: string[];
+    excludeHidden?: boolean;
+  }): void {
+    if (!yearData?.Credits) return;
+
+    // First, cache the full year data for detailed views (like CreditEntryDetails)
+    const yearKey = this.getYearCacheKey(yearData.Year, options);
+    this.yearCache.set(yearKey, {
+      data: yearData,
+      timestamp: Date.now()
+    });
+
+    // Then, extract each month's data from the year data and cache individually for navigation
+    for (let month = 1; month <= 12; month++) {
+      // Filter credits that apply to this month and extract relevant history
+      const monthCredits = yearData.Credits.map(credit => {
+        // Calculate the relevant period number for this month based on credit's period type
+        const getPeriodNumberForMonth = (period: string, month: number): number => {
+          switch (period) {
+            case CREDIT_PERIODS.Monthly:
+              return month; // For monthly credits, period number = month
+            case CREDIT_PERIODS.Quarterly:
+              return Math.ceil(month / 3); // Q1=1, Q2=2, Q3=3, Q4=4
+            case CREDIT_PERIODS.Semiannually:
+              return month <= 6 ? 1 : 2; // H1=1, H2=2
+            case CREDIT_PERIODS.Annually:
+              return 1; // Only one period for the year
+            default:
+              return 1;
+          }
+        };
+
+        const relevantPeriodNumber = getPeriodNumberForMonth(credit.AssociatedPeriod, month);
+
+        // Filter history to only include the relevant period for this month
+        const filteredHistory = credit.History.filter(historyEntry =>
+          historyEntry.PeriodNumber === relevantPeriodNumber
+        );
+
+        return {
+          ...credit,
+          History: filteredHistory
+        };
+      }).filter(credit => {
+        // Only include credits that have history for this month
+        return credit.History.length > 0;
+      });
+
+      // Cache this month's data
+      const monthData: CalendarUserCredits = {
+        ...yearData,
+        Credits: monthCredits,
+        _month: month
+      } as any;
+
+      this.setCachedData(yearData.Year, month, monthData, options);
+    }
+  }
+
+  /**
+   * Get cached full year data (needed for detailed views)
+   */
+  static getCachedYearData(year: number, options?: {
+    cardIds?: string[];
+    excludeHidden?: boolean;
+  }): CalendarUserCredits | null {
+    const key = this.getYearCacheKey(year, options);
+    const entry = this.yearCache.get(key);
+
+    if (entry && Date.now() - entry.timestamp < this.CACHE_TTL) {
+      return entry.data;
+    }
+
+    if (entry) {
+      this.yearCache.delete(key); // Remove expired entry
+    }
+
+    return null;
+  }
+
+  /**
+   * Generate cache key for year data
+   */
+  private static getYearCacheKey(year: number, options?: {
+    cardIds?: string[];
+    excludeHidden?: boolean;
+  }): string {
+    const cardIdsStr = options?.cardIds?.sort().join(',') || '';
+    const excludeHidden = options?.excludeHidden || false;
+    return `year-${year}-${cardIdsStr}-${excludeHidden}`;
+  }
+
+
+  /**
+   * Get a credit with its full year history for detailed views
+   * Fetches full year data and returns the specific credit with complete history
+   */
+  static async getCreditWithFullHistory(
+    cardId: string,
+    creditId: string,
+    year: number,
+    options?: {
+      cardIds?: string[];
+      excludeHidden?: boolean;
+    }
+  ): Promise<any | null> {
+    // First try to get from cached year data
+    const yearData = this.getCachedYearData(year, options);
+    if (yearData) {
+      const credit = yearData.Credits.find(c => c.CardId === cardId && c.CreditId === creditId);
+      if (credit) {
+        return credit;
+      }
+    }
+
+    // If not in cache, fetch year data
+    try {
+      const fullYearData = await UserCreditService.fetchCreditHistoryForYear(year, options);
+      if (fullYearData) {
+        // Update the cache for future use
+        this.populateCacheFromYearData(fullYearData, options);
+
+        // Return the specific credit with full history
+        const credit = fullYearData.Credits.find(c => c.CardId === cardId && c.CreditId === creditId);
+        return credit || null;
+      }
+    } catch (error: any) {
+      // Handle specific case where year data doesn't exist
+      if (error?.response?.status === 404 ||
+          (error?.response?.data?.error && error.response.data.error.includes('Credit history for specified year not found'))) {
+        console.log(`No credit history found for year ${year}, attempting to sync...`);
+
+        try {
+          // Attempt to sync/create the current year's credit data
+          const syncResult = await this.syncCurrentYearCredits();
+          if (syncResult.changed) {
+            // Retry the year request after sync
+            const fullYearData = await UserCreditService.fetchCreditHistoryForYear(year, options);
+            if (fullYearData) {
+              // Update the cache for future use
+              this.populateCacheFromYearData(fullYearData, options);
+
+              // Return the specific credit with full history
+              const credit = fullYearData.Credits.find(c => c.CardId === cardId && c.CreditId === creditId);
+              return credit || null;
+            }
+          }
+        } catch (syncError) {
+          console.error('Failed to sync current year credits:', syncError);
+        }
+      }
+
+      console.error('Failed to fetch credit with full history:', error);
+    }
+
+    return null;
   }
 
   /**

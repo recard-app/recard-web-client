@@ -116,12 +116,15 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
         setIsLoading(false);
 
         // API Call #2: Load full year in background for complete navigation
+        // Populate cache with individual months without overwriting current display
         setTimeout(async () => {
           try {
             if (!mounted) return;
             const fullYearData = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
             if (mounted && fullYearData) {
-              setLocalCalendar(fullYearData);
+              // Populate cache with all 12 months from the year data
+              // This enables fast navigation without overwriting the current month display
+              OptimizedCreditService.populateCacheFromYearData(fullYearData, filterOptions);
             }
           } catch (yearError) {
             console.error('Background year loading failed:', yearError);
@@ -209,14 +212,14 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
 
   const filteredCalendar: CalendarUserCredits | null = useMemo(() => {
     if (!localCalendar) return null;
-    
-    // Server-side filtering now handles: cardIds, excludeHidden
-    // Client-side filtering only needs to handle: allowedPairs (selected cards)
+
+    // Server-side filtering handles: cardIds, excludeHidden
+    // Client-side filtering handles: allowedPairs (selected cards validation)
     let filtered = (localCalendar.Credits || [])
       .filter(uc => allowedPairs.has(`${uc.CardId}:${uc.CreditId}`));
-    
+
     return { ...localCalendar, Credits: filtered };
-  }, [localCalendar, allowedPairs]); // Removed selectedFilterCardId and trackingPreferences as they're handled server-side
+  }, [localCalendar, allowedPairs]);
 
   const [yearOptions, setYearOptions] = useState<number[]>([]);
 
@@ -740,12 +743,13 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                     const currentMonthData = await OptimizedCreditService.loadMonthData(selectedYear, selectedMonth, filterOptions);
                     setLocalCalendar(currentMonthData);
 
-                    // Load full year in background to refresh navigation
+                    // Load full year in background to refresh navigation cache
                     setTimeout(async () => {
                       try {
                         const fullYearData = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
                         if (fullYearData) {
-                          setLocalCalendar(fullYearData);
+                          // Populate cache with all months from the year data without overwriting display
+                          OptimizedCreditService.populateCacheFromYearData(fullYearData, filterOptions);
                         }
                       } catch (yearError) {
                         console.error('Background year refresh failed:', yearError);
