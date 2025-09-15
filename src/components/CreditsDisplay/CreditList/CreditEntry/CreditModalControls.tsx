@@ -11,7 +11,7 @@ interface CreditModalControlsProps {
   userCredit: UserCredit;
   cardCredit: CardCredit | null;
   creditMaxValue?: number;
-  currentYear: number;
+  now: Date;
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -27,15 +27,15 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   userCredit,
   cardCredit,
   creditMaxValue,
-  currentYear,
+  now,
   onUpdateHistoryEntry,
   selectedPeriodNumber: propSelectedPeriodNumber,
   onPeriodSelect: propOnPeriodSelect
 }) => {
-  // Calculate default current period
+  // Calculate default current period using the selected date context
   const defaultCurrentPeriod = (() => {
-    const currentMonth = new Date().getMonth() + 1;
-    
+    const currentMonth = now.getMonth() + 1;
+
     if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
       return currentMonth;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
@@ -191,24 +191,12 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
     // This ensures consistency with what the user sees
     const finalValue = valueUsed;
     const finalStatus = usage;
-    
-    console.log('[CreditModalControls] Slider commit:', {
-      sliderValue: v,
-      localValue: finalValue,
-      localStatus: finalStatus,
-      maxValue,
-      difference: Math.abs(finalValue - v)
-    });
-    
+
     // Double-check that our local state matches the slider value
     // This handles any edge cases with precision
     if (Math.abs(finalValue - v) > 0.01) {
       // If there's a discrepancy, use the slider value and recalculate
       const correctedStatus = getUsageForValue(v, maxValue);
-      console.log('[CreditModalControls] State discrepancy detected, correcting:', {
-        correctedStatus,
-        correctedValue: v
-      });
       setValueUsed(v);
       setUsage(correctedStatus);
       
@@ -228,6 +216,7 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   };
 
   const getCurrentPeriodName = (): string => {
+    const currentYear = now.getFullYear();
     if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
       const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       return monthNames[selectedPeriodNumber - 1] || `Month ${selectedPeriodNumber}`;

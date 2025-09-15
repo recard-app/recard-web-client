@@ -81,6 +81,18 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   // Shared selected period state for modal editing
   const [selectedPeriodNumber, setSelectedPeriodNumber] = useState<number>(currentPeriodNumber);
 
+  // Update selected period when current period changes (e.g., when navigating months)
+  useEffect(() => {
+    setSelectedPeriodNumber(currentPeriodNumber);
+  }, [currentPeriodNumber]);
+
+  // Reset selected period to current period when modal opens
+  useEffect(() => {
+    if (isModalOpen) {
+      setSelectedPeriodNumber(currentPeriodNumber);
+    }
+  }, [isModalOpen, currentPeriodNumber]);
+
   // Get current period history for main list display (always uses current period)
   const currentHistory = useMemo(() => {
     return userCredit.History.find((h) => h.PeriodNumber === currentPeriodNumber) ?? userCredit.History[0];
@@ -266,7 +278,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 userCredit={userCredit}
                 cardCredit={cardCredit}
                 creditMaxValue={creditMaxValue}
-                currentYear={now.getFullYear()}
+                now={now}
                 onUpdateHistoryEntry={onUpdateHistoryEntry}
                 selectedPeriodNumber={selectedPeriodNumber}
                 onPeriodSelect={setSelectedPeriodNumber}
@@ -299,7 +311,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 userCredit={userCredit}
                 cardCredit={cardCredit}
                 creditMaxValue={creditMaxValue}
-                currentYear={now.getFullYear()}
+                now={now}
                 onUpdateHistoryEntry={onUpdateHistoryEntry}
                 selectedPeriodNumber={selectedPeriodNumber}
                 onPeriodSelect={setSelectedPeriodNumber}
