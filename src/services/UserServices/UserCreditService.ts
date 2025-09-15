@@ -67,6 +67,34 @@ export const UserCreditService = {
     },
 
     /**
+     * Returns credits for a specific month, including all credits that apply to that month (monthly, quarterly, semiannual, annual)
+     * @param year - The year to fetch
+     * @param month - The month to fetch (1-12)
+     * @param options - Optional filtering parameters
+     */
+    async fetchCreditHistoryForMonth(year: number, month: number, options?: {
+        cardIds?: string[];
+        excludeHidden?: boolean;
+    }): Promise<CalendarUserCredits> {
+        const headers = await getAuthHeaders();
+        
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (options?.cardIds && options.cardIds.length > 0) {
+            options.cardIds.forEach(cardId => params.append('cardIds[]', cardId));
+        }
+        if (options?.excludeHidden) {
+            params.set('excludeHidden', 'true');
+        }
+        
+        const queryString = params.toString();
+        const url = `${apiurl}/users/cards/credits/month/${year}/${month}${queryString ? `?${queryString}` : ''}`;
+        
+        const response = await axios.get<CalendarUserCredits>(url, { headers });
+        return response.data;
+    },
+
+    /**
      * Returns credit data for a specific month range with optional filtering
      * @param start - Start date in YYYY-MM format (e.g., "2024-01")
      * @param end - End date in YYYY-MM format (optional, defaults to start month)
