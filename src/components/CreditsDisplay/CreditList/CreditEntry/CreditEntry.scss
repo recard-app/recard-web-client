@@ -352,15 +352,33 @@
 .credit-modal-slider {
   width: 100%;
   
-  // Make slider thin like scrollbars on mobile
+  // Make slider larger and more touch-friendly on mobile
   @media (max-width: $mobile-breakpoint) {
+    padding: 0 $space-4;
+    
     [data-slot="slider-track"] {
-      height: 6px !important; // Match our thin scrollbar width
+      height: 8px !important; // Slightly thicker track for mobile
     }
     
     [data-slot="slider-thumb"] {
-      width: 12px !important; // Smaller thumb
-      height: 12px !important; // Smaller thumb
+      width: 24px !important; // Visual size of thumb button
+      height: 24px !important; // Visual size of thumb button
+      position: relative !important;
+      
+      // Create larger touch area with pseudo-element
+      &::before {
+        content: '';
+        position: absolute;
+        top: -10px; // Extra 10px on top
+        left: -10px; // Extra 10px on left
+        right: -10px; // Extra 10px on right
+        bottom: -10px; // Extra 10px on bottom
+        width: 44px; // Total touch area: 24px + 20px padding
+        height: 44px; // Total touch area: 24px + 20px padding
+        border-radius: 50%;
+        background: transparent;
+        pointer-events: all;
+      }
     }
   }
 }
