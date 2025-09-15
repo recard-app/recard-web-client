@@ -20,6 +20,7 @@ export class OptimizedCreditService {
   private static readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
   private static prefetchQueue = new Set<string>();
   private static accountCreatedAt: Date | null = null;
+  private static hasCleanedNonCurrentYearCache = false;
 
   // Generate cache key for month data
   private static getCacheKey(year: number, month: number, options?: {
@@ -104,13 +105,15 @@ export class OptimizedCreditService {
     month: number,
     now: Date = new Date()
   ): boolean {
-    const maxYear = now.getFullYear();
+    const currentYear = now.getFullYear();
     const maxMonth = now.getMonth() + 1;
-    const minYear = (this.accountCreatedAt ?? now).getFullYear();
-    const minMonth = (this.accountCreatedAt ?? now).getMonth() + 1;
 
-    if (year > maxYear || (year === maxYear && month > maxMonth)) return false;
-    if (year < minYear || (year === minYear && month < minMonth)) return false;
+    // Only allow current year
+    if (year !== currentYear) return false;
+
+    // Within current year, don't allow future months
+    if (month > maxMonth) return false;
+
     return true;
   }
 
@@ -122,6 +125,22 @@ export class OptimizedCreditService {
     cardIds?: string[];
     excludeHidden?: boolean;
   }): Promise<CalendarUserCredits> {
+    // Clear any cached data from non-current years on first use only
+    if (!this.hasCleanedNonCurrentYearCache) {
+      this.clearNonCurrentYearCache();
+      this.hasCleanedNonCurrentYearCache = true;
+    }
+
+    // Only allow current year
+    if (year !== new Date().getFullYear()) {
+      console.warn(`OptimizedCreditService: Skipping request for non-current year ${year}`);
+      return {
+        Year: year,
+        Credits: [],
+        _month: month
+      } as any;
+    }
+
     // Check cache first
     const cached = this.getCachedData(year, month, options);
     if (cached) {
@@ -464,6 +483,7 @@ export class OptimizedCreditService {
     this.cache.clear();
     this.loadingStates.clear();
     this.prefetchQueue.clear();
+    this.hasCleanedNonCurrentYearCache = false;
   }
 
   /**
@@ -486,6 +506,27 @@ export class OptimizedCreditService {
       this.cache.delete(key);
       this.loadingStates.delete(key);
     });
+  }
+
+  /**
+   * Clear cache for non-current years (useful for restricting to current year only)
+   */
+  static clearNonCurrentYearCache(): void {
+    const currentYear = new Date().getFullYear();
+    const keysToDelete: string[] = [];
+
+    for (const [key, entry] of this.cache.entries()) {
+      if (entry.year !== currentYear) {
+        keysToDelete.push(key);
+      }
+    }
+
+    keysToDelete.forEach(key => {
+      this.cache.delete(key);
+      this.loadingStates.delete(key);
+    });
+
+    console.log(`Cleared ${keysToDelete.length} cache entries for non-current years`);
   }
 
   /**
