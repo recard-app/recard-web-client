@@ -269,16 +269,15 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 <div className="mobile-drawer-body">
                   <nav className="mobile-drawer-nav" role="navigation">
                     <ul className="primary-links">
-                      {shouldShowNewChatButton() && (
-                        <li className="nav-item-new-chat">
-                          <Drawer.Close asChild>
-                            <button onClick={handleNewChatClick} aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}>
-                              <Icon name="chat-bubble" variant="micro" size={16} />
-                              <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
-                            </button>
-                          </Drawer.Close>
-                        </li>
-                      )}
+                      {/* Always show new chat button in mobile drawer (acts like sidebar) */}
+                      <li className="nav-item-new-chat">
+                        <Drawer.Close asChild>
+                          <button onClick={handleNewChatClick} aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}>
+                            <Icon name="chat-bubble" variant="micro" size={16} />
+                            <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
+                          </button>
+                        </Drawer.Close>
+                      </li>
                       <li className={isActive(PAGES.HISTORY.PATH) ? 'active' : ''}>
                         <Drawer.Close asChild>
                           <Link to={PAGES.HISTORY.PATH}>

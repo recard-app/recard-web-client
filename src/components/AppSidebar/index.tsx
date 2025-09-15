@@ -233,18 +233,16 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           <>
             {/* Left column - Mini nav icons (always visible and fixed) */}
             <div className="mini-nav-column">
-              {/* New Chat Plus Button */}
-              {shouldShowNewChatButton() && (
-                <button 
-                  className="button no-outline new-chat-button"
-                  onClick={handleNewChat}
-                  onMouseEnter={handleNewChatHover}
-                  onMouseLeave={() => hideTooltip()}
-                  aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
-                >
-                  <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
-                </button>
-              )}
+              {/* New Chat Plus Button - Always show in sidebar */}
+              <button
+                className="button no-outline new-chat-button"
+                onClick={handleNewChat}
+                onMouseEnter={handleNewChatHover}
+                onMouseLeave={() => hideTooltip()}
+                aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
+              >
+                <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
+              </button>
 
               {miniMiddleNavItems.map((item, index) => {
                 const isActive = isRouteActive(item.to);
@@ -303,18 +301,16 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           <>
             {/* Collapsed mini-nav content - just icons */}
             <div className="mini-nav-icons">
-              {/* New Chat Plus Button */}
-              {shouldShowNewChatButton() && (
-                <button 
-                  className="button no-outline new-chat-button"
-                  onClick={handleNewChat}
-                  onMouseEnter={handleNewChatHover}
-                  onMouseLeave={() => hideTooltip()}
-                  aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
-                >
-                  <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
-                </button>
-              )}
+              {/* New Chat Plus Button - Always show in sidebar */}
+              <button
+                className="button no-outline new-chat-button"
+                onClick={handleNewChat}
+                onMouseEnter={handleNewChatHover}
+                onMouseLeave={() => hideTooltip()}
+                aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
+              >
+                <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
+              </button>
 
               {miniMiddleNavItems.map((item, index) => {
                 const isActive = isRouteActive(item.to);
