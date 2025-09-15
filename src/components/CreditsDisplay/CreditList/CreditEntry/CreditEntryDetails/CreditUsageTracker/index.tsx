@@ -109,15 +109,27 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
     return periodsInfo;
   }, [userCredit, currentYear, currentUsage, currentValueUsed, selectedPeriodNumber]);
 
-  // Scroll selected period into view when it changes
+  // Scroll selected period into view when it changes (horizontal only)
   useEffect(() => {
     if (selectedPeriodNumber && containerRef.current) {
       const selectedElement = periodRefs.current.get(selectedPeriodNumber);
-      if (selectedElement) {
-        selectedElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-          inline: 'center'
+      if (selectedElement && containerRef.current) {
+        // Calculate horizontal scroll position to center the selected element
+        const container = containerRef.current;
+        const element = selectedElement;
+        
+        const containerRect = container.getBoundingClientRect();
+        const elementRect = element.getBoundingClientRect();
+        
+        // Calculate the scroll position to center the element horizontally
+        const elementCenter = elementRect.left + elementRect.width / 2;
+        const containerCenter = containerRect.left + containerRect.width / 2;
+        const scrollOffset = elementCenter - containerCenter;
+        
+        // Only scroll horizontally within the container
+        container.scrollBy({
+          left: scrollOffset,
+          behavior: 'smooth'
         });
       }
     }
