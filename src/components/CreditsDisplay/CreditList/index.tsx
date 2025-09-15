@@ -38,8 +38,9 @@ const useIsMobile = () => {
 
 const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, onUpdateHistoryEntry }) => {
   const isMobile = useIsMobile();
-  
+
   if (!credits || credits.length === 0) return null;
+
   return (
     <div className="credit-list">
       {credits.map((uc) => {

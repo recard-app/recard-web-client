@@ -67,7 +67,7 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
       setUsage(selectedHistory.CreditUsage as CreditUsageType);
       setValueUsed(selectedHistory.ValueUsed ?? 0);
     }
-  }, [selectedHistory]);
+  }, [selectedHistory, userCredit.CardId, userCredit.CreditId, selectedPeriodNumber]);
 
   const maxValue = getMaxValue(creditMaxValue);
   const isSliderDisabled = usage === CREDIT_USAGE.INACTIVE;
@@ -176,6 +176,7 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
 
   const handleSliderChange = (vals: number[]) => {
     if (isSliderDisabled) return; // Only undisable via select
+
     const v = clampValue(vals[0] ?? 0, maxValue);
     // Only update local state during dragging for visual feedback
     setValueUsed(v);

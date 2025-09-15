@@ -8,7 +8,7 @@ import Icon from '@/icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './utils';
-import { OptimizedCreditService } from '../../../../services/UserServices/OptimizedCreditService';
+import { UserCreditService } from '../../../../services/UserServices/UserCreditService';
 import CreditEntryDetails from './CreditEntryDetails';
 import CreditModalControls from './CreditModalControls';
 import UsageDropdown from './UsageDropdown';
@@ -88,41 +88,27 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     setSelectedPeriodNumber(currentPeriodNumber);
   }, [currentPeriodNumber]);
 
-  // Reset selected period to current period when modal opens
+  // Reset selected period to current period when modal opens, clear enriched credit when modal closes
   useEffect(() => {
     if (isModalOpen) {
       setSelectedPeriodNumber(currentPeriodNumber);
+    } else {
+      // Delay clearing enriched credit to allow modal close animation to complete
+      const timer = setTimeout(() => {
+        setEnrichedCredit(null);
+      }, 300); // Match typical modal animation duration
+
+      return () => clearTimeout(timer);
     }
   }, [isModalOpen, currentPeriodNumber]);
 
-  // Fetch full year credit data when modal opens for "Usage This Year" section
+  // Use the existing credit data when modal opens - no need to fetch additional data
   useEffect(() => {
-    if (isModalOpen) {
-      const fetchFullYearCredit = async () => {
-        try {
-          const fullYearCredit = await OptimizedCreditService.getCreditWithFullHistory(
-            userCredit.CardId,
-            userCredit.CreditId,
-            now.getFullYear(),
-            { excludeHidden: true }
-          );
-
-          if (fullYearCredit) {
-            setEnrichedCredit(fullYearCredit);
-          } else {
-            // Fallback to original credit if fetch fails
-            setEnrichedCredit(userCredit);
-          }
-        } catch (error) {
-          console.error('Failed to fetch full year credit:', error);
-          // Fallback to original credit if fetch fails
-          setEnrichedCredit(userCredit);
-        }
-      };
-
-      fetchFullYearCredit();
+    if (isModalOpen && !enrichedCredit) {
+      // Just use the userCredit data that's already available
+      setEnrichedCredit(userCredit);
     }
-  }, [isModalOpen, userCredit.CardId, userCredit.CreditId, now, userCredit]);
+  }, [isModalOpen, userCredit, enrichedCredit]);
 
   // Get current period history for main list display (always uses current period)
   const currentHistory = useMemo(() => {
@@ -135,7 +121,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       setCardUsage((currentHistory.CreditUsage as CreditUsageType) ?? CREDIT_USAGE.INACTIVE);
       setCardValueUsed(currentHistory.ValueUsed ?? 0);
     }
-  }, [currentHistory]);
+  }, [currentHistory, userCredit.CardId, userCredit.CreditId]);
 
   // Main list display state (always shows current period)
   const valueUsed = cardValueUsed;
@@ -229,7 +215,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
 
     // Persist the update immediately
     if (onUpdateHistoryEntry) {
-      onUpdateHistoryEntry({
+      await onUpdateHistoryEntry({
         cardId: userCredit.CardId,
         creditId: userCredit.CreditId,
         periodNumber: currentPeriodNumber,

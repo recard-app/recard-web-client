@@ -279,6 +279,7 @@ export class OptimizedCreditService {
   /**
    * Populate cache with year data broken down by months
    * This allows background year loading without overwriting current month display
+   * Skips current month to preserve optimistic updates
    */
   static populateCacheFromYearData(yearData: CalendarUserCredits, options?: {
     cardIds?: string[];
@@ -293,8 +294,21 @@ export class OptimizedCreditService {
       timestamp: Date.now()
     });
 
+    // Get current month to avoid overwriting it with old data
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+
     // Then, extract each month's data from the year data and cache individually for navigation
     for (let month = 1; month <= 12; month++) {
+      // Skip current month if it's the current year to preserve optimistic updates
+      if (yearData.Year === currentYear && month === currentMonth) {
+        // Check if we already have current month data in cache
+        const existingCurrentMonthData = this.getCachedData(yearData.Year, month, options);
+        if (existingCurrentMonthData) {
+          continue;
+        }
+      }
+
       // Filter credits that apply to this month and extract relevant history
       const monthCredits = yearData.Credits.map(credit => {
         // Calculate the relevant period number for this month based on credit's period type
@@ -449,9 +463,85 @@ export class OptimizedCreditService {
     creditUsage?: CreditUsageType;
     valueUsed?: number;
   }): Promise<CreditHistory> {
-    // Clear cache after updates to ensure fresh data
-    this.clearCache();
-    return UserCreditService.updateCreditHistoryEntry(params);
+    // Call the server update first
+    const result = await UserCreditService.updateCreditHistoryEntry(params);
+
+    // Update the cached data with the confirmed values to ensure consistency
+    this.updateCachedHistoryEntry(params);
+
+    return result;
+  }
+
+  /**
+   * Update specific cache entries with confirmed server data
+   */
+  private static updateCachedHistoryEntry(params: {
+    cardId: string;
+    creditId: string;
+    periodNumber: number;
+    creditUsage?: CreditUsageType;
+    valueUsed?: number;
+  }): void {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+
+    // Update current month cache if it exists
+    const currentMonthKey = this.getCacheKey(currentYear, currentMonth, { excludeHidden: true });
+    const currentMonthEntry = this.cache.get(currentMonthKey);
+
+    if (currentMonthEntry) {
+      const updatedCredits = currentMonthEntry.data.Credits.map(credit => {
+        if (credit.CardId === params.cardId && credit.CreditId === params.creditId) {
+          const updatedHistory = credit.History.map(hist => {
+            if (hist.PeriodNumber === params.periodNumber) {
+              return {
+                ...hist,
+                CreditUsage: params.creditUsage ?? hist.CreditUsage,
+                ValueUsed: params.valueUsed ?? hist.ValueUsed
+              };
+            }
+            return hist;
+          });
+          return { ...credit, History: updatedHistory };
+        }
+        return credit;
+      });
+
+      currentMonthEntry.data = {
+        ...currentMonthEntry.data,
+        Credits: updatedCredits
+      };
+
+    }
+
+    // Also update year cache if it exists
+    const yearKey = this.getYearCacheKey(currentYear, { excludeHidden: true });
+    const yearEntry = this.yearCache.get(yearKey);
+
+    if (yearEntry) {
+      const updatedCredits = yearEntry.data.Credits.map(credit => {
+        if (credit.CardId === params.cardId && credit.CreditId === params.creditId) {
+          const updatedHistory = credit.History.map(hist => {
+            if (hist.PeriodNumber === params.periodNumber) {
+              return {
+                ...hist,
+                CreditUsage: params.creditUsage ?? hist.CreditUsage,
+                ValueUsed: params.valueUsed ?? hist.ValueUsed
+              };
+            }
+            return hist;
+          });
+          return { ...credit, History: updatedHistory };
+        }
+        return credit;
+      });
+
+      yearEntry.data = {
+        ...yearEntry.data,
+        Credits: updatedCredits
+      };
+
+    }
   }
 
   static async syncCurrentYearCredits(): Promise<{ changed: boolean; creditHistory?: CreditHistory }> {

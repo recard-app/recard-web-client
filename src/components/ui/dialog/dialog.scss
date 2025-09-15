@@ -103,15 +103,20 @@
     align-items: center;
     justify-content: center;
     z-index: 1000; // ensure above header/title on mobile
+    transition: transform 0.1s ease-out; // smooth transition
 
     svg {
       width: $icon-mini;
       height: $icon-mini;
     }
-    
+
     &:hover {
       background-color: $neutral-light-gray;
       color: $neutral-black;
+    }
+
+    &:active {
+      transform: translateY(-50%) translateY(1px); // subtle 1px shift down when clicked
     }
   }
 }
