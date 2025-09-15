@@ -50,6 +50,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
   const [accountCreatedAt, setAccountCreatedAt] = useState<Date | null>(null);
+  const [selectedFilterCardId, setSelectedFilterCardId] = useState<string | null>(null);
   const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return window.matchMedia('(max-width: 780px)').matches;
@@ -78,7 +79,21 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
       setIsLoading(true);
       try {
         const year = selectedYear;
-        const cal = await UserCreditService.fetchCreditHistoryForYear(year);
+        
+        // Build server-side filtering options
+        const filterOptions: {
+          cardIds?: string[];
+          excludeHidden?: boolean;
+        } = {
+          excludeHidden: true, // Always exclude hidden credits server-side
+        };
+        
+        // Add card filtering if a specific card is selected
+        if (selectedFilterCardId) {
+          filterOptions.cardIds = [selectedFilterCardId];
+        }
+        
+        const cal = await UserCreditService.fetchCreditHistoryForYear(year, filterOptions);
         if (!mounted) return;
         setLocalCalendar(cal);
         setIsLoading(false);
@@ -88,8 +103,9 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
             const result = await UserCreditService.syncCurrentYearCredits();
             if (!mounted) return;
             if (result.changed && result.creditHistory) {
-              const updated = result.creditHistory.Credits.find(c => c.Year === year) || null;
-              if (updated) setLocalCalendar(updated);
+              // Re-fetch with current filters after sync
+              const refreshedCal = await UserCreditService.fetchCreditHistoryForYear(year, filterOptions);
+              if (mounted) setLocalCalendar(refreshedCal);
             }
           } catch (e) {
             console.error('Credits sync failed:', e);
@@ -99,7 +115,20 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
         try {
           await UserCreditService.generateCreditHistory();
           const year = selectedYear;
-          const cal = await UserCreditService.fetchCreditHistoryForYear(year);
+          
+          // Same filtering options for fallback
+          const fallbackFilterOptions: {
+            cardIds?: string[];
+            excludeHidden?: boolean;
+          } = {
+            excludeHidden: true,
+          };
+          
+          if (selectedFilterCardId) {
+            fallbackFilterOptions.cardIds = [selectedFilterCardId];
+          }
+          
+          const cal = await UserCreditService.fetchCreditHistoryForYear(year, fallbackFilterOptions);
           if (mounted) {
             setLocalCalendar(cal);
             setIsLoading(false);
@@ -114,7 +143,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
       }
     })();
     return () => { mounted = false; };
-  }, [reloadTrigger, selectedYear]);
+  }, [reloadTrigger, selectedYear, selectedFilterCardId]); // Added selectedFilterCardId to dependencies
 
   // Helper function to check if a credit should be hidden based on tracking preferences
   const isCreditHidden = (cardId: string, creditId: string): boolean => {
@@ -138,18 +167,16 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ calendar, userCardDetai
     return set;
   }, [userCardDetails]);
 
-  const [selectedFilterCardId, setSelectedFilterCardId] = useState<string | null>(null);
   const filteredCalendar: CalendarUserCredits | null = useMemo(() => {
     if (!localCalendar) return null;
-    let filtered = (localCalendar.Credits || [])
-      .filter(uc => allowedPairs.has(`${uc.CardId}:${uc.CreditId}`))
-      .filter(uc => !isCreditHidden(uc.CardId, uc.CreditId)); // Filter out hidden credits
     
-    if (selectedFilterCardId) {
-      filtered = filtered.filter(uc => uc.CardId === selectedFilterCardId);
-    }
+    // Server-side filtering now handles: cardIds, excludeHidden
+    // Client-side filtering only needs to handle: allowedPairs (selected cards)
+    let filtered = (localCalendar.Credits || [])
+      .filter(uc => allowedPairs.has(`${uc.CardId}:${uc.CreditId}`));
+    
     return { ...localCalendar, Credits: filtered };
-  }, [localCalendar, allowedPairs, selectedFilterCardId, trackingPreferences]);
+  }, [localCalendar, allowedPairs]); // Removed selectedFilterCardId and trackingPreferences as they're handled server-side
 
   const [yearOptions, setYearOptions] = useState<number[]>([]);
 

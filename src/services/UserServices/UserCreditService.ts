@@ -41,11 +41,58 @@ export const UserCreditService = {
 
     /**
      * Returns the authenticated user's CalendarUserCredits for a given year
+     * @param year - The year to fetch
+     * @param options - Optional filtering parameters
      */
-    async fetchCreditHistoryForYear(year: number): Promise<CalendarUserCredits> {
+    async fetchCreditHistoryForYear(year: number, options?: {
+        cardIds?: string[];
+        excludeHidden?: boolean;
+    }): Promise<CalendarUserCredits> {
         const headers = await getAuthHeaders();
+        
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (options?.cardIds && options.cardIds.length > 0) {
+            options.cardIds.forEach(cardId => params.append('cardIds[]', cardId));
+        }
+        if (options?.excludeHidden) {
+            params.set('excludeHidden', 'true');
+        }
+        
+        const queryString = params.toString();
+        const url = `${apiurl}/users/cards/credits/year/${year}${queryString ? `?${queryString}` : ''}`;
+        
+        const response = await axios.get<CalendarUserCredits>(url, { headers });
+        return response.data;
+    },
+
+    /**
+     * Returns credit data for a specific month range with optional filtering
+     * @param start - Start date in YYYY-MM format (e.g., "2024-01")
+     * @param end - End date in YYYY-MM format (optional, defaults to start month)
+     * @param options - Optional filtering parameters
+     */
+    async fetchCreditHistoryForRange(start: string, end?: string, options?: {
+        cardIds?: string[];
+        excludeHidden?: boolean;
+    }): Promise<CalendarUserCredits> {
+        const headers = await getAuthHeaders();
+        
+        // Build query parameters
+        const params = new URLSearchParams();
+        params.set('start', start);
+        if (end) {
+            params.set('end', end);
+        }
+        if (options?.cardIds && options.cardIds.length > 0) {
+            options.cardIds.forEach(cardId => params.append('cardIds[]', cardId));
+        }
+        if (options?.excludeHidden) {
+            params.set('excludeHidden', 'true');
+        }
+        
         const response = await axios.get<CalendarUserCredits>(
-            `${apiurl}/users/cards/credits/year/${year}`,
+            `${apiurl}/users/cards/credits/range?${params.toString()}`,
             { headers }
         );
         return response.data;
