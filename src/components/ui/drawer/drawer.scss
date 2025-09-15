@@ -33,3 +33,31 @@
   outline: none !important;
   box-shadow: none !important;
 }
+
+// Smooth transitions for drawer content changes
+[data-slot="drawer-content"] {
+  transition: height 0.3s ease-out, max-height 0.3s ease-out;
+}
+
+// Smooth transitions for content that loads asynchronously
+.drawer-content-scroll,
+.dialog-content-scroll {
+  transition: opacity 0.2s ease-out;
+}
+
+// Add a minimum height to prevent jarring transitions when content loads
+.mobile-credit-details-drawer {
+  min-height: 300px;
+  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Ensure smooth opacity transitions when content appears
+.mobile-credit-details-drawer .drawer-content-scroll {
+  opacity: 1;
+  transition: opacity 0.3s ease-out 0.1s; // Small delay to ensure content is ready
+}
+
+// When content is loading/missing, reduce opacity slightly
+.mobile-credit-details-drawer .drawer-content-scroll:empty {
+  opacity: 0.5;
+}
