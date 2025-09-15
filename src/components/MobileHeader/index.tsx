@@ -69,12 +69,35 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     return PageUtils.isPage(pathname, 'HOME');
   };
 
+  // Check if current chat has messages to determine if new chat button should be visible
+  const shouldShowNewChatButton = () => {
+    if (!currentChatId) {
+      // No current chat selected, so we're in a "new" state - hide button
+      return false;
+    }
+    
+    // Find the current chat in history
+    const currentChat = chatHistory?.find(chat => chat.chatId === currentChatId);
+    if (!currentChat) {
+      // Current chat not found in history (new chat) - hide button
+      return false;
+    }
+    
+    // Show button if current chat has messages
+    return currentChat.conversation && currentChat.conversation.length > 0;
+  };
+
   // Determine if user has any selected cards (fallback to length > 0)
   const hasSelectedCards = Array.isArray(creditCards)
     ? creditCards.some((c: any) => c && c.selected === true)
     : false;
-  // While loading, assume user has cards so we don't flash the empty state
-  const shouldShowNewChat = isLoadingCreditCards || hasSelectedCards;
+  
+  // Separate logic for each button type
+  // New chat button: show if user has cards AND current chat has messages
+  const shouldShowNewChatButton_Mobile = (isLoadingCreditCards || hasSelectedCards) && shouldShowNewChatButton();
+  
+  // Add cards button: show if user has no cards selected (regardless of chat state)
+  const shouldShowAddCardsButton = !isLoadingCreditCards && !hasSelectedCards;
 
   // Get the current page title for display in mobile header
   const getCurrentPageTitle = (): string => {
@@ -185,27 +208,30 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
           <div className="mobile-header__actions">
             {isHomeOrChatRoute(location.pathname) && (onNewChat || onOpenCardSelector) ? (
-              shouldShowNewChat ? (
-                <button 
-                  className="button ghost small icon with-text mobile-header__new-chat-button"
-                  onClick={handleNewChatClick}
-                  aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
-                  title={PAGE_NAMES.NEW_TRANSACTION_CHAT}
-                >
-                  <Icon name="chat-bubble" variant="micro" size={16} color={ICON_PRIMARY_MEDIUM} />
-                  <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
-                </button>
-              ) : (
-                <button 
-                  className="button ghost small icon with-text mobile-header__new-chat-button"
-                  onClick={handleAddCardsClick}
-                  aria-label="Add cards"
-                  title="Add Cards"
-                >
-                  <Icon name="card" variant="mini" size={16} color={ICON_PRIMARY_MEDIUM} />
-                  <span>Add Cards</span>
-                </button>
-              )
+              <>
+                {shouldShowNewChatButton_Mobile && (
+                  <button 
+                    className="button ghost small icon with-text mobile-header__new-chat-button"
+                    onClick={handleNewChatClick}
+                    aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
+                    title={PAGE_NAMES.NEW_TRANSACTION_CHAT}
+                  >
+                    <Icon name="chat-bubble" variant="micro" size={16} color={ICON_PRIMARY_MEDIUM} />
+                    <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
+                  </button>
+                )}
+                {shouldShowAddCardsButton && (
+                  <button 
+                    className="button ghost small icon with-text mobile-header__new-chat-button"
+                    onClick={handleAddCardsClick}
+                    aria-label="Add cards"
+                    title="Add Cards"
+                  >
+                    <Icon name="card" variant="mini" size={16} color={ICON_PRIMARY_MEDIUM} />
+                    <span>Add Cards</span>
+                  </button>
+                )}
+              </>
             ) : null}
             {showHelpButton && onHelpClick ? (
               <button 
@@ -243,14 +269,16 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 <div className="mobile-drawer-body">
                   <nav className="mobile-drawer-nav" role="navigation">
                     <ul className="primary-links">
-                      <li className="nav-item-new-chat">
-                        <Drawer.Close asChild>
-                          <button onClick={handleNewChatClick} aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}>
-                            <Icon name="chat-bubble" variant="micro" size={16} />
-                            <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
-                          </button>
-                        </Drawer.Close>
-                      </li>
+                      {shouldShowNewChatButton() && (
+                        <li className="nav-item-new-chat">
+                          <Drawer.Close asChild>
+                            <button onClick={handleNewChatClick} aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}>
+                              <Icon name="chat-bubble" variant="micro" size={16} />
+                              <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
+                            </button>
+                          </Drawer.Close>
+                        </li>
+                      )}
                       <li className={isActive(PAGES.HISTORY.PATH) ? 'active' : ''}>
                         <Drawer.Close asChild>
                           <Link to={PAGES.HISTORY.PATH}>

@@ -96,6 +96,24 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     }
     return isRouteActive(routePath) ? iconVariants.ACTIVE : iconVariants.INACTIVE;
   };
+
+  // Check if current chat has messages to determine if new chat button should be visible
+  const shouldShowNewChatButton = () => {
+    if (!currentChatId) {
+      // No current chat selected, so we're in a "new" state - hide button
+      return false;
+    }
+    
+    // Find the current chat in history
+    const currentChat = chatHistory.find(chat => chat.chatId === currentChatId);
+    if (!currentChat) {
+      // Current chat not found in history (new chat) - hide button
+      return false;
+    }
+    
+    // Show button if current chat has messages
+    return currentChat.conversation && currentChat.conversation.length > 0;
+  };
   
   // Centralized tooltip state
   const [activeTooltip, setActiveTooltip] = React.useState<{
@@ -216,15 +234,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             {/* Left column - Mini nav icons (always visible and fixed) */}
             <div className="mini-nav-column">
               {/* New Chat Plus Button */}
-              <button 
-                className="button no-outline new-chat-button"
-                onClick={handleNewChat}
-                onMouseEnter={handleNewChatHover}
-                onMouseLeave={() => hideTooltip()}
-                aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
-              >
-                <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
-              </button>
+              {shouldShowNewChatButton() && (
+                <button 
+                  className="button no-outline new-chat-button"
+                  onClick={handleNewChat}
+                  onMouseEnter={handleNewChatHover}
+                  onMouseLeave={() => hideTooltip()}
+                  aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
+                >
+                  <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
+                </button>
+              )}
 
               {miniMiddleNavItems.map((item, index) => {
                 const isActive = isRouteActive(item.to);
@@ -284,15 +304,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             {/* Collapsed mini-nav content - just icons */}
             <div className="mini-nav-icons">
               {/* New Chat Plus Button */}
-              <button 
-                className="button no-outline new-chat-button"
-                onClick={handleNewChat}
-                onMouseEnter={handleNewChatHover}
-                onMouseLeave={() => hideTooltip()}
-                aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
-              >
-                <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
-              </button>
+              {shouldShowNewChatButton() && (
+                <button 
+                  className="button no-outline new-chat-button"
+                  onClick={handleNewChat}
+                  onMouseEnter={handleNewChatHover}
+                  onMouseLeave={() => hideTooltip()}
+                  aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
+                >
+                  <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
+                </button>
+              )}
 
               {miniMiddleNavItems.map((item, index) => {
                 const isActive = isRouteActive(item.to);
