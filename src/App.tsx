@@ -192,50 +192,110 @@ function AppContent({}: AppContentProps) {
     }
   }, [location.pathname]);
 
-  // Effect to fetch credit cards when user is authenticated
+  // Effect to fetch all initial data in parallel batches when user is authenticated
   useEffect(() => {
-    const fetchCreditCards = async () => {
+    const loadInitialData = async () => {
       if (!user) {
+        // Reset all states when user is not authenticated
         setCreditCards([]);
+        setTrackingPreferences(null);
+        setUserCardDetails([]);
+        setUserDetailedCardDetails([]);
+        setChatHistory([]);
+        setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE);
+        setPreferencesInstructions('');
+        setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
+        setShowCompletedOnlyPreference(false);
         setIsLoadingCreditCards(false);
+        setIsLoadingHistory(false);
         return;
       }
-      
+
       setIsLoadingCreditCards(true);
+      setIsLoadingHistory(true);
+
       try {
-        const cards = await CardService.fetchCreditCards(true);
+        // Batch 1: Critical data that's needed immediately (parallel)
+        const [cards, subscriptionPlan] = await Promise.all([
+          CardService.fetchCreditCards(true),
+          UserService.fetchUserSubscriptionPlan().catch(error => {
+            console.error('Error fetching subscription plan:', error);
+            return SUBSCRIPTION_PLAN.FREE; // Default to free on error
+          })
+        ]);
+
         setCreditCards(cards);
+        setSubscriptionPlan(subscriptionPlan);
+
+        // Batch 2: User preferences and tracking data (parallel)
+        const [trackingPrefs, preferencesInstructions, chatHistoryPref, showCompletedPref] = await Promise.all([
+          UserCreditService.fetchCreditTrackingPreferences().catch(error => {
+            console.error('Error fetching credit tracking preferences:', error);
+            return { Cards: [] }; // Return empty preferences if fetch fails
+          }),
+          UserPreferencesService.loadInstructionsPreferences().catch(error => {
+            console.error('Error fetching preferences instructions:', error);
+            return { instructions: '' };
+          }),
+          UserPreferencesService.loadChatHistoryPreferences().catch(error => {
+            console.error('Error fetching chat history preference:', error);
+            return { data: null };
+          }),
+          UserPreferencesService.loadShowCompletedOnlyPreference().catch(error => {
+            console.error('Error fetching show completed only preference:', error);
+            return { data: 'false' };
+          })
+        ]);
+
+        setTrackingPreferences(trackingPrefs);
+        setPreferencesInstructions(preferencesInstructions.instructions || '');
+        if (chatHistoryPref.data) {
+          setChatHistoryPreference(chatHistoryPref.data as ChatHistoryPreference);
+        }
+        setShowCompletedOnlyPreference(showCompletedPref.data === 'true');
+
+        // Batch 3: Card details and chat history (parallel)
+        const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
+        const params: HistoryParams = {
+          lastUpdate: undefined,
+          page_size: quick_history_size,
+          page: 1,
+          forceShowAll: 'true'
+        };
+
+        const [basicDetails, detailedInfo, historyResponse] = await Promise.all([
+          UserCreditCardService.fetchUserCardDetails().catch(error => {
+            console.error('Error fetching user card details:', error);
+            return [];
+          }),
+          UserCreditCardService.fetchUserCardsDetailedInfo().catch(error => {
+            console.error('Error fetching user detailed card info:', error);
+            return [];
+          }),
+          UserHistoryService.fetchPagedHistory(params).catch(error => {
+            console.error('Error fetching chat history:', error);
+            return { chatHistory: [], hasUpdates: false };
+          })
+        ]);
+
+        setUserCardDetails(basicDetails);
+        setUserDetailedCardDetails(detailedInfo);
+
+        if (historyResponse.hasUpdates) {
+          setChatHistory(historyResponse.chatHistory);
+          setLastUpdateTimestamp(new Date().toISOString());
+        }
+
       } catch (error) {
-        console.error('Error fetching credit cards:', error);
+        console.error('Error loading initial data:', error);
       } finally {
         setIsLoadingCreditCards(false);
+        setIsLoadingHistory(false);
       }
     };
 
-    fetchCreditCards();
-  }, [user]);
-
-
-  // Effect to fetch user's credit tracking preferences
-  useEffect(() => {
-    const fetchTrackingPreferences = async () => {
-      if (!user) {
-        setTrackingPreferences(null);
-        return;
-      }
-      
-      try {
-        const preferences = await UserCreditService.fetchCreditTrackingPreferences();
-        setTrackingPreferences(preferences);
-      } catch (error) {
-        console.error('Error fetching credit tracking preferences:', error);
-        // Set empty preferences if fetch fails
-        setTrackingPreferences({ Cards: [] });
-      }
-    };
-
-    fetchTrackingPreferences();
-  }, [user, cardsVersion]); // Refresh when cards change
+    loadInitialData();
+  }, [user, cardsVersion]); // Refresh when user changes or cards version changes
 
   // Track viewport size to decide drawer vs dialog flags
   useEffect(() => {
@@ -267,122 +327,35 @@ function AppContent({}: AppContentProps) {
     };
   }, []);
 
-  // Effect to fetch show completed only preference
+  // Effect to handle history refresh triggers (for updates from other components)
   useEffect(() => {
-    const fetchShowCompletedOnlyPreference = async () => {
-      if (!user) {
-        setShowCompletedOnlyPreference(false);
-        return;
-      }
-      
-      try {
-        const response = await UserPreferencesService.loadShowCompletedOnlyPreference();
-        setShowCompletedOnlyPreference(response.data === 'true');
-      } catch (error) {
-        console.error('Error fetching show completed only preference:', error);
-        setShowCompletedOnlyPreference(false);
-      }
-    };
+    const refreshHistory = async () => {
+      if (!user || historyRefreshTrigger === 0) return;
 
-    fetchShowCompletedOnlyPreference();
-  }, [user, historyRefreshTrigger]);
-
-  // Effect to fetch user preferences instructions
-  useEffect(() => {
-    const fetchPreferencesInstructions = async () => {
-      if (!user) return;
-      
-      try {
-        const response = await UserPreferencesService.loadInstructionsPreferences();
-        setPreferencesInstructions(response.instructions || '');
-      } catch (error) {
-        console.error('Error fetching preferences instructions:', error);
-      }
-    };
-
-    fetchPreferencesInstructions();
-  }, [user]);
-
-  // Effect to fetch chat history preference settings
-  useEffect(() => {
-    const fetchChatHistoryPreference = async () => {
-      if (!user) return;
-      
-      try {
-        const response = await UserPreferencesService.loadChatHistoryPreferences();
-        if (response.data) {
-          setChatHistoryPreference(response.data as ChatHistoryPreference);
-        }
-      } catch (error) {
-        console.error('Error fetching chat history preference:', error);
-      }
-    };
-
-    fetchChatHistoryPreference();
-  }, [user]);
-
-  // Effect to fetch full chat history with updates
-  useEffect(() => {
-    const fetchFullHistory = async () => {
-      if (!user) {
-        setChatHistory([]);
-        setIsLoadingHistory(false);
-        return;
-      }
-      
       setIsLoadingHistory(true);
       try {
         const params: HistoryParams = {
           lastUpdate: lastUpdateTimestamp || undefined,
-          page_size: quick_history_size,
+          page_size: GLOBAL_QUICK_HISTORY_SIZE,
           page: 1,
           forceShowAll: 'true'
         };
 
         const response: PagedHistoryResponse = await UserHistoryService.fetchPagedHistory(params);
-        
+
         if (response.hasUpdates) {
-          // Ensure each chat history entry has all required fields
-          const processedHistory = response.chatHistory;
-          
-          setChatHistory(processedHistory);
+          setChatHistory(response.chatHistory);
           setLastUpdateTimestamp(new Date().toISOString());
         }
       } catch (error) {
-        console.error('Error fetching chat history:', error);
+        console.error('Error refreshing chat history:', error);
       } finally {
         setIsLoadingHistory(false);
       }
     };
 
-    fetchFullHistory();
-  }, [user, historyRefreshTrigger, chatHistoryPreference, showCompletedOnlyPreference]);
-
-  // Effect to fetch user's card details
-  useEffect(() => {
-    const fetchUserCardDetails = async () => {
-      if (!user) {
-        setUserCardDetails([]); // Clear details if no user
-        setUserDetailedCardDetails([]);
-        return;
-      }
-      
-      try {
-        // Fetch both basic and detailed card information
-        const [basicDetails, detailedInfo] = await Promise.all([
-          UserCreditCardService.fetchUserCardDetails(),
-          UserCreditCardService.fetchUserCardsDetailedInfo()
-        ]);
-        
-        setUserCardDetails(basicDetails);
-        setUserDetailedCardDetails(detailedInfo);
-      } catch (error) {
-        console.error('Error fetching user card details:', error);
-      }
-    };
-
-    fetchUserCardDetails();
-  }, [user]);
+    refreshHistory();
+  }, [historyRefreshTrigger, chatHistoryPreference, showCompletedOnlyPreference]);
 
   // Function to update credit cards and refresh user card details
   const getCreditCards = async (returnCreditCards: CreditCard[]): Promise<void> => {
@@ -411,25 +384,6 @@ function AppContent({}: AppContentProps) {
     }
   };
 
-  // Effect to fetch user's subscription plan
-  useEffect(() => {
-    const fetchSubscriptionPlan = async () => {
-      if (!user) {
-        setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE);
-        return;
-      }
-      
-      try {
-        const plan = await UserService.fetchUserSubscriptionPlan();
-        setSubscriptionPlan(plan);
-      } catch (error) {
-        console.error('Error fetching subscription plan:', error);
-        setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE); // Default to free on error
-      }
-    };
-
-    fetchSubscriptionPlan();
-  }, [user]);
 
   // Function to update current chat ID
   const getCurrentChatId = (returnCurrentChatId: string | null): void => {
