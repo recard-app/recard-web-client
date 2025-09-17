@@ -71,6 +71,9 @@
   display: flex;
   flex-direction: column;
   gap: $space-3;
+  @media (max-width: $mobile-breakpoint) {
+    padding-top: $space-1;
+  }
 }
 
 .current-period-label {

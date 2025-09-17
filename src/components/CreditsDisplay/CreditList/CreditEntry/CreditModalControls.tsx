@@ -244,7 +244,6 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
     <div 
       className="credit-modal-controls" 
       style={{ 
-        backgroundColor: lineTintBackground, 
         '--usage-tint-hover': lineTintHover
       } as React.CSSProperties}
     >
