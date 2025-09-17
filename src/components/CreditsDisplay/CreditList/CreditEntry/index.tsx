@@ -306,9 +306,21 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       {isMobile ? (
         <Drawer open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DrawerContent fitContent maxHeight="80vh" className="mobile-credit-details-drawer">
-            <DrawerTitle className="sr-only">Credit Details</DrawerTitle>
+            <DrawerTitle className="sr-only">{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</DrawerTitle>
             <div className="dialog-header drawer-sticky-header">
-              <h2>Credit Details</h2>
+              <h2>{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</h2>
+              {enrichedCredit && card && (
+                <p className="card-bubble-display header-card-display">
+                  <CardIcon 
+                    title={card.CardName}
+                    size={12}
+                    primary={card.CardPrimaryColor}
+                    secondary={card.CardSecondaryColor}
+                    className="card-thumbnail"
+                  />
+                  {card.CardName}
+                </p>
+              )}
             </div>
             <div className="drawer-content-scroll" style={{ padding: '0 16px 16px', overflow: 'auto' }}>
               {enrichedCredit && (
@@ -353,7 +365,19 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent width="600px">
             <DialogHeader>
-              <DialogTitle>Credit Details</DialogTitle>
+              <DialogTitle>{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</DialogTitle>
+              {enrichedCredit && card && (
+                <p className="card-bubble-display header-card-display">
+                  <CardIcon 
+                    title={card.CardName}
+                    size={12}
+                    primary={card.CardPrimaryColor}
+                    secondary={card.CardSecondaryColor}
+                    className="card-thumbnail"
+                  />
+                  {card.CardName}
+                </p>
+              )}
             </DialogHeader>
             <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
               {enrichedCredit && (

@@ -468,6 +468,20 @@ body:has(.mobile-credit-details-drawer) [data-radix-popper-content-wrapper] .usa
   background-color: $neutral-lightest-gray;
 }
 
+// Header card display overrides - remove padding, margin, and border
+.header-card-display {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+// Center the card display in mobile drawer header
+.mobile-credit-details-drawer .drawer-sticky-header .header-card-display {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
 // Mobile-specific dropdown item styling for better touch targets
 @media (max-width: $mobile-breakpoint) {
   [data-slot="dropdown-menu-item"].usage-dropdown-item {

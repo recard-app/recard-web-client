@@ -116,23 +116,6 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
 
   return (
     <div className="credit-detail-content">
-      {/* Credit title and card info combined */}
-      <div className="credit-header">
-        <div className="credit-id">{cardCredit?.Title ?? userCredit.CreditId}</div>
-        {card && (
-          <p className="card-bubble-display">
-            <CardIcon 
-              title={card.CardName}
-              size={12}
-              primary={card.CardPrimaryColor}
-              secondary={card.CardSecondaryColor}
-              className="card-thumbnail"
-            />
-            {card.CardName}
-          </p>
-        )}
-      </div>
-
       {/* Description with stacked label */}
       {cardCredit?.Description && (
         <div className="credit-detail-item">
