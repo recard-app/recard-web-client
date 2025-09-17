@@ -104,6 +104,10 @@ function PromptWindow({
     const [errorMessage, setErrorMessage] = useState<string>('');
     // Controls whether to show the error message
     const [showError, setShowError] = useState<boolean>(false);
+    // Indicates if the error is a rate limiting error
+    const [isRateLimitError, setIsRateLimitError] = useState<boolean>(false);
+    // Indicates if the error is a daily rate limiting error
+    const [isDailyRateLimitError, setIsDailyRateLimitError] = useState<boolean>(false);
 
     // Declare that this component needs full height behavior
     useFullHeight(true);
@@ -117,6 +121,8 @@ function PromptWindow({
     const getPrompt = (returnPromptStr: string) => {
         // Clear any previous errors
         setShowError(false);
+        setIsRateLimitError(false);
+        setIsDailyRateLimitError(false);
         
         if (isNewChat && isNewChatPending) {
             console.log('New chat creation in progress, please wait...');
@@ -374,6 +380,8 @@ function PromptWindow({
             
             // Clear any errors on success
             setShowError(false);
+            setIsRateLimitError(false);
+            setIsDailyRateLimitError(false);
         } catch (error) {
             if (axios.isCancel(error)) {
                 console.log('Request cancelled');
@@ -384,7 +392,26 @@ function PromptWindow({
             }
             console.error(error);
             setIsNewChatPending(false);
-            setErrorMessage('Error processing request, please try again.');
+
+            // Check if this is a rate limiting error (429 status)
+            if (error.response?.status === 429) {
+                // Check if it's specifically a daily rate limit error
+                const errorCode = error.response?.data?.error?.code;
+
+                if (errorCode === 'DAILY_RATE_LIMIT_EXCEEDED') {
+                    setErrorMessage('You\'ve run out of messages for the day. Your limit will reset in 24 hours.');
+                    setIsDailyRateLimitError(true);
+                    setIsRateLimitError(false);
+                } else {
+                    setErrorMessage('You\'re sending messages too quickly. Please wait before trying again.');
+                    setIsRateLimitError(true);
+                    setIsDailyRateLimitError(false);
+                }
+            } else {
+                setErrorMessage('Error processing request, please try again.');
+                setIsRateLimitError(false);
+                setIsDailyRateLimitError(false);
+            }
             setShowError(true);
         } finally {
             resetLoading();
@@ -453,8 +480,10 @@ function PromptWindow({
             {showError && (
                 <div className="error-container">
                     <InfoDisplay
-                        type="error"
+                        type={isDailyRateLimitError || isRateLimitError ? "warning" : "error"}
                         message={errorMessage}
+                        transparent={true}
+                        showTitle={!isDailyRateLimitError}
                     />
                 </div>
             )}
