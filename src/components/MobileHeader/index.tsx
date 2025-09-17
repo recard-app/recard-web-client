@@ -182,8 +182,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         <Drawer.Root direction="left" open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <div className="mobile-header__left">
             <Drawer.Trigger asChild>
-              <button className="button no-outline small icon-gray-hover mobile-header__menu-button" aria-label="Open menu">
-                <Icon name="sidebar" variant="open" size={20} color={SIDEBAR_TOGGLE_ICON_COLOR} />
+              <button className="button no-outline small icon-gray-hover-fill mobile-header__menu-button" aria-label="Open menu">
+                <Icon name="bar-menu" variant="mini" size={22} color={SIDEBAR_TOGGLE_ICON_COLOR} />
               </button>
             </Drawer.Trigger>
             {isHomeOrChatRoute(location.pathname) ? (
@@ -240,7 +240,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 aria-label="Open help"
                 title="Help"
               >
-                <Icon name="help" variant="outline" size={20} color={SIDEBAR_TOGGLE_ICON_COLOR} />
+                <Icon name="help" variant="outline" size={22} color={SIDEBAR_TOGGLE_ICON_COLOR} />
               </button>
             ) : (
               rightContent || <span aria-hidden className="header-spacer" />
@@ -252,8 +252,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
               <div className="mobile-drawer-container">
               <div className="mobile-drawer-header">
                 <Drawer.Close asChild>
-                  <button className="mobile-drawer-close button no-outline small icon-gray-hover" aria-label="Close menu">
-                    <Icon name="sidebar" variant="close" size={20} color={SIDEBAR_TOGGLE_ICON_COLOR} />
+                  <button className="mobile-drawer-close button no-outline small icon-gray-hover-fill" aria-label="Close menu">
+                    <Icon name="chevron-double-left" variant="mini" size={22} color={SIDEBAR_TOGGLE_ICON_COLOR} />
                   </button>
                 </Drawer.Close>
                 <Drawer.Close asChild>
@@ -273,7 +273,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                       <li className="nav-item-new-chat">
                         <Drawer.Close asChild>
                           <button onClick={handleNewChatClick} aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}>
-                            <Icon name="chat-bubble" variant="micro" size={16} />
+                            <Icon name="chat-bubble" variant="mini" size={18} />
                             <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
                           </button>
                         </Drawer.Close>
@@ -284,7 +284,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                             <Icon 
                               name="history" 
                               variant={isActive(PAGES.HISTORY.PATH) ? 'solid' : 'outline'} 
-                              size={16}
+                              size={18}
                               color={SIDEBAR_INACTIVE_ICON_COLOR}
                             />
                             <span>{PAGE_NAMES.TRANSACTION_HISTORY}</span>
@@ -297,7 +297,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                             <Icon 
                               name="card" 
                               variant={isActive(PAGES.MY_CARDS.PATH) ? 'solid' : 'outline'} 
-                              size={16}
+                              size={18}
                               color={SIDEBAR_INACTIVE_ICON_COLOR}
                             />
                             <span>{PAGE_NAMES.MY_CARDS}</span>
@@ -310,7 +310,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                             <Icon 
                               name="banknotes" 
                               variant={isActive(PAGES.MY_CREDITS.PATH) ? 'solid' : 'outline'} 
-                              size={16}
+                              size={18}
                               color={SIDEBAR_INACTIVE_ICON_COLOR}
                             />
                             <span>{PAGE_NAMES.MY_CREDITS}</span>

@@ -79,7 +79,7 @@
     .mobile-header__help-button {
       background: none;
       border: none;
-      padding: $space-2;
+      padding: $space-3;
       border-radius: $radius-base;
       cursor: pointer;
       display: flex;
@@ -197,7 +197,7 @@
   .mobile-drawer-close {
     background: none;
     border: none;
-    padding: $space-2;
+    padding: $space-3 !important;
     border-radius: $radius-base;
     cursor: pointer;
     &:hover { background-color: $neutral-light-gray; }
@@ -214,9 +214,9 @@
         align-items: center;
         gap: $space-3;
         width: 100%;
-        padding: $space-2;
+        padding: $space-3 $space-2;
         justify-content: flex-start;
-        min-height: 40px; // ensure consistent item height across all entries
+        min-height: 45px; // ensure consistent item height across all entries
         border-radius: $radius-base;
         color: inherit;
         background: none;
@@ -224,9 +224,9 @@
         text-decoration: none;
         cursor: pointer;
         &:hover { background-color: $neutral-light-gray; }
-        img { width: $icon-mini; height: $icon-mini; }
-        svg { width: $icon-mini; height: $icon-mini; }
-        span { font-size: $font-sm; }
+        img { width: 18px; height: 18px; }
+        svg { width: 18px; height: 18px; }
+        span { font-size: $font-chat; }
       }
       &.active a {
         background-color: $neutral-light-gray;
@@ -286,7 +286,7 @@
   .mobile-header__menu-button {
     background: none;
     border: none;
-    padding: $space-2;
+    padding: $space-3 !important;
     border-radius: $radius-base;
     cursor: pointer;
     &:hover { background-color: $neutral-light-gray; }
