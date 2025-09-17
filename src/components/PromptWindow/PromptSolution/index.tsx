@@ -184,73 +184,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
 
     // Don't render anything if there are no solutions or if all solutions lack card names
     if (solutions.length === 0 || !solutions.some(solution => solution.cardName)) {
-        return (
-            <div className="solutions-container">
-                {chatHistory.length >= 2 && (
-                    <SelectCard
-                        selectedCardId={activeCardId}
-                        creditCards={creditCards || []}
-                        isUpdating={isUpdating}
-                        onSelectCardClick={() => setIsCardSelectorOpen(true)}
-                        onDeselectCard={() => handleCardSelection(activeCardId)}
-                        selectLabel="Select card for purchase:"
-                        className="expanded"
-                    />
-                )}
-
-                {(() => {
-                    const useDrawer = isMobileViewport ? USE_DRAWER_FOR_SELECT_CARD_MOBILE : USE_DRAWER_FOR_SELECT_CARD_DESKTOP;
-                    if (useDrawer) {
-                        return (
-                            <Drawer open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen} direction="bottom">
-                                <DrawerContent fitContent maxHeight="80vh">
-                                    <DrawerTitle className="sr-only">Select a Credit Card</DrawerTitle>
-                                    <div className="dialog-header drawer-sticky-header">
-                                        <h2>Select a Credit Card</h2>
-                                        <div className="search-container" style={{ marginTop: 6 }}>
-                                            <SearchField
-                                                type="text"
-                                                placeholder="Search cards..."
-                                                value={selectCardSearchTerm}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectCardSearchTerm(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="dialog-body" style={{ overflowY: 'auto' }}>
-                                        {creditCards && (
-                                            <SingleCardSelector
-                                                creditCards={creditCards}
-                                                onSelectCard={handleCardSelectedFromModal}
-                                                selectedCardId={activeCardId}
-                                                hideInternalSearch={true}
-                                                externalSearchTerm={selectCardSearchTerm}
-                                                onExternalSearchTermChange={setSelectCardSearchTerm}
-                                            />
-                                        )}
-                                    </div>
-                                </DrawerContent>
-                            </Drawer>
-                        );
-                    }
-                    return (
-                        <Dialog open={isCardSelectorOpen} onOpenChange={setIsCardSelectorOpen}>
-                            <DialogContent>
-                                <DialogHeader>
-                                    <DialogTitle>Select a Credit Card</DialogTitle>
-                                </DialogHeader>
-                                {creditCards && (
-                                    <SingleCardSelector
-                                        creditCards={creditCards}
-                                        onSelectCard={handleCardSelectedFromModal}
-                                        selectedCardId={activeCardId}
-                                    />
-                                )}
-                            </DialogContent>
-                        </Dialog>
-                    );
-                })()}
-            </div>
-        );
+        return null;
     }
 
     return (
