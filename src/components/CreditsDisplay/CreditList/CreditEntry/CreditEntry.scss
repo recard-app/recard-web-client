@@ -361,6 +361,19 @@
 .credit-modal-slider {
   width: 100%;
   
+  // Ensure border persists on slider thumb in all states
+  [data-slot="slider-thumb"] {
+    border: 1px solid currentColor !important;
+    
+    &:hover,
+    &:focus,
+    &:active,
+    &:focus-visible,
+    &[data-state="dragging"] {
+      border: 1px solid currentColor !important;
+    }
+  }
+  
   // Make slider larger and more touch-friendly on mobile
   @media (max-width: $mobile-breakpoint) {
     padding: 0 $space-4;
@@ -412,6 +425,20 @@
   align-items: center;
   gap: $space-3;
   margin-top: $space-3;
+  
+  // Ensure button borders persist in all states
+  button.outline {
+    border: 1px solid currentColor !important;
+    
+    &:hover,
+    &:focus,
+    &:active,
+    &:focus-visible,
+    &:visited,
+    &.active {
+      border: 1px solid currentColor !important;
+    }
+  }
 }
 
 .amount-display {
