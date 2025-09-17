@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType, MOBILE_BREAKPOINT } from '../../../../types';
 import { CardCredit } from '../../../../types/CreditCardTypes';
+import { MONTH_ABBREVIATIONS } from '../../../../types/Constants';
 import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
 import { Slider } from '../../../ui/slider';
 import Icon from '@/icons';
@@ -222,11 +223,19 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
       const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
       return monthNames[selectedPeriodNumber - 1] || `Month ${selectedPeriodNumber}`;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
-      return `Q${selectedPeriodNumber} ${currentYear}`;
+      const quarterSize = 3;
+      const startIdx = (selectedPeriodNumber - 1) * quarterSize;
+      const endIdx = startIdx + quarterSize - 1;
+      return `Q${selectedPeriodNumber} (${MONTH_ABBREVIATIONS[startIdx]}-${MONTH_ABBREVIATIONS[endIdx]})`;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
-      return selectedPeriodNumber === 1 ? `H1 ${currentYear}` : `H2 ${currentYear}`;
+      const halfSize = 6;
+      if (selectedPeriodNumber === 1) {
+        return `H1 (${MONTH_ABBREVIATIONS[0]}-${MONTH_ABBREVIATIONS[halfSize - 1]})`;
+      } else {
+        return `H2 (${MONTH_ABBREVIATIONS[halfSize]}-${MONTH_ABBREVIATIONS[11]})`;
+      }
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Annually) {
-      return `${currentYear}`;
+      return `${currentYear} (${MONTH_ABBREVIATIONS[0]}-${MONTH_ABBREVIATIONS[11]})`;
     }
     return 'Unknown Period';
   };

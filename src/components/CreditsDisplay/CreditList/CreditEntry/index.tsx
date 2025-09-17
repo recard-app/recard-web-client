@@ -11,6 +11,7 @@ import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './u
 import { UserCreditService } from '../../../../services/UserServices/UserCreditService';
 import CreditEntryDetails from './CreditEntryDetails';
 import CreditModalControls from './CreditModalControls';
+import CreditUsageTracker from './CreditEntryDetails/CreditUsageTracker';
 import UsageDropdown from './UsageDropdown';
 
 export interface CreditEntryProps {
@@ -327,15 +328,23 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
             </div>
             <DrawerFooter>
               {enrichedCredit && (
-                <CreditModalControls
-                  userCredit={enrichedCredit}
-                  cardCredit={cardCredit}
-                  creditMaxValue={creditMaxValue}
-                  now={now}
-                  onUpdateHistoryEntry={handleUpdateHistoryEntry}
-                  selectedPeriodNumber={selectedPeriodNumber}
-                  onPeriodSelect={setSelectedPeriodNumber}
-                />
+                <>
+                  <CreditUsageTracker 
+                    userCredit={enrichedCredit} 
+                    currentYear={now.getFullYear()} 
+                    selectedPeriodNumber={selectedPeriodNumber}
+                    onPeriodSelect={setSelectedPeriodNumber}
+                  />
+                  <CreditModalControls
+                    userCredit={enrichedCredit}
+                    cardCredit={cardCredit}
+                    creditMaxValue={creditMaxValue}
+                    now={now}
+                    onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                    selectedPeriodNumber={selectedPeriodNumber}
+                    onPeriodSelect={setSelectedPeriodNumber}
+                  />
+                </>
               )}
             </DrawerFooter>
           </DrawerContent>
@@ -348,18 +357,26 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
             </DialogHeader>
             <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
               {enrichedCredit && (
-                <CreditEntryDetails
-                  userCredit={enrichedCredit}
-                  now={now}
-                  card={card}
-                  cardCredit={cardCredit}
-                  creditMaxValue={creditMaxValue}
-                  currentYear={now.getFullYear()}
-                  onUpdateHistoryEntry={handleUpdateHistoryEntry}
-                  hideControls={false}
-                  selectedPeriodNumber={selectedPeriodNumber}
-                  onPeriodSelect={setSelectedPeriodNumber}
-                />
+                <>
+                  <CreditEntryDetails
+                    userCredit={enrichedCredit}
+                    now={now}
+                    card={card}
+                    cardCredit={cardCredit}
+                    creditMaxValue={creditMaxValue}
+                    currentYear={now.getFullYear()}
+                    onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                    hideControls={false}
+                    selectedPeriodNumber={selectedPeriodNumber}
+                    onPeriodSelect={setSelectedPeriodNumber}
+                  />
+                  <CreditUsageTracker 
+                    userCredit={enrichedCredit} 
+                    currentYear={now.getFullYear()} 
+                    selectedPeriodNumber={selectedPeriodNumber}
+                    onPeriodSelect={setSelectedPeriodNumber}
+                  />
+                </>
               )}
             </div>
             <DialogFooter>

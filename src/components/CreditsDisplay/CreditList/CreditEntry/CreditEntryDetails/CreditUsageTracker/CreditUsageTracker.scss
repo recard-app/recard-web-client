@@ -14,6 +14,10 @@
     height: 70px;
     // Universal scrollbar styling
     @include universal-scrollbar;
+    @media (max-width: $mobile-breakpoint) {
+      padding-left: $space-3;
+      padding-right: $space-3;
+    }
   }
 
   .tracker-period {
@@ -56,7 +60,7 @@
     }
 
     .period-name {
-      font-size: 9px;
+      font-size: $font-xxs;
       font-weight: 600;
       line-height: 1.1;
       text-align: center;

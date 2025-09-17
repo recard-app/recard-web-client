@@ -394,7 +394,7 @@ function PromptWindow({
             setIsNewChatPending(false);
 
             // Check if this is a rate limiting error (429 status)
-            if (error.response?.status === 429) {
+            if (axios.isAxiosError(error) && error.response?.status === 429) {
                 // Check if it's specifically a daily rate limit error
                 const errorCode = error.response?.data?.error?.code;
 

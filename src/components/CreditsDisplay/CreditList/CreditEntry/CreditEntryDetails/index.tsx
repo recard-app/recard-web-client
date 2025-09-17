@@ -3,7 +3,6 @@ import './CreditEntryDetails.scss';
 import { CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, UserCredit } from '../../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../../types/CreditCardTypes';
 import { CardIcon } from '../../../../../icons';
-import CreditUsageTracker from './CreditUsageTracker';
 import { MONTH_NAMES, MONTH_ABBREVIATIONS } from '../../../../../types/Constants';
 
 export interface CreditEntryDetailsProps {
@@ -175,25 +174,14 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
         </div>
       )}
 
-      {/* Usage Tracker with Statistics */}
-      <div className="usage-tracker-section">
+      {/* Usage Statistics */}
+      <div className="usage-stats-section">
         <div className="credit-detail-item">
           <span className="credit-detail-label">Usage This Year</span>
           <div className="credit-detail-value">
             ${userCredit.History.reduce((total: any, entry: any) => total + (entry.ValueUsed || 0), 0)} / ${(Number(cardCredit?.Value) || 0) * userCredit.History.length} used
           </div>
         </div>
-        <CreditUsageTracker 
-          userCredit={userCredit} 
-          currentYear={now.getFullYear()} 
-          currentUsage={usage}
-          currentValueUsed={valueUsed}
-          selectedPeriodNumber={selectedPeriodNumber}
-          onPeriodSelect={(periodNumber) => {
-            console.log('[CreditEntryDetails] Period selected:', periodNumber);
-            onPeriodSelect(periodNumber);
-          }}
-        />
       </div>
 
     </div>

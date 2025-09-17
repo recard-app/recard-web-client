@@ -76,24 +76,16 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         isFuture = true;
       }
 
-      // Generate period name using date ranges (same logic as CreditPeriodGroup)
+      // Generate simplified period labels
       let periodName = '';
       if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
         periodName = monthLabels[i - 1] || `${i}`;
       } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
-        const quarterSize = 3;
-        const startIdx = (i - 1) * quarterSize;
-        const endIdx = startIdx + quarterSize - 1;
-        periodName = `${monthLabels[startIdx]} - ${monthLabels[endIdx]}`;
+        periodName = `Q${i}`;
       } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
-        const halfSize = 6;
-        if (i === 1) {
-          periodName = `${monthLabels[0]} - ${monthLabels[halfSize - 1]}`;
-        } else {
-          periodName = `${monthLabels[halfSize]} - ${monthLabels[11]}`;
-        }
+        periodName = `H${i}`;
       } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Annually) {
-        periodName = `${monthLabels[0]} - ${monthLabels[11]}`;
+        periodName = `${now.getFullYear()}`;
       }
 
       periodsInfo.push({
