@@ -88,6 +88,9 @@ export const SHOW_HEADER_ICONS = true;
 export const FREE_PLAN_HISTORY_DAYS = 90;
 export const MOBILE_BREAKPOINT = 780;
 
+// Feature flags
+export const DISABLE_DESKTOP_PERIOD_BAR = true;
+
 export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
 export const PLACEHOLDER_PROFILE_IMAGE = '/temp_account.png';
 // Terminology toggle: set to 'chat' for Chat-centric wording, or 'transaction' for Transaction-centric wording

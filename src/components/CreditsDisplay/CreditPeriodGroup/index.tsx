@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import './CreditPeriodGroup.scss';
-import { CalendarUserCredits, CreditPeriodType, CreditUsageType, MONTH_LABEL_ABBREVIATIONS, CREDIT_PERIODS, CREDIT_USAGE } from '../../../types';
+import { CalendarUserCredits, CreditPeriodType, CreditUsageType, MONTH_LABEL_ABBREVIATIONS, CREDIT_PERIODS, CREDIT_USAGE, DISABLE_DESKTOP_PERIOD_BAR } from '../../../types';
 import CreditList from '../CreditList';
 import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
 import Icon from '@/icons';
@@ -107,17 +107,19 @@ const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar,
     <section className="credit-period-group" aria-labelledby={`period-${period}`}>
       <div className="period-header">
         <h3 id={`period-${period}`} className="period-title">{title}</h3>
-        
-        {/* Mobile period label */}
+
+        {/* Mobile period label - now also shown on desktop when feature flag is enabled */}
         {activePeriodLabel && (
-          <div className="mobile-period-label">
+          <div className={`mobile-period-label ${DISABLE_DESKTOP_PERIOD_BAR ? 'desktop-visible' : ''}`}>
             <Icon name="calendar" variant="micro" size={12} />
             <span className="period-label">{activePeriodLabel}</span>
           </div>
         )}
       </div>
-      
-      <div className="period-bar">
+
+      {/* Period bar - hidden on desktop when feature flag is enabled */}
+      {!DISABLE_DESKTOP_PERIOD_BAR && (
+        <div className="period-bar">
         {(() => {
           const activeIdx = cells.findIndex((cell) =>
             (groupYear === selectedYear) && (selectedMonthIdx >= cell.startMonthIndex && selectedMonthIdx <= cell.endMonthIndex)
@@ -201,7 +203,8 @@ const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar,
             </>
           );
         })()}
-      </div>
+        </div>
+      )}
       <CreditList credits={creditsForPeriod} now={now} cardById={cardById} creditByPair={creditByPair} onUpdateHistoryEntry={onUpdateHistoryEntry} />
     </section>
   );

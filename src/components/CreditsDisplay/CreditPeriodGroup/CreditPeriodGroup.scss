@@ -6,14 +6,18 @@
 }
 
 .period-header {
-  // Desktop: just normal layout
+  // Desktop: normal layout, but flex when period bar is disabled
   margin-bottom: $space-3;
-  
-  // Mobile: inline layout
+  display: flex;
+  align-items: center;
+  gap: $space-2; // Small gap between title and label
+
+  // Mobile: use space-between to push label to the right
   @media (max-width: $mobile-breakpoint) {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 0; // Remove gap, use space-between instead
     margin-bottom: $space-2;
   }
 }
@@ -30,7 +34,7 @@
 
 .mobile-period-label {
   display: none;
-  
+
   // Show only on mobile
   @media (max-width: $mobile-breakpoint) {
     display: flex;
@@ -38,12 +42,31 @@
     gap: $space-1;
     font-size: $font-xs;
     color: $neutral-dark-gray;
-    
+
     .period-label {
       font-weight: $font-semibold;
       text-transform: uppercase;
     }
-    
+
+    svg {
+      color: $primary-medium;
+      flex-shrink: 0;
+    }
+  }
+
+  // Show on desktop when feature flag makes it desktop-visible
+  &.desktop-visible {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+    font-size: $font-xs;
+    color: $neutral-dark-gray;
+
+    .period-label {
+      font-weight: $font-semibold;
+      text-transform: uppercase;
+    }
+
     svg {
       color: $primary-medium;
       flex-shrink: 0;
