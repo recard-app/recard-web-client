@@ -11,7 +11,6 @@ import {
 } from '../../../components/ui/dialog/dialog';
 import MyCreditsHelpModal from '../MyCreditsHelpModal';
 import { UserCreditService } from '../../../services/UserServices';
-import { OptimizedCreditService } from '../../../services/UserServices/OptimizedCreditService';
 import { UserService } from '../../../services/UserServices';
 import CreditsDisplay from '../../../components/CreditsDisplay';
 import { CreditCardDetails } from '../../../types/CreditCardTypes';
@@ -141,7 +140,6 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
           // Try loading current month after history generation
           const cal = await UserCreditService.fetchCreditHistoryForYear(
             selectedYear,
-            selectedMonth,
             fallbackFilterOptions
           );
           if (mounted) {
