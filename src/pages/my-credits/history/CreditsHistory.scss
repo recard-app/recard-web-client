@@ -26,6 +26,9 @@
       flex-direction: row;
       gap: $space-6;
       flex-wrap: wrap;
+      @media (max-width: $mobile-breakpoint) {
+        gap: $space-3;
+      }
     }
 
     .header-actions {

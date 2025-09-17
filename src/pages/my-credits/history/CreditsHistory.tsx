@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES, MOBILE_BREAKPOINT } from '../../../types';
+import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES, MOBILE_BREAKPOINT, DISABLE_MOBILE_CREDITS_STICKY_FOOTER } from '../../../types';
 import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE } from '../../../types/CardCreditsTypes';
 import {
   Dialog,
@@ -645,6 +645,45 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                     ))}
                   </select>
                 </div>
+                {DISABLE_MOBILE_CREDITS_STICKY_FOOTER && (
+                  <div className="date-picker">
+                    <select
+                      className="month-select default-select"
+                      value={selectedMonth}
+                      onChange={async (e) => {
+                        const m = parseInt(e.target.value);
+                        if (isAllowedYearMonth(selectedYear, m)) {
+                          setIsLoadingMonth(true);
+                          try {
+                            // Build filtering options
+                            const filterOptions: {
+                              cardIds?: string[];
+                              excludeHidden?: boolean;
+                            } = {
+                              excludeHidden: true,
+                            };
+                            if (selectedFilterCardId) {
+                              filterOptions.cardIds = [selectedFilterCardId];
+                            }
+
+                            // Load new month data
+                            const newData = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
+                            updateLocalCalendar(newData);
+                            setSelectedMonth(m);
+                          } catch (error) {
+                            console.error('Failed to load new month:', error);
+                          } finally {
+                            setIsLoadingMonth(false);
+                          }
+                        }
+                      }}
+                    >
+                      {MONTH_OPTIONS.filter(m => isAllowedYearMonth(selectedYear, m.value)).map(m => (
+                        <option key={m.value} value={m.value}>{m.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             )}
             <div className="header-actions">
@@ -802,7 +841,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
       </Drawer>
 
       {/* Mobile-only sticky footer controls */}
-      {isMobileViewport && (
+      {isMobileViewport && !DISABLE_MOBILE_CREDITS_STICKY_FOOTER && (
         <div className="mobile-sticky-footer" role="region" aria-label="Month navigation">
           <div className="footer-date-controls">
             <div className="date-control-group">

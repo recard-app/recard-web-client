@@ -90,6 +90,7 @@ export const MOBILE_BREAKPOINT = 780;
 
 // Feature flags
 export const DISABLE_DESKTOP_PERIOD_BAR = true;
+export const DISABLE_MOBILE_CREDITS_STICKY_FOOTER = true;
 
 export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
 export const PLACEHOLDER_PROFILE_IMAGE = '/temp_account.png';
