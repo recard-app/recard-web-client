@@ -127,15 +127,16 @@
             flex-shrink: 0;
             height: 48px; // Match the select height
             min-height: 48px; // Ensure minimum height
-            padding: 0 $space-3; // Adjust padding for consistent look
+            width: 48px; // Make buttons square
+            min-width: 48px; // Ensure minimum width
+            padding: 0; // Remove padding for square buttons
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
         }
       }
 
-      .current-period-btn {
-        align-self: flex-start;
-        margin-top: $space-1;
-      }
     }
   }
 }

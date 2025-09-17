@@ -542,6 +542,16 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                       <option key={m.value} value={m.value}>{m.label}</option>
                     ))}
                   </select>
+                  {!isOnCurrentMonth && (
+                    <button
+                      type="button"
+                      aria-label="Go to current period"
+                      className="button outline small px-2"
+                      onClick={goToCurrentPeriod}
+                    >
+                      <Icon name="map-pin" variant="micro" size={16} />
+                    </button>
+                  )}
                   <button
                     type="button"
                     aria-label="Next month"
@@ -552,17 +562,6 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                     <Icon name="chevron-down" variant="mini" size={16} className="-rotate-90" />
                   </button>
                 </div>
-                {!isOnCurrentMonth && (
-                  <button
-                    type="button"
-                    aria-label="Go to current period"
-                    className="button outline small icon with-text"
-                    onClick={goToCurrentPeriod}
-                  >
-                    <Icon name="map-pin" variant="micro" size={16} />
-                    <span>Back to Today</span>
-                  </button>
-                )}
               </div>
               <ToggleBar className="connected items-center gap-2">
                 <span className="caps-label">Credits to Show</span>
@@ -831,6 +830,16 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                     <option key={m.value} value={m.value}>{m.label}</option>
                   ))}
                 </select>
+                {!isOnCurrentMonth && (
+                  <button
+                    type="button"
+                    aria-label="Go to current period"
+                    className="button outline small px-2"
+                    onClick={goToCurrentPeriod}
+                  >
+                    <Icon name="map-pin" variant="mini" size={16} />
+                  </button>
+                )}
                 <button
                   type="button"
                   aria-label="Next month"
@@ -842,17 +851,6 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                 </button>
               </div>
             </div>
-            {!isOnCurrentMonth && (
-              <button
-                type="button"
-                aria-label="Go to current period"
-                className="button outline small icon with-text current-period-btn"
-                onClick={goToCurrentPeriod}
-              >
-                <Icon name="map-pin" variant="micro" size={16} />
-                <span>Back to Today</span>
-              </button>
-            )}
           </div>
         </div>
       )}
