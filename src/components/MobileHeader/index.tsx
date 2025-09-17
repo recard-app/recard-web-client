@@ -253,7 +253,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
               <div className="mobile-drawer-header">
                 <Drawer.Close asChild>
                   <button className="mobile-drawer-close button no-outline small icon-gray-hover-fill" aria-label="Close menu">
-                    <Icon name="chevron-double-left" variant="mini" size={22} color={SIDEBAR_TOGGLE_ICON_COLOR} />
+                    <Icon name="arrow-left" variant="mini" size={22} color={SIDEBAR_TOGGLE_ICON_COLOR} />
                   </button>
                 </Drawer.Close>
                 <Drawer.Close asChild>
