@@ -11,6 +11,7 @@
     white-space: nowrap;
     padding-top: $space-2;
     padding-bottom: $space-2; // Small margin to prevent scrollbar from covering content
+    height: 70px;
     // Universal scrollbar styling
     @include universal-scrollbar;
   }
@@ -31,17 +32,14 @@
       cursor: pointer;
 
       &:hover {
-        transform: translateY(-1px);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      &:active {
-        transform: translateY(0);
       }
     }
 
     &.selected {
-      box-shadow: 0 0 0 1px currentColor;
+      min-height: 56px; // 8px taller than the default 48px
+      min-width: 52px;
+      padding: 12px 12px; // Increase top/bottom padding for better visual balance
     }
 
     &.future {
