@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, JSX } from 'react';
 import { adjustTextareaHeight, canSubmitPrompt, shouldSubmitOnEnter } from './utils';
 import { Icon } from '../../../icons';
 import './PromptField.scss';
-import { CHAT_MAX_FIELD_HEIGHT } from '../../../types';
+import { CHAT_MAX_FIELD_HEIGHT, MOBILE_BREAKPOINT } from '../../../types';
 
 /**
  * Maximum height of the textarea.
@@ -37,7 +37,7 @@ function PromptField({ returnPrompt, isProcessing, onCancel }: PromptFieldProps)
 
   /**
    * Effect hook for iOS Safari keyboard handling using visualViewport API
-   * MOBILE ONLY - All behavior in this effect only applies to mobile devices (max-width: 780px)
+   * MOBILE ONLY - All behavior in this effect only applies to mobile devices (max-width: ${MOBILE_BREAKPOINT}px)
    * Desktop and tablet users are completely unaffected
    */
   useEffect(() => {
@@ -45,7 +45,7 @@ function PromptField({ returnPrompt, isProcessing, onCancel }: PromptFieldProps)
     if (!textarea) return;
 
     // Check if we're on mobile and have visualViewport support
-    const isMobile = window.matchMedia('(max-width: 780px)').matches;
+    const isMobile = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
     const visualViewport = (window as any).visualViewport;
     
     // Early return for non-mobile devices - nothing below this line affects desktop/tablet

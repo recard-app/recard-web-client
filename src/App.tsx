@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
-import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, ICON_PRIMARY_MEDIUM, PAGES, PageUtils } from './types';
+import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT } from './types';
 import { Icon } from './icons';
 // Services
 import { 
@@ -165,7 +165,7 @@ function AppContent({}: AppContentProps) {
   };
   const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    return window.matchMedia('(max-width: 780px)').matches;
+    return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
   });
   // Local feature flags controlling drawer vs dialog
   const USE_DRAWER_FOR_CARD_DETAILS_DESKTOP = true;
@@ -300,7 +300,7 @@ function AppContent({}: AppContentProps) {
   // Track viewport size to decide drawer vs dialog flags
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const mediaQuery = window.matchMedia('(max-width: 780px)');
+    const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
     const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
       // Support initial call with MediaQueryList and subsequent events
       const matches = 'matches' in e ? e.matches : (e as MediaQueryList).matches;
@@ -658,7 +658,7 @@ function AppContent({}: AppContentProps) {
             const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH]);
             const isAuthRoute = authPaths.has(location.pathname);
             const mobileHeaderTitle = PageUtils.getTitleByPath(location.pathname) || APP_NAME;
-            // Render mobile header for authenticated, non-auth routes. CSS shows it only under 780px.
+            // Render mobile header for authenticated, non-auth routes. CSS shows it only under ${MOBILE_BREAKPOINT}px.
             return user && !isAuthRoute ? (
               <MobileHeader 
                 title={mobileHeaderTitle}

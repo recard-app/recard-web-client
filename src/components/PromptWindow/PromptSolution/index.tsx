@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { CreditCard } from '../../../types/CreditCardTypes';
-import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage } from '../../../types';
+import { ChatSolutionCard, ChatSolutionSelectedCardId, Conversation, ChatMessage, MOBILE_BREAKPOINT } from '../../../types';
 import { CardIcon, Icon } from '../../../icons';
 import { UserHistoryService } from '../../../services';
 import { CheckIcon } from 'lucide-react';
@@ -58,7 +58,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
 
     const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
         if (typeof window === 'undefined') return false;
-        return window.matchMedia('(max-width: 780px)').matches;
+        return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
     });
     const USE_DRAWER_FOR_SELECT_CARD_DESKTOP = false;
     const USE_DRAWER_FOR_SELECT_CARD_MOBILE = true;
@@ -100,7 +100,7 @@ function PromptSolution({ promptSolutions, creditCards, chatId, selectedCardId, 
     // Track viewport size
     useEffect(() => {
         if (typeof window === 'undefined') return;
-        const mediaQuery = window.matchMedia('(max-width: 780px)');
+        const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
         const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
             const matches = 'matches' in e ? e.matches : (e as MediaQueryList).matches;
             setIsMobileViewport(matches);

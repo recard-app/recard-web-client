@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
+import { MOBILE_BREAKPOINT } from '../../types';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService } from '../../services';
 import CreditCardDetailView from '../CreditCardDetailView';
@@ -62,7 +63,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     // Keeping state omitted to avoid unused warnings
     const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
         if (typeof window === 'undefined') return false;
-        return window.matchMedia('(max-width: 780px)').matches;
+        return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
     });
     // Local feature flags for Add Card selector (drawer vs dialog)
     const USE_DRAWER_FOR_ADD_CARD_DESKTOP = false;
@@ -134,7 +135,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     // Track viewport size
     useEffect(() => {
         if (typeof window === 'undefined') return;
-        const mediaQuery = window.matchMedia('(max-width: 780px)');
+        const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
         const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
             const matches = 'matches' in e ? e.matches : (e as MediaQueryList).matches;
             setIsMobileViewport(matches);

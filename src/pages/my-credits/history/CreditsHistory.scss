@@ -18,6 +18,22 @@
     // Universal scrollbar styling
     @include universal-scrollbar;
   }
+
+  // Header controls styling to match HistoryPanel
+  .header-controls-container {
+    .header-controls {
+      display: flex;
+      flex-direction: row;
+      gap: $space-6;
+      flex-wrap: wrap;
+    }
+
+    .header-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+    }
+  }
 }
 
 
@@ -54,6 +70,13 @@
 
   .button.mobile-only {
     display: inline-flex;
+  }
+
+  // Ensure header actions remain right-aligned on mobile
+  .credits-history-panel .header-controls-container {
+    .header-actions {
+      margin-left: auto;
+    }
   }
 
   .mobile-sticky-footer {
@@ -97,10 +120,14 @@
 
           .month-select {
             flex: 1;
+            height: 48px; // Set consistent height
           }
 
           .button {
             flex-shrink: 0;
+            height: 48px; // Match the select height
+            min-height: 48px; // Ensure minimum height
+            padding: 0 $space-3; // Adjust padding for consistent look
           }
         }
       }

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES } from '../../../types';
+import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES, MOBILE_BREAKPOINT } from '../../../types';
 import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE } from '../../../types/CardCreditsTypes';
 import {
   Dialog,
@@ -69,11 +69,11 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
   }, []);
   const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
-    return window.matchMedia('(max-width: 780px)').matches;
+    return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
   });
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const mq = window.matchMedia('(max-width: 780px)');
+    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
     const handler = (e: MediaQueryListEvent | MediaQueryList) => {
       const matches = 'matches' in e ? e.matches : (e as MediaQueryList).matches;
       setIsMobileViewport(matches);
@@ -454,7 +454,8 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
       <div className="standard-page-content--no-padding">
         <div className="credits-history-panel">
           <HeaderControls>
-            <div className="header-controls desktop-only">
+            {!isMobileViewport && (
+              <div className="header-controls">
               <div className="date-picker">
                 <label className="filter-label">Year</label>
                 <select
@@ -605,64 +606,70 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                   className="standalone"
                 />
               </div>
-            </div>
-            <div className="header-controls mobile-only">
-              <div className="date-picker">
-                <label className="filter-label">Year</label>
-                <select
-                  className="year-select default-select"
-                  value={selectedYear}
-                  onChange={async (e) => {
-                    const newYear = parseInt(e.target.value);
-                    const newMonth = clampMonthForYear(newYear, selectedMonth, accountCreatedAt);
-
-                    setIsLoadingMonth(true);
-                    try {
-                      // Build filtering options
-                      const filterOptions: {
-                        cardIds?: string[];
-                        excludeHidden?: boolean;
-                      } = {
-                        excludeHidden: true,
-                      };
-                      if (selectedFilterCardId) {
-                        filterOptions.cardIds = [selectedFilterCardId];
-                      }
-
-                      // Load new year/month data
-                      const newData = await UserCreditService.fetchCreditHistoryForYear(newYear, filterOptions);
-                      updateLocalCalendar(newData);
-                      setSelectedYear(newYear);
-                      setSelectedMonth(newMonth);
-                    } catch (error) {
-                      console.error('Failed to load new year:', error);
-                    } finally {
-                      setIsLoadingMonth(false);
-                    }
-                  }}
-                >
-                  {yearOptions.map(y => (
-                    <option key={y} value={y}>{y}</option>
-                  ))}
-                </select>
               </div>
-            </div>
+            )}
+            {isMobileViewport && (
+              <div className="header-controls">
+                <div className="date-picker">
+                  <select
+                    className="year-select default-select"
+                    value={selectedYear}
+                    onChange={async (e) => {
+                      const newYear = parseInt(e.target.value);
+                      const newMonth = clampMonthForYear(newYear, selectedMonth, accountCreatedAt);
+
+                      setIsLoadingMonth(true);
+                      try {
+                        // Build filtering options
+                        const filterOptions: {
+                          cardIds?: string[];
+                          excludeHidden?: boolean;
+                        } = {
+                          excludeHidden: true,
+                        };
+                        if (selectedFilterCardId) {
+                          filterOptions.cardIds = [selectedFilterCardId];
+                        }
+
+                        // Load new year/month data
+                        const newData = await UserCreditService.fetchCreditHistoryForYear(newYear, filterOptions);
+                        updateLocalCalendar(newData);
+                        setSelectedYear(newYear);
+                        setSelectedMonth(newMonth);
+                      } catch (error) {
+                        console.error('Failed to load new year:', error);
+                      } finally {
+                        setIsLoadingMonth(false);
+                      }
+                    }}
+                  >
+                    {yearOptions.map(y => (
+                      <option key={y} value={y}>{y}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
             <div className="header-actions">
-              <button
-                className="button outline small desktop-only"
-                onClick={handleResetFilters}
-                aria-label="Reset filters to defaults"
-              >
-                Reset Filters
-              </button>
-              <button
-                className="button small mobile-only icon with-text"
-                onClick={() => setIsFiltersDrawerOpen(true)}
-                aria-label="Open filters drawer"
-              >
-                <Icon name="filter" variant="mini" size={16} />
-                Filters
-              </button>
+              {!isMobileViewport && (
+                <button
+                  className="button outline small"
+                  onClick={handleResetFilters}
+                  aria-label="Reset filters to defaults"
+                >
+                  Reset Filters
+                </button>
+              )}
+              {isMobileViewport && (
+                <button
+                  className="button small icon with-text"
+                  onClick={() => setIsFiltersDrawerOpen(true)}
+                  aria-label="Open filters drawer"
+                >
+                  <Icon name="filter" variant="mini" size={16} />
+                  Filters
+                </button>
+              )}
             </div>
           </HeaderControls>
           <div className="credits-history-content">
@@ -802,7 +809,6 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
         <div className="mobile-sticky-footer" role="region" aria-label="Month navigation">
           <div className="footer-date-controls">
             <div className="date-control-group">
-              <label className="caps-label">Month</label>
               <div className="month-controls">
                 <button
                   type="button"
