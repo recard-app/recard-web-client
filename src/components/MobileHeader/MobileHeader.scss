@@ -214,9 +214,9 @@
         align-items: center;
         gap: $space-3;
         width: 100%;
-        padding: $space-3 $space-2;
+        padding: $space-2;
         justify-content: flex-start;
-        min-height: 45px; // ensure consistent item height across all entries
+        min-height: 44px; // ensure consistent item height across all entries
         border-radius: $radius-base;
         color: inherit;
         background: none;
