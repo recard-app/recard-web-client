@@ -92,13 +92,13 @@
             width: 100%;
             margin-left: auto;
             margin-right: auto;
-            
+
+            // Universal scrollbar styling
+            @include universal-scrollbar;
+
             @media (max-width: $mobile-breakpoint) {
               padding: $space-2;
             }
-            
-            // Universal scrollbar styling
-            @include universal-scrollbar;
 
             // Loading and empty state messages
             > p {

@@ -318,27 +318,27 @@
   width: 100%;
   transition: all $transition-fast;
 
-  @media (max-width: $mobile-breakpoint) {
-    font-size: $font-base;
-  }
-  
   &:hover {
     border-color: $neutral-medium-gray;
   }
-  
+
   &:focus {
     outline: none;
     border-color: $primary-color;
     box-shadow: 0 0 0 3px rgba($primary-color, 0.2);
   }
-  
+
   &::placeholder {
     color: $neutral-medium-gray;
   }
-  
+
   &:disabled {
     background-color: $neutral-light-gray;
     cursor: not-allowed;
+  }
+
+  @media (max-width: $mobile-breakpoint) {
+    font-size: $font-base;
   }
 }
 
@@ -351,8 +351,8 @@
   margin-bottom: $space-1;
 }
 
-// Default input styling based on PromptField design
-@mixin default-input {
+// Base input styling without media queries - for reuse
+@mixin default-input-base {
   font-family: inherit;
   // Ensure at least 16px to prevent iOS Safari/Chrome auto-zoom on focus
   font-size: $font-chat;
@@ -365,29 +365,25 @@
   box-sizing: border-box;
   transition: border-color 0.1s ease, box-shadow 0.1s ease;
   line-height: 1.4;
-  
+
   // Remove default styles
   outline: none !important;
   margin: 0;
 
-  @media (max-width: $mobile-breakpoint) {
-    font-size: $font-base;
-  }
-  
   &:hover {
     border-color: $neutral-medium-gray;
   }
-  
+
   &:focus {
     border-color: $neutral-medium-gray;
     box-shadow: $shadow-base;
     outline: none !important;
   }
-  
+
   &::placeholder {
     color: $neutral-medium-gray;
   }
-  
+
   &:disabled {
     background-color: $neutral-light-gray;
     cursor: not-allowed;
@@ -395,23 +391,36 @@
   }
 }
 
+// Default input styling based on PromptField design
+@mixin default-input {
+  @include default-input-base;
+
+  @media (max-width: $mobile-breakpoint) {
+    font-size: $font-base;
+  }
+}
+
 // Default textarea styling based on PromptField design
 @mixin default-textarea {
-  @include default-input;
+  @include default-input-base;
   min-height: 80px;
   resize: vertical;
   padding: $space-1-5;
-  
+
   &:focus {
     border-color: $neutral-medium-gray;
     box-shadow: $shadow-base;
     outline: none !important;
   }
+
+  @media (max-width: $mobile-breakpoint) {
+    font-size: $font-base;
+  }
 }
 
 // Default select styling based on PromptField design
 @mixin default-select {
-  @include default-input;
+  @include default-input-base;
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B5BBC2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
@@ -419,22 +428,26 @@
   background-position: right $space-2 center;
   background-size: 16px;
   padding-right: $space-8; // Extra padding for the dropdown arrow
-  
+
   &:hover {
     border-color: $neutral-medium-gray;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A5F66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
   }
-  
+
   &:focus {
     border-color: $neutral-medium-gray;
     box-shadow: $shadow-base;
     outline: none !important;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A5F66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
   }
-  
+
   &:disabled {
     cursor: not-allowed;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C9CED3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  }
+
+  @media (max-width: $mobile-breakpoint) {
+    font-size: $font-base;
   }
 }
 
@@ -557,21 +570,21 @@
 
 // Universal thin scrollbar mixin for consistent scrollbars across the app
 @mixin universal-scrollbar {
-  // Modern scrollbar styling for all browsers
-  scrollbar-width: thin;
-  scrollbar-color: rgba($neutral-dark-gray, 0.3) transparent;
-  
   // Webkit-specific thin scrollbar styling
   &::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background-color: rgba($neutral-dark-gray, 0.3);
     border-radius: $radius-base;
   }
+
+  // Modern scrollbar styling for all browsers (moved after nested rules)
+  scrollbar-width: thin;
+  scrollbar-color: rgba($neutral-dark-gray, 0.3) transparent;
 }

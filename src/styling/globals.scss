@@ -102,10 +102,10 @@ p {
 
 // Form elements
 input, textarea, select {
-  @include input-field;
   margin-bottom: $space-4;
   // Prevent iOS Safari/Chrome auto-zoom by ensuring minimum 16px font size
   font-size: $font-base;
+  @include input-field;
 }
 
 // Default input styling classes
