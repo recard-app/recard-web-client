@@ -592,7 +592,10 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                     CardSecondaryColor: card.CardSecondaryColor,
                     CardIssuer: card.CardIssuer || '',
                     CardNetwork: card.CardNetwork || '',
-                    CardDetails: card.CardDetails || ''
+                    CardDetails: card.CardDetails || '',
+                    effectiveFrom: card.effectiveFrom,
+                    effectiveTo: card.effectiveTo,
+                    lastUpdated: card.lastUpdated
                   }))}
                   isUpdating={false}
                   onSelectCardClick={handleOpenCardFilter}
@@ -815,7 +818,10 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                   CardSecondaryColor: card.CardSecondaryColor,
                   CardIssuer: card.CardIssuer || '',
                   CardNetwork: card.CardNetwork || '',
-                  CardDetails: card.CardDetails || ''
+                  CardDetails: card.CardDetails || '',
+                  effectiveFrom: card.effectiveFrom,
+                  effectiveTo: card.effectiveTo,
+                  lastUpdated: card.lastUpdated
                 }))}
                 isUpdating={false}
                 onSelectCardClick={handleOpenCardFilter}
