@@ -20,6 +20,10 @@ export interface CreditCard {
     CardSecondaryColor?: string;
     selected?: boolean;      // Whether the card is selected by the user (optional, for user context)
     isDefaultCard?: boolean; // Whether this is the user's default card (optional, for user context)
+    // Versioning fields
+    effectiveFrom: string;   // ISO date string when this version became active
+    effectiveTo?: string;    // ISO date string when this version ended (optional, missing for current version)
+    lastUpdated: string;     // ISO date string when this record was created/modified
 }
 
 /**
@@ -100,10 +104,20 @@ export interface CardParams {
 }
 
 /**
+ * Represents a historical version of a credit card for versioning system
+ */
+export interface CreditCardVersion extends CreditCardDetails {
+    cardId: string;         // Reference to the card this version belongs to
+    effectiveFrom: string;  // ISO date string when this version became active
+    effectiveTo?: string;   // ISO date string when this version ended (optional, missing for current version)
+    lastUpdated: string;    // ISO date string when this record was created/modified
+}
+
+/**
  * ------------------------------------------------------------------------------------------------
- * 
+ *
  * CLIENT TYPES
- * 
+ *
  * ------------------------------------------------------------------------------------------------
  */
 
