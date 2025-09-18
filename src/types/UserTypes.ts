@@ -33,7 +33,6 @@ export type CardDetailsList = CardDetails[];
 
 export interface User {
     id: string;
-    chatHistory?: ChatHistory;
     selectedCards?: SelectedCards;
     defaultCard?: DefaultCard;
     preferencesInstructions?: string;
