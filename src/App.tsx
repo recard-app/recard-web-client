@@ -48,6 +48,7 @@ import {
 } from './components/ui/dialog/dialog';
 import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
+import { ComponentsProvider } from './contexts/ComponentsContext';
 import CreditCardDetailView from './components/CreditCardDetailView';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
 import PromptHelpModal from './components/PromptWindow/PromptHelpModal';
@@ -974,7 +975,9 @@ function App() {
   return (
     <Router>
       <HelmetProvider>
-        <AppContent />
+        <ComponentsProvider>
+          <AppContent />
+        </ComponentsProvider>
       </HelmetProvider>
     </Router>
   );

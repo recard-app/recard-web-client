@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, CardMultiplier } from '../../types/CreditCardTypes';
-import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES, CreditHidePreferenceType } from '../../types/CardCreditsTypes';
+import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CreditHidePreferenceType } from '../../types/CardCreditsTypes';
 import { ICON_RED } from '../../types';
 import { CardIcon } from '../../icons';
 import { InfoDisplay } from '../../elements';
 import { Icon } from '../../icons';
 import { UserCreditService } from '../../services/UserServices';
+import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId } from '../../contexts/ComponentsContext';
 
 interface CreditCardDetailViewProps {
     cardDetails: CreditCardDetails | null;
@@ -18,15 +19,20 @@ interface CreditCardDetailViewProps {
     onPreferencesUpdate?: () => Promise<void>; // Called when preferences are updated
 }
 
-const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({ 
-    cardDetails, 
-    isLoading, 
-    onSetPreferred, 
+const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
+    cardDetails,
+    isLoading,
+    onSetPreferred,
     onRemoveCard,
     noCards = false,
     showTrackingPreferences = false,
     onPreferencesUpdate
 }) => {
+    // Get component data from ComponentsContext using the card ID
+    const cardCredits = useCreditsByCardId(cardDetails?.id || '');
+    const cardPerks = usePerksByCardId(cardDetails?.id || '');
+    const cardMultipliers = useMultipliersByCardId(cardDetails?.id || '');
+
     const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
     const [isLoadingPreferences, setIsLoadingPreferences] = useState(false);
 
@@ -196,12 +202,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 </div>
             </div>
             
-            {cardDetails.Multipliers && cardDetails.Multipliers.length > 0 && (
+            {cardMultipliers && cardMultipliers.length > 0 && (
                 <div className="card-section">
                     <h3>Reward Multipliers</h3>
                     <div className="multipliers-table">
                         {Array.from(
-                            (cardDetails.Multipliers || []).reduce((map, m) => {
+                            cardMultipliers.reduce((map, m) => {
                                 const key = (m.Category && m.Category.trim() !== '') ? m.Category : 'Other';
                                 if (!map.has(key)) map.set(key, [] as CardMultiplier[]);
                                 map.get(key)!.push(m);
@@ -246,11 +252,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 </div>
             )}
             
-            {cardDetails.Credits && cardDetails.Credits.length > 0 && (
+            {cardCredits && cardCredits.length > 0 && (
                 <div className="card-section">
                     <h3>Card Credits</h3>
                     <div className="credits-list">
-                        {cardDetails.Credits.map((credit, index) => (
+                        {cardCredits.map((credit, index) => (
                             <div key={index} className="credit-item">
                                 <div className="credit-header">
                                     <span className="credit-title">{credit.Title}</span>
@@ -293,11 +299,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 </div>
             )}
             
-            {cardDetails.Perks && cardDetails.Perks.length > 0 && (
+            {cardPerks && cardPerks.length > 0 && (
                 <div className="card-section">
                     <h3>Card Perks</h3>
                     <div className="perks-list">
-                        {cardDetails.Perks.map((perk, index) => (
+                        {cardPerks.map((perk, index) => (
                             <div key={index} className="perk-item">
                                 <div className="perk-title">{perk.Title}</div>
                                 <div className="perk-description">{perk.Description}</div>

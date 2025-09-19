@@ -11,8 +11,7 @@ import {
     prepareRequestData,
     processChatAndSolutions,
     handleHistoryStorage,
-    limitChatHistory,
-    getCurrentDateString
+    limitChatHistory
 } from './utils';
 
 import axios from 'axios';
@@ -326,7 +325,6 @@ function PromptWindow({
         abortControllerRef.current = new AbortController();
         const signal = abortControllerRef.current.signal;
 
-        const currentDate = getCurrentDateString();
         const name = user?.displayName || NO_DISPLAY_NAME_PLACEHOLDER;
         const userMessage: ChatMessage = {
             id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -337,13 +335,8 @@ function PromptWindow({
         try {
             const requestData = prepareRequestData(
                 name,
-                currentDate,
                 promptValue,
-                chatHistory,
-                creditCards,
-                preferencesInstructions,
-                user,
-                userCardDetails
+                chatHistory
             );
             
             const { updatedHistory, solutions } = await processChatAndSolutions(

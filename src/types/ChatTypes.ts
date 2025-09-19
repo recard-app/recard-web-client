@@ -1,6 +1,4 @@
 import { ChatSourceType } from './Constants';
-import { CreditCard } from './CreditCardTypes';
-import { CardDetailsList, InstructionsPreference } from './UserTypes';
 
 /**
  * ------------------------------------------------------------------------------------------------
@@ -29,10 +27,6 @@ export interface ChatRequestData {
     name: string;
     prompt: string;
     chatHistory: ChatMessage[];
-    creditCards: CreditCard[];
-    currentDate: string;
-    preferencesInstructions: InstructionsPreference;
-    userCardDetails?: CardDetailsList;
 }
 
 export interface OpenAIChatMessage {

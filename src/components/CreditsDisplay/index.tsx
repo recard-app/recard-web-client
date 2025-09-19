@@ -3,6 +3,7 @@ import './CreditsDisplay.scss';
 import { CalendarUserCredits, CREDIT_PERIODS, CreditPeriodType, CreditUsageType } from '../../types';
 import CreditPeriodGroup from './CreditPeriodGroup';
 import { CreditCardDetails, CardCredit } from '../../types/CreditCardTypes';
+import { useCredits } from '../../contexts/ComponentsContext';
 
 export interface CreditsDisplayProps {
   calendar: CalendarUserCredits | null;
@@ -30,6 +31,7 @@ export interface CreditsDisplayProps {
 
 const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, onUpdateHistoryEntry }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
+  const credits = useCredits(); // Get all credit data from the context
 
   const periodOrder: CreditPeriodType[] = useMemo(() => {
     // Use the order defined in CREDIT_PERIODS from the types file
@@ -43,15 +45,15 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
     return map;
   }, [userCards]);
 
+  // Build credit lookup map using the separate credits data from ComponentsContext
   const creditByPair = useMemo(() => {
     const map = new Map<string, CardCredit>();
-    for (const c of userCards || []) {
-      for (const credit of c.Credits || []) {
-        map.set(`${c.id}:${credit.id}`, credit);
-      }
+    for (const credit of credits) {
+      // Use ReferenceCardId to map credits to cards
+      map.set(`${credit.ReferenceCardId}:${credit.id}`, credit);
     }
     return map;
-  }, [userCards]);
+  }, [credits]);
 
   if (isLoading) {
     return (

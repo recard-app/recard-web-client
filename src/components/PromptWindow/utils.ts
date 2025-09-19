@@ -17,43 +17,23 @@ export const CHAT_HISTORY_MESSAGES: Record<ChatHistoryPreferenceType, string> = 
 
 /**
  * Prepares the data object for API requests.
- * Includes chat history, selected credit cards, and user preferences.
- * 
+ * Now simplified to only include essential fields as backend fetches all other data.
+ *
  * @param {string} name - User's name or 'Guest'
- * @param {string} currentDate - Current timestamp string
  * @param {string} promptValue - Current prompt value
  * @param {ChatMessage[]} chatHistory - Current chat history
- * @param {CreditCard[]} creditCards - Available credit cards
- * @param {InstructionsPreference} preferencesInstructions - User preferences
- * @param {any} user - Current user object
- * @param {string[]} userCardDetails - User's card details
  * @returns {ChatRequestData} Formatted request data for API calls
  */
 export const prepareRequestData = (
     name: string,
-    currentDate: string,
     promptValue: string,
-    chatHistory: ChatMessage[],
-    creditCards: CreditCard[],
-    preferencesInstructions: InstructionsPreference,
-    user: any,
-    userCardDetails: string[]
+    chatHistory: ChatMessage[]
 ): ChatRequestData => {
-    const selectedCreditCards = creditCards.filter(card => card.selected);
-    const requestData: ChatRequestData = {
+    return {
         name,
         prompt: promptValue,
-        chatHistory: limitChatHistory(chatHistory),
-        creditCards: selectedCreditCards,
-        currentDate,
-        preferencesInstructions
+        chatHistory: limitChatHistory(chatHistory)
     };
-
-    if (user && userCardDetails) {
-        requestData.userCardDetails = userCardDetails;
-    }
-
-    return requestData;
 };
 
 /**

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES, MOBILE_BREAKPOINT, DISABLE_MOBILE_CREDITS_STICKY_FOOTER } from '../../../types';
 import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE } from '../../../types/CardCreditsTypes';
+import { useCredits } from '../../../contexts/ComponentsContext';
 import {
   Dialog,
   DialogContent,
@@ -40,6 +41,9 @@ interface CreditsHistoryProps {
 const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reloadTrigger }) => {
   // Use the full height hook for this page
   useFullHeight(true);
+
+  // Get credits data from ComponentsContext
+  const allCredits = useCredits();
 
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -193,18 +197,14 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
 
   // Check if all credits have metadata loaded to prevent showing IDs as titles
   const allCreditsHaveMetadata = useMemo(() => {
-    if (!filteredCalendar || !filteredCalendar.Credits || !userCardDetails) return false;
+    if (!filteredCalendar || !filteredCalendar.Credits || !allCredits) return false;
 
     return filteredCalendar.Credits.every((uc) => {
-      // Find the card for this credit
-      const card = userCardDetails.find(c => c.id === uc.CardId);
-      if (!card) return false;
-
-      // Find the credit metadata
-      const cardCredit = card.Credits?.find(credit => credit.id === uc.CreditId);
+      // Find the credit metadata using the separate credits data
+      const cardCredit = allCredits.find(credit => credit.id === uc.CreditId);
       return cardCredit != null;
     });
-  }, [filteredCalendar, userCardDetails]);
+  }, [filteredCalendar, allCredits]);
 
   const [yearOptions, setYearOptions] = useState<number[]>([]);
 

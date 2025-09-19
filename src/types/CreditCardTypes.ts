@@ -20,10 +20,6 @@ export interface CreditCard {
     CardSecondaryColor?: string;
     selected?: boolean;      // Whether the card is selected by the user (optional, for user context)
     isDefaultCard?: boolean; // Whether this is the user's default card (optional, for user context)
-    // Versioning fields
-    effectiveFrom: string;   // ISO date string when this version became active
-    effectiveTo?: string;    // ISO date string when this version ended (optional, missing for current version)
-    lastUpdated: string;     // ISO date string when this record was created/modified
 }
 
 /**
@@ -31,12 +27,20 @@ export interface CreditCard {
  */
 export interface CardPerk {
     id: string;
+    ReferenceCardId: string;
     Title: string;
     Category: string;
     SubCategory: string;
     Description: string;
     Requirements: string;
     Details?: string;
+    EffectiveFrom: string;
+    EffectiveTo: string;
+    LastUpdated: string;
+}
+
+export interface CardPerkPointer {
+    id: string;
 }
 
 /**
@@ -44,6 +48,7 @@ export interface CardPerk {
  */
 export interface CardCredit {
     id: string;
+    ReferenceCardId: string;
     Title: string;
     Category: string;
     SubCategory: string;
@@ -52,13 +57,22 @@ export interface CardCredit {
     TimePeriod: string;
     Requirements: string;
     Details?: string;
+    EffectiveFrom: string;
+    EffectiveTo: string;
+    LastUpdated: string;
 }
+
+export interface CardCreditPointer {
+    id: string;
+}
+
 
 /**
  * Represents a rewards multiplier for specific spending categories
  */
 export interface CardMultiplier {
     id: string;
+    ReferenceCardId: string;
     Name: string;
     Category: string;
     SubCategory: string;
@@ -66,6 +80,13 @@ export interface CardMultiplier {
     Multiplier: number | null;
     Requirements: string;
     Details?: string;
+    EffectiveFrom: string;
+    EffectiveTo: string;
+    LastUpdated: string;
+}
+
+export interface CardMultiplierPointer {
+    id: string;
 }
 
 /**
@@ -77,9 +98,16 @@ export interface CreditCardDetails extends CreditCard {
     ForeignExchangeFeePercentage: number | null;
     RewardsCurrency: string;
     PointsPerDollar: number | null;
-    Perks: CardPerk[];
-    Credits: CardCredit[];
-    Multipliers: CardMultiplier[];
+    Perks: CardPerkPointer[];
+    Credits: CardCreditPointer[];
+    Multipliers: CardMultiplierPointer[];
+    VersionName: string;        // Name/label for this version
+    ReferenceCardId: string;    // Reference to the base card this version belongs to
+    IsActive: boolean;          // Whether this version is currently active
+    // Versioning fields
+    effectiveFrom: string;   // ISO date string when this version became active
+    effectiveTo: string;    // ISO date string when this version ended (optional, missing for current version)
+    lastUpdated: string;     // ISO date string when this record was created/modified
 }
 
 // Response types
@@ -123,7 +151,7 @@ export interface CreditCardVersionSummary {
     VersionName: string;
     IsActive: boolean;
     effectiveFrom: string;
-    effectiveTo?: string;
+    effectiveTo: string;
     lastUpdated: string;
 }
 
@@ -132,14 +160,6 @@ export interface CreditCardVersionSummary {
  */
 export type CreditCardVersionsListResponse = CreditCardVersionSummary[];
 
-/**
- * Represents a versioned credit card with full data structure matching DATAENTRYSampleJsonStructureOneCard
- */
-export interface CreditCardVersion extends CreditCardDetails {
-    VersionName: string;        // Name/label for this version
-    ReferenceCardId: string;    // Reference to the base card this version belongs to
-    IsActive: boolean;          // Whether this version is currently active
-}
 
 /**
  * ------------------------------------------------------------------------------------------------
