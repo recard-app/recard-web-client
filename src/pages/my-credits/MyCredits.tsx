@@ -1,13 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PageHeader from '../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, PAGES } from '../../types';
 import { Link } from 'react-router-dom';
+import { UserCreditService } from '../../services';
 import './MyCredits.scss';
 
 const MyCredits: React.FC = () => {
+  // Sync credit history when visiting the my-credits page
+  useEffect(() => {
+    const syncCredits = async () => {
+      try {
+        await UserCreditService.syncCurrentYearCredits();
+      } catch (syncError) {
+        console.warn('Failed to sync credit history on my-credits page visit:', syncError);
+      }
+    };
+
+    syncCredits();
+  }, []);
+
   return (
     <div className="standard-page-layout">
-      <PageHeader 
+      <PageHeader
         title={PAGE_NAMES.MY_CREDITS}
         icon={PAGE_ICONS.MY_CREDITS.MINI}
       />

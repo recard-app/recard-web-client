@@ -3,7 +3,7 @@ import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
 import { MOBILE_BREAKPOINT } from '../../types';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
-import { CardService, UserCreditCardService } from '../../services';
+import { CardService, UserCreditCardService, UserCreditService } from '../../services';
 import CreditCardDetailView from '../CreditCardDetailView';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import { InfoDisplay, SearchField } from '../../elements';
@@ -234,14 +234,21 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                 }));
             
             await UserCreditCardService.updateUserCards(cardsToSubmit);
-            
+
             // Refresh cards after update
             const refreshedCards = await CardService.fetchCreditCards(true);
             setUserCards(refreshedCards);
-            
+
+            // Sync credit history to reflect card selection changes
+            try {
+                await UserCreditService.syncCurrentYearCredits();
+            } catch (syncError) {
+                console.warn('Failed to sync credit history after card update:', syncError);
+            }
+
             // Notify parent component of card updates
             notifyCardUpdate(refreshedCards);
-            
+
             // Immediately update local state for a responsive UI
             if (selectedCard && selectedCard.id === card.id) {
                 setSelectedCard({
@@ -307,14 +314,21 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                 }));
             
             await UserCreditCardService.updateUserCards(cardsToSubmit);
-            
+
             // Refresh cards after update
             const refreshedCards = await CardService.fetchCreditCards(true);
             setUserCards(refreshedCards);
-            
+
+            // Sync credit history to reflect card removal
+            try {
+                await UserCreditService.syncCurrentYearCredits();
+            } catch (syncError) {
+                console.warn('Failed to sync credit history after card removal:', syncError);
+            }
+
             // Notify parent component of card updates
             notifyCardUpdate(refreshedCards);
-            
+
             // Clear the selection if the removed card was selected
             if (selectedCard && selectedCard.id === cardToDelete.id) {
                 setSelectedCard(null);
@@ -400,14 +414,21 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                     }));
                 
                 await UserCreditCardService.updateUserCards(cardsToSubmit);
-                
+
                 // Refresh cards after update
                 const refreshedCards = await CardService.fetchCreditCards(true);
                 setUserCards(refreshedCards);
-                
+
+                // Sync credit history to reflect new card addition
+                try {
+                    await UserCreditService.syncCurrentYearCredits();
+                } catch (syncError) {
+                    console.warn('Failed to sync credit history after card addition:', syncError);
+                }
+
                 // Notify parent component of card updates
                 notifyCardUpdate(refreshedCards);
-                
+
                 // Set the newly added card as selected
                 const newlyAddedCard = refreshedCards.find(c => c.id === card.id);
                 if (newlyAddedCard) {

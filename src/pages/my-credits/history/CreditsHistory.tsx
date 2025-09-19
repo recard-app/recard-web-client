@@ -101,6 +101,14 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
     (async () => {
       setIsLoading(true);
       setIsLoadingMonth(true);
+
+      // Sync credit history on page visit to ensure data is up-to-date
+      try {
+        await UserCreditService.syncCurrentYearCredits();
+      } catch (syncError) {
+        console.warn('Failed to sync credit history on page visit:', syncError);
+      }
+
       try {
         // Build server-side filtering options
         const filterOptions: {
