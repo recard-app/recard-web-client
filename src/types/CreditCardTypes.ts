@@ -104,6 +104,35 @@ export interface CardParams {
 }
 
 /**
+ * Response type for the worker credit cards list endpoint
+ */
+export type CreditCardReferenceListResponse = string[];
+
+/**
+ * Request parameters for getting versions of a specific credit card
+ */
+export interface CreditCardVersionsParams {
+    referenceCardId: string;
+}
+
+/**
+ * Response type for credit card version summary
+ */
+export interface CreditCardVersionSummary {
+    id: string;
+    VersionName: string;
+    IsActive: boolean;
+    effectiveFrom: string;
+    effectiveTo?: string;
+    lastUpdated: string;
+}
+
+/**
+ * Response type for the worker credit card versions endpoint
+ */
+export type CreditCardVersionsListResponse = CreditCardVersionSummary[];
+
+/**
  * Represents a versioned credit card with full data structure matching DATAENTRYSampleJsonStructureOneCard
  */
 export interface CreditCardVersion extends CreditCardDetails {
