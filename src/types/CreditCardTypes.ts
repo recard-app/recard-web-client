@@ -104,13 +104,12 @@ export interface CardParams {
 }
 
 /**
- * Represents a historical version of a credit card for versioning system
+ * Represents a versioned credit card with full data structure matching DATAENTRYSampleJsonStructureOneCard
  */
 export interface CreditCardVersion extends CreditCardDetails {
-    cardId: string;         // Reference to the card this version belongs to
-    effectiveFrom: string;  // ISO date string when this version became active
-    effectiveTo?: string;   // ISO date string when this version ended (optional, missing for current version)
-    lastUpdated: string;    // ISO date string when this record was created/modified
+    VersionName: string;        // Name/label for this version
+    ReferenceCardId: string;    // Reference to the base card this version belongs to
+    IsActive: boolean;          // Whether this version is currently active
 }
 
 /**
