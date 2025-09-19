@@ -71,7 +71,8 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   }, [selectedHistory, userCredit.CardId, userCredit.CreditId, selectedPeriodNumber]);
 
   const maxValue = getMaxValue(creditMaxValue);
-  const isSliderDisabled = usage === CREDIT_USAGE.INACTIVE;
+  const isSliderDisabled = usage === CREDIT_USAGE.INACTIVE || usage === CREDIT_USAGE.DISABLED;
+  const isCompletelyDisabled = usage === CREDIT_USAGE.DISABLED;
   
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);
@@ -92,6 +93,7 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
     [CREDIT_USAGE.PARTIALLY_USED]: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
     [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_DISPLAY_COLORS.NOT_USED,
     [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE,
+    [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
   };
 
   const usageColor = USAGE_COLOR_BY_STATE[usage];
@@ -101,10 +103,15 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
     [CREDIT_USAGE.PARTIALLY_USED]: 'partially-used-icon',
     [CREDIT_USAGE.NOT_USED]: 'not-used-icon',
     [CREDIT_USAGE.INACTIVE]: 'inactive',
+    [CREDIT_USAGE.DISABLED]: 'disabled',
   };
 
   // Tinting functions
-  const parseHexToRgb = (hex: string): { r: number; g: number; b: number } => {
+  const parseHexToRgb = (hex: string | undefined): { r: number; g: number; b: number } => {
+    // Default to gray if hex is undefined/null
+    if (!hex) {
+      return { r: 156, g: 163, b: 175 }; // #9CA3AF
+    }
     const normalized = hex.replace('#', '');
     const value = normalized.length === 3 ? normalized.split('').map((c) => c + c).join('') : normalized;
     const r = parseInt(value.substring(0, 2), 16);
@@ -144,6 +151,11 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   };
 
   const handleUsageSelect = async (newUsage: CreditUsageType) => {
+    // Don't allow changing DISABLED status
+    if (usage === CREDIT_USAGE.DISABLED || newUsage === CREDIT_USAGE.DISABLED) {
+      return;
+    }
+
     setUsage(newUsage);
     // Update slider according to the rules and (un)disable
     try {
@@ -277,16 +289,19 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
           onUsageSelect={handleUsageSelect}
           align="start"
           trigger={
-            <button 
-              className="button outline small" 
-              style={{ 
-                color: usageColor, 
-                borderColor: usageColor, 
+            <button
+              className="button outline small"
+              disabled={isCompletelyDisabled}
+              style={{
+                color: usageColor,
+                borderColor: usageColor,
                 backgroundColor: buttonBackgroundColor,
-                display: 'flex', 
-                alignItems: 'center', 
+                display: 'flex',
+                alignItems: 'center',
                 gap: '8px',
                 '--button-hover-bg': lineTintHover,
+                opacity: isCompletelyDisabled ? 0.6 : 1,
+                cursor: isCompletelyDisabled ? 'not-allowed' : 'pointer',
                 // Mobile-specific styling
                 ...(isMobile && {
                   width: '100%',
@@ -299,7 +314,7 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
             >
               <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
               {CREDIT_USAGE_DISPLAY_NAMES[usage.toUpperCase() as keyof typeof CREDIT_USAGE_DISPLAY_NAMES]}
-              <Icon name="chevron-down" variant="micro" size={12} />
+              {!isCompletelyDisabled && <Icon name="chevron-down" variant="micro" size={12} />}
             </button>
           }
         />

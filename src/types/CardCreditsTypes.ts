@@ -35,7 +35,8 @@ export const CREDIT_USAGE = {
     USED: 'used',
     NOT_USED: 'not_used',
     PARTIALLY_USED: 'partially_used',
-    INACTIVE: 'inactive'
+    INACTIVE: 'inactive',
+    DISABLED: 'disabled'
 } as const;
 export type CreditUsageType = typeof CREDIT_USAGE[keyof typeof CREDIT_USAGE];
 
@@ -46,7 +47,8 @@ export const CREDIT_USAGE_DISPLAY_NAMES = {
     USED: 'Redeemed',
     NOT_USED: 'Not Used',
     PARTIALLY_USED: 'Partially Used',
-    INACTIVE: 'Not Tracked'
+    INACTIVE: 'Not Tracked',
+    DISABLED: 'Disabled'
 } as const;
 export type CreditUsageDisplayNameType = typeof CREDIT_USAGE_DISPLAY_NAMES[keyof typeof CREDIT_USAGE_DISPLAY_NAMES];
 
@@ -74,6 +76,7 @@ export interface UserCredit {
     CreditId: string;
     History: SingleCreditHistory[];
     AssociatedPeriod: CreditPeriodType;
+    ActiveMonths?: number[]; // Array of month numbers (1-12) where this credit is active
 }
 
 /**
@@ -132,7 +135,8 @@ export const CREDIT_USAGE_DISPLAY_COLORS = {
     USED: '#007B53',
     NOT_USED: '#0B0D0F',
     PARTIALLY_USED: '#005DCF',
-    INACTIVE: '#B5BBC2'
+    INACTIVE: '#B5BBC2',
+    DISABLED: '#9CA3AF'
 } as const;
 export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[keyof typeof CREDIT_USAGE_DISPLAY_COLORS];
 

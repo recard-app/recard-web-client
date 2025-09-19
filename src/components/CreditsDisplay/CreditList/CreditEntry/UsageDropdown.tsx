@@ -18,6 +18,7 @@ const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
   [CREDIT_USAGE.PARTIALLY_USED]: 'partially-used-icon',
   [CREDIT_USAGE.NOT_USED]: 'not-used-icon',
   [CREDIT_USAGE.INACTIVE]: 'inactive',
+  [CREDIT_USAGE.DISABLED]: 'disabled',
 };
 
 const USAGE_COLOR_BY_STATE: Record<CreditUsageType, string> = {
@@ -25,6 +26,7 @@ const USAGE_COLOR_BY_STATE: Record<CreditUsageType, string> = {
   [CREDIT_USAGE.PARTIALLY_USED]: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
   [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_DISPLAY_COLORS.NOT_USED,
   [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE,
+  [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
 };
 
 const UsageDropdown: React.FC<UsageDropdownProps> = ({
@@ -45,34 +47,36 @@ const UsageDropdown: React.FC<UsageDropdownProps> = ({
         sideOffset={4}
         alignOffset={0}
       >
-        {Object.entries(CREDIT_USAGE_DISPLAY_NAMES).map(([key, label]) => {
-          const usageKey = CREDIT_USAGE[key as keyof typeof CREDIT_USAGE];
-          const isSelected = usage === usageKey;
-          
-          return (
-            <DropdownMenuItem
-              key={key}
-              onClick={(e) => {
-                e.stopPropagation();
-                onUsageSelect(usageKey);
-              }}
-              className={`usage-dropdown-item ${isSelected ? 'selected' : ''}`}
-            >
-              <Icon 
-                name={USAGE_ICON_NAME[usageKey]} 
-                variant="micro" 
-                size={14}
-                className="usage-dropdown-icon"
-                style={{ 
-                  color: USAGE_COLOR_BY_STATE[usageKey]
+        {Object.entries(CREDIT_USAGE_DISPLAY_NAMES)
+          .filter(([key]) => key !== 'DISABLED') // Exclude DISABLED from dropdown options
+          .map(([key, label]) => {
+            const usageKey = CREDIT_USAGE[key as keyof typeof CREDIT_USAGE];
+            const isSelected = usage === usageKey;
+
+            return (
+              <DropdownMenuItem
+                key={key}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUsageSelect(usageKey);
                 }}
-              />
-              <span className="usage-dropdown-text" style={{ color: USAGE_COLOR_BY_STATE[usageKey] }}>
-                {label}
-              </span>
-            </DropdownMenuItem>
-          );
-        })}
+                className={`usage-dropdown-item ${isSelected ? 'selected' : ''}`}
+              >
+                <Icon
+                  name={USAGE_ICON_NAME[usageKey]}
+                  variant="micro"
+                  size={14}
+                  className="usage-dropdown-icon"
+                  style={{
+                    color: USAGE_COLOR_BY_STATE[usageKey]
+                  }}
+                />
+                <span className="usage-dropdown-text" style={{ color: USAGE_COLOR_BY_STATE[usageKey] }}>
+                  {label}
+                </span>
+              </DropdownMenuItem>
+            );
+          })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

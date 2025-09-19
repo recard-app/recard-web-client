@@ -94,7 +94,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         usage,
         valueUsed,
         isFuture,
-        isActive: !isFuture && usage !== CREDIT_USAGE.INACTIVE
+        isActive: !isFuture && usage !== CREDIT_USAGE.INACTIVE && usage !== CREDIT_USAGE.DISABLED
       });
     }
 
@@ -135,14 +135,16 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         return 'partially-used-icon';
       case CREDIT_USAGE.NOT_USED:
         return 'not-used-icon';
+      case CREDIT_USAGE.DISABLED:
+        return 'disabled';
       case CREDIT_USAGE.INACTIVE:
       default:
         return 'inactive';
     }
   };
 
-  const getUsageColor = (usage: CreditUsageType, isFuture: boolean): string => {
-    if (isFuture) {
+  const getUsageColor = (usage: CreditUsageType, isFuture: boolean, isDisabled: boolean): string => {
+    if (isFuture || isDisabled) {
       return CREDIT_USAGE_DISPLAY_COLORS.INACTIVE;
     }
     switch (usage) {
@@ -152,6 +154,8 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         return CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED;
       case CREDIT_USAGE.NOT_USED:
         return CREDIT_USAGE_DISPLAY_COLORS.NOT_USED;
+      case CREDIT_USAGE.DISABLED:
+        return CREDIT_USAGE_DISPLAY_COLORS.DISABLED;
       case CREDIT_USAGE.INACTIVE:
       default:
         return CREDIT_USAGE_DISPLAY_COLORS.INACTIVE;
@@ -187,6 +191,8 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         return 'Partial';
       case CREDIT_USAGE.NOT_USED:
         return 'Not Used';
+      case CREDIT_USAGE.DISABLED:
+        return 'Disabled';
       case CREDIT_USAGE.INACTIVE:
       default:
         return 'Untracked';
@@ -200,10 +206,12 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         className={`tracker-periods ${userCredit.AssociatedPeriod}`}
       >
         {periods.map((period) => {
-          const usageColor = getUsageColor(period.usage, period.isFuture);
+          const isDisabled = period.usage === CREDIT_USAGE.DISABLED;
+          const usageColor = getUsageColor(period.usage, period.isFuture, isDisabled);
           const backgroundColor = tintHexColor(usageColor, 0.95);
           const isSelected = selectedPeriodNumber === period.periodNumber;
-          
+          const isNonInteractive = period.isFuture || isDisabled;
+
           return (
             <div
               key={period.periodNumber}
@@ -214,15 +222,15 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
                   periodRefs.current.delete(period.periodNumber);
                 }
               }}
-              className={`tracker-period ${period.isFuture ? 'future' : ''} ${onPeriodSelect ? 'clickable' : ''} ${isSelected ? 'selected' : ''}`}
+              className={`tracker-period ${isNonInteractive ? 'future' : ''} ${onPeriodSelect && !isNonInteractive ? 'clickable' : ''} ${isSelected ? 'selected' : ''}`}
               style={{
                 backgroundColor: backgroundColor,
                 color: usageColor,
                 borderColor: usageColor
               }}
-              title={`${period.name}: ${period.isFuture ? 'Future period' : getUsageLabel(period.usage)}${!period.isFuture && period.valueUsed > 0 ? ` ($${period.valueUsed})` : ''}${onPeriodSelect ? ' (Click to edit)' : ''}${isSelected ? ' [EDITING]' : ''}`}
+              title={`${period.name}: ${period.isFuture ? 'Future period' : isDisabled ? 'Disabled period' : getUsageLabel(period.usage)}${!isNonInteractive && period.valueUsed > 0 ? ` ($${period.valueUsed})` : ''}${onPeriodSelect && !isNonInteractive ? ' (Click to edit)' : ''}${isSelected ? ' [EDITING]' : ''}`}
               onClick={() => {
-                if (onPeriodSelect && !period.isFuture) {
+                if (onPeriodSelect && !isNonInteractive) {
                   onPeriodSelect(period.periodNumber);
                 }
               }}
