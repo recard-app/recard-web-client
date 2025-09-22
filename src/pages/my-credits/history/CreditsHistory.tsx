@@ -104,7 +104,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
 
       // Sync credit history on page visit to ensure data is up-to-date
       try {
-        await UserCreditService.syncCurrentYearCredits();
+        await UserCreditService.syncCurrentYearCreditsDebounced();
       } catch (syncError) {
         console.warn('Failed to sync credit history on page visit:', syncError);
       }

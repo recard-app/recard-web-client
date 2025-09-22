@@ -10,7 +10,7 @@ const MyCredits: React.FC = () => {
   useEffect(() => {
     const syncCredits = async () => {
       try {
-        await UserCreditService.syncCurrentYearCredits();
+        await UserCreditService.syncCurrentYearCreditsDebounced();
       } catch (syncError) {
         console.warn('Failed to sync credit history on my-credits page visit:', syncError);
       }

@@ -241,7 +241,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
 
             // Sync credit history to reflect card selection changes
             try {
-                await UserCreditService.syncCurrentYearCredits();
+                await UserCreditService.syncCurrentYearCreditsDebounced();
             } catch (syncError) {
                 console.warn('Failed to sync credit history after card update:', syncError);
             }
@@ -321,7 +321,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
 
             // Sync credit history to reflect card removal
             try {
-                await UserCreditService.syncCurrentYearCredits();
+                await UserCreditService.syncCurrentYearCreditsDebounced();
             } catch (syncError) {
                 console.warn('Failed to sync credit history after card removal:', syncError);
             }
@@ -421,7 +421,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
 
                 // Sync credit history to reflect new card addition
                 try {
-                    await UserCreditService.syncCurrentYearCredits();
+                    await UserCreditService.syncCurrentYearCreditsDebounced();
                 } catch (syncError) {
                     console.warn('Failed to sync credit history after card addition:', syncError);
                 }

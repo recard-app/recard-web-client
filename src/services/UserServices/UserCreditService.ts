@@ -2,6 +2,10 @@ import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
 import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType } from '../../types';
 
+let syncTimeout: NodeJS.Timeout | null = null;
+let pendingSyncResolvers: ((value: { changed: boolean; creditHistory?: CreditHistory }) => void)[] = [];
+let pendingSyncRejectors: ((reason: any) => void)[] = [];
+
 export const UserCreditService = {
     /**
      * Generates a CreditHistory for the authenticated user for the current year
@@ -200,6 +204,47 @@ export const UserCreditService = {
             { headers }
         );
         return response.data;
+    },
+
+    /**
+     * Debounced version of syncCurrentYearCredits that prevents multiple rapid calls.
+     * Multiple calls within 500ms will be batched into a single API request.
+     */
+    async syncCurrentYearCreditsDebounced(): Promise<{ changed: boolean; creditHistory?: CreditHistory }> {
+        return new Promise((resolve, reject) => {
+            // Add this promise's resolve/reject to the pending queue
+            pendingSyncResolvers.push(resolve);
+            pendingSyncRejectors.push(reject);
+
+            // Clear any existing timeout
+            if (syncTimeout) {
+                clearTimeout(syncTimeout);
+            }
+
+            // Set a new timeout
+            syncTimeout = setTimeout(async () => {
+                // Execute the actual sync call
+                try {
+                    const result = await this.syncCurrentYearCredits();
+
+                    // Resolve all pending promises with the same result
+                    const resolvers = [...pendingSyncResolvers];
+                    pendingSyncResolvers = [];
+                    pendingSyncRejectors = [];
+
+                    resolvers.forEach(resolver => resolver(result));
+                } catch (error) {
+                    // Reject all pending promises with the same error
+                    const rejectors = [...pendingSyncRejectors];
+                    pendingSyncResolvers = [];
+                    pendingSyncRejectors = [];
+
+                    rejectors.forEach(rejector => rejector(error));
+                }
+
+                syncTimeout = null;
+            }, 500); // 500ms debounce delay
+        });
     },
 
     /**
