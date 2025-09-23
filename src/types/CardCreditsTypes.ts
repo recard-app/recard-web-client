@@ -221,12 +221,11 @@ export interface UpdateCreditEntryResponse extends CreditHistory {}
  * POST /users/cards/credits/sync
  */
 export interface SyncCurrentYearCreditsParams {
+    year?: number; // Optional year to sync (defaults to current year)
     excludeHidden?: boolean; // Optional flag to exclude hidden credits
 }
 
-export interface SyncCurrentYearCreditsResponse extends CalendarUserCredits {
-    // Returns current year data only
-}
+export interface SyncCurrentYearCreditsResponse extends CalendarUserCredits {}
 
 /**
  * Get Credit Tracking Preferences API

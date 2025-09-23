@@ -3,8 +3,13 @@ import { apiurl, getAuthHeaders } from '../index';
 import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType } from '../../types';
 
 let syncTimeout: NodeJS.Timeout | null = null;
-let pendingSyncResolvers: ((value: { changed: boolean; creditHistory?: CreditHistory }) => void)[] = [];
+let pendingSyncResolvers: ((value: CalendarUserCredits) => void)[] = [];
 let pendingSyncRejectors: ((reason: any) => void)[] = [];
+
+// Separate debouncing for year-specific syncs
+let yearSyncTimeouts: Map<number, NodeJS.Timeout> = new Map();
+let pendingYearSyncResolvers: Map<number, ((value: CalendarUserCredits) => void)[]> = new Map();
+let pendingYearSyncRejectors: Map<number, ((reason: any) => void)[]> = new Map();
 
 export const UserCreditService = {
 
@@ -170,14 +175,42 @@ export const UserCreditService = {
 
     /**
      * Background reconciliation for current-year credits: ensures all selected cards and their credits
-     * exist in the user's current year's CalendarUserCredits. Returns { changed, creditHistory? }.
+     * exist in the user's current year's CalendarUserCredits. Returns CalendarUserCredits.
      */
-    async syncCurrentYearCredits(): Promise<{ changed: boolean; creditHistory?: CreditHistory }> {
+    async syncCurrentYearCredits(): Promise<CalendarUserCredits> {
         const headers = await getAuthHeaders();
 
         try {
-            const response = await axios.post<{ changed: boolean; creditHistory?: CreditHistory }>(
+            const response = await axios.post<CalendarUserCredits>(
                 `${apiurl}/users/cards/credits/sync`,
+                undefined,
+                { headers }
+            );
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /**
+     * Background reconciliation for specified year credits: ensures all selected cards and their credits
+     * exist in the user's specified year's CalendarUserCredits. Returns CalendarUserCredits.
+     */
+    async syncYearCredits(year: number, options?: {
+        excludeHidden?: boolean;
+    }): Promise<CalendarUserCredits> {
+        const headers = await getAuthHeaders();
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        params.set('year', year.toString());
+        if (options?.excludeHidden) {
+            params.set('excludeHidden', 'true');
+        }
+
+        try {
+            const response = await axios.post<CalendarUserCredits>(
+                `${apiurl}/users/cards/credits/sync?${params.toString()}`,
                 undefined,
                 { headers }
             );
@@ -191,7 +224,7 @@ export const UserCreditService = {
      * Debounced version of syncCurrentYearCredits that prevents multiple rapid calls.
      * Multiple calls within 500ms will be batched into a single API request.
      */
-    async syncCurrentYearCreditsDebounced(): Promise<{ changed: boolean; creditHistory?: CreditHistory }> {
+    async syncCurrentYearCreditsDebounced(): Promise<CalendarUserCredits> {
         return new Promise((resolve, reject) => {
             // Add this promise's resolve/reject to the pending queue
             pendingSyncResolvers.push(resolve);
@@ -226,6 +259,59 @@ export const UserCreditService = {
 
                 syncTimeout = null;
             }, 500); // 500ms debounce delay
+        });
+    },
+
+    /**
+     * Debounced version of syncYearCredits that prevents multiple rapid calls for the same year.
+     * Multiple calls within 500ms for the same year will be batched into a single API request.
+     */
+    async syncYearCreditsDebounced(year: number, options?: {
+        excludeHidden?: boolean;
+    }): Promise<CalendarUserCredits> {
+        return new Promise((resolve, reject) => {
+            // Initialize arrays for this year if they don't exist
+            if (!pendingYearSyncResolvers.has(year)) {
+                pendingYearSyncResolvers.set(year, []);
+            }
+            if (!pendingYearSyncRejectors.has(year)) {
+                pendingYearSyncRejectors.set(year, []);
+            }
+
+            // Add this promise's resolve/reject to the pending queue for this year
+            pendingYearSyncResolvers.get(year)!.push(resolve);
+            pendingYearSyncRejectors.get(year)!.push(reject);
+
+            // Clear any existing timeout for this year
+            if (yearSyncTimeouts.has(year)) {
+                clearTimeout(yearSyncTimeouts.get(year)!);
+            }
+
+            // Set a new timeout for this year
+            const timeout = setTimeout(async () => {
+                // Execute the actual sync call
+                try {
+                    const result = await this.syncYearCredits(year, options);
+
+                    // Resolve all pending promises for this year with the same result
+                    const resolvers = [...(pendingYearSyncResolvers.get(year) || [])];
+                    pendingYearSyncResolvers.set(year, []);
+                    pendingYearSyncRejectors.set(year, []);
+
+                    resolvers.forEach(resolver => resolver(result));
+                } catch (error) {
+                    // Reject all pending promises for this year with the same error
+                    const rejectors = [...(pendingYearSyncRejectors.get(year) || [])];
+                    pendingYearSyncResolvers.set(year, []);
+                    pendingYearSyncRejectors.set(year, []);
+
+                    rejectors.forEach(rejector => rejector(error));
+                }
+
+                yearSyncTimeouts.delete(year);
+            }, 500); // 500ms debounce delay
+
+            yearSyncTimeouts.set(year, timeout);
         });
     },
 

@@ -104,7 +104,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
 
       // Sync credit history on page visit to ensure data is up-to-date
       try {
-        await UserCreditService.syncCurrentYearCreditsDebounced();
+        await UserCreditService.syncYearCreditsDebounced(selectedYear, { excludeHidden: true });
       } catch (syncError) {
         console.warn('Failed to sync credit history on page visit:', syncError);
       }
@@ -136,7 +136,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
       } catch (error) {
         // Fallback: sync credit history and try again
         try {
-          await UserCreditService.syncCurrentYearCreditsDebounced();
+          await UserCreditService.syncYearCreditsDebounced(selectedYear, { excludeHidden: true });
 
           const fallbackFilterOptions: {
             cardIds?: string[];
@@ -240,27 +240,46 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
   const incrementMonth = async () => {
     const { y, m } = utilGetNextYearMonth(selectedYear, selectedMonth);
     if (isAllowedYearMonth(y, m)) {
-      setIsLoadingMonth(true);
-      try {
-        // Build filtering options
-        const filterOptions: {
-          cardIds?: string[];
-          excludeHidden?: boolean;
-        } = {
-          excludeHidden: true,
-        };
-        if (selectedFilterCardId) {
-          filterOptions.cardIds = [selectedFilterCardId];
-        }
+      const currentYear = selectedYear; // Store original year before updating
 
-        // Load new month data
-        const newData = await UserCreditService.fetchCreditHistoryForYear(y, filterOptions);
-        updateLocalCalendar(newData);
+      // If staying in same year, just update state immediately - no API calls needed
+      if (y === currentYear) {
         setSelectedYear(y);
         setSelectedMonth(m);
+        return;
+      }
+
+      // Different year - need to fetch data
+      setIsLoadingMonth(true);
+
+      // Build filtering options
+      const filterOptions: {
+        cardIds?: string[];
+        excludeHidden?: boolean;
+      } = {
+        excludeHidden: true,
+      };
+      if (selectedFilterCardId) {
+        filterOptions.cardIds = [selectedFilterCardId];
+      }
+
+      try {
+        // Load stale data immediately (fast)
+        const staleData = await UserCreditService.fetchCreditHistoryForYear(y, filterOptions);
+        updateLocalCalendar(staleData);
+        setSelectedYear(y);
+        setSelectedMonth(m);
+        setIsLoadingMonth(false);
+
+        // Sync in background - sync response already includes filtered data
+        try {
+          const syncedData = await UserCreditService.syncYearCreditsDebounced(y, { excludeHidden: true });
+          updateLocalCalendar(syncedData);
+        } catch (syncError) {
+          console.warn('Background sync failed for year', y, syncError);
+        }
       } catch (error) {
         console.error('Failed to load next month:', error);
-      } finally {
         setIsLoadingMonth(false);
       }
     }
@@ -269,27 +288,46 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
   const decrementMonth = async () => {
     const { y, m } = utilGetPrevYearMonth(selectedYear, selectedMonth);
     if (isAllowedYearMonth(y, m)) {
-      setIsLoadingMonth(true);
-      try {
-        // Build filtering options
-        const filterOptions: {
-          cardIds?: string[];
-          excludeHidden?: boolean;
-        } = {
-          excludeHidden: true,
-        };
-        if (selectedFilterCardId) {
-          filterOptions.cardIds = [selectedFilterCardId];
-        }
+      const currentYear = selectedYear; // Store original year before updating
 
-        // Load new month data
-        const newData = await UserCreditService.fetchCreditHistoryForYear(y, filterOptions);
-        updateLocalCalendar(newData);
+      // If staying in same year, just update state immediately - no API calls needed
+      if (y === currentYear) {
         setSelectedYear(y);
         setSelectedMonth(m);
+        return;
+      }
+
+      // Different year - need to fetch data
+      setIsLoadingMonth(true);
+
+      // Build filtering options
+      const filterOptions: {
+        cardIds?: string[];
+        excludeHidden?: boolean;
+      } = {
+        excludeHidden: true,
+      };
+      if (selectedFilterCardId) {
+        filterOptions.cardIds = [selectedFilterCardId];
+      }
+
+      try {
+        // Load stale data immediately (fast)
+        const staleData = await UserCreditService.fetchCreditHistoryForYear(y, filterOptions);
+        updateLocalCalendar(staleData);
+        setSelectedYear(y);
+        setSelectedMonth(m);
+        setIsLoadingMonth(false);
+
+        // Sync in background - sync response already includes filtered data
+        try {
+          const syncedData = await UserCreditService.syncYearCreditsDebounced(y, { excludeHidden: true });
+          updateLocalCalendar(syncedData);
+        } catch (syncError) {
+          console.warn('Background sync failed for year', y, syncError);
+        }
       } catch (error) {
         console.error('Failed to load previous month:', error);
-      } finally {
         setIsLoadingMonth(false);
       }
     }
@@ -314,27 +352,46 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
   const onJumpMonths = async (deltaMonths: number) => {
     const { y, m } = getYearMonthOffset(selectedYear, selectedMonth, deltaMonths);
     if (isAllowedYearMonth(y, m)) {
-      setIsLoadingMonth(true);
-      try {
-        // Build filtering options
-        const filterOptions: {
-          cardIds?: string[];
-          excludeHidden?: boolean;
-        } = {
-          excludeHidden: true,
-        };
-        if (selectedFilterCardId) {
-          filterOptions.cardIds = [selectedFilterCardId];
-        }
+      const currentYear = selectedYear; // Store original year before updating
 
-        // Load new month data
-        const newData = await UserCreditService.fetchCreditHistoryForYear(y, filterOptions);
-        updateLocalCalendar(newData);
+      // If staying in same year, just update state immediately - no API calls needed
+      if (y === currentYear) {
         setSelectedYear(y);
         setSelectedMonth(m);
+        return;
+      }
+
+      // Different year - need to fetch data
+      setIsLoadingMonth(true);
+
+      // Build filtering options
+      const filterOptions: {
+        cardIds?: string[];
+        excludeHidden?: boolean;
+      } = {
+        excludeHidden: true,
+      };
+      if (selectedFilterCardId) {
+        filterOptions.cardIds = [selectedFilterCardId];
+      }
+
+      try {
+        // Load stale data immediately (fast)
+        const staleData = await UserCreditService.fetchCreditHistoryForYear(y, filterOptions);
+        updateLocalCalendar(staleData);
+        setSelectedYear(y);
+        setSelectedMonth(m);
+        setIsLoadingMonth(false);
+
+        // Sync in background - sync response already includes filtered data
+        try {
+          const syncedData = await UserCreditService.syncYearCreditsDebounced(y, { excludeHidden: true });
+          updateLocalCalendar(syncedData);
+        } catch (syncError) {
+          console.warn('Background sync failed for year', y, syncError);
+        }
       } catch (error) {
         console.error('Failed to jump to month:', error);
-      } finally {
         setIsLoadingMonth(false);
       }
     }
@@ -472,26 +529,35 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                     const newMonth = clampMonthForYear(newYear, selectedMonth, accountCreatedAt);
 
                     setIsLoadingMonth(true);
-                    try {
-                      // Build filtering options
-                      const filterOptions: {
-                        cardIds?: string[];
-                        excludeHidden?: boolean;
-                      } = {
-                        excludeHidden: true,
-                      };
-                      if (selectedFilterCardId) {
-                        filterOptions.cardIds = [selectedFilterCardId];
-                      }
 
-                      // Load new year/month data
-                      const newData = await UserCreditService.fetchCreditHistoryForYear(newYear, filterOptions);
-                      updateLocalCalendar(newData);
+                    // Build filtering options
+                    const filterOptions: {
+                      cardIds?: string[];
+                      excludeHidden?: boolean;
+                    } = {
+                      excludeHidden: true,
+                    };
+                    if (selectedFilterCardId) {
+                      filterOptions.cardIds = [selectedFilterCardId];
+                    }
+
+                    try {
+                      // Load stale data immediately (fast)
+                      const staleData = await UserCreditService.fetchCreditHistoryForYear(newYear, filterOptions);
+                      updateLocalCalendar(staleData);
                       setSelectedYear(newYear);
                       setSelectedMonth(newMonth);
+                      setIsLoadingMonth(false);
+
+                      // Sync in background - sync response already includes filtered data
+                      try {
+                        const syncedData = await UserCreditService.syncYearCreditsDebounced(newYear, { excludeHidden: true });
+                        updateLocalCalendar(syncedData);
+                      } catch (syncError) {
+                        console.warn('Background sync failed for year', newYear, syncError);
+                      }
                     } catch (error) {
                       console.error('Failed to load new year:', error);
-                    } finally {
                       setIsLoadingMonth(false);
                     }
                   }}
@@ -627,26 +693,35 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                       const newMonth = clampMonthForYear(newYear, selectedMonth, accountCreatedAt);
 
                       setIsLoadingMonth(true);
-                      try {
-                        // Build filtering options
-                        const filterOptions: {
-                          cardIds?: string[];
-                          excludeHidden?: boolean;
-                        } = {
-                          excludeHidden: true,
-                        };
-                        if (selectedFilterCardId) {
-                          filterOptions.cardIds = [selectedFilterCardId];
-                        }
 
-                        // Load new year/month data
-                        const newData = await UserCreditService.fetchCreditHistoryForYear(newYear, filterOptions);
-                        updateLocalCalendar(newData);
+                      // Build filtering options
+                      const filterOptions: {
+                        cardIds?: string[];
+                        excludeHidden?: boolean;
+                      } = {
+                        excludeHidden: true,
+                      };
+                      if (selectedFilterCardId) {
+                        filterOptions.cardIds = [selectedFilterCardId];
+                      }
+
+                      try {
+                        // Load stale data immediately (fast)
+                        const staleData = await UserCreditService.fetchCreditHistoryForYear(newYear, filterOptions);
+                        updateLocalCalendar(staleData);
                         setSelectedYear(newYear);
                         setSelectedMonth(newMonth);
+                        setIsLoadingMonth(false);
+
+                        // Sync in background - sync response already includes filtered data
+                        try {
+                          const syncedData = await UserCreditService.syncYearCreditsDebounced(newYear, { excludeHidden: true });
+                          updateLocalCalendar(syncedData);
+                        } catch (syncError) {
+                          console.warn('Background sync failed for year', newYear, syncError);
+                        }
                       } catch (error) {
                         console.error('Failed to load new year:', error);
-                      } finally {
                         setIsLoadingMonth(false);
                       }
                     }}
