@@ -134,9 +134,9 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
 
         setIsLoadingMonth(false);
       } catch (error) {
-        // Fallback: generate credit history and try again
+        // Fallback: sync credit history and try again
         try {
-          await UserCreditService.generateCreditHistory();
+          await UserCreditService.syncCurrentYearCreditsDebounced();
 
           const fallbackFilterOptions: {
             cardIds?: string[];

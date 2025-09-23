@@ -36,7 +36,8 @@ export const CREDIT_USAGE = {
     NOT_USED: 'not_used',
     PARTIALLY_USED: 'partially_used',
     INACTIVE: 'inactive',
-    DISABLED: 'disabled'
+    DISABLED: 'disabled',
+    FULLY_USED: 'fully_used'
 } as const;
 export type CreditUsageType = typeof CREDIT_USAGE[keyof typeof CREDIT_USAGE];
 
@@ -48,7 +49,8 @@ export const CREDIT_USAGE_DISPLAY_NAMES = {
     NOT_USED: 'Not Used',
     PARTIALLY_USED: 'Partially Used',
     INACTIVE: 'Not Tracked',
-    DISABLED: 'Disabled'
+    DISABLED: 'Disabled',
+    FULLY_USED: 'Fully Used'
 } as const;
 export type CreditUsageDisplayNameType = typeof CREDIT_USAGE_DISPLAY_NAMES[keyof typeof CREDIT_USAGE_DISPLAY_NAMES];
 
@@ -122,9 +124,151 @@ export interface CreditTrackingPreference {
 
 /**
  * ------------------------------------------------------------------------------------------------
- * 
+ *
+ * CREDIT HISTORY API TYPES (Request/Response)
+ *
+ * ------------------------------------------------------------------------------------------------
+ */
+
+/**
+ * Get Full Credit History API
+ * GET /users/cards/credits
+ */
+export interface GetFullCreditHistoryResponse extends CreditHistory {}
+
+/**
+ * Delete Credit History API
+ * DELETE /users/cards/credits
+ */
+export interface DeleteCreditHistoryResponse {
+    success: boolean;
+}
+
+/**
+ * Get Credits for Date Range API
+ * GET /users/cards/credits/range
+ */
+export interface GetCreditsByDateRangeParams {
+    start: string; // YYYY-MM format
+    end?: string; // YYYY-MM format (optional, defaults to start month)
+    cardIds?: string[]; // Optional array of card IDs to filter by
+    excludeHidden?: boolean; // Optional flag to exclude hidden credits
+}
+
+export interface GetCreditsByDateRangeResponse extends CalendarUserCredits {}
+
+/**
+ * Get Credits for Month API
+ * GET /users/cards/credits/month/{year}/{month}
+ */
+export interface GetCreditsForMonthParams {
+    year: string;
+    month: string; // 1-12
+    cardIds?: string[]; // Optional array of card IDs to filter by
+    excludeHidden?: boolean; // Optional flag to exclude hidden credits
+}
+
+export interface GetCreditsForMonthResponse extends CalendarUserCredits {}
+
+/**
+ * Get Credit Details API
+ * GET /users/cards/credits/details/{cardId}/{creditId}/{year}
+ */
+export interface GetCreditDetailsParams {
+    cardId: string;
+    creditId: string;
+    year: string;
+    excludeHidden?: boolean; // Optional flag to exclude hidden credits
+}
+
+export interface GetCreditDetailsResponse {
+    credit: any;
+    cardDetails: any;
+    yearContext: {
+        totalCredits: number;
+        yearData: CalendarUserCredits;
+    };
+}
+
+/**
+ * Get Credits for Year API
+ * GET /users/cards/credits/year/{year}
+ */
+export interface GetCreditsForYearParams {
+    year: string;
+    cardIds?: string[]; // Optional array of card IDs to filter by
+    excludeHidden?: boolean; // Optional flag to exclude hidden credits
+}
+
+export interface GetCreditsForYearResponse extends CalendarUserCredits {}
+
+/**
+ * Update Credit Entry API
+ * PUT /users/cards/credits/history
+ */
+export interface UpdateCreditEntryRequest {
+    cardId: string;
+    creditId: string;
+    periodNumber: number;
+    creditUsage?: CreditUsageType;
+    valueUsed?: number;
+}
+
+export interface UpdateCreditEntryResponse extends CreditHistory {}
+
+/**
+ * Sync Current Year Credits API
+ * POST /users/cards/credits/sync
+ */
+export interface SyncCurrentYearCreditsParams {
+    excludeHidden?: boolean; // Optional flag to exclude hidden credits
+}
+
+export interface SyncCurrentYearCreditsResponse extends CalendarUserCredits {
+    // Returns current year data only
+}
+
+/**
+ * Get Credit Tracking Preferences API
+ * GET /users/cards/credits/preferences
+ */
+export interface GetCreditTrackingPreferencesResponse extends UserCreditsTrackingPreferences {}
+
+/**
+ * Update Credit Hide Preference API
+ * PUT /users/cards/credits/preferences
+ */
+export interface UpdateCreditHidePreferenceRequest {
+    cardId: string;
+    creditId: string;
+    hidePreference: CreditHidePreferenceType;
+}
+
+export interface UpdateCreditHidePreferenceResponse extends UserCreditsTrackingPreferences {}
+
+/**
+ * Get Card Credits API
+ * GET /users/cards/credits/cards
+ */
+export interface GetCardCreditsParams {
+    cardIds?: string; // Optional comma-separated string of card IDs
+}
+
+export type GetCardCreditsResponse = CardCredit[];
+
+/**
+ * Card Credit interface for the /cards endpoint
+ */
+export interface CardCredit {
+    CardId: string;
+    Credits: any[]; // Credit definitions from the card
+}
+
+/**
+ * ------------------------------------------------------------------------------------------------
+ *
  * CLIENT-SPECIFIC TYPES
- * 
+ *
  * ------------------------------------------------------------------------------------------------
  */
 
@@ -136,7 +280,8 @@ export const CREDIT_USAGE_DISPLAY_COLORS = {
     NOT_USED: '#0B0D0F',
     PARTIALLY_USED: '#005DCF',
     INACTIVE: '#B5BBC2',
-    DISABLED: '#9CA3AF'
+    DISABLED: '#9CA3AF',
+    FULLY_USED: '#007B53'
 } as const;
 export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[keyof typeof CREDIT_USAGE_DISPLAY_COLORS];
 

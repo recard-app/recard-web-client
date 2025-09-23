@@ -7,18 +7,6 @@ let pendingSyncResolvers: ((value: { changed: boolean; creditHistory?: CreditHis
 let pendingSyncRejectors: ((reason: any) => void)[] = [];
 
 export const UserCreditService = {
-    /**
-     * Generates a CreditHistory for the authenticated user for the current year
-     */
-    async generateCreditHistory(): Promise<CreditHistory> {
-        const headers = await getAuthHeaders();
-        const response = await axios.post<CreditHistory>(
-            `${apiurl}/users/cards/credits/generate`,
-            undefined,
-            { headers }
-        );
-        return response.data;
-    },
 
     /**
      * Deletes the full credit history for the authenticated user
