@@ -179,18 +179,6 @@ export const UserCreditService = {
         return response.data;
     },
 
-    /**
-     * Creates an empty CalendarUserCredits for the given year for the authenticated user
-     */
-    async createEmptyCalendarForYear(year: number): Promise<CalendarUserCredits> {
-        const headers = await getAuthHeaders();
-        const response = await axios.post<CalendarUserCredits>(
-            `${apiurl}/users/cards/credits/year/${year}`,
-            undefined,
-            { headers }
-        );
-        return response.data;
-    },
 
     /**
      * Background reconciliation for current-year credits: ensures all selected cards and their credits
@@ -198,12 +186,17 @@ export const UserCreditService = {
      */
     async syncCurrentYearCredits(): Promise<{ changed: boolean; creditHistory?: CreditHistory }> {
         const headers = await getAuthHeaders();
-        const response = await axios.post<{ changed: boolean; creditHistory?: CreditHistory }>(
-            `${apiurl}/users/cards/credits/sync`,
-            undefined,
-            { headers }
-        );
-        return response.data;
+
+        try {
+            const response = await axios.post<{ changed: boolean; creditHistory?: CreditHistory }>(
+                `${apiurl}/users/cards/credits/sync`,
+                undefined,
+                { headers }
+            );
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     },
 
     /**
@@ -215,6 +208,7 @@ export const UserCreditService = {
             // Add this promise's resolve/reject to the pending queue
             pendingSyncResolvers.push(resolve);
             pendingSyncRejectors.push(reject);
+
 
             // Clear any existing timeout
             if (syncTimeout) {
