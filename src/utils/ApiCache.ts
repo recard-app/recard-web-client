@@ -192,16 +192,12 @@ export const CACHE_KEYS = {
   CREDIT_TRACKING_PREFERENCES: 'credit_tracking_preferences',
 
   // User Preferences Service
-  USER_PREFERENCES_INSTRUCTIONS: 'user_preferences_instructions',
-  USER_PREFERENCES_CHAT_HISTORY: 'user_preferences_chat_history',
-  USER_PREFERENCES_SHOW_COMPLETED: 'user_preferences_show_completed',
+  USER_PREFERENCES_BATCH: 'user_preferences_batch',
 
   // User Credit Card Service
   USER_CARD_DETAILS: 'user_card_details',
   USER_CARD_DETAILS_FULL: 'user_card_details_full',
 
-  // User History Service
-  CHAT_HISTORY: 'chat_history',
 
   // Component Service
   COMPONENTS_PERKS: 'components_perks',

@@ -9,7 +9,6 @@ import {
     ChatSolution,
     ChatSolutionSelectedCardId,
 } from '../../types';
-import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 export const UserHistoryService = {
     /**
@@ -27,14 +26,12 @@ export const UserHistoryService = {
      * @returns Paginated history data with update status
      */
     async fetchPagedHistory(params: HistoryParams): Promise<PagedHistoryResponse> {
-        return apiCache.get(CACHE_KEYS.CHAT_HISTORY, async () => {
-            const headers = await getAuthHeaders();
-            const response = await axios.get<PagedHistoryResponse>(
-                `${apiurl}/users/history`,
-                { headers, params }
-            );
-            return response.data;
-        });
+        const headers = await getAuthHeaders();
+        const response = await axios.get<PagedHistoryResponse>(
+            `${apiurl}/users/history`,
+            { headers, params }
+        );
+        return response.data;
     },
 
     /**

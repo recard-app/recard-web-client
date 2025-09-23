@@ -88,6 +88,21 @@ export interface PreferencesResponse {
     error?: string;
 }
 
+export interface BatchedPreferencesResponse {
+    success: boolean;
+    message?: string;
+    error?: string;
+    instructions: InstructionsPreference;
+    chatHistory: ChatHistoryPreference;
+    showCompletedOnly: ShowCompletedOnlyPreference;
+}
+
+export interface BatchedPreferencesRequest {
+    instructions?: InstructionsPreference;
+    chatHistory?: ChatHistoryPreference;
+    showCompletedOnly?: ShowCompletedOnlyPreference;
+}
+
 export interface SubscriptionPlanResponse {
     success: boolean;
     subscriptionPlan: SubscriptionPlan;

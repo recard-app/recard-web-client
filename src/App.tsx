@@ -230,31 +230,26 @@ function AppContent({}: AppContentProps) {
         setSubscriptionPlan(subscriptionPlan);
 
         // Batch 2: User preferences and tracking data (parallel)
-        const [trackingPrefs, preferencesInstructions, chatHistoryPref, showCompletedPref] = await Promise.all([
+        const [trackingPrefs, allPreferences] = await Promise.all([
           UserCreditService.fetchCreditTrackingPreferences().catch(error => {
             console.error('Error fetching credit tracking preferences:', error);
             return { Cards: [] }; // Return empty preferences if fetch fails
           }),
-          UserPreferencesService.loadInstructionsPreferences().catch(error => {
-            console.error('Error fetching preferences instructions:', error);
-            return { instructions: '' };
-          }),
-          UserPreferencesService.loadChatHistoryPreferences().catch(error => {
-            console.error('Error fetching chat history preference:', error);
-            return { data: null };
-          }),
-          UserPreferencesService.loadShowCompletedOnlyPreference().catch(error => {
-            console.error('Error fetching show completed only preference:', error);
-            return { data: 'false' };
+          UserPreferencesService.loadAllPreferences().catch(error => {
+            console.error('Error fetching user preferences:', error);
+            return {
+              success: false,
+              instructions: '',
+              chatHistory: 'keep_history' as ChatHistoryPreference,
+              showCompletedOnly: false
+            };
           })
         ]);
 
         setTrackingPreferences(trackingPrefs);
-        setPreferencesInstructions(preferencesInstructions.instructions || '');
-        if (chatHistoryPref.data) {
-          setChatHistoryPreference(chatHistoryPref.data as ChatHistoryPreference);
-        }
-        setShowCompletedOnlyPreference(showCompletedPref.data === 'true');
+        setPreferencesInstructions(allPreferences.instructions || '');
+        setChatHistoryPreference(allPreferences.chatHistory);
+        setShowCompletedOnlyPreference(allPreferences.showCompletedOnly);
 
         // Batch 3: Card details and chat history (parallel)
         const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;

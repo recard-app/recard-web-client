@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
 import {
-    PreferencesResponse,
+    BatchedPreferencesResponse,
+    BatchedPreferencesRequest,
     InstructionsPreference,
     ChatHistoryPreference,
     ShowCompletedOnlyPreference
@@ -10,138 +11,95 @@ import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 export const UserPreferencesService = {
     /**
-     * Loads instructions preferences
-     * @returns Promise containing instructions preferences response
+     * Loads all user preferences in a single API call
+     * @returns Promise containing all user preferences
      */
-    async loadInstructionsPreferences(): Promise<PreferencesResponse> {
-        return apiCache.get(CACHE_KEYS.USER_PREFERENCES_INSTRUCTIONS, async () => {
+    async loadAllPreferences(): Promise<BatchedPreferencesResponse> {
+        return apiCache.get(CACHE_KEYS.USER_PREFERENCES_BATCH, async () => {
             const headers = await getAuthHeaders();
-            const response = await axios.get<PreferencesResponse>(
-                `${apiurl}/users/preferences/instructions`,
+            const response = await axios.get<BatchedPreferencesResponse>(
+                `${apiurl}/users/preferences/batch`,
                 { headers }
             );
             return response.data;
         });
+    },
+
+    /**
+     * Updates multiple preferences in a single API call
+     * @param updates Object containing the preferences to update
+     * @returns Promise<BatchedPreferencesResponse>
+     */
+    async updatePreferences(updates: BatchedPreferencesRequest): Promise<BatchedPreferencesResponse> {
+        const headers = await getAuthHeaders();
+        const response = await axios.post<BatchedPreferencesResponse>(
+            `${apiurl}/users/preferences/batch`,
+            updates,
+            { headers }
+        );
+
+        // Clear cache after successful update
+        apiCache.invalidate(CACHE_KEYS.USER_PREFERENCES_BATCH);
+
+        return response.data;
     },
 
     /**
      * Updates instructions preference
      * @param instructions User's custom instructions
-     * @returns Promise<void>
+     * @returns Promise<BatchedPreferencesResponse>
      */
     async updateInstructionsPreference(
         instructions: InstructionsPreference
-    ): Promise<void> {
-        const headers = await getAuthHeaders();
-        await axios.post<PreferencesResponse>(
-            `${apiurl}/users/preferences/instructions`,
-            { instructions },
-            { headers }
-        );
-    },
-
-    /**
-     * Loads chat history preferences
-     * @returns Promise containing chat history preferences response
-     */
-    async loadChatHistoryPreferences(): Promise<PreferencesResponse> {
-        return apiCache.get(CACHE_KEYS.USER_PREFERENCES_CHAT_HISTORY, async () => {
-            const headers = await getAuthHeaders();
-            const response = await axios.get<PreferencesResponse>(
-                `${apiurl}/users/preferences/chat_history`,
-                { headers }
-            );
-            return response.data;
-        });
+    ): Promise<BatchedPreferencesResponse> {
+        return this.updatePreferences({ instructions });
     },
 
     /**
      * Updates chat history preference
      * @param chatHistory User's chat history preference
-     * @returns Promise<void>
+     * @returns Promise<BatchedPreferencesResponse>
      */
     async updateChatHistoryPreference(
         chatHistory: ChatHistoryPreference
-    ): Promise<void> {
-        const headers = await getAuthHeaders();
-        await axios.post<PreferencesResponse>(
-            `${apiurl}/users/preferences/chat_history`,
-            { chatHistory },
-            { headers }
-        );
-    },
-
-    /**
-     * Loads show completed only preference
-     * @returns Promise containing show completed only preference response
-     */
-    async loadShowCompletedOnlyPreference(): Promise<PreferencesResponse> {
-        return apiCache.get(CACHE_KEYS.USER_PREFERENCES_SHOW_COMPLETED, async () => {
-            const headers = await getAuthHeaders();
-            const response = await axios.get<PreferencesResponse>(
-                `${apiurl}/users/preferences/only_show_completed_transactions`,
-                { headers }
-            );
-            return response.data;
-        });
+    ): Promise<BatchedPreferencesResponse> {
+        return this.updatePreferences({ chatHistory });
     },
 
     /**
      * Updates show completed only preference
      * @param showCompletedOnly Whether to show only completed transactions
-     * @returns Promise<void>
+     * @returns Promise<BatchedPreferencesResponse>
      */
     async updateShowCompletedOnlyPreference(
         showCompletedOnly: ShowCompletedOnlyPreference
-    ): Promise<void> {
-        const headers = await getAuthHeaders();
-        await axios.post<PreferencesResponse>(
-            `${apiurl}/users/preferences/only_show_completed_transactions`,
-            { showCompletedOnly },
-            { headers }
-        );
+    ): Promise<BatchedPreferencesResponse> {
+        return this.updatePreferences({ showCompletedOnly });
     },
 
     /**
-     * Loads all user preferences including instructions, chat history, and show completed only
-     * @returns Promise containing all preferences responses
-     */
-    async loadAllPreferences(): Promise<{
-        instructionsResponse: PreferencesResponse;
-        chatHistoryResponse: PreferencesResponse;
-        showCompletedOnlyResponse: PreferencesResponse;
-    }> {
-        const [instructionsResponse, chatHistoryResponse, showCompletedOnlyResponse] = await Promise.all([
-            this.loadInstructionsPreferences(),
-            this.loadChatHistoryPreferences(),
-            this.loadShowCompletedOnlyPreference()
-        ]);
-
-        return {
-            instructionsResponse,
-            chatHistoryResponse,
-            showCompletedOnlyResponse
-        };
-    },
-
-    /**
-     * Saves all preferences
+     * Saves all preferences in a single API call
      * @param instructions User's custom instructions
      * @param chatHistory User's chat history preference
      * @param showCompletedOnly User's show completed only preference
-     * @returns Promise<void>
+     * @returns Promise<BatchedPreferencesResponse>
      */
     async savePreferences(
-        instructions: InstructionsPreference, 
+        instructions: InstructionsPreference,
         chatHistory: ChatHistoryPreference,
         showCompletedOnly: ShowCompletedOnlyPreference
-    ): Promise<void> {
-        await Promise.all([
-            this.updateInstructionsPreference(instructions),
-            this.updateChatHistoryPreference(chatHistory),
-            this.updateShowCompletedOnlyPreference(showCompletedOnly)
-        ]);
+    ): Promise<BatchedPreferencesResponse> {
+        return this.updatePreferences({
+            instructions,
+            chatHistory,
+            showCompletedOnly
+        });
+    },
+
+    /**
+     * Clear preferences cache - useful when preferences change
+     */
+    clearCache(): void {
+        apiCache.invalidate(CACHE_KEYS.USER_PREFERENCES_BATCH);
     }
 };
-
-
