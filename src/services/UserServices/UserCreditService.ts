@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
 import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType } from '../../types';
+import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 let syncTimeout: NodeJS.Timeout | null = null;
 let pendingSyncResolvers: ((value: CalendarUserCredits) => void)[] = [];
@@ -319,12 +320,14 @@ export const UserCreditService = {
      * Returns the authenticated user's credit tracking preferences
      */
     async fetchCreditTrackingPreferences(): Promise<UserCreditsTrackingPreferences> {
-        const headers = await getAuthHeaders();
-        const response = await axios.get<UserCreditsTrackingPreferences>(
-            `${apiurl}/users/cards/credits/preferences`,
-            { headers }
-        );
-        return response.data;
+        return apiCache.get(CACHE_KEYS.CREDIT_TRACKING_PREFERENCES, async () => {
+            const headers = await getAuthHeaders();
+            const response = await axios.get<UserCreditsTrackingPreferences>(
+                `${apiurl}/users/cards/credits/preferences`,
+                { headers }
+            );
+            return response.data;
+        });
     },
 
     /**

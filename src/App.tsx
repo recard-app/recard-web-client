@@ -4,13 +4,14 @@ import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT } from './types';
 import { Icon } from './icons';
 // Services
-import { 
-  CardService, 
-  UserService, 
-  UserCreditCardService, 
-  UserHistoryService, 
+import {
+  CardService,
+  UserService,
+  UserCreditCardService,
+  UserHistoryService,
   UserPreferencesService,
-  UserCreditService
+  UserCreditService,
+  ComponentService
 } from './services';
 
 // Styles
@@ -48,7 +49,7 @@ import {
 } from './components/ui/dialog/dialog';
 import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
-import { ComponentsProvider } from './contexts/ComponentsContext';
+import { ComponentsProvider, useComponents } from './contexts/ComponentsContext';
 import CreditCardDetailView from './components/CreditCardDetailView';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
 import PromptHelpModal from './components/PromptWindow/PromptHelpModal';
@@ -975,7 +976,7 @@ function App() {
   return (
     <Router>
       <HelmetProvider>
-        <ComponentsProvider>
+        <ComponentsProvider autoFetch={true}>
           <AppContent />
         </ComponentsProvider>
       </HelmetProvider>

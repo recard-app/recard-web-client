@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { 
-    PreferencesResponse, 
-    InstructionsPreference, 
-    ChatHistoryPreference, 
-    ShowCompletedOnlyPreference 
+import {
+    PreferencesResponse,
+    InstructionsPreference,
+    ChatHistoryPreference,
+    ShowCompletedOnlyPreference
 } from '../../types';
+import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 export const UserPreferencesService = {
     /**
@@ -13,12 +14,14 @@ export const UserPreferencesService = {
      * @returns Promise containing instructions preferences response
      */
     async loadInstructionsPreferences(): Promise<PreferencesResponse> {
-        const headers = await getAuthHeaders();
-        const response = await axios.get<PreferencesResponse>(
-            `${apiurl}/users/preferences/instructions`,
-            { headers }
-        );
-        return response.data;
+        return apiCache.get(CACHE_KEYS.USER_PREFERENCES_INSTRUCTIONS, async () => {
+            const headers = await getAuthHeaders();
+            const response = await axios.get<PreferencesResponse>(
+                `${apiurl}/users/preferences/instructions`,
+                { headers }
+            );
+            return response.data;
+        });
     },
 
     /**
@@ -42,12 +45,14 @@ export const UserPreferencesService = {
      * @returns Promise containing chat history preferences response
      */
     async loadChatHistoryPreferences(): Promise<PreferencesResponse> {
-        const headers = await getAuthHeaders();
-        const response = await axios.get<PreferencesResponse>(
-            `${apiurl}/users/preferences/chat_history`,
-            { headers }
-        );
-        return response.data;
+        return apiCache.get(CACHE_KEYS.USER_PREFERENCES_CHAT_HISTORY, async () => {
+            const headers = await getAuthHeaders();
+            const response = await axios.get<PreferencesResponse>(
+                `${apiurl}/users/preferences/chat_history`,
+                { headers }
+            );
+            return response.data;
+        });
     },
 
     /**
@@ -71,12 +76,14 @@ export const UserPreferencesService = {
      * @returns Promise containing show completed only preference response
      */
     async loadShowCompletedOnlyPreference(): Promise<PreferencesResponse> {
-        const headers = await getAuthHeaders();
-        const response = await axios.get<PreferencesResponse>(
-            `${apiurl}/users/preferences/only_show_completed_transactions`,
-            { headers }
-        );
-        return response.data;
+        return apiCache.get(CACHE_KEYS.USER_PREFERENCES_SHOW_COMPLETED, async () => {
+            const headers = await getAuthHeaders();
+            const response = await axios.get<PreferencesResponse>(
+                `${apiurl}/users/preferences/only_show_completed_transactions`,
+                { headers }
+            );
+            return response.data;
+        });
     },
 
     /**

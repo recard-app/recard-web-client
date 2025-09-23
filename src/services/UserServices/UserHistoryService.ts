@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { 
-    Conversation, 
-    StartDateResponse, 
-    HistoryParams, 
+import {
+    Conversation,
+    StartDateResponse,
+    HistoryParams,
     PagedHistoryResponse,
     ChatMessage,
     ChatSolution,
     ChatSolutionSelectedCardId,
 } from '../../types';
+import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 export const UserHistoryService = {
     /**
@@ -26,12 +27,14 @@ export const UserHistoryService = {
      * @returns Paginated history data with update status
      */
     async fetchPagedHistory(params: HistoryParams): Promise<PagedHistoryResponse> {
-        const headers = await getAuthHeaders();
-        const response = await axios.get<PagedHistoryResponse>(
-            `${apiurl}/users/history`,
-            { headers, params }
-        );
-        return response.data;
+        return apiCache.get(CACHE_KEYS.CHAT_HISTORY, async () => {
+            const headers = await getAuthHeaders();
+            const response = await axios.get<PagedHistoryResponse>(
+                `${apiurl}/users/history`,
+                { headers, params }
+            );
+            return response.data;
+        });
     },
 
     /**

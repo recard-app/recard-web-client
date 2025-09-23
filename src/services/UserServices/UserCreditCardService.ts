@@ -2,6 +2,7 @@ import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
 import { CardDetailsList, UserWalletHistory } from '../../types';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
+import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 export const UserCreditCardService = {
     /**
@@ -21,12 +22,14 @@ export const UserCreditCardService = {
      * @returns Promise containing the user's card details
      */
     async fetchUserCardDetails(): Promise<CardDetailsList> {
-        const headers = await getAuthHeaders();
-        const response = await axios.get<CardDetailsList>(
-            `${apiurl}/users/cards/details`,
-            { headers }
-        );
-        return response.data;
+        return apiCache.get(CACHE_KEYS.USER_CARD_DETAILS, async () => {
+            const headers = await getAuthHeaders();
+            const response = await axios.get<CardDetailsList>(
+                `${apiurl}/users/cards/details`,
+                { headers }
+            );
+            return response.data;
+        });
     },
     
     /**
@@ -34,15 +37,17 @@ export const UserCreditCardService = {
      * @returns Promise containing the detailed credit card information for user's cards
      */
     async fetchUserCardsDetailedInfo(): Promise<CreditCardDetails[]> {
-        const headers = await getAuthHeaders();
-        const response = await axios.get<CreditCardDetails[]>(
-            `${apiurl}/credit-cards/list/details`,
-            { 
-                headers,
-                params: { userCardsOnly: true } 
-            }
-        );
-        return response.data;
+        return apiCache.get(CACHE_KEYS.USER_CARD_DETAILS_FULL, async () => {
+            const headers = await getAuthHeaders();
+            const response = await axios.get<CreditCardDetails[]>(
+                `${apiurl}/credit-cards/list/details`,
+                {
+                    headers,
+                    params: { userCardsOnly: true }
+                }
+            );
+            return response.data;
+        });
     },
 
     /**

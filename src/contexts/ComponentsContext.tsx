@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { CardPerk, CardCredit, CardMultiplier } from '../types/CreditCardTypes';
 import { ComponentService } from '../services';
+import { useAuth } from '../context/AuthContext';
+import { apiCache } from '../utils/ApiCache';
 
 interface ComponentsContextType {
   perks: CardPerk[];
@@ -22,6 +24,7 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
   children,
   autoFetch = true
 }) => {
+  const { user } = useAuth();
   const [perks, setPerks] = useState<CardPerk[]>([]);
   const [credits, setCredits] = useState<CardCredit[]>([]);
   const [multipliers, setMultipliers] = useState<CardMultiplier[]>([]);
@@ -51,10 +54,18 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
   };
 
   useEffect(() => {
-    if (autoFetch) {
+    if (autoFetch && user) {
       fetchComponents();
+    } else if (!user) {
+      // Clear data when user logs out
+      setPerks([]);
+      setCredits([]);
+      setMultipliers([]);
+      setError(null);
+      ComponentService.clearCache();
+      apiCache.clearUserData();
     }
-  }, [autoFetch]);
+  }, [autoFetch, user]);
 
   const value: ComponentsContextType = {
     perks,

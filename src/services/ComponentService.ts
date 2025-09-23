@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from './index';
 import { CardPerk, CardCredit, CardMultiplier } from '../types';
+import { apiCache, CACHE_KEYS } from '../utils/ApiCache';
 
 /**
  * Service for fetching credit card components (perks, credits, multipliers)
@@ -11,30 +12,36 @@ export const ComponentService = {
    * Fetch all perks for the user's selected credit cards
    */
   async fetchUserCardPerks(): Promise<CardPerk[]> {
-    const headers = await getAuthHeaders();
-    const url = `${apiurl}/users/cards/components/perks`;
-    const response = await axios.get<{ perks: CardPerk[] }>(url, { headers });
-    return response.data.perks;
+    return apiCache.get(CACHE_KEYS.COMPONENTS_PERKS, async () => {
+      const headers = await getAuthHeaders();
+      const url = `${apiurl}/users/cards/components/perks`;
+      const response = await axios.get<{ perks: CardPerk[] }>(url, { headers });
+      return response.data.perks;
+    });
   },
 
   /**
    * Fetch all credits for the user's selected credit cards
    */
   async fetchUserCardCredits(): Promise<CardCredit[]> {
-    const headers = await getAuthHeaders();
-    const url = `${apiurl}/users/cards/components/credits`;
-    const response = await axios.get<{ credits: CardCredit[] }>(url, { headers });
-    return response.data.credits;
+    return apiCache.get(CACHE_KEYS.COMPONENTS_CREDITS, async () => {
+      const headers = await getAuthHeaders();
+      const url = `${apiurl}/users/cards/components/credits`;
+      const response = await axios.get<{ credits: CardCredit[] }>(url, { headers });
+      return response.data.credits;
+    });
   },
 
   /**
    * Fetch all multipliers for the user's selected credit cards
    */
   async fetchUserCardMultipliers(): Promise<CardMultiplier[]> {
-    const headers = await getAuthHeaders();
-    const url = `${apiurl}/users/cards/components/multipliers`;
-    const response = await axios.get<{ multipliers: CardMultiplier[] }>(url, { headers });
-    return response.data.multipliers;
+    return apiCache.get(CACHE_KEYS.COMPONENTS_MULTIPLIERS, async () => {
+      const headers = await getAuthHeaders();
+      const url = `${apiurl}/users/cards/components/multipliers`;
+      const response = await axios.get<{ multipliers: CardMultiplier[] }>(url, { headers });
+      return response.data.multipliers;
+    });
   },
 
   /**
@@ -46,18 +53,27 @@ export const ComponentService = {
     credits: CardCredit[];
     multipliers: CardMultiplier[];
   }> {
-    // Execute all three requests in parallel for better performance
-    const [perks, credits, multipliers] = await Promise.all([
-      this.fetchUserCardPerks(),
-      this.fetchUserCardCredits(),
-      this.fetchUserCardMultipliers()
-    ]);
+    return apiCache.get(CACHE_KEYS.COMPONENTS_ALL, async () => {
+      // Execute all three requests in parallel for better performance
+      const [perks, credits, multipliers] = await Promise.all([
+        this.fetchUserCardPerks(),
+        this.fetchUserCardCredits(),
+        this.fetchUserCardMultipliers()
+      ]);
 
-    return {
-      perks,
-      credits,
-      multipliers
-    };
+      return {
+        perks,
+        credits,
+        multipliers
+      };
+    });
+  },
+
+  /**
+   * Clear all component caches - useful when user's card selection changes
+   */
+  clearCache(): void {
+    apiCache.invalidatePattern('components_');
   }
 };
 
