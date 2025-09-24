@@ -85,6 +85,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     if (routePath === PAGES.HOME.PATH) {
       return isHomeOrChatRoute(location.pathname);
     }
+    // Special handling for MY_CREDITS - highlight for all my-credits/* pages
+    if (routePath === PAGES.MY_CREDITS.PATH) {
+      return location.pathname.startsWith(PAGES.MY_CREDITS.PATH);
+    }
     return location.pathname === routePath;
   };
 

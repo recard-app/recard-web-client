@@ -64,7 +64,13 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   const navigate = useNavigate();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const isActive = (path: string): boolean => location.pathname === path;
+  const isActive = (path: string): boolean => {
+    // Special handling for MY_CREDITS - highlight for all my-credits/* pages
+    if (path === PAGES.MY_CREDITS.PATH) {
+      return location.pathname.startsWith(PAGES.MY_CREDITS.PATH);
+    }
+    return location.pathname === path;
+  };
   const isHomeOrChatRoute = (pathname: string) => {
     return PageUtils.isPage(pathname, 'HOME');
   };
