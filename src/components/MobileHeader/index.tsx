@@ -350,13 +350,18 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
                   <div className="mobile-drawer-section">
                     <div className="section-title">My Cards</div>
-                    <CreditCardPreviewList 
+                    <CreditCardPreviewList
                       cards={creditCards}
                       loading={isLoadingCreditCards}
                       showOnlySelected={true}
                       onCardSelect={onCardSelect!}
                       variant="mobile-sidebar"
                     />
+                  </div>
+
+                  <div className="mobile-drawer-section">
+                    <div className="section-title">{PAGE_NAMES.MY_CREDITS}</div>
+                    {/* Content will be added later */}
                   </div>
                 </div>
 

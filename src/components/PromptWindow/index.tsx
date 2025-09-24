@@ -28,7 +28,6 @@ import { InfoDisplay } from '../../elements';
 /**
  * Props for the PromptWindow component.
  * @param {CreditCard[]} creditCards - An array of credit cards.
- * @param {string[]} userCardDetails - An array of user card details.
  * @param {FirebaseUser | null} user - The current user.
  * @param {function} returnCurrentChatId - A function to return the current chat ID.
  * @param {function} onHistoryUpdate - A function to update the history.
@@ -40,7 +39,6 @@ import { InfoDisplay } from '../../elements';
  */
 interface PromptWindowProps {
     creditCards: CreditCard[];
-    userCardDetails: string[];
     user: FirebaseUser | null;
     returnCurrentChatId: (chatId: string) => void;
     onHistoryUpdate: (chat: Conversation) => void;
@@ -61,7 +59,6 @@ interface PromptWindowProps {
  */
 function PromptWindow({
     creditCards,
-    userCardDetails,
     user,
     returnCurrentChatId,
     onHistoryUpdate,

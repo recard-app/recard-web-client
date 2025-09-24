@@ -286,18 +286,27 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               </SidebarItem>
 
               {/* My Cards as SidebarItem */}
-              <SidebarItem 
+              <SidebarItem
                 icon={PAGE_ICONS.MY_CARDS.INACTIVE}
-                name={PAGE_NAMES.MY_CARDS} 
+                name={PAGE_NAMES.MY_CARDS}
                 isDropdown={true}
               >
-                <CreditCardPreviewList 
+                <CreditCardPreviewList
                   cards={creditCards}
                   loading={isLoadingCreditCards}
                   showOnlySelected={true}
                   onCardSelect={onCardSelect}
                   variant="sidebar"
                 />
+              </SidebarItem>
+
+              {/* My Credits as SidebarItem */}
+              <SidebarItem
+                icon={PAGE_ICONS.MY_CREDITS.INACTIVE}
+                name={PAGE_NAMES.MY_CREDITS}
+                isDropdown={true}
+              >
+                {/* Content will be added later */}
               </SidebarItem>
             </div>
           </>

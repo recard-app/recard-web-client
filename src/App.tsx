@@ -77,8 +77,7 @@ import {
   SUBSCRIPTION_PLAN,
   LOADING_ICON,
   LOADING_ICON_SIZE,
-  Conversation,  
-  CardDetailsList, 
+  Conversation,
   ChatHistoryPreference,
   InstructionsPreference,
   SubscriptionPlan 
@@ -113,7 +112,6 @@ function AppContent({}: AppContentProps) {
   // State for loading transaction history
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(true);
   // State for storing user's basic card details (for PromptWindow)
-  const [userCardDetails, setUserCardDetails] = useState<CardDetailsList>([]);
   // State for storing user's detailed card details (for modal view)
   const [userDetailedCardDetails, setUserDetailedCardDetails] = useState<CreditCardDetails[]>([]);
   // State for storing selected card details for modal view
@@ -202,7 +200,6 @@ function AppContent({}: AppContentProps) {
         // Reset all states when user is not authenticated
         setCreditCards([]);
         setTrackingPreferences(null);
-        setUserCardDetails([]);
         setUserDetailedCardDetails([]);
         setChatHistory([]);
         setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE);
@@ -268,10 +265,6 @@ function AppContent({}: AppContentProps) {
 
         // Prepare parallel requests
         const requests = [
-          UserCreditCardService.fetchUserCardDetails().catch(error => {
-            console.error('Error fetching user card details:', error);
-            return [];
-          }),
           UserCreditCardService.fetchUserCardsDetailedInfo().catch(error => {
             console.error('Error fetching user detailed card info:', error);
             return [];
@@ -291,9 +284,8 @@ function AppContent({}: AppContentProps) {
             })
           );
 
-          const [basicDetails, detailedInfo, priorityChat, historyResponse] = await Promise.all(requests);
+          const [detailedInfo, priorityChat, historyResponse] = await Promise.all(requests);
 
-          setUserCardDetails(basicDetails);
           setUserDetailedCardDetails(detailedInfo);
 
           // Build chat history with priority chat first
@@ -314,9 +306,8 @@ function AppContent({}: AppContentProps) {
             })
           );
 
-          const [basicDetails, detailedInfo, historyResponse] = await Promise.all(requests);
+          const [detailedInfo, historyResponse] = await Promise.all(requests);
 
-          setUserCardDetails(basicDetails);
           setUserDetailedCardDetails(detailedInfo);
           setChatHistory(historyResponse.chatHistory);
         }
@@ -432,7 +423,6 @@ function AppContent({}: AppContentProps) {
   // Function to handle user logout and reset all states
   const handleLogout = async (): Promise<void> => {
     // Reset all states to their initial values
-    setUserCardDetails([]);
     setUserDetailedCardDetails([]);
     setTrackingPreferences(null);
     setCurrentChatId(null);
@@ -645,7 +635,6 @@ function AppContent({}: AppContentProps) {
           <div className="prompt-window-container">
             <PromptWindow
               creditCards={creditCards}
-              userCardDetails={userCardDetails}
               user={user}
               returnCurrentChatId={getCurrentChatId}
               onHistoryUpdate={handleHistoryUpdate}
