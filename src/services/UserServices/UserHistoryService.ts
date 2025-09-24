@@ -151,6 +151,20 @@ export const UserHistoryService = {
             { chatDescription },
             { headers }
         );
+    },
+
+    /**
+     * Fetches recent chat history entries with full conversation data for sidebar preview
+     * @param size Optional size parameter (defaults to 3, max 10)
+     * @returns Promise containing the full conversation data
+     */
+    async fetchChatHistoryPreview(size: number = 3): Promise<{ chatHistory: Conversation[] }> {
+        const headers = await getAuthHeaders();
+        const response = await axios.get<{ chatHistory: Conversation[] }>(
+            `${apiurl}/users/history/preview`,
+            { headers, params: { size: Math.min(size, 10) } }
+        );
+        return response.data;
     }
 };
 

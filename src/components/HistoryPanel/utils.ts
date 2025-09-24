@@ -1,7 +1,8 @@
-import { 
-  Conversation, 
-  SubscriptionPlan, 
-  HistoryParams, 
+import {
+  Conversation,
+  LightweightConversation,
+  SubscriptionPlan,
+  HistoryParams,
   PaginationData
 } from '../../types';
 import { MONTH_OPTIONS, MONTH_NAMES, SUBSCRIPTION_PLAN, TERMINOLOGY } from '../../types';
@@ -20,7 +21,7 @@ export interface MonthOption {
  */
 export interface HistorySection {
   title: string;
-  entries: Conversation[];
+  entries: Conversation[] | LightweightConversation[];
   key?: string | number;
 }
 
@@ -36,7 +37,7 @@ export const fetchPagedHistory = async (
       showCompletedOnly: boolean
     }
   ): Promise<{
-    chatHistory: Conversation[],
+    chatHistory: LightweightConversation[],
     pagination: PaginationData | null,
     error?: Error
   }> => {
@@ -175,7 +176,7 @@ export const getAvailableMonths = (
 /**
  * Organizes history entries into sections based on date
  */
-export const organizeHistoryByDate = (entries: Conversation[]): HistorySection[] => {
+export const organizeHistoryByDate = (entries: Conversation[] | LightweightConversation[]): HistorySection[] => {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 

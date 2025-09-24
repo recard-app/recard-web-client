@@ -111,11 +111,16 @@ export interface SubscriptionPlanResponse {
 }
 
 /**
+ * Lightweight conversation type for history list (excludes heavy conversation/solutions arrays)
+ */
+export type LightweightConversation = Pick<Conversation, 'chatId' | 'chatDescription' | 'timestamp' | 'cardSelection'>;
+
+/**
  * Interface for paginated history response
  */
 export interface PagedHistoryResponse {
     hasUpdates: boolean;
-    chatHistory: Conversation[];
+    chatHistory: LightweightConversation[];
     pagination: PaginationData;
     filters: {
         month: number | null;

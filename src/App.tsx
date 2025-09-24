@@ -79,10 +79,8 @@ import {
   LOADING_ICON_SIZE,
   Conversation,  
   CardDetailsList, 
-  ChatHistoryPreference, 
-  InstructionsPreference, 
-  PagedHistoryResponse,
-  HistoryParams,
+  ChatHistoryPreference,
+  InstructionsPreference,
   SubscriptionPlan 
 } from './types';
 
@@ -253,12 +251,6 @@ function AppContent({}: AppContentProps) {
 
         // Batch 3: Card details and chat history (parallel)
         const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
-        const params: HistoryParams = {
-          lastUpdate: undefined,
-          page_size: quick_history_size,
-          page: 1,
-          forceShowAll: 'true'
-        };
 
         const [basicDetails, detailedInfo, historyResponse] = await Promise.all([
           UserCreditCardService.fetchUserCardDetails().catch(error => {
@@ -269,19 +261,17 @@ function AppContent({}: AppContentProps) {
             console.error('Error fetching user detailed card info:', error);
             return [];
           }),
-          UserHistoryService.fetchPagedHistory(params).catch(error => {
-            console.error('Error fetching chat history:', error);
-            return { chatHistory: [], hasUpdates: false };
+          UserHistoryService.fetchChatHistoryPreview(quick_history_size).catch(error => {
+            console.error('Error fetching chat history preview:', error);
+            return { chatHistory: [] };
           })
         ]);
 
         setUserCardDetails(basicDetails);
         setUserDetailedCardDetails(detailedInfo);
 
-        if (historyResponse.hasUpdates) {
-          setChatHistory(historyResponse.chatHistory);
-          setLastUpdateTimestamp(new Date().toISOString());
-        }
+        setChatHistory(historyResponse.chatHistory);
+        setLastUpdateTimestamp(new Date().toISOString());
 
       } catch (error) {
         console.error('Error loading initial data:', error);
@@ -331,19 +321,10 @@ function AppContent({}: AppContentProps) {
 
       setIsLoadingHistory(true);
       try {
-        const params: HistoryParams = {
-          lastUpdate: lastUpdateTimestamp || undefined,
-          page_size: GLOBAL_QUICK_HISTORY_SIZE,
-          page: 1,
-          forceShowAll: 'true'
-        };
+        const response = await UserHistoryService.fetchChatHistoryPreview(GLOBAL_QUICK_HISTORY_SIZE);
 
-        const response: PagedHistoryResponse = await UserHistoryService.fetchPagedHistory(params);
-
-        if (response.hasUpdates) {
-          setChatHistory(response.chatHistory);
-          setLastUpdateTimestamp(new Date().toISOString());
-        }
+        setChatHistory(response.chatHistory);
+        setLastUpdateTimestamp(new Date().toISOString());
       } catch (error) {
         console.error('Error refreshing chat history:', error);
       } finally {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
@@ -11,7 +11,8 @@ import {
 } from '../ui/drawer';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
 import {
-  Conversation, 
+  Conversation,
+  LightweightConversation,
   PaginationData,
   CreditCard,
   SubscriptionPlan,
@@ -86,7 +87,7 @@ function FullHistoryPanel({
   // Loading state for API requests
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // List of paginated conversations
-  const [paginatedList, setPaginatedList] = useState<Conversation[]>([]);
+  const [paginatedList, setPaginatedList] = useState<LightweightConversation[]>([]);
   // Selected month for filtering
   const [selectedMonth, setSelectedMonth] = useState<string>('');
   // Selected year for filtering
@@ -104,6 +105,10 @@ function FullHistoryPanel({
     else setIsFiltersDrawerOpenInternal(open);
   };
 
+  // Ref to track if component has mounted to prevent duplicate initial API calls
+  const hasMountedRef = useRef(false);
+  const isInitialMountRef = useRef(true);
+
   // Removed session storage persistence in favor of App-scoped state
 
   // Compute effective value from local override or user preference
@@ -111,42 +116,57 @@ function FullHistoryPanel({
     ? showCompletedOnlyFilter
     : showCompletedOnlyPreference;
 
-  // Initial loading state
-  useEffect(() => {
+  // Fetch data function - not memoized to avoid dependency issues
+  const fetchData = async () => {
+    if (!user) return;
+
     setIsLoading(true);
-  }, []);
+    try {
+      // Fetch history data
+      const result = await fetchPagedHistory({
+        currentPage,
+        pageSize: PAGE_SIZE_LIMIT,
+        selectedMonth,
+        selectedYear,
+        showCompletedOnly: effectiveShowCompletedOnly
+      });
 
-  // No external syncing
+      if (result.chatHistory) {
+        setPaginatedList(result.chatHistory);
+        setPaginationData(result.pagination);
+      }
 
-  /**
-   * Effect hook to fetch history when page changes
-   */
-  useEffect(() => {
-    if (user) {
-      fetchPagedHistoryData();
+      // Only fetch first entry date on initial mount
+      if (isInitialMountRef.current) {
+        const date = await fetchFirstEntryDate();
+        setFirstEntryDate(date);
+        isInitialMountRef.current = false;
+      }
+    } finally {
+      setIsLoading(false);
     }
-  }, [currentPage, historyRefreshTrigger]);
+  };
 
-  /**
-   * Effect hook to fetch history when filters change
-   */
+  // Single effect handles all data fetching and page resets
   useEffect(() => {
-    if (user) {
-      setCurrentPage(1); // Reset to first page when filters change
-      fetchPagedHistoryData();
+    if (!user) return;
+
+    // Auto-reset to page 1 when filters change (except initial mount)
+    if (hasMountedRef.current && currentPage !== 1) {
+      setCurrentPage(1);
+      return; // Let the page change trigger the next fetch
     }
-  }, [user, selectedMonth, selectedYear, showCompletedOnlyFilter, showCompletedOnlyPreference]);
+
+    // Set mounted flag after first render
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+    }
+
+    fetchData();
+  }, [user, currentPage, selectedMonth, selectedYear, effectiveShowCompletedOnly, historyRefreshTrigger]);
 
   // No propagation
 
-  /**
-   * Effect hook to fetch first entry date on mount
-   */
-  useEffect(() => {
-    if (user) {
-      fetchFirstEntryDateData();
-    }
-  }, [user]);
 
   if (!user) return null;
 
@@ -169,38 +189,6 @@ function FullHistoryPanel({
     setCurrentPage(1);
   };
 
-  /**
-   * Wrapper function to fetch paginated history and update state
-   */
-  const fetchPagedHistoryData = async () => {
-    if (!user) return;
-    
-    setIsLoading(true);
-    try {
-      const result = await fetchPagedHistory({
-        currentPage,
-        pageSize: PAGE_SIZE_LIMIT,
-        selectedMonth,
-        selectedYear,
-         showCompletedOnly: effectiveShowCompletedOnly
-      });
-      
-      if (result.chatHistory) {
-        setPaginatedList(result.chatHistory);
-        setPaginationData(result.pagination);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Wrapper function to fetch first entry date and update state
-   */
-  const fetchFirstEntryDateData = async () => {
-    const date = await fetchFirstEntryDate();
-    setFirstEntryDate(date);
-  };
 
   /**
    * Wrapper function to handle deletion
