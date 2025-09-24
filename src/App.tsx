@@ -192,6 +192,9 @@ function AppContent({}: AppContentProps) {
     }
   }, [location.pathname]);
 
+  // Ref to prevent duplicate initial loads
+  const isLoadingRef = useRef(false);
+
   // Effect to fetch all initial data in parallel batches when user is authenticated
   useEffect(() => {
     const loadInitialData = async () => {
@@ -208,8 +211,13 @@ function AppContent({}: AppContentProps) {
         setShowCompletedOnlyPreference(false);
         setIsLoadingCreditCards(false);
         setIsLoadingHistory(false);
+        isLoadingRef.current = false;
         return;
       }
+
+      // Prevent duplicate loads
+      if (isLoadingRef.current) return;
+      isLoadingRef.current = true;
 
       setIsLoadingCreditCards(true);
       setIsLoadingHistory(true);
@@ -249,10 +257,17 @@ function AppContent({}: AppContentProps) {
         setChatHistoryPreference(allPreferences.chatHistory);
         setShowCompletedOnlyPreference(allPreferences.showCompletedOnly);
 
-        // Batch 3: Card details and chat history (parallel)
+        // Batch 3: Card details and chat history with priority loading
         const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 
-        const [basicDetails, detailedInfo, historyResponse] = await Promise.all([
+        // Extract chatId from URL if present (priority loading)
+        const currentPath = location.pathname;
+        const urlChatId = currentPath !== PAGES.HOME.PATH && PageUtils.isPage(currentPath, 'HOME')
+          ? currentPath.slice(1) // Remove leading slash
+          : null;
+
+        // Prepare parallel requests
+        const requests = [
           UserCreditCardService.fetchUserCardDetails().catch(error => {
             console.error('Error fetching user card details:', error);
             return [];
@@ -260,17 +275,52 @@ function AppContent({}: AppContentProps) {
           UserCreditCardService.fetchUserCardsDetailedInfo().catch(error => {
             console.error('Error fetching user detailed card info:', error);
             return [];
-          }),
-          UserHistoryService.fetchChatHistoryPreview(quick_history_size).catch(error => {
-            console.error('Error fetching chat history preview:', error);
-            return { chatHistory: [] };
           })
-        ]);
+        ];
 
-        setUserCardDetails(basicDetails);
-        setUserDetailedCardDetails(detailedInfo);
+        // If there's a specific chat in the URL, prioritize loading it
+        if (urlChatId) {
+          requests.push(
+            UserHistoryService.fetchChatHistoryById(urlChatId).catch(error => {
+              console.error('Error fetching priority chat:', error);
+              return null;
+            }),
+            UserHistoryService.fetchChatHistoryPreview(quick_history_size).catch(error => {
+              console.error('Error fetching chat history preview:', error);
+              return { chatHistory: [] };
+            })
+          );
 
-        setChatHistory(historyResponse.chatHistory);
+          const [basicDetails, detailedInfo, priorityChat, historyResponse] = await Promise.all(requests);
+
+          setUserCardDetails(basicDetails);
+          setUserDetailedCardDetails(detailedInfo);
+
+          // Build chat history with priority chat first
+          const chatHistoryList = historyResponse.chatHistory || [];
+          if (priorityChat && !chatHistoryList.find(chat => chat.chatId === urlChatId)) {
+            chatHistoryList.unshift(priorityChat);
+          }
+
+          setChatHistory(chatHistoryList);
+          // Set the current chat ID immediately for faster loading
+          setCurrentChatId(urlChatId);
+        } else {
+          // Regular loading without priority chat
+          requests.push(
+            UserHistoryService.fetchChatHistoryPreview(quick_history_size).catch(error => {
+              console.error('Error fetching chat history preview:', error);
+              return { chatHistory: [] };
+            })
+          );
+
+          const [basicDetails, detailedInfo, historyResponse] = await Promise.all(requests);
+
+          setUserCardDetails(basicDetails);
+          setUserDetailedCardDetails(detailedInfo);
+          setChatHistory(historyResponse.chatHistory);
+        }
+
         setLastUpdateTimestamp(new Date().toISOString());
 
       } catch (error) {
@@ -278,11 +328,22 @@ function AppContent({}: AppContentProps) {
       } finally {
         setIsLoadingCreditCards(false);
         setIsLoadingHistory(false);
+        isLoadingRef.current = false;
       }
     };
 
     loadInitialData();
   }, [user, cardsVersion]); // Refresh when user changes or cards version changes
+
+  // Update current chat ID when URL changes (no API calls here)
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const urlChatId = currentPath !== PAGES.HOME.PATH && PageUtils.isPage(currentPath, 'HOME')
+      ? currentPath.slice(1) // Remove leading slash
+      : null;
+
+    setCurrentChatId(urlChatId);
+  }, [location.pathname]);
 
   // Track viewport size to decide drawer vs dialog flags
   useEffect(() => {
@@ -582,10 +643,10 @@ function AppContent({}: AppContentProps) {
         />
         <div className="app-content">
           <div className="prompt-window-container">
-            <PromptWindow 
+            <PromptWindow
               creditCards={creditCards}
               userCardDetails={userCardDetails}
-              user={user} 
+              user={user}
               returnCurrentChatId={getCurrentChatId}
               onHistoryUpdate={handleHistoryUpdate}
               clearChatCallback={clearChatCallback}
@@ -593,6 +654,7 @@ function AppContent({}: AppContentProps) {
               existingHistoryList={chatHistory}
               preferencesInstructions={preferencesInstructions}
               chatHistoryPreference={chatHistoryPreference}
+              isLoadingHistory={isLoadingHistory}
             />
           </div>
         </div>

@@ -49,6 +49,7 @@ interface PromptWindowProps {
     existingHistoryList: Conversation[];
     preferencesInstructions: InstructionsPreference;
     chatHistoryPreference: ChatHistoryPreference;
+    isLoadingHistory?: boolean;
 }
 
 /**
@@ -58,17 +59,18 @@ interface PromptWindowProps {
  * @param {PromptWindowProps} props - Component props including credit cards, user details, and callbacks
  * @returns {JSX.Element} Rendered PromptWindow component
  */
-function PromptWindow({ 
-    creditCards, 
+function PromptWindow({
+    creditCards,
     userCardDetails,
-    user, 
-    returnCurrentChatId, 
-    onHistoryUpdate, 
+    user,
+    returnCurrentChatId,
+    onHistoryUpdate,
     clearChatCallback,
     setClearChatCallback,
     existingHistoryList,
     preferencesInstructions,
     chatHistoryPreference,
+    isLoadingHistory = false,
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
@@ -218,7 +220,7 @@ function PromptWindow({
         if (user) {
             const loadHistory = async () => {
                 if (!user) return;
-                
+
                 // If there's no urlChatId, we're on the home page - clear everything for a new chat
                 if (!urlChatId) {
                     setSelectedCardId('');
@@ -229,22 +231,33 @@ function PromptWindow({
                     returnCurrentChatId('');
                     return;
                 }
-                
+
                 // Return early if the URL chat ID is the same as the current chat ID
                 if (urlChatId === chatId) return;
-                
+
+                // Wait for initial history loading to complete before checking for existing chat
+                if (isLoadingHistory) {
+                    console.log('Waiting for history to finish loading before loading chat...');
+                    return;
+                }
+
                 // Always reset state when loading a new chat - do this first before any async operations
                 setSelectedCardId('');
                 setPromptSolutions([]);
                 setChatHistory([]);
 
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
-                
+
                 if (existingChat) {
+                    // Chat found in pre-loaded history - fast path
+                    console.log('Chat found in pre-loaded history - using fast path');
                     setExistingChatStates(existingChat.conversation, existingChat.solutions, urlChatId, existingChat.cardSelection);
                     return;
                 }
 
+                // Fallback: Chat not in pre-loaded history, fetch individually
+                // This should rarely happen with priority loading enabled
+                console.warn('Chat not found in pre-loaded history, fetching individually:', urlChatId);
                 try {
                     const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
                     setExistingChatStates(response.conversation, response.solutions, urlChatId, response.cardSelection);
@@ -256,7 +269,18 @@ function PromptWindow({
             };
             loadHistory();
         }
-    }, [urlChatId, user, existingHistoryList]);
+    }, [urlChatId, user, isLoadingHistory]); // Added isLoadingHistory to wait for completion
+
+    // Separate effect to handle when chat becomes available in history
+    useEffect(() => {
+        if (!urlChatId || !user || chatId === urlChatId) return;
+
+        const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
+        if (existingChat && !chatHistory.length) {
+            // Chat just became available and we haven't loaded it yet
+            setExistingChatStates(existingChat.conversation, existingChat.solutions, urlChatId, existingChat.cardSelection);
+        }
+    }, [existingHistoryList, urlChatId, user, chatId, chatHistory.length]);
 
     /**
      * Effect hook that handles clearing the chat when triggered externally.
