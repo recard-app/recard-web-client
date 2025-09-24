@@ -206,9 +206,13 @@ export interface GetCreditsForYearParams {
     year: string;
     cardIds?: string[]; // Optional array of card IDs to filter by
     excludeHidden?: boolean; // Optional flag to exclude hidden credits
+    includeExpiring?: boolean; // Optional flag to include isExpiring field and daysUntilExpiration
 }
 
-export interface GetCreditsForYearResponse extends CalendarUserCredits {}
+export interface GetCreditsForYearResponse {
+    Credits: UserCredit[] | UserCreditWithExpiration[]; // Can include expiration data when includeExpiring=true
+    Year: number;
+}
 
 /**
  * Update Credit Entry API
@@ -263,21 +267,6 @@ export interface GetCardCreditsParams {
 
 export type GetCardCreditsResponse = CardCredit[];
 
-/**
- * Get Current Month Credits API
- * GET /users/cards/credits/current-month
- */
-export interface GetCurrentMonthCreditsParams {
-    cardIds?: string[]; // Optional array of card IDs to filter by
-    excludeHidden?: boolean; // Optional flag to exclude hidden credits
-    includeExpiring?: boolean; // Optional flag to include isExpiring field
-}
-
-export interface GetCurrentMonthCreditsResponse {
-    Credits: UserCreditWithExpiration[];
-    Year: number;
-    Month: number; // Current month number (1-12)
-}
 
 /**
  * Card Credit interface for the /cards endpoint

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PageHeader from '../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES, PAGES, GetCurrentMonthCreditsResponse, CalendarUserCredits } from '../../types';
+import { PAGE_ICONS, PAGE_NAMES, PAGES, CalendarUserCredits } from '../../types';
 import { Link } from 'react-router-dom';
 import { UserCreditService, UserCreditCardService } from '../../services';
 import CreditsDisplay from '../../components/CreditsDisplay';
@@ -12,51 +12,45 @@ const MyCredits: React.FC = () => {
   const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Function to refresh current month credits data
+  // Function to refresh current year credits data
   const refreshCredits = async () => {
     try {
-      const updatedResponse = await UserCreditService.fetchCurrentMonthCredits({
+      const currentYear = new Date().getFullYear();
+      const updatedResponse = await UserCreditService.fetchCreditHistoryForYear(currentYear, {
         includeExpiring: true,
         excludeHidden: true
       });
 
-      const updatedCalendarCredits: CalendarUserCredits = {
-        Credits: updatedResponse.Credits,
-        Year: updatedResponse.Year
-      };
-
-      setCurrentMonthCredits(updatedCalendarCredits);
+      setCurrentMonthCredits(updatedResponse);
     } catch (error) {
-      console.error('Failed to refresh current month credits:', error);
+      console.error('Failed to refresh current year credits:', error);
     }
   };
 
-  // Sync credit history and fetch current month credits
+  // Sync credit history and fetch current year credits
   useEffect(() => {
     const loadCredits = async () => {
       try {
         // First sync the credits to ensure they're up to date
         await UserCreditService.syncCurrentYearCreditsDebounced();
 
-        // Fetch user card details and current month credits in parallel
+        // Fetch user card details and current year credits in parallel
+        const currentYear = new Date().getFullYear();
         const [userCardsResponse, creditsResponse] = await Promise.all([
           UserCreditCardService.fetchUserCardsDetailedInfo(),
-          UserCreditService.fetchCurrentMonthCredits({
+          UserCreditService.fetchCreditHistoryForYear(currentYear, {
             includeExpiring: true,
             excludeHidden: true
           })
         ]);
 
-        // Convert to CalendarUserCredits format expected by CreditsDisplay
-        const calendarCredits: CalendarUserCredits = {
-          Credits: creditsResponse.Credits,
-          Year: creditsResponse.Year
-        };
+        // creditsResponse is already in CalendarUserCredits format
+        const calendarCredits: CalendarUserCredits = creditsResponse;
 
         setUserCards(userCardsResponse);
         setCurrentMonthCredits(calendarCredits);
       } catch (error) {
-        console.warn('Failed to load current month credits:', error);
+        console.warn('Failed to load current year credits:', error);
       } finally {
         setIsLoading(false);
       }
@@ -79,7 +73,7 @@ const MyCredits: React.FC = () => {
         </div>
 
         <div className="current-month-credits">
-          <h2>Current Month Credits</h2>
+          <h2>Current Year Credits</h2>
           <CreditsDisplay
             calendar={currentMonthCredits}
             isLoading={isLoading}
