@@ -69,10 +69,20 @@ export const MONTH_LABEL_ABBREVIATIONS: { value: number; label: string }[] = [
 ] as const;
 
 /**
+ * Credit expiration warning thresholds (in days before period ends)
+ */
+export const CREDIT_EXPIRATION_THRESHOLDS = {
+    MONTHLY: 10,        // Within last 10 days of month
+    QUARTERLY: 30,      // Within last 30 days of quarter
+    SEMIANNUALLY: 45,   // Within last 45 days of half-year
+    ANNUALLY: 60        // Within last 60 days of year
+} as const;
+
+/**
  * ------------------------------------------------------------------------------------------------
- * 
+ *
  * CLIENT CONSTANTS
- * 
+ *
  * ------------------------------------------------------------------------------------------------
  */
 

@@ -43,11 +43,18 @@
     font-size: $font-sm;
     color: $neutral-black;
     line-height: 1.2;
-    
+
     // Mobile adjustment
     @media (max-width: $mobile-breakpoint) {
       font-weight: $font-medium;
     }
+  }
+
+  .expiring-text {
+    font-size: $font-xs;
+    color: $neutral-medium-gray;
+    font-style: italic;
+    margin-top: $space-half;
   }
   
   .card-info {

@@ -1,1 +1,15 @@
 @use '../../styling/globals' as *;
+
+.my-credits-actions {
+  margin-bottom: 24px;
+}
+
+.current-month-credits {
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 16px;
+    margin-top: 0;
+  }
+}

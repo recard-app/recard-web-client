@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType } from '../../types';
+import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, GetCurrentMonthCreditsResponse, UserCreditWithExpiration } from '../../types';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 let syncTimeout: NodeJS.Timeout | null = null;
@@ -345,6 +345,36 @@ export const UserCreditService = {
             params,
             { headers }
         );
+        return response.data;
+    },
+
+    /**
+     * Returns credits for the current month with expiration flags
+     * @param options - Optional filtering parameters
+     */
+    async fetchCurrentMonthCredits(options?: {
+        cardIds?: string[];
+        excludeHidden?: boolean;
+        includeExpiring?: boolean;
+    }): Promise<GetCurrentMonthCreditsResponse> {
+        const headers = await getAuthHeaders();
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (options?.cardIds && options.cardIds.length > 0) {
+            options.cardIds.forEach(cardId => params.append('cardIds[]', cardId));
+        }
+        if (options?.excludeHidden) {
+            params.set('excludeHidden', 'true');
+        }
+        if (options?.includeExpiring) {
+            params.set('includeExpiring', 'true');
+        }
+
+        const queryString = params.toString();
+        const url = `${apiurl}/users/cards/credits/current-month${queryString ? `?${queryString}` : ''}`;
+
+        const response = await axios.get<GetCurrentMonthCreditsResponse>(url, { headers });
         return response.data;
     }
 };

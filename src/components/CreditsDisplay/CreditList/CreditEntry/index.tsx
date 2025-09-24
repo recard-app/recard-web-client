@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
-import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType, MOBILE_BREAKPOINT } from '../../../../types';
+import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, MOBILE_BREAKPOINT } from '../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
 import { CardIcon } from '../../../../icons';
@@ -15,7 +15,7 @@ import CreditUsageTracker from './CreditEntryDetails/CreditUsageTracker';
 import UsageDropdown from './UsageDropdown';
 
 export interface CreditEntryProps {
-  userCredit: UserCredit;
+  userCredit: UserCredit | UserCreditWithExpiration;
   now: Date;
   card: CreditCardDetails | null;
   cardCredit: CardCredit | null;
@@ -54,6 +54,9 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [enrichedCredit, setEnrichedCredit] = useState<any>(null);
+
+  // Check if this credit is expiring (only available on UserCreditWithExpiration)
+  const isExpiring = 'isExpiring' in userCredit ? userCredit.isExpiring : false;
   
   // State for the main card's usage editing
   const [cardUsage, setCardUsage] = useState<CreditUsageType>(CREDIT_USAGE.INACTIVE);
@@ -232,10 +235,12 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       <div className="credit-entry-row" data-period={userCredit.AssociatedPeriod} onClick={() => setIsModalOpen(true)} style={{ cursor: 'pointer' }}>
         {/* Left side: Credit info */}
         <div className="credit-info">
-          <div className="credit-name">{cardCredit?.Title ?? userCredit.CreditId}</div>
+          <div className="credit-name">
+            {cardCredit?.Title ?? userCredit.CreditId}
+          </div>
           {card && (
             <div className="card-info">
-              <CardIcon 
+              <CardIcon
                 title={card.CardName}
                 size={12}
                 primary={card.CardPrimaryColor}
@@ -243,6 +248,11 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 className="card-thumbnail"
               />
               <span className="card-name">{card.CardName}</span>
+            </div>
+          )}
+          {isExpiring && (
+            <div className="expiring-text">
+              Expiring soon
             </div>
           )}
         </div>

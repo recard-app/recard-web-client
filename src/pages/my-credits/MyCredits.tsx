@@ -1,22 +1,49 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PageHeader from '../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES, PAGES } from '../../types';
+import { PAGE_ICONS, PAGE_NAMES, PAGES, GetCurrentMonthCreditsResponse, CalendarUserCredits } from '../../types';
 import { Link } from 'react-router-dom';
-import { UserCreditService } from '../../services';
+import { UserCreditService, UserCreditCardService } from '../../services';
+import CreditsDisplay from '../../components/CreditsDisplay';
+import { CreditCardDetails } from '../../types/CreditCardTypes';
 import './MyCredits.scss';
 
 const MyCredits: React.FC = () => {
-  // Sync credit history when visiting the my-credits page
+  const [currentMonthCredits, setCurrentMonthCredits] = useState<CalendarUserCredits | null>(null);
+  const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Sync credit history and fetch current month credits
   useEffect(() => {
-    const syncCredits = async () => {
+    const loadCredits = async () => {
       try {
+        // First sync the credits to ensure they're up to date
         await UserCreditService.syncCurrentYearCreditsDebounced();
-      } catch (syncError) {
-        console.warn('Failed to sync credit history on my-credits page visit:', syncError);
+
+        // Fetch user card details and current month credits in parallel
+        const [userCardsResponse, creditsResponse] = await Promise.all([
+          UserCreditCardService.fetchUserCardsDetailedInfo(),
+          UserCreditService.fetchCurrentMonthCredits({
+            includeExpiring: true,
+            excludeHidden: true
+          })
+        ]);
+
+        // Convert to CalendarUserCredits format expected by CreditsDisplay
+        const calendarCredits: CalendarUserCredits = {
+          Credits: creditsResponse.Credits,
+          Year: creditsResponse.Year
+        };
+
+        setUserCards(userCardsResponse);
+        setCurrentMonthCredits(calendarCredits);
+      } catch (error) {
+        console.warn('Failed to load current month credits:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    syncCredits();
+    loadCredits();
   }, []);
 
   return (
@@ -26,7 +53,25 @@ const MyCredits: React.FC = () => {
         icon={PAGE_ICONS.MY_CREDITS.MINI}
       />
       <div className="standard-page-content--padded" style={{ paddingTop: 12 }}>
-        <Link to={`${PAGES.MY_CREDITS.PATH}/history`} className="button icon with-text">See Credits History</Link>
+        <div className="my-credits-actions">
+          <Link to={`${PAGES.MY_CREDITS.PATH}/history`} className="button icon with-text">
+            See Credits History
+          </Link>
+        </div>
+
+        <div className="current-month-credits">
+          <h2>Current Month Credits</h2>
+          <CreditsDisplay
+            calendar={currentMonthCredits}
+            isLoading={isLoading}
+            userCards={userCards}
+            showAllPeriods={false}
+            showUsed={true}
+            showNotUsed={true}
+            showPartiallyUsed={true}
+            showInactive={false}
+          />
+        </div>
       </div>
     </div>
   );
