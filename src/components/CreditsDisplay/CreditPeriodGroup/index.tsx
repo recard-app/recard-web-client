@@ -26,9 +26,10 @@ export interface CreditPeriodGroupProps {
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => void;
+  onUpdateComplete?: () => void; // Optional callback when any credit is updated
 }
 
-const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar, now, cardById, creditByPair, onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = false, onUpdateHistoryEntry }) => {
+const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar, now, cardById, creditByPair, onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = false, onUpdateHistoryEntry, onUpdateComplete }) => {
   // Build period cells across top using MONTH_LABEL_ABBREVIATIONS and math
   const title = period.charAt(0).toUpperCase() + period.slice(1);
   const monthLabels = MONTH_LABEL_ABBREVIATIONS.map(m => m.label);
@@ -205,7 +206,7 @@ const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar,
         })()}
         </div>
       )}
-      <CreditList credits={creditsForPeriod} now={now} cardById={cardById} creditByPair={creditByPair} onUpdateHistoryEntry={onUpdateHistoryEntry} />
+      <CreditList credits={creditsForPeriod} now={now} cardById={cardById} creditByPair={creditByPair} onUpdateHistoryEntry={onUpdateHistoryEntry} onUpdateComplete={onUpdateComplete} />
     </section>
   );
 };

@@ -12,6 +12,25 @@ const MyCredits: React.FC = () => {
   const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Function to refresh current month credits data
+  const refreshCredits = async () => {
+    try {
+      const updatedResponse = await UserCreditService.fetchCurrentMonthCredits({
+        includeExpiring: true,
+        excludeHidden: true
+      });
+
+      const updatedCalendarCredits: CalendarUserCredits = {
+        Credits: updatedResponse.Credits,
+        Year: updatedResponse.Year
+      };
+
+      setCurrentMonthCredits(updatedCalendarCredits);
+    } catch (error) {
+      console.error('Failed to refresh current month credits:', error);
+    }
+  };
+
   // Sync credit history and fetch current month credits
   useEffect(() => {
     const loadCredits = async () => {
@@ -70,6 +89,7 @@ const MyCredits: React.FC = () => {
             showNotUsed={true}
             showPartiallyUsed={true}
             showInactive={false}
+            onUpdateComplete={refreshCredits}
           />
         </div>
       </div>

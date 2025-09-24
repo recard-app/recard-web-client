@@ -86,6 +86,7 @@ export interface UserCredit {
  */
 export interface UserCreditWithExpiration extends UserCredit {
     isExpiring: boolean; // True if the credit is close to expiring based on period type
+    daysUntilExpiration?: number; // Number of days until the credit expires (only present when includeExpiring is true)
 }
 
 /**

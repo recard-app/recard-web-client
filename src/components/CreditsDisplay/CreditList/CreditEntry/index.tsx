@@ -29,6 +29,7 @@ export interface CreditEntryProps {
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => void;
+  onUpdateComplete?: () => void; // Optional callback to notify parent that an update was successful
 }
 
 // Simple hook to detect mobile screen size
@@ -49,7 +50,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, onUpdateHistoryEntry }) => {
+const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, onUpdateHistoryEntry, onUpdateComplete }) => {
   const isMobile = useIsMobile();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,6 +58,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
 
   // Check if this credit is expiring (only available on UserCreditWithExpiration)
   const isExpiring = 'isExpiring' in userCredit ? userCredit.isExpiring : false;
+  const daysUntilExpiration = 'daysUntilExpiration' in userCredit ? userCredit.daysUntilExpiration : undefined;
   
   // State for the main card's usage editing
   const [cardUsage, setCardUsage] = useState<CreditUsageType>(CREDIT_USAGE.INACTIVE);
@@ -165,7 +167,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   const buttonBackgroundColor = tintHexColor(usageColor, 0.9);
   const buttonHoverColor = tintHexColor(usageColor, 0.85);
 
-  // Create a wrapper for onUpdateHistoryEntry that also updates enrichedCredit
+  // Handle credit history updates by calling the API directly
   const handleUpdateHistoryEntry = async (update: {
     cardId: string;
     creditId: string;
@@ -173,28 +175,73 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => {
-    // Update enrichedCredit optimistically
-    if (enrichedCredit && enrichedCredit.CardId === update.cardId && enrichedCredit.CreditId === update.creditId) {
-      setEnrichedCredit((prev: any) => {
-        if (!prev) return prev;
-        const updated = { ...prev };
-        updated.History = updated.History.map((h: any) => {
-          if (h.PeriodNumber === update.periodNumber) {
-            return {
-              ...h,
-              CreditUsage: update.creditUsage,
-              ValueUsed: update.valueUsed
-            };
-          }
-          return h;
+    try {
+      // Update enrichedCredit optimistically for immediate UI feedback
+      if (enrichedCredit && enrichedCredit.CardId === update.cardId && enrichedCredit.CreditId === update.creditId) {
+        setEnrichedCredit((prev: any) => {
+          if (!prev) return prev;
+          const updated = { ...prev };
+          updated.History = updated.History.map((h: any) => {
+            if (h.PeriodNumber === update.periodNumber) {
+              return {
+                ...h,
+                CreditUsage: update.creditUsage,
+                ValueUsed: update.valueUsed
+              };
+            }
+            return h;
+          });
+          return updated;
         });
-        return updated;
-      });
-    }
+      }
 
-    // Call the original handler
-    if (onUpdateHistoryEntry) {
-      await onUpdateHistoryEntry(update);
+      // Call the API to persist the update
+      await UserCreditService.updateCreditHistoryEntry({
+        cardId: update.cardId,
+        creditId: update.creditId,
+        periodNumber: update.periodNumber,
+        creditUsage: update.creditUsage,
+        valueUsed: update.valueUsed
+      });
+
+      // Call legacy handler if provided (for backward compatibility)
+      if (onUpdateHistoryEntry) {
+        await onUpdateHistoryEntry(update);
+      }
+
+      // Notify parent that update was successful (for data refresh)
+      if (onUpdateComplete) {
+        onUpdateComplete();
+      }
+
+    } catch (error) {
+      console.error('Failed to update credit history entry:', error);
+
+      // Revert optimistic update on error
+      if (enrichedCredit && enrichedCredit.CardId === update.cardId && enrichedCredit.CreditId === update.creditId) {
+        // Refresh the enriched credit from the original userCredit
+        const originalPeriodData = userCredit.History.find(h => h.PeriodNumber === update.periodNumber);
+        if (originalPeriodData) {
+          setEnrichedCredit((prev: any) => {
+            if (!prev) return prev;
+            const reverted = { ...prev };
+            reverted.History = reverted.History.map((h: any) => {
+              if (h.PeriodNumber === update.periodNumber) {
+                return {
+                  ...h,
+                  CreditUsage: originalPeriodData.CreditUsage,
+                  ValueUsed: originalPeriodData.ValueUsed
+                };
+              }
+              return h;
+            });
+            return reverted;
+          });
+        }
+      }
+
+      // Re-throw the error so calling components can handle it if needed
+      throw error;
     }
   };
 
@@ -252,7 +299,10 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           )}
           {isExpiring && (
             <div className="expiring-text">
-              Expiring soon
+              {daysUntilExpiration !== undefined
+                ? `Expiring in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
+                : 'Expiring soon'
+              }
             </div>
           )}
         </div>

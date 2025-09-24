@@ -56,6 +56,26 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
   const [selectedFilterCardId, setSelectedFilterCardId] = useState<string | null>(null);
   const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
 
+  // Function to refresh calendar data after updates
+  const refreshCalendar = async () => {
+    try {
+      const filterOptions: {
+        cardIds?: string[];
+        excludeHidden?: boolean;
+      } = {
+        excludeHidden: true,
+      };
+      if (selectedFilterCardId) {
+        filterOptions.cardIds = [selectedFilterCardId];
+      }
+
+      const updatedCalendar = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
+      updateLocalCalendar(updatedCalendar);
+    } catch (error) {
+      console.error('Failed to refresh credit history:', error);
+    }
+  };
+
   // Simplified update function - no complex protection, just trust optimistic updates
   const updateLocalCalendar = (data: CalendarUserCredits | null) => {
     setLocalCalendar(data);
@@ -816,34 +836,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                 showPartiallyUsed={showPartiallyUsed}
                 showInactive={showInactive}
                 showAllPeriods={!isMobileViewport}
-                onUpdateHistoryEntry={async ({ cardId, creditId, periodNumber, creditUsage, valueUsed }) => {
-                  try {
-                    // Simple approach: persist to server then refresh
-                    await UserCreditService.updateCreditHistoryEntry({
-                      cardId,
-                      creditId,
-                      periodNumber,
-                      creditUsage,
-                      valueUsed
-                    });
-
-                    // Refresh data from server after successful update
-                    const filterOptions: {
-                      cardIds?: string[];
-                      excludeHidden?: boolean;
-                    } = {
-                      excludeHidden: true,
-                    };
-                    if (selectedFilterCardId) {
-                      filterOptions.cardIds = [selectedFilterCardId];
-                    }
-
-                    const updatedCalendar = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
-                    updateLocalCalendar(updatedCalendar);
-                  } catch (error) {
-                    console.error('Failed to update credit history entry:', error);
-                  }
-                }}
+                onUpdateComplete={refreshCalendar}
                 />
             )}
           </div>

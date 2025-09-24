@@ -27,9 +27,10 @@ export interface CreditsDisplayProps {
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => void;
+  onUpdateComplete?: () => void; // Optional callback when any credit is updated
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, onUpdateHistoryEntry }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, onUpdateHistoryEntry, onUpdateComplete }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
   const credits = useCredits(); // Get all credit data from the context
 
@@ -85,6 +86,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           showInactive={showInactive}
           showAllPeriods={showAllPeriods}
           onUpdateHistoryEntry={onUpdateHistoryEntry}
+          onUpdateComplete={onUpdateComplete}
         />
       ))}
     </div>

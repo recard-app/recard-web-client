@@ -16,6 +16,7 @@ export interface CreditListProps {
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => void;
+  onUpdateComplete?: () => void; // Optional callback when any credit is updated
 }
 
 // Simple hook to detect mobile screen size
@@ -36,7 +37,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, onUpdateHistoryEntry }) => {
+const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, onUpdateHistoryEntry, onUpdateComplete }) => {
   const isMobile = useIsMobile();
 
   if (!credits || credits.length === 0) return null;
@@ -57,6 +58,7 @@ const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditB
             creditMaxValue={typeof creditMaxValue === 'string' ? Number(creditMaxValue.replace(/[^0-9.]/g, '')) : (creditMaxValue as unknown as number) }
             disableDropdown={isMobile} // Disable dropdown on mobile
             onUpdateHistoryEntry={onUpdateHistoryEntry}
+            onUpdateComplete={onUpdateComplete}
           />
         );
       })}
