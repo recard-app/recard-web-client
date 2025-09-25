@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, UserCreditWithExpiration } from '../../types';
+import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType } from '../../types';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 let syncTimeout: NodeJS.Timeout | null = null;
@@ -349,6 +349,41 @@ export const UserCreditService = {
             params,
             { headers }
         );
+        return response.data;
+    },
+
+    /**
+     * Returns prioritized credits list for sidebar display
+     * Sorts credits by expiration urgency and unused value
+     */
+    async fetchPrioritizedCreditsList(options?: GetPrioritizedCreditsListParams): Promise<GetPrioritizedCreditsListResponse> {
+        const headers = await getAuthHeaders();
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (options?.limit !== undefined) {
+            params.set('limit', options.limit.toString());
+        }
+        if (options?.year !== undefined) {
+            params.set('year', options.year.toString());
+        }
+        if (options?.cardId) {
+            params.set('cardId', options.cardId);
+        }
+        if (options?.period) {
+            params.set('period', options.period);
+        }
+        if (options?.onlyExpiring) {
+            params.set('onlyExpiring', 'true');
+        }
+        if (options?.excludeHidden) {
+            params.set('excludeHidden', 'true');
+        }
+
+        const queryString = params.toString();
+        const url = `${apiurl}/users/cards/credits/prioritized-list${queryString ? `?${queryString}` : ''}`;
+
+        const response = await axios.get<GetPrioritizedCreditsListResponse>(url, { headers });
         return response.data;
     },
 

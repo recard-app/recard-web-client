@@ -36,8 +36,7 @@ export const CREDIT_USAGE = {
     NOT_USED: 'not_used',
     PARTIALLY_USED: 'partially_used',
     INACTIVE: 'inactive',
-    DISABLED: 'disabled',
-    FULLY_USED: 'fully_used'
+    DISABLED: 'disabled'
 } as const;
 export type CreditUsageType = typeof CREDIT_USAGE[keyof typeof CREDIT_USAGE];
 
@@ -49,8 +48,7 @@ export const CREDIT_USAGE_DISPLAY_NAMES = {
     NOT_USED: 'Not Used',
     PARTIALLY_USED: 'Partially Used',
     INACTIVE: 'Not Tracked',
-    DISABLED: 'Disabled',
-    FULLY_USED: 'Fully Used'
+    DISABLED: 'Disabled'
 } as const;
 export type CreditUsageDisplayNameType = typeof CREDIT_USAGE_DISPLAY_NAMES[keyof typeof CREDIT_USAGE_DISPLAY_NAMES];
 
@@ -277,6 +275,52 @@ export interface CardCredit {
 }
 
 /**
+ * Prioritized Credits List API
+ * GET /users/cards/credits/prioritized-list
+ */
+export interface PrioritizedCredit {
+    id: string;
+    name: string;
+    cardName: string;
+    cardId: string;
+    totalAmount: number;
+    usedAmount: number;
+    unusedAmount: number;
+    daysUntilExpiration: number;
+    expirationDate: string;
+    period: CreditPeriodType;
+    usageStatus: 'unused' | 'partially_used' | 'redeemed' | 'not_tracked';
+    priority: {
+        expiration: number;
+        unusedAmount: number;
+        period: number;
+        usageStatus: number;
+        alphabetical: string;
+    };
+    // Required for frontend interactive features
+    History: SingleCreditHistory[];
+    // Compatibility aliases for existing frontend components
+    CardId: string;
+    CreditId: string;
+    AssociatedPeriod: CreditPeriodType;
+}
+
+export interface GetPrioritizedCreditsListParams {
+    limit?: number; // Optional limit (default 20, max 100 for full list)
+    year?: number; // Optional year (defaults to current year)
+    cardId?: string; // Optional card ID filter
+    period?: CreditPeriodType; // Optional period filter (monthly, quarterly, etc.)
+    onlyExpiring?: boolean; // Optional flag to only include credits where isExpiring=true
+    excludeHidden?: boolean; // Optional flag to exclude credits marked as hidden in user preferences
+}
+
+export interface GetPrioritizedCreditsListResponse {
+    credits: PrioritizedCredit[];
+    totalCount: number;
+    lastUpdated: string;
+}
+
+/**
  * ------------------------------------------------------------------------------------------------
  *
  * CLIENT-SPECIFIC TYPES
@@ -292,8 +336,7 @@ export const CREDIT_USAGE_DISPLAY_COLORS = {
     NOT_USED: '#0B0D0F',
     PARTIALLY_USED: '#005DCF',
     INACTIVE: '#B5BBC2',
-    DISABLED: '#9CA3AF',
-    FULLY_USED: '#007B53'
+    DISABLED: '#9CA3AF'
 } as const;
 export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[keyof typeof CREDIT_USAGE_DISPLAY_COLORS];
 
