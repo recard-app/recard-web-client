@@ -22,7 +22,7 @@ const MyCredits: React.FC = () => {
     History: credit.History || [],
     // Add expiration info as extended properties
     daysUntilExpiration: credit.daysUntilExpiration,
-    isExpiring: credit.priority.expiration < 999999, // Credits with priority.expiration < 999999 are expiring
+    isExpiring: credit.isExpiring, // Use the proper isExpiring flag from API
   }));
 
   // Build lookup maps for CreditList
