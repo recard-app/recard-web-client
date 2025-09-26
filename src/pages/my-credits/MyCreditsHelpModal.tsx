@@ -4,73 +4,72 @@ const MyCreditsHelpModal: React.FC = () => {
   return (
     <div className="help-modal-content">
       <section>
-        <h3>Credit History Overview</h3>
+        <h3>Credits Overview</h3>
         <p>
-          Track your credit card benefits usage across all time periods. This page shows your complete
-          credit history with detailed tracking of earned and redeemed rewards for each card.
+          Get a quick overview of your current credit card benefits and rewards. This page shows your
+          monthly statistics and current credit usage across all your cards.
         </p>
       </section>
 
       <section>
-        <h3>Navigation Controls</h3>
+        <h3>Monthly Statistics</h3>
         <p>
-          Use the time controls to view credits from different periods:
+          The statistics section shows your current month's credit activity:
         </p>
         <ul>
-          <li><strong>Year Selector:</strong> Choose which year to view</li>
-          <li><strong>Month Navigation:</strong> Browse through months using the arrows or dropdown</li>
-          <li><strong>Current Period Button:</strong> Quickly jump back to the current month</li>
+          <li><strong>Used Value:</strong> Total value of credits redeemed this month</li>
+          <li><strong>Possible Value:</strong> Total potential credit value available</li>
+          <li><strong>Credit Counts:</strong> Number of used, partially used, and unused credits</li>
         </ul>
       </section>
 
       <section>
-        <h3>Credit Status Types</h3>
+        <h3>Current Credits</h3>
         <p>
-          Credits are displayed with different status indicators:
+          View credits for the current period organized by earning frequency:
         </p>
         <ul>
-          <li><strong>Used:</strong> Credit has been fully redeemed</li>
-          <li><strong>Not Used:</strong> Credit is available but hasn't been used yet</li>
-          <li><strong>Partially Used:</strong> Some of the credit value has been redeemed</li>
-          <li><strong>Inactive:</strong> Credit is not being tracked (hidden from calculations)</li>
+          <li><strong>Monthly Credits:</strong> Benefits that reset each month</li>
+          <li><strong>Quarterly Credits:</strong> Benefits that reset every 3 months</li>
+          <li><strong>Annual Credits:</strong> Benefits that reset once per year</li>
         </ul>
       </section>
 
       <section>
-        <h3>Filtering Options</h3>
+        <h3>Quick Actions</h3>
         <p>
-          Customize your view using the available filters:
+          Use the action buttons to manage your credits:
         </p>
         <ul>
-          <li><strong>Credits to Show:</strong> Toggle which status types are visible</li>
-          <li><strong>Filter by Card:</strong> View credits for a specific card only</li>
-          <li><strong>Reset Filters:</strong> Return to default view showing all credits</li>
+          <li><strong>View Full History:</strong> See detailed credit history across all time periods</li>
+          <li><strong>Update Credits:</strong> Mark credits as used or partially used</li>
+          <li><strong>Track Progress:</strong> Monitor your progress toward earning thresholds</li>
         </ul>
       </section>
 
       <section>
-        <h3>Credit Periods</h3>
+        <h3>Credit Status Indicators</h3>
         <p>
-          Credits are organized by their earning periods:
+          Credits are color-coded to show their current status:
         </p>
         <ul>
-          <li><strong>Monthly:</strong> Earn each month of the year</li>
-          <li><strong>Quarterly:</strong> Earn every 3 months (Q1, Q2, Q3, Q4)</li>
-          <li><strong>Semiannual:</strong> Earn twice per year (every 6 months)</li>
-          <li><strong>Annual:</strong> Earn once per year</li>
+          <li><strong>Green:</strong> Credit has been fully used</li>
+          <li><strong>Yellow:</strong> Credit is partially used</li>
+          <li><strong>Blue:</strong> Credit is available but not yet used</li>
+          <li><strong>Gray:</strong> Credit is not being tracked</li>
         </ul>
       </section>
 
       <section>
-        <h3>Managing Credits</h3>
+        <h3>Getting Started</h3>
         <p>
-          Click on any credit entry to:
+          If this is your first time using credits tracking:
         </p>
         <ul>
-          <li>Update usage status and amount used</li>
-          <li>View detailed credit information</li>
-          <li>See when credits expire</li>
-          <li>Track spending progress toward earning thresholds</li>
+          <li>Make sure your credit cards are added in "My Cards"</li>
+          <li>Credits are automatically synced based on your card benefits</li>
+          <li>Click on any credit to update its usage status</li>
+          <li>Visit "Full History" to see detailed historical data</li>
         </ul>
       </section>
     </div>

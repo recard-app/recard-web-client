@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogBody,
 } from '../../../components/ui/dialog/dialog';
-import MyCreditsHelpModal from '../MyCreditsHelpModal';
+import CreditsHistoryHelpModal from './CreditsHistoryHelpModal';
 import { UserCreditService } from '../../../services/UserServices';
 import { UserService } from '../../../services/UserServices';
 import CreditsDisplay from '../../../components/CreditsDisplay';
@@ -985,10 +985,10 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
       <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>My Credits Help</DialogTitle>
+            <DialogTitle>Credits History Help</DialogTitle>
           </DialogHeader>
           <DialogBody>
-            <MyCreditsHelpModal />
+            <CreditsHistoryHelpModal />
           </DialogBody>
         </DialogContent>
       </Dialog>

@@ -34,6 +34,7 @@ import PreferencesHelpModal from './pages/preferences/PreferencesHelpModal';
 import MyCreditsHelpModal from './pages/my-credits/MyCreditsHelpModal';
 import MyCredits from './pages/my-credits/MyCredits';
 import CreditsHistory from './pages/my-credits/history/CreditsHistory';
+import CreditsHistoryHelpModal from './pages/my-credits/history/CreditsHistoryHelpModal';
 // Components
 
 import AppSidebar from './components/AppSidebar';
@@ -620,7 +621,7 @@ function AppContent({}: AppContentProps) {
       return <MyCreditsHelpModal />;
     }
     if (path === PAGES.MY_CREDITS_HISTORY.PATH) {
-      return <MyCreditsHelpModal />;
+      return <CreditsHistoryHelpModal />;
     }
     return null;
   };
