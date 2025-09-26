@@ -4,6 +4,7 @@ import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, UserCredit } from '../../t
 import { UserCreditService, UserCreditCardService } from '../../services';
 import CreditsDisplay from '../../components/CreditsDisplay';
 import { CreditCardDetails, PrioritizedCredit } from '../../types/CreditCardTypes';
+import { MonthlyStatsResponse } from '../../types/CardCreditsTypes';
 import { useCredits } from '../../contexts/ComponentsContext';
 import Icon from '../../icons';
 import { InfoDisplay } from '../../elements/InfoDisplay/InfoDisplay';
@@ -13,7 +14,17 @@ import { useFullHeight } from '../../hooks/useFullHeight';
 import './shared-credits-layout.scss';
 import './MyCredits.scss';
 
-const MyCredits: React.FC = () => {
+interface MyCreditsProps {
+  monthlyStats: MonthlyStatsResponse | null;
+  isLoadingMonthlyStats: boolean;
+  onRefreshMonthlyStats?: () => void;
+}
+
+const MyCredits: React.FC<MyCreditsProps> = ({
+  monthlyStats,
+  isLoadingMonthlyStats,
+  onRefreshMonthlyStats
+}) => {
   // Use the full height hook for this page
   useFullHeight(true);
 
@@ -50,6 +61,11 @@ const MyCredits: React.FC = () => {
       });
 
       setPrioritizedCredits(prioritizedResponse.credits);
+
+      // Also refresh monthly stats when credits are updated
+      if (onRefreshMonthlyStats) {
+        onRefreshMonthlyStats();
+      }
     } catch (error) {
       console.error('Failed to refresh current year credits:', error);
     }
@@ -126,7 +142,10 @@ const MyCredits: React.FC = () => {
       <div className="standard-page-content--no-padding">
         <div className="credits-history-panel">
           <HeaderControls>
-            <CreditSummary />
+            <CreditSummary
+              monthlyStats={monthlyStats}
+              loading={isLoadingMonthlyStats}
+            />
           </HeaderControls>
           <div className="credits-history-content">
             {isLoading ? (
@@ -169,7 +188,7 @@ const MyCredits: React.FC = () => {
                           onClick={() => handleToggleRedeemed(true)}
                         >
                           <Icon name="visibility-on" variant="micro" size={14} />
-                          See redeemed credits
+                          Show redeemed credits
                         </button>
                       ) : (
                         <button

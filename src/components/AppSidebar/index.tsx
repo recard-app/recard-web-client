@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
+import CreditSummary from '../CreditSummary';
 import { SidebarItem } from './SidebarItem';
 import {
   DropdownMenu,
@@ -11,8 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu/dropdown-menu';
-import { 
-  Conversation, 
+import {
+  Conversation,
   SubscriptionPlan,
   APP_NAME,
   PLAN_DISPLAY_TEXT,
@@ -25,6 +26,7 @@ import {
   PAGES
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
+import { MonthlyStatsResponse } from '../../types/CardCreditsTypes';
 import Icon from '../../icons';
 import './AppSidebar.scss';
 
@@ -45,6 +47,8 @@ interface AppSidebarProps {
   user: FirebaseUser | null;
   onLogout: () => void;
   onNewChat: () => void;
+  monthlyStats: MonthlyStatsResponse | null;
+  isLoadingMonthlyStats: boolean;
 }
 
 const AppSidebar: React.FC<AppSidebarProps> = ({
@@ -63,7 +67,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   quickHistorySize,
   user,
   onLogout,
-  onNewChat
+  onNewChat,
+  monthlyStats,
+  isLoadingMonthlyStats
 }) => {
   // Get current location for active state
   const location = useLocation();
@@ -306,7 +312,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 name={PAGE_NAMES.MY_CREDITS}
                 isDropdown={true}
               >
-                {/* Content will be added later */}
+                <CreditSummary
+                  variant="sidebar"
+                  monthlyStats={monthlyStats}
+                  loading={isLoadingMonthlyStats}
+                />
               </SidebarItem>
             </div>
           </>

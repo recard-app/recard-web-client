@@ -75,14 +75,3 @@
     }
   }
 }
-
-// Dark mode support
-@media (prefers-color-scheme: dark) {
-  .credit-usage-tracker {
-    border-top-color: $credit-entry-text;
-
-    .tracker-label {
-      color: $credit-entry-background;
-    }
-  }
-}

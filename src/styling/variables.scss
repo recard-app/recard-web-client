@@ -61,29 +61,28 @@ $border-medium-gray: #ccc; // Used for form borders and dividers
 $disabled-gray: #9CA3AF; // Used for disabled form elements and inactive states
 
 // Warning and status colors
-$warning-badge-background: #FFF3CD; // Used in warning badges and notifications
+$warning-badge-background: $warning-yellow; // Used in warning badges and notifications
 $warning-badge-text: #8a6d3b; // Used for warning badge text
-$warning-badge-light: #FFECB5; // Used for light warning backgrounds
-$alert-red-background: #e7000b; // Used for critical error backgrounds
+$warning-badge-light: $warning-yellow; // Used for light warning backgrounds
+$alert-red-background: $error; // Used for critical error backgrounds
 
 // Info component colors
-$info-error-red: #ff4444; // Used in info displays for error states
-$info-blue: #2196F3; // Used in info displays for informational content
-$info-warning-orange: #ff9800; // Used in info displays for warning states
+$info-error-red: $error; // Used in info displays for error states
+$info-blue: $info; // Used in info displays for informational content
+$info-warning-orange: $warning; // Used in info displays for warning states
 $info-success-green: #4caf50; // Used in info displays for success states
-$info-loading-gray: #6b7280; // Used in info displays for loading states
+$info-loading-gray: $neutral-dark-gray; // Used in info displays for loading states
 
 // Button and action colors
-$button-red: #e53935; // Used for destructive action buttons
+$button-red: $error; // Used for destructive action buttons
 $button-red-dark: #c62828; // Used for destructive button hover states
-$button-blue: #0066ff; // Used for primary action buttons
-$button-blue-dark: #0052cc; // Used for primary button hover states
+$button-blue: $accent-color; // Used for primary action buttons
+$button-blue-dark: $accent-medium; // Used for primary button hover states
 
 // Component-specific colors
 $credit-entry-border: #e5e7eb; // Used in credit entry components for borders
-$credit-entry-text: #374151; // Used in credit entry components for text
 $credit-entry-background: #f3f4f6; // Used in credit entry components for backgrounds
-$dropdown-white: white; // Used specifically for dropdown backgrounds (exact white)
+$dropdown-white: $neutral-white; // Used specifically for dropdown backgrounds (exact white)
 
 /* -------------
 

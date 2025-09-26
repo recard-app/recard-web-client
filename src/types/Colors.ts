@@ -36,7 +36,7 @@ export class COLORS {
   static readonly WARNING_YELLOW = '#EAB308';
   static readonly WARNING = '#F59E0B';
   static readonly ERROR = '#EF4444';
-  static readonly INFO = '#2563EB';
+  static readonly INFO = COLORS.ACCENT_COLOR;
 
   // Additional grays and neutral colors found in components
   static readonly BORDER_LIGHT_GRAY = '#ddd'; // Used in dropdown borders, form elements, and component separators
@@ -50,29 +50,28 @@ export class COLORS {
   static readonly DISABLED_GRAY = '#9CA3AF'; // Used for disabled form elements and inactive states
 
   // Warning and status colors
-  static readonly WARNING_BADGE_BACKGROUND = '#FFF3CD'; // Used in warning badges and notifications
+  static readonly WARNING_BADGE_BACKGROUND = COLORS.WARNING_YELLOW; // Used in warning badges and notifications
   static readonly WARNING_BADGE_TEXT = '#8a6d3b'; // Used for warning badge text
-  static readonly WARNING_BADGE_LIGHT = '#FFECB5'; // Used for light warning backgrounds
-  static readonly ALERT_RED_BACKGROUND = '#e7000b'; // Used for critical error backgrounds
+  static readonly WARNING_BADGE_LIGHT = COLORS.WARNING_YELLOW; // Used for light warning backgrounds
+  static readonly ALERT_RED_BACKGROUND = COLORS.ERROR; // Used for critical error backgrounds
 
   // Info component colors
-  static readonly INFO_ERROR_RED = '#ff4444'; // Used in info displays for error states
-  static readonly INFO_BLUE = '#2196F3'; // Used in info displays for informational content
-  static readonly INFO_WARNING_ORANGE = '#ff9800'; // Used in info displays for warning states
+  static readonly INFO_ERROR_RED = COLORS.ERROR; // Used in info displays for error states
+  static readonly INFO_BLUE = COLORS.INFO; // Used in info displays for informational content
+  static readonly INFO_WARNING_ORANGE = COLORS.WARNING; // Used in info displays for warning states
   static readonly INFO_SUCCESS_GREEN = '#4caf50'; // Used in info displays for success states
-  static readonly INFO_LOADING_GRAY = '#6b7280'; // Used in info displays for loading states
+  static readonly INFO_LOADING_GRAY = COLORS.NEUTRAL_DARK_GRAY; // Used in info displays for loading states
 
   // Button and action colors
-  static readonly BUTTON_RED = '#e53935'; // Used for destructive action buttons
+  static readonly BUTTON_RED = COLORS.ERROR; // Used for destructive action buttons
   static readonly BUTTON_RED_DARK = '#c62828'; // Used for destructive button hover states
-  static readonly BUTTON_BLUE = '#0066ff'; // Used for primary action buttons
-  static readonly BUTTON_BLUE_DARK = '#0052cc'; // Used for primary button hover states
+  static readonly BUTTON_BLUE = COLORS.ACCENT_COLOR; // Used for primary action buttons
+  static readonly BUTTON_BLUE_DARK = COLORS.ACCENT_MEDIUM; // Used for primary button hover states
 
   // Component-specific colors
   static readonly CREDIT_ENTRY_BORDER = '#e5e7eb'; // Used in credit entry components for borders
-  static readonly CREDIT_ENTRY_TEXT = '#374151'; // Used in credit entry components for text
   static readonly CREDIT_ENTRY_BACKGROUND = '#f3f4f6'; // Used in credit entry components for backgrounds
-  static readonly DROPDOWN_WHITE = 'white'; // Used specifically for dropdown backgrounds (exact white)
+  static readonly DROPDOWN_WHITE = COLORS.NEUTRAL_WHITE; // Used specifically for dropdown backgrounds (exact white)
 }
 
 // Alternative export for individual colors if preferred
@@ -122,7 +121,6 @@ export const {
   BUTTON_BLUE,
   BUTTON_BLUE_DARK,
   CREDIT_ENTRY_BORDER,
-  CREDIT_ENTRY_TEXT,
   CREDIT_ENTRY_BACKGROUND,
   DROPDOWN_WHITE,
 } = COLORS;

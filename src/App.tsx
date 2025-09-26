@@ -72,15 +72,16 @@ import { useViewportHeight } from './hooks/useViewportHeight';
 
 // Constants and Types
 import { 
-  GLOBAL_QUICK_HISTORY_SIZE, 
-  CHAT_HISTORY_PREFERENCE, 
+  GLOBAL_QUICK_HISTORY_SIZE,
+  CHAT_HISTORY_PREFERENCE,
   SUBSCRIPTION_PLAN,
   LOADING_ICON,
   LOADING_ICON_SIZE,
   Conversation,
   ChatHistoryPreference,
   InstructionsPreference,
-  SubscriptionPlan 
+  SubscriptionPlan,
+  MonthlyStatsResponse
 } from './types';
 
 // Types
@@ -120,12 +121,17 @@ function AppContent({}: AppContentProps) {
   const [isLoadingCardDetails, setIsLoadingCardDetails] = useState<boolean>(false);
   // State for storing user's credit tracking preferences
   const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
+  // State for storing monthly credit stats
+  const [monthlyStats, setMonthlyStats] = useState<MonthlyStatsResponse | null>(null);
+  const [isLoadingMonthlyStats, setIsLoadingMonthlyStats] = useState<boolean>(true);
   // State for storing chat history/conversations
   const [chatHistory, setChatHistory] = useState<Conversation[]>([]);
   // State for tracking the current active chat ID
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   // State to trigger history refresh when needed
   const [historyRefreshTrigger, setHistoryRefreshTrigger] = useState<number>(0);
+  // State to trigger monthly stats refresh when needed
+  const [monthlyStatsRefreshTrigger, setMonthlyStatsRefreshTrigger] = useState<number>(0);
   // State to track the last update timestamp for chat history
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState<string | null>(null);
   // State to trigger chat clearing functionality
@@ -206,8 +212,10 @@ function AppContent({}: AppContentProps) {
         setPreferencesInstructions('');
         setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
         setShowCompletedOnlyPreference(false);
+        setMonthlyStats(null);
         setIsLoadingCreditCards(false);
         setIsLoadingHistory(false);
+        setIsLoadingMonthlyStats(false);
         isLoadingRef.current = false;
         return;
       }
@@ -218,6 +226,7 @@ function AppContent({}: AppContentProps) {
 
       setIsLoadingCreditCards(true);
       setIsLoadingHistory(true);
+      setIsLoadingMonthlyStats(true);
 
       try {
         // Batch 1: Critical data that's needed immediately (parallel)
@@ -233,7 +242,7 @@ function AppContent({}: AppContentProps) {
         setSubscriptionPlan(subscriptionPlan);
 
         // Batch 2: User preferences and tracking data (parallel)
-        const [trackingPrefs, allPreferences] = await Promise.all([
+        const [trackingPrefs, allPreferences, monthlyStatsData] = await Promise.all([
           UserCreditService.fetchCreditTrackingPreferences().catch(error => {
             console.error('Error fetching credit tracking preferences:', error);
             return { Cards: [] }; // Return empty preferences if fetch fails
@@ -246,6 +255,10 @@ function AppContent({}: AppContentProps) {
               chatHistory: 'keep_history' as ChatHistoryPreference,
               showCompletedOnly: false
             };
+          }),
+          UserCreditService.fetchMonthlyStats().catch(error => {
+            console.error('Error fetching monthly stats:', error);
+            return null;
           })
         ]);
 
@@ -253,6 +266,7 @@ function AppContent({}: AppContentProps) {
         setPreferencesInstructions(allPreferences.instructions || '');
         setChatHistoryPreference(allPreferences.chatHistory);
         setShowCompletedOnlyPreference(allPreferences.showCompletedOnly);
+        setMonthlyStats(monthlyStatsData);
 
         // Batch 3: Card details and chat history with priority loading
         const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
@@ -319,6 +333,7 @@ function AppContent({}: AppContentProps) {
       } finally {
         setIsLoadingCreditCards(false);
         setIsLoadingHistory(false);
+        setIsLoadingMonthlyStats(false);
         isLoadingRef.current = false;
       }
     };
@@ -386,6 +401,25 @@ function AppContent({}: AppContentProps) {
 
     refreshHistory();
   }, [historyRefreshTrigger, chatHistoryPreference, showCompletedOnlyPreference]);
+
+  // Effect to handle monthly stats refresh triggers (for updates from other components)
+  useEffect(() => {
+    const refreshMonthlyStats = async () => {
+      if (!user || monthlyStatsRefreshTrigger === 0) return;
+
+      setIsLoadingMonthlyStats(true);
+      try {
+        const statsData = await UserCreditService.fetchMonthlyStats();
+        setMonthlyStats(statsData);
+      } catch (error) {
+        console.error('Error refreshing monthly stats:', error);
+      } finally {
+        setIsLoadingMonthlyStats(false);
+      }
+    };
+
+    refreshMonthlyStats();
+  }, [monthlyStatsRefreshTrigger]);
 
   // Function to update credit cards and refresh user card details
   const getCreditCards = async (returnCreditCards: CreditCard[]): Promise<void> => {
@@ -664,7 +698,7 @@ function AppContent({}: AppContentProps) {
           
           {/* Universal Sidebar - shown on all pages when user is authenticated */}
           {user && (
-            <AppSidebar 
+            <AppSidebar
               isOpen={isSidePanelOpen}
               onToggle={toggleSidePanel}
               chatHistory={chatHistory}
@@ -681,6 +715,8 @@ function AppContent({}: AppContentProps) {
               user={user}
               onLogout={handleLogout}
               onNewChat={handleClearChat}
+              monthlyStats={monthlyStats}
+              isLoadingMonthlyStats={isLoadingMonthlyStats}
             />
           )}
           {(() => {
@@ -689,7 +725,7 @@ function AppContent({}: AppContentProps) {
             const mobileHeaderTitle = PageUtils.getTitleByPath(location.pathname) || APP_NAME;
             // Render mobile header for authenticated, non-auth routes. CSS shows it only under ${MOBILE_BREAKPOINT}px.
             return user && !isAuthRoute ? (
-              <MobileHeader 
+              <MobileHeader
                 title={mobileHeaderTitle}
                 showHelpButton={shouldShowMobileHelp()}
                 onHelpClick={() => setIsHelpOpen(true)}
@@ -707,6 +743,8 @@ function AppContent({}: AppContentProps) {
                 user={user}
                 onNewChat={handleClearChat}
                 onOpenCardSelector={() => setIsCardSelectorOpen(true)}
+                monthlyStats={monthlyStats}
+                isLoadingMonthlyStats={isLoadingMonthlyStats}
               />
             ) : null;
           })()}
@@ -942,7 +980,11 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.MY_CREDITS.PATH} element={
                     <ProtectedRoute>
-                      <MyCredits />
+                      <MyCredits
+                        monthlyStats={monthlyStats}
+                        isLoadingMonthlyStats={isLoadingMonthlyStats}
+                        onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
+                      />
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.MY_CREDITS_HISTORY.PATH} element={

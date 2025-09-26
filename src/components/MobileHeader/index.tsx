@@ -5,6 +5,7 @@ import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_T
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
+import CreditSummary from '../CreditSummary';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +14,7 @@ import {
 } from '../ui/dropdown-menu/dropdown-menu';
 import { Conversation, SubscriptionPlan } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
+import { MonthlyStatsResponse } from '../../types/CardCreditsTypes';
 import { User as FirebaseUser } from 'firebase/auth';
 import './MobileHeader.scss';
 
@@ -37,6 +39,8 @@ interface MobileHeaderProps {
   user?: FirebaseUser | null;
   onNewChat?: () => void;
   onOpenCardSelector?: () => void;
+  monthlyStats?: MonthlyStatsResponse | null;
+  isLoadingMonthlyStats?: boolean;
 }
 
 const MobileHeader: React.FC<MobileHeaderProps> = ({ 
@@ -58,7 +62,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   quickHistorySize = 3,
   user = null,
   onNewChat,
-  onOpenCardSelector
+  onOpenCardSelector,
+  monthlyStats = null,
+  isLoadingMonthlyStats = false
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -361,7 +367,11 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
                   <div className="mobile-drawer-section">
                     <div className="section-title">{PAGE_NAMES.MY_CREDITS}</div>
-                    {/* Content will be added later */}
+                    <CreditSummary
+                      variant="sidebar"
+                      monthlyStats={monthlyStats}
+                      loading={isLoadingMonthlyStats}
+                    />
                   </div>
                 </div>
 

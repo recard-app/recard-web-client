@@ -1,0 +1,42 @@
+@use '../../styling/variables' as *;
+@use '../../styling/mixins' as *;
+
+// Sidebar variant styling
+.credit-summary-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-1;
+  font-size: $font-xs;
+}
+
+.sidebar-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: $space-2;
+
+  .stat-label {
+    color: $neutral-medium-gray;
+    font-weight: $font-medium;
+    white-space: nowrap;
+  }
+
+  .stat-value {
+    color: $neutral-dark-gray;
+    font-weight: $font-semibold;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &.expiring {
+    .stat-label,
+    .stat-value {
+      color: $neutral-dark-gray;
+    }
+  }
+}
+
