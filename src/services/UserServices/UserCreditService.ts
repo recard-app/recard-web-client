@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType } from '../../types';
+import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType, MonthlyStatsResponse } from '../../types';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 let syncTimeout: NodeJS.Timeout | null = null;
@@ -387,6 +387,18 @@ export const UserCreditService = {
         const url = `${apiurl}/users/cards/credits/prioritized-list${queryString ? `?${queryString}` : ''}`;
 
         const response = await axios.get<GetPrioritizedCreditsListResponse>(url, { headers });
+        return response.data;
+    },
+
+    /**
+     * Fetches monthly credits statistics including current month usage, full year stats, and expiring credits by period
+     */
+    async fetchMonthlyStats(): Promise<MonthlyStatsResponse> {
+        const headers = await getAuthHeaders();
+        const response = await axios.get<MonthlyStatsResponse>(
+            `${apiurl}/users/cards/credits/monthly-stats`,
+            { headers }
+        );
         return response.data;
     },
 

@@ -7,6 +7,8 @@ import { CreditCardDetails, PrioritizedCredit } from '../../types/CreditCardType
 import { useCredits } from '../../contexts/ComponentsContext';
 import Icon from '../../icons';
 import { InfoDisplay } from '../../elements/InfoDisplay/InfoDisplay';
+import HeaderControls from '@/components/PageControls/HeaderControls';
+import CreditSummary from '../../components/CreditSummary';
 import './shared-credits-layout.scss';
 import './MyCredits.scss';
 
@@ -119,6 +121,9 @@ const MyCredits: React.FC = () => {
       />
       <div className="standard-page-content--no-padding">
         <div className="credits-history-panel">
+          <HeaderControls>
+            <CreditSummary />
+          </HeaderControls>
           <div className="credits-history-content">
             {isLoading ? (
               <InfoDisplay
@@ -143,37 +148,37 @@ const MyCredits: React.FC = () => {
                   useSimpleDisplay={true}
                   showPeriodLabel={true}
                   onUpdateComplete={refreshCredits}
-                />
-
-                <div className="redeemed-credits-toggle-container" style={{ marginTop: '20px', textAlign: 'center', position: 'relative' }}>
-                  {isToggleLoading ? (
-                    <InfoDisplay
-                      type="loading"
-                      message="Loading..."
-                      showTitle={false}
-                      transparent={true}
-                      centered={true}
-                    />
-                  ) : (
-                    !showRedeemed ? (
-                      <button
-                        className="button ghost icon with-text"
-                        onClick={() => handleToggleRedeemed(true)}
-                      >
-                        <Icon name="used-icon" variant="micro" size={14} />
-                        See redeemed credits
-                      </button>
+                >
+                  <div className="redeemed-credits-toggle-container" style={{ marginTop: '20px', textAlign: 'center', position: 'relative' }}>
+                    {isToggleLoading ? (
+                      <InfoDisplay
+                        type="loading"
+                        message="Loading..."
+                        showTitle={false}
+                        transparent={true}
+                        centered={true}
+                      />
                     ) : (
-                      <button
-                        className="button ghost icon with-text"
-                        onClick={() => handleToggleRedeemed(false)}
-                      >
-                        <Icon name="used-icon" variant="micro" size={14} />
-                        Hide redeemed credits
-                      </button>
-                    )
-                  )}
-                </div>
+                      !showRedeemed ? (
+                        <button
+                          className="button ghost icon with-text"
+                          onClick={() => handleToggleRedeemed(true)}
+                        >
+                          <Icon name="used-icon" variant="micro" size={14} />
+                          See redeemed credits
+                        </button>
+                      ) : (
+                        <button
+                          className="button ghost icon with-text"
+                          onClick={() => handleToggleRedeemed(false)}
+                        >
+                          <Icon name="used-icon" variant="micro" size={14} />
+                          Hide redeemed credits
+                        </button>
+                      )
+                    )}
+                  </div>
+                </CreditsDisplay>
               </>
             )}
           </div>

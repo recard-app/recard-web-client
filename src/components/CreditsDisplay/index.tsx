@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, ReactNode } from 'react';
 import './CreditsDisplay.scss';
 import { CalendarUserCredits, CREDIT_PERIODS, CreditPeriodType, CreditUsageType } from '../../types';
 import CreditPeriodGroup from './CreditPeriodGroup';
@@ -34,9 +34,10 @@ export interface CreditsDisplayProps {
     valueUsed: number;
   }) => void;
   onUpdateComplete?: () => void; // Optional callback when any credit is updated
+  children?: ReactNode; // Optional children to render at the bottom
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, onUpdateHistoryEntry, onUpdateComplete }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, onUpdateHistoryEntry, onUpdateComplete, children }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
   const credits = useCredits(); // Get all credit data from the context
 
@@ -93,6 +94,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           onUpdateHistoryEntry={onUpdateHistoryEntry}
           onUpdateComplete={onUpdateComplete}
         />
+        {children}
       </div>
     );
   }
@@ -118,6 +120,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           onUpdateComplete={onUpdateComplete}
         />
       ))}
+      {children}
     </div>
   );
 };

@@ -321,6 +321,24 @@ export interface GetPrioritizedCreditsListResponse {
     lastUpdated: string;
 }
 
+export interface MonthlyStatsResponse {
+    MonthlyCredits: {
+        used: number;
+        possible: number;
+    };
+    AllCredits: {
+        used: number;
+        possible: number;
+    };
+    ExpiringCredits: {
+        Monthly: { count: number; unusedValue: number; };
+        Quarterly: { count: number; unusedValue: number; };
+        Semiannually: { count: number; unusedValue: number; };
+        Annually: { count: number; unusedValue: number; };
+        Total: { count: number; unusedValue: number; };
+    };
+}
+
 /**
  * ------------------------------------------------------------------------------------------------
  *
