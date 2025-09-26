@@ -21,6 +21,7 @@ export interface CreditGroupProps {
     valueUsed: number;
   }) => void;
   onUpdateComplete?: () => void;
+  isUpdating?: boolean; // Optional flag to show updating indicators
 }
 
 const CreditGroup: React.FC<CreditGroupProps> = ({
@@ -32,7 +33,8 @@ const CreditGroup: React.FC<CreditGroupProps> = ({
   creditByPair,
   displayPeriod = true,
   onUpdateHistoryEntry,
-  onUpdateComplete
+  onUpdateComplete,
+  isUpdating
 }) => {
   if (credits.length === 0) {
     return null;
@@ -59,6 +61,7 @@ const CreditGroup: React.FC<CreditGroupProps> = ({
         displayPeriod={displayPeriod}
         onUpdateHistoryEntry={onUpdateHistoryEntry}
         onUpdateComplete={onUpdateComplete}
+        isUpdating={isUpdating}
       />
     </section>
   );

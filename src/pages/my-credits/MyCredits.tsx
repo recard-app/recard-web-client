@@ -20,6 +20,7 @@ interface MyCreditsProps {
   prioritizedCredits: PrioritizedCredit[];
   isLoadingPrioritizedCredits: boolean;
   onRefreshMonthlyStats?: () => void;
+  isUpdatingMonthlyStats?: boolean;
 }
 
 const MyCredits: React.FC<MyCreditsProps> = ({
@@ -27,7 +28,8 @@ const MyCredits: React.FC<MyCreditsProps> = ({
   isLoadingMonthlyStats,
   prioritizedCredits,
   isLoadingPrioritizedCredits,
-  onRefreshMonthlyStats
+  onRefreshMonthlyStats,
+  isUpdatingMonthlyStats
 }) => {
   // Use the full height hook for this page
   useFullHeight(true);
@@ -103,6 +105,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
             <CreditSummary
               monthlyStats={monthlyStats}
               loading={isLoadingMonthlyStats}
+              isUpdating={isUpdatingMonthlyStats}
             />
           </HeaderControls>
           <div className="credits-history-content">
@@ -130,6 +133,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                   useSimpleDisplay={true}
                   showPeriodLabel={true}
                   onUpdateComplete={onRefreshMonthlyStats}
+                  isUpdating={isUpdatingMonthlyStats}
                 >
                   <div className="redeemed-credits-toggle-container">
                     {!showRedeemed ? (

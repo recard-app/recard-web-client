@@ -18,6 +18,7 @@ export interface CreditListProps {
     valueUsed: number;
   }) => void;
   onUpdateComplete?: () => void; // Optional callback when any credit is updated
+  isUpdating?: boolean; // Optional flag to show updating indicators
 }
 
 // Simple hook to detect mobile screen size
@@ -38,7 +39,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete }) => {
+const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, isUpdating }) => {
   const isMobile = useIsMobile();
 
   if (!credits || credits.length === 0) return null;
@@ -61,6 +62,7 @@ const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditB
             displayPeriod={displayPeriod}
             onUpdateHistoryEntry={onUpdateHistoryEntry}
             onUpdateComplete={onUpdateComplete}
+            isUpdating={isUpdating}
           />
         );
       })}

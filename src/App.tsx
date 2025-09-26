@@ -125,6 +125,7 @@ function AppContent({}: AppContentProps) {
   // State for storing monthly credit stats
   const [monthlyStats, setMonthlyStats] = useState<MonthlyStatsResponse | null>(null);
   const [isLoadingMonthlyStats, setIsLoadingMonthlyStats] = useState<boolean>(true);
+  const [isUpdatingMonthlyStats, setIsUpdatingMonthlyStats] = useState<boolean>(false);
   // State for storing prioritized credits list
   const [prioritizedCredits, setPrioritizedCredits] = useState<PrioritizedCredit[]>([]);
   const [isLoadingPrioritizedCredits, setIsLoadingPrioritizedCredits] = useState<boolean>(true);
@@ -428,8 +429,13 @@ function AppContent({}: AppContentProps) {
     const refreshMonthlyStats = async () => {
       if (!user || monthlyStatsRefreshTrigger === 0) return;
 
-      setIsLoadingMonthlyStats(true);
-      setIsLoadingPrioritizedCredits(true);
+      // If we already have data, this is an update, not initial load
+      if (monthlyStats) {
+        setIsUpdatingMonthlyStats(true);
+      } else {
+        setIsLoadingMonthlyStats(true);
+        setIsLoadingPrioritizedCredits(true);
+      }
       try {
         const summaryData = await UserCreditService.fetchMonthlySummary({
           showRedeemed: true,
@@ -443,6 +449,7 @@ function AppContent({}: AppContentProps) {
       } finally {
         setIsLoadingMonthlyStats(false);
         setIsLoadingPrioritizedCredits(false);
+        setIsUpdatingMonthlyStats(false);
       }
     };
 
@@ -753,6 +760,7 @@ function AppContent({}: AppContentProps) {
               onNewChat={handleClearChat}
               monthlyStats={monthlyStats}
               isLoadingMonthlyStats={isLoadingMonthlyStats}
+              isUpdatingMonthlyStats={isUpdatingMonthlyStats}
             />
           )}
           {(() => {
@@ -781,6 +789,7 @@ function AppContent({}: AppContentProps) {
                 onOpenCardSelector={() => setIsCardSelectorOpen(true)}
                 monthlyStats={monthlyStats}
                 isLoadingMonthlyStats={isLoadingMonthlyStats}
+                isUpdatingMonthlyStats={isUpdatingMonthlyStats}
               />
             ) : null;
           })()}
@@ -1019,6 +1028,7 @@ function AppContent({}: AppContentProps) {
                       <MyCredits
                         monthlyStats={monthlyStats}
                         isLoadingMonthlyStats={isLoadingMonthlyStats}
+                        isUpdatingMonthlyStats={isUpdatingMonthlyStats}
                         prioritizedCredits={prioritizedCredits}
                         isLoadingPrioritizedCredits={isLoadingPrioritizedCredits}
                         onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}

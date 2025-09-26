@@ -23,6 +23,7 @@ interface CreditModalControlsProps {
   }) => void;
   selectedPeriodNumber?: number;
   onPeriodSelect?: (periodNumber: number) => void;
+  isUpdating?: boolean;
 }
 
 const CreditModalControls: React.FC<CreditModalControlsProps> = ({
@@ -32,7 +33,8 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   now,
   onUpdateHistoryEntry,
   selectedPeriodNumber: propSelectedPeriodNumber,
-  onPeriodSelect: propOnPeriodSelect
+  onPeriodSelect: propOnPeriodSelect,
+  isUpdating
 }) => {
   // Calculate default current period using the selected date context
   const defaultCurrentPeriod = (() => {

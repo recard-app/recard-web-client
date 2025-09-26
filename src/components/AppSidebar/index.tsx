@@ -49,6 +49,7 @@ interface AppSidebarProps {
   onNewChat: () => void;
   monthlyStats: MonthlyStatsResponse | null;
   isLoadingMonthlyStats: boolean;
+  isUpdatingMonthlyStats?: boolean;
 }
 
 const AppSidebar: React.FC<AppSidebarProps> = ({
@@ -69,7 +70,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   onLogout,
   onNewChat,
   monthlyStats,
-  isLoadingMonthlyStats
+  isLoadingMonthlyStats,
+  isUpdatingMonthlyStats
 }) => {
   // Get current location for active state
   const location = useLocation();
@@ -316,6 +318,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   variant="sidebar"
                   monthlyStats={monthlyStats}
                   loading={isLoadingMonthlyStats}
+                  isUpdating={isUpdatingMonthlyStats}
                 />
               </SidebarItem>
             </div>

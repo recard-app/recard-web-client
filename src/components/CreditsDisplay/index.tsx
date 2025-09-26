@@ -37,9 +37,10 @@ export interface CreditsDisplayProps {
   }) => void;
   onUpdateComplete?: () => void; // Optional callback when any credit is updated
   children?: ReactNode; // Optional children to render at the bottom
+  isUpdating?: boolean; // Optional flag to show updating indicators
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, children }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, children, isUpdating }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
   const credits = useCredits(); // Get all credit data from the context
 
@@ -96,6 +97,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           displayPeriod={displayPeriod}
           onUpdateHistoryEntry={onUpdateHistoryEntry}
           onUpdateComplete={onUpdateComplete}
+          isUpdating={isUpdating}
         />
         {children}
       </div>
@@ -122,6 +124,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           displayPeriod={displayPeriod}
           onUpdateHistoryEntry={onUpdateHistoryEntry}
           onUpdateComplete={onUpdateComplete}
+          isUpdating={isUpdating}
         />
       ))}
       {children}

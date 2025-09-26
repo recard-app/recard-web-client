@@ -9,6 +9,7 @@ interface CreditSummaryProps {
   variant?: 'header' | 'sidebar';
   monthlyStats: MonthlyStatsResponse | null;
   loading: boolean;
+  isUpdating?: boolean;
   error?: string | null;
 }
 
@@ -16,6 +17,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   variant = 'header',
   monthlyStats,
   loading,
+  isUpdating = false,
   error = null
 }) => {
   const navigate = useNavigate();
@@ -64,11 +66,15 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
       <div className="credit-summary-sidebar">
         <div className="sidebar-stat-row">
           <span className="stat-label">Monthly:</span>
-          <span className="stat-value">${monthlyStats.MonthlyCredits.usedValue} / ${monthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)</span>
+          <span className="stat-value">
+            {isUpdating ? "Updating..." : `$${monthlyStats.MonthlyCredits.usedValue} / $${monthlyStats.MonthlyCredits.possibleValue} (${usedMonthlyCredits} / ${totalMonthlyCredits} credits used)`}
+          </span>
         </div>
         <div className="sidebar-stat-row expiring">
           <span className="stat-label">Expiring:</span>
-          <span className="stat-value">{monthlyStats.ExpiringCredits.Total.count} credits (${monthlyStats.ExpiringCredits.Total.unusedValue})</span>
+          <span className="stat-value">
+            {isUpdating ? "Updating..." : `${monthlyStats.ExpiringCredits.Total.count} credits ($${monthlyStats.ExpiringCredits.Total.unusedValue})`}
+          </span>
         </div>
       </div>
     );
@@ -81,11 +87,15 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
     <div className="credit-summary-sidebar">
       <div className="sidebar-stat-row">
         <span className="stat-label">Monthly:</span>
-        <span className="stat-value">${monthlyStats.MonthlyCredits.usedValue} / ${monthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)</span>
+        <span className="stat-value">
+          {isUpdating ? "Updating..." : `$${monthlyStats.MonthlyCredits.usedValue} / $${monthlyStats.MonthlyCredits.possibleValue} (${usedMonthlyCredits} / ${totalMonthlyCredits} credits used)`}
+        </span>
       </div>
       <div className="sidebar-stat-row expiring">
         <span className="stat-label">Expiring:</span>
-        <span className="stat-value">{monthlyStats.ExpiringCredits.Total.count} credits (${monthlyStats.ExpiringCredits.Total.unusedValue})</span>
+        <span className="stat-value">
+          {isUpdating ? "Updating..." : `${monthlyStats.ExpiringCredits.Total.count} credits ($${monthlyStats.ExpiringCredits.Total.unusedValue})`}
+        </span>
       </div>
       <div>
         <button

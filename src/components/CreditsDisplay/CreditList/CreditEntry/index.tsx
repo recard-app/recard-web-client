@@ -31,6 +31,7 @@ export interface CreditEntryProps {
     valueUsed: number;
   }) => void;
   onUpdateComplete?: () => void; // Optional callback to notify parent that an update was successful
+  isUpdating?: boolean; // Optional flag to show updating indicators
 }
 
 // Simple hook to detect mobile screen size
@@ -51,7 +52,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete }) => {
+const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, isUpdating }) => {
   const isMobile = useIsMobile();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -328,56 +329,63 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         
         {/* Right side: Usage dropdown (interactive for list view) or static display */}
         <div className="credit-controls">
-          <div className="credit-usage">
-            {disableDropdown ? (
-              // Static display when dropdown is disabled
-              <div 
-                className="credit-usage-button static"
-                style={{ 
-                  color: usageColor
-                } as React.CSSProperties}
-              >
-                <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
-                <div className="credit-usage-label">
-                  <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={12} />
-                  <span>
-                    {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
-                    {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
-                    {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
-                    {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
-                  </span>
-                  {/* No chevron icon for static display */}
+          {isUpdating ? (
+            // Show updating text when updating
+            <div className="credit-updating-text" style={{ color: '#9CA3AF', fontSize: '14px', textAlign: 'center', padding: '8px' }}>
+              Updating...
+            </div>
+          ) : (
+            <div className="credit-usage">
+              {disableDropdown ? (
+                // Static display when dropdown is disabled
+                <div
+                  className="credit-usage-button static"
+                  style={{
+                    color: usageColor
+                  } as React.CSSProperties}
+                >
+                  <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
+                  <div className="credit-usage-label">
+                    <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={12} />
+                    <span>
+                      {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
+                      {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
+                      {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
+                      {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
+                    </span>
+                    {/* No chevron icon for static display */}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <UsageDropdown
-                usage={usage}
-                usageColor={usageColor}
-                onUsageSelect={handleCardUsageSelect}
-                trigger={
-                  <button 
-                    className="credit-usage-button"
-                    style={{ 
-                      color: usageColor
-                    } as React.CSSProperties}
-                    onClick={(e) => e.stopPropagation()} // Prevent card click from opening modal
-                  >
-                    <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
-                    <div className="credit-usage-label">
-                      <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={12} />
-                      <span>
-                        {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
-                        {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
-                        {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
-                        {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
-                      </span>
-                      <Icon name="chevron-down" variant="micro" size={12} />
-                    </div>
-                  </button>
-                }
-              />
-            )}
-          </div>
+              ) : (
+                <UsageDropdown
+                  usage={usage}
+                  usageColor={usageColor}
+                  onUsageSelect={handleCardUsageSelect}
+                  trigger={
+                    <button
+                      className="credit-usage-button"
+                      style={{
+                        color: usageColor
+                      } as React.CSSProperties}
+                      onClick={(e) => e.stopPropagation()} // Prevent card click from opening modal
+                    >
+                      <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
+                      <div className="credit-usage-label">
+                        <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={12} />
+                        <span>
+                          {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
+                          {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
+                          {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
+                          {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
+                        </span>
+                        <Icon name="chevron-down" variant="micro" size={12} />
+                      </div>
+                    </button>
+                  }
+                />
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -434,6 +442,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                     onUpdateHistoryEntry={handleUpdateHistoryEntry}
                     selectedPeriodNumber={selectedPeriodNumber}
                     onPeriodSelect={setSelectedPeriodNumber}
+                    isUpdating={isUpdating}
                   />
                 </>
               )}
@@ -492,6 +501,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                   onUpdateHistoryEntry={handleUpdateHistoryEntry}
                   selectedPeriodNumber={selectedPeriodNumber}
                   onPeriodSelect={setSelectedPeriodNumber}
+                  isUpdating={isUpdating}
                 />
               )}
             </DialogFooter>
