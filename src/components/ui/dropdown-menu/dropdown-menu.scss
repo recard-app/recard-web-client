@@ -1,11 +1,11 @@
-// Import variables if available
-// @use '../../styling/variables' as *;
+// Import variables
+@use '../../../styling/variables' as *;
 
 // Override Shadcn dropdown menu styles with custom styling
 [data-slot="dropdown-menu-content"] {
   // Base dropdown menu styling
-  background-color: white !important;
-  border: 1px solid #ddd !important;
+  background-color: $dropdown-white !important;
+  border: 1px solid $border-light-gray !important;
   border-radius: 4px !important;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
   padding: 8px 0 !important;
@@ -26,18 +26,18 @@
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
-  color: #333 !important;
+  color: $text-dark-gray !important;
   cursor: pointer !important;
   
   // Remove default Tailwind styling
   @apply bg-transparent text-inherit;
   
   &:hover {
-    background-color: #f5f5f5 !important;
+    background-color: $background-lighter-gray !important;
   }
   
   &:focus {
-    background-color: #f5f5f5 !important;
+    background-color: $background-lighter-gray !important;
     outline: none !important;
   }
   
@@ -65,7 +65,7 @@
   // Destructive/delete action styling
   &[data-variant="destructive"],
   &.delete-action {
-    color: #ff4444 !important;
+    color: $info-error-red !important;
     
     &:hover {
       background-color: rgba(255, 68, 68, 0.1) !important;
@@ -78,7 +78,7 @@
   
   // Sign out action styling
   &.signout-action {
-    color: #dc3545 !important;
+    color: $button-red !important;
     background-color: rgba(255, 0, 0, 0.05) !important;
     
     &:hover {

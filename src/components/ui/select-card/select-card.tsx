@@ -2,9 +2,10 @@ import React from 'react';
 import { CreditCard, LOADING_ICON, LOADING_ICON_SIZE } from '../../../types';
 import { CardIcon } from '../../../icons';
 import Icon from '../../../icons';
+import { COLORS } from '../../../types/Colors';
 import './SelectCard.scss';
 
-const ICON_GRAY = '#C9CED3';
+const ICON_GRAY = COLORS.NEUTRAL_GRAY;
 
 export interface SelectCardProps {
   /** Currently selected card ID */

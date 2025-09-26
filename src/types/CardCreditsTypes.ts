@@ -329,15 +329,17 @@ export interface GetPrioritizedCreditsListResponse {
  * ------------------------------------------------------------------------------------------------
  */
 
+import { COLORS } from './Colors';
+
 /**
  * Represents the different credit usage display colors
  */
 export const CREDIT_USAGE_DISPLAY_COLORS = {
-    USED: '#007B53',
-    NOT_USED: '#0B0D0F',
-    PARTIALLY_USED: '#005DCF',
-    INACTIVE: '#B5BBC2',
-    DISABLED: '#9CA3AF'
+    USED: COLORS.PRIMARY_MEDIUM,
+    NOT_USED: COLORS.NEUTRAL_BLACK,
+    PARTIALLY_USED: COLORS.ACCENT_MEDIUM,
+    INACTIVE: COLORS.NEUTRAL_MEDIUM_GRAY,
+    DISABLED: COLORS.DISABLED_GRAY
 } as const;
 export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[keyof typeof CREDIT_USAGE_DISPLAY_COLORS];
 

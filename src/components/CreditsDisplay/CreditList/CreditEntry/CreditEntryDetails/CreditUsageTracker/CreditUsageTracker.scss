@@ -1,4 +1,5 @@
 @use '../../../../../../styling/globals' as *;
+@use '../../../../../../styling/variables' as *;
 
 .credit-usage-tracker {
 
@@ -78,10 +79,10 @@
 // Dark mode support
 @media (prefers-color-scheme: dark) {
   .credit-usage-tracker {
-    border-top-color: #374151;
+    border-top-color: $credit-entry-text;
 
     .tracker-label {
-      color: #f3f4f6;
+      color: $credit-entry-background;
     }
   }
 }

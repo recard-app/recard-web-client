@@ -156,12 +156,12 @@
 // Destructive button (like primary but with red colors)
 @mixin button-destructive {
   @include button-primary;
-  background-color: #e7000b;
-  
+  background-color: $alert-red-background;
+
   &:hover:not(:disabled) {
     background-color: rgba(231, 0, 11, 0.9);
   }
-  
+
   &:active:not(:disabled) {
     background-color: rgba(231, 0, 11, 0.8);
     transform: translateY(1px);

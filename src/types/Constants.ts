@@ -133,6 +133,7 @@ export const STAR_FILLED_ICON = 'https://placehold.co/16x16';
 
 import { createIconVariant, Icon } from '../icons';
 import React from 'react';
+import { COLORS } from './Colors';
 
 // Loading icon configuration
 export const LOADING_ICON = (props: any = {}) => React.createElement(Icon, { name: 'spinner', variant: 'default', size: 12, ...props });
@@ -151,13 +152,13 @@ export const PAGE_NAMES = {
 } as const;
 export type PageNameType = typeof PAGE_NAMES[keyof typeof PAGE_NAMES];
 
-export const ICON_WHITE = '#FFFFFF';
-export const ICON_GRAY = '#B5BBC2';
-export const ICON_GRAY_DARK = '#5A5F66';
-export const ICON_PRIMARY = '#22CC9D';
-export const ICON_PRIMARY_MEDIUM = '#007B53';
-export const ICON_PRIMARY_DARK = '#003E29';
-export const ICON_RED = '#EF4444';
+export const ICON_WHITE = COLORS.NEUTRAL_WHITE;
+export const ICON_GRAY = COLORS.NEUTRAL_MEDIUM_GRAY;
+export const ICON_GRAY_DARK = COLORS.NEUTRAL_DARK_GRAY;
+export const ICON_PRIMARY = COLORS.PRIMARY_COLOR;
+export const ICON_PRIMARY_MEDIUM = COLORS.PRIMARY_MEDIUM;
+export const ICON_PRIMARY_DARK = COLORS.PRIMARY_DARK;
+export const ICON_RED = COLORS.ERROR;
 
 export const SIDEBAR_TOGGLE_ICON_COLOR = ICON_GRAY;
 export const SIDEBAR_TOGGLE_ICON_COLOR_HOVER = ICON_GRAY_DARK;
@@ -256,11 +257,11 @@ export const MONTH_LETTERS = [
 // Info component constants
 export const INFO_COLORS = {
     DEFAULT: ICON_GRAY,
-    ERROR: '#ff4444',
-    INFO: '#2196F3', 
-    WARNING: '#ff9800',
-    SUCCESS: '#4caf50',
-    LOADING: '#6b7280'
+    ERROR: COLORS.INFO_ERROR_RED,
+    INFO: COLORS.INFO_BLUE, 
+    WARNING: COLORS.INFO_WARNING_ORANGE,
+    SUCCESS: COLORS.INFO_SUCCESS_GREEN,
+    LOADING: COLORS.INFO_LOADING_GRAY
 } as const;
 
 export const INFO_ICONS = {

@@ -12,6 +12,12 @@ $container-sm: 560px;
 $container-md: 720px;
 $container-lg: 960px;
 
+/* -------------
+
+COLORS
+
+------------- */
+
 // Primary Color Palette
 $primary-lightest: #EBF6EE;
 $primary-light: #D9EDDF;
@@ -41,6 +47,50 @@ $warning-yellow: #EAB308;
 $warning: #F59E0B;
 $error: #EF4444;
 $info: $accent-color;
+
+// Misc Colors
+// Additional grays and neutral colors found in components
+$border-light-gray: #ddd; // Used in dropdown borders, form elements, and component separators
+$background-lighter-gray: #f5f5f5; // Used in background overlays and disabled states
+$text-medium-gray: #999; // Used for secondary text and placeholder content
+$text-dark-gray: #555; // Used for muted text content
+$border-lighter-gray: #eee; // Used in light borders and dividers
+$text-subtle-gray: #888; // Used for subtle text elements
+$text-muted-gray: #666; // Used for muted secondary text
+$border-medium-gray: #ccc; // Used for form borders and dividers
+$disabled-gray: #9CA3AF; // Used for disabled form elements and inactive states
+
+// Warning and status colors
+$warning-badge-background: #FFF3CD; // Used in warning badges and notifications
+$warning-badge-text: #8a6d3b; // Used for warning badge text
+$warning-badge-light: #FFECB5; // Used for light warning backgrounds
+$alert-red-background: #e7000b; // Used for critical error backgrounds
+
+// Info component colors
+$info-error-red: #ff4444; // Used in info displays for error states
+$info-blue: #2196F3; // Used in info displays for informational content
+$info-warning-orange: #ff9800; // Used in info displays for warning states
+$info-success-green: #4caf50; // Used in info displays for success states
+$info-loading-gray: #6b7280; // Used in info displays for loading states
+
+// Button and action colors
+$button-red: #e53935; // Used for destructive action buttons
+$button-red-dark: #c62828; // Used for destructive button hover states
+$button-blue: #0066ff; // Used for primary action buttons
+$button-blue-dark: #0052cc; // Used for primary button hover states
+
+// Component-specific colors
+$credit-entry-border: #e5e7eb; // Used in credit entry components for borders
+$credit-entry-text: #374151; // Used in credit entry components for text
+$credit-entry-background: #f3f4f6; // Used in credit entry components for backgrounds
+$dropdown-white: white; // Used specifically for dropdown backgrounds (exact white)
+
+/* -------------
+
+END OF COLORS
+
+------------- */
+
 
 // Font Family Variables
 $font-cal-sans: "Cal Sans", sans-serif;

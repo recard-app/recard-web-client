@@ -184,21 +184,21 @@
   }
   
   .confirm-button {
-    background-color: #e53935;
+    background-color: $button-red;
     color: white;
     border: none;
     
     &:hover {
-      background-color: #c62828;
+      background-color: $button-red-dark;
     }
   }
   
   .cancel-button {
     background-color: transparent;
-    border: 1px solid #ccc;
+    border: 1px solid $border-medium-gray;
     
     &:hover {
-      background-color: #f5f5f5;
+      background-color: $background-lighter-gray;
     }
   }
 }
@@ -214,14 +214,14 @@
   .rename-input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid $border-medium-gray;
     border-radius: 4px;
     font-family: inherit;
     font-size: 14px;
     
     &:focus {
       outline: none;
-      border-color: #0066ff;
+      border-color: $button-blue;
       box-shadow: 0 0 0 2px rgba(0, 102, 255, 0.2);
     }
   }
@@ -246,21 +246,21 @@
   }
   
   .confirm-button {
-    background-color: #0066ff;
+    background-color: $button-blue;
     color: white;
     border: none;
     
     &:hover:not(:disabled) {
-      background-color: #0052cc;
+      background-color: $button-blue-dark;
     }
   }
   
   .cancel-button {
     background-color: transparent;
-    border: 1px solid #ccc;
+    border: 1px solid $border-medium-gray;
     
     &:hover:not(:disabled) {
-      background-color: #f5f5f5;
+      background-color: $background-lighter-gray;
     }
   }
 }

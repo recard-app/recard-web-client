@@ -39,7 +39,7 @@
 .usage-tracker-section {
   margin-top: 16px;
   padding-top: 12px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid $credit-entry-border;
 }
 
 .usage-tracker-header {
@@ -51,14 +51,14 @@
   .usage-tracker-title {
     font-size: 12px;
     font-weight: 600;
-    color: #374151;
+    color: $credit-entry-text;
   }
   
   .usage-tracker-stats {
     font-size: 11px;
     font-weight: 500;
-    color: #6b7280;
-    background-color: #f3f4f6;
+    color: $info-loading-gray;
+    background-color: $credit-entry-background;
     padding: 2px 6px;
     border-radius: 4px;
   }

@@ -254,7 +254,7 @@
       border: 1px solid rgba(34, 204, 157, 0.3); // Light border
       
       svg {
-        fill: #22CC9D !important; // Force the icon color
+        fill: $primary-color !important; // Force the icon color
       }
       
       &:hover {

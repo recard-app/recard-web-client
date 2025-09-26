@@ -42,7 +42,7 @@
   color: $neutral-dark-gray;
 
   &--success { background: $primary-light; color: $primary-medium; border-color: $primary-light; }
-  &--warning { background: #FFF3CD; color: #8a6d3b; border-color: #FFECB5; }
+  &--warning { background: $warning-badge-background; color: $warning-badge-text; border-color: $warning-badge-light; }
   &--sub { text-transform: capitalize; }
 }
 

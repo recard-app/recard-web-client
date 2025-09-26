@@ -3,6 +3,7 @@ import './CreditCardDetailView.scss';
 import { CreditCardDetails, CardMultiplier } from '../../types/CreditCardTypes';
 import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CreditHidePreferenceType } from '../../types/CardCreditsTypes';
 import { ICON_RED } from '../../types';
+import { COLORS } from '../../types/Colors';
 import { CardIcon } from '../../icons';
 import { InfoDisplay } from '../../elements';
 import { Icon } from '../../icons';
@@ -125,12 +126,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <h2>{cardDetails.CardName}</h2>
                     <div className="header-meta">
                         <div className="meta-item">
-                            <Icon name="bank" variant="micro" color="#C9CED3" className="meta-icon" aria-hidden="true" />
+                            <Icon name="bank" variant="micro" color={COLORS.NEUTRAL_GRAY} className="meta-icon" aria-hidden="true" />
                             <span className="meta-label">Issuer:</span>
                             <span className="meta-value">{cardDetails.CardIssuer}</span>
                         </div>
                         <div className="meta-item">
-                            <Icon name="card" variant="micro" color="#C9CED3" className="meta-icon" aria-hidden="true" />
+                            <Icon name="card" variant="micro" color={COLORS.NEUTRAL_GRAY} className="meta-icon" aria-hidden="true" />
                             <span className="meta-label">Network:</span>
                             <span className="meta-value">{cardDetails.CardNetwork}</span>
                         </div>
