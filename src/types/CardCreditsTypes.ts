@@ -331,6 +331,13 @@ export interface MonthlyStatsResponse {
         partiallyUsedCount: number;
         unusedCount: number;
     };
+    CurrentCredits: {
+        usedValue: number;
+        possibleValue: number;
+        usedCount: number;
+        partiallyUsedCount: number;
+        unusedCount: number;
+    };
     AllCredits: {
         usedValue: number;
         possibleValue: number;
@@ -345,6 +352,25 @@ export interface MonthlyStatsResponse {
         Annually: { count: number; unusedValue: number; };
         Total: { count: number; unusedValue: number; };
     };
+}
+
+/**
+ * Monthly Summary API (combines monthly-stats and prioritized-list)
+ * GET /users/cards/credits/monthly-summary
+ */
+export interface GetMonthlySummaryParams {
+    includeHidden?: boolean; // Optional flag to include hidden credits (default false)
+    limit?: number; // Optional limit for prioritized credits (default 20, max 100)
+    year?: number; // Optional year (defaults to current year)
+    cardId?: string; // Optional card ID filter for prioritized credits
+    period?: CreditPeriodType; // Optional period filter for prioritized credits
+    onlyExpiring?: boolean; // Optional flag to only include expiring credits in prioritized list
+    showRedeemed?: boolean; // Optional flag to show redeemed credits in prioritized list
+    showUntracked?: boolean; // Optional flag to show untracked credits in prioritized list
+}
+
+export interface MonthlySummaryResponse extends MonthlyStatsResponse {
+    PrioritizedCredits: GetPrioritizedCreditsListResponse;
 }
 
 /**
