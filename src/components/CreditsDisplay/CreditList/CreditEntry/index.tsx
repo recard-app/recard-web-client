@@ -306,17 +306,22 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               <span className="card-name">{card.CardName}</span>
             </div>
           )}
-          {displayPeriod && (
-            <div className="period-text">
-              {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
-            </div>
-          )}
-          {isExpiring && (
-            <div className="expiring-text">
-              {daysUntilExpiration !== undefined
-                ? `Expiring in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
-                : 'Expiring soon'
-              }
+          {(displayPeriod || isExpiring) && (
+            <div className="period-expiring-text">
+              {displayPeriod && (
+                <span className="period-text">
+                  {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
+                </span>
+              )}
+              {displayPeriod && isExpiring && <span className="separator"> • </span>}
+              {isExpiring && (
+                <span className="expiring-text">
+                  {daysUntilExpiration !== undefined
+                    ? `Expiring in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
+                    : 'Expiring soon'
+                  }
+                </span>
+              )}
             </div>
           )}
         </div>

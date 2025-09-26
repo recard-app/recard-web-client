@@ -35,14 +35,17 @@
   display: flex;
   flex-direction: column;
   gap: $space-1;
-  min-width: 0; // Allow text truncation
-  padding-right: 32px; // Space for controls like history entries
+  min-width: 0; // Allow text truncation and shrinking
+  overflow: hidden; // Prevent content from overflowing
   
   .credit-name {
     font-weight: $font-semibold;
     font-size: $font-sm;
     color: $neutral-black;
     line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     // Mobile adjustment
     @media (max-width: $mobile-breakpoint) {
@@ -50,18 +53,28 @@
     }
   }
 
-  .period-text {
+  .period-expiring-text {
     font-size: $font-xs;
-    color: $neutral-dark-gray;
-    font-weight: $font-medium;
-    text-transform: capitalize;
-  }
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: $space-1;
 
-  .expiring-text {
-    font-size: $font-xs;
-    color: $neutral-medium-gray;
-    font-style: italic;
-    margin-top: $space-half;
+    .period-text {
+      color: $neutral-dark-gray;
+      font-weight: $font-medium;
+      text-transform: capitalize;
+    }
+
+    .separator {
+      color: $neutral-medium-gray;
+      font-weight: $font-medium;
+    }
+
+    .expiring-text {
+      color: $neutral-medium-gray;
+      font-style: italic;
+    }
   }
   
   .card-info {
@@ -70,13 +83,19 @@
     gap: $space-1;
     @extend .card-bubble-display;
     margin-top: 0;
-    
+    min-width: 0; // Allow shrinking
+    max-width: 100%; // Don't exceed parent width
+
     .card-name {
       font-size: $font-xs;
       color: $neutral-dark-gray;
       font-weight: $font-medium;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
     }
-    
+
     .card-thumbnail {
       flex-shrink: 0;
     }
@@ -84,15 +103,12 @@
 }
 
 .credit-controls {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+  flex: 0 0 auto; // Don't grow or shrink, maintain natural size
   display: flex;
   flex-direction: column;
   gap: $space-1;
   align-items: flex-end;
-  z-index: 1;
+  justify-content: center; // Center vertically within the row
   
   .credit-amount {
     font-size: $font-xs;
