@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './CreditList.scss';
-import { CreditUsageType, UserCredit, MOBILE_BREAKPOINT } from '../../../types';
+import { CreditUsageType, UserCredit, MOBILE_BREAKPOINT, CREDIT_PERIODS, CREDIT_INTERVALS } from '../../../types';
 import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
 import CreditEntry from './CreditEntry';
 
@@ -19,6 +19,9 @@ export interface CreditListProps {
   }) => void;
   onUpdateComplete?: () => void; // Optional callback when any credit is updated
   isUpdating?: boolean; // Optional flag to show updating indicators
+  onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
 }
 
 // Simple hook to detect mobile screen size
@@ -39,7 +42,22 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, isUpdating }) => {
+// Helper function to calculate current period number based on date and period type
+const calculateCurrentPeriod = (now: Date, associatedPeriod: string): number => {
+  const periodKey = (Object.keys(CREDIT_PERIODS) as Array<keyof typeof CREDIT_PERIODS>).find(
+    (k) => CREDIT_PERIODS[k] === associatedPeriod
+  ) as keyof typeof CREDIT_INTERVALS | undefined;
+
+  if (!periodKey) return 1;
+
+  const intervals = CREDIT_INTERVALS[periodKey] ?? 1;
+  if (intervals <= 1) return 1;
+  const monthZeroBased = now.getMonth();
+  const segmentLength = 12 / intervals;
+  return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
+};
+
+const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
   const isMobile = useIsMobile();
 
   if (!credits || credits.length === 0) return null;
@@ -50,6 +68,11 @@ const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditB
         const card = cardById.get(uc.CardId) || null;
         const cardCredit = creditByPair.get(`${uc.CardId}:${uc.CreditId}`) || null;
         const creditMaxValue = cardCredit?.Value;
+
+        // Calculate current period using the same logic as CreditEntry
+        const currentPeriodNumber = calculateCurrentPeriod(now, uc.AssociatedPeriod);
+        const isThisCreditUpdating = isCreditUpdating?.(uc.CardId, uc.CreditId, currentPeriodNumber) || false;
+
         return (
           <CreditEntry
             key={`${uc.CardId}:${uc.CreditId}`}
@@ -62,7 +85,10 @@ const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditB
             displayPeriod={displayPeriod}
             onUpdateHistoryEntry={onUpdateHistoryEntry}
             onUpdateComplete={onUpdateComplete}
-            isUpdating={isUpdating}
+            isUpdating={isThisCreditUpdating}
+            onAddUpdatingCreditId={onAddUpdatingCreditId}
+            onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+            isCreditUpdating={isCreditUpdating}
           />
         );
       })}

@@ -29,9 +29,13 @@ export interface CreditPeriodGroupProps {
     valueUsed: number;
   }) => void;
   onUpdateComplete?: () => void; // Optional callback when any credit is updated
+  isUpdating?: boolean; // Optional flag to show updating indicators
+  onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
 }
 
-const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar, now, cardById, creditByPair, onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete }) => {
+const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar, now, cardById, creditByPair, onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
   // Build period cells across top using MONTH_LABEL_ABBREVIATIONS and math
   const title = period.charAt(0).toUpperCase() + period.slice(1);
   const monthLabels = MONTH_LABEL_ABBREVIATIONS.map(m => m.label);
@@ -208,7 +212,7 @@ const CreditPeriodGroup: React.FC<CreditPeriodGroupProps> = ({ period, calendar,
         })()}
         </div>
       )}
-      <CreditList credits={creditsForPeriod} now={now} cardById={cardById} creditByPair={creditByPair} displayPeriod={displayPeriod} onUpdateHistoryEntry={onUpdateHistoryEntry} onUpdateComplete={onUpdateComplete} />
+      <CreditList credits={creditsForPeriod} now={now} cardById={cardById} creditByPair={creditByPair} displayPeriod={displayPeriod} onUpdateHistoryEntry={onUpdateHistoryEntry} onUpdateComplete={onUpdateComplete} isUpdating={isUpdating} onAddUpdatingCreditId={onAddUpdatingCreditId} onRemoveUpdatingCreditId={onRemoveUpdatingCreditId} isCreditUpdating={isCreditUpdating} />
     </section>
   );
 };

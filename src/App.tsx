@@ -126,6 +126,32 @@ function AppContent({}: AppContentProps) {
   const [monthlyStats, setMonthlyStats] = useState<MonthlyStatsResponse | null>(null);
   const [isLoadingMonthlyStats, setIsLoadingMonthlyStats] = useState<boolean>(true);
   const [isUpdatingMonthlyStats, setIsUpdatingMonthlyStats] = useState<boolean>(false);
+  // State for tracking which specific credits are being updated
+  const [updatingCreditIds, setUpdatingCreditIds] = useState<Set<string>>(new Set());
+
+  // Helper functions to manage updating credit IDs
+  const addUpdatingCreditId = (cardId: string, creditId: string, periodNumber: number) => {
+    const creditKey = `${cardId}:${creditId}:${periodNumber}`;
+    setUpdatingCreditIds(prev => new Set(prev).add(creditKey));
+  };
+
+  const removeUpdatingCreditId = (cardId: string, creditId: string, periodNumber: number) => {
+    const creditKey = `${cardId}:${creditId}:${periodNumber}`;
+    setUpdatingCreditIds(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(creditKey);
+      return newSet;
+    });
+  };
+
+  const isCreditUpdating = (cardId: string, creditId: string, periodNumber: number) => {
+    const creditKey = `${cardId}:${creditId}:${periodNumber}`;
+    return updatingCreditIds.has(creditKey);
+  };
+
+  const clearAllUpdatingCredits = () => {
+    setUpdatingCreditIds(new Set());
+  };
   // State for storing prioritized credits list
   const [prioritizedCredits, setPrioritizedCredits] = useState<PrioritizedCredit[]>([]);
   const [isLoadingPrioritizedCredits, setIsLoadingPrioritizedCredits] = useState<boolean>(true);
@@ -450,6 +476,8 @@ function AppContent({}: AppContentProps) {
         setIsLoadingMonthlyStats(false);
         setIsLoadingPrioritizedCredits(false);
         setIsUpdatingMonthlyStats(false);
+        // Clear all updating credit indicators after refresh completes
+        setUpdatingCreditIds(new Set());
       }
     };
 
@@ -1032,6 +1060,9 @@ function AppContent({}: AppContentProps) {
                         prioritizedCredits={prioritizedCredits}
                         isLoadingPrioritizedCredits={isLoadingPrioritizedCredits}
                         onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
+                        onAddUpdatingCreditId={addUpdatingCreditId}
+                        onRemoveUpdatingCreditId={removeUpdatingCreditId}
+                        isCreditUpdating={isCreditUpdating}
                       />
                     </ProtectedRoute>
                   } />
@@ -1041,6 +1072,10 @@ function AppContent({}: AppContentProps) {
                         userCardDetails={userDetailedCardDetails}
                         reloadTrigger={cardsVersion}
                         onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
+                        onAddUpdatingCreditId={addUpdatingCreditId}
+                        onRemoveUpdatingCreditId={removeUpdatingCreditId}
+                        isCreditUpdating={isCreditUpdating}
+                        onClearAllUpdatingCredits={clearAllUpdatingCredits}
                       />
                     </ProtectedRoute>
                   } />

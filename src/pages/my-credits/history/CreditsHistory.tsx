@@ -38,9 +38,13 @@ interface CreditsHistoryProps {
   userCardDetails: CreditCardDetails[];
   reloadTrigger?: number;
   onRefreshMonthlyStats?: () => void;
+  onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
+  onClearAllUpdatingCredits?: () => void;
 }
 
-const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reloadTrigger, onRefreshMonthlyStats }) => {
+const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reloadTrigger, onRefreshMonthlyStats, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating, onClearAllUpdatingCredits }) => {
   // Use the full height hook for this page
   useFullHeight(true);
 
@@ -57,6 +61,13 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
   const [accountCreatedAt, setAccountCreatedAt] = useState<Date | null>(null);
   const [selectedFilterCardId, setSelectedFilterCardId] = useState<string | null>(null);
   const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
+
+  // Helper function to clear all updating indicators
+  const clearAllUpdatingIndicators = () => {
+    if (onClearAllUpdatingCredits) {
+      onClearAllUpdatingCredits();
+    }
+  };
 
   // Function to refresh calendar data after updates
   const refreshCalendar = async () => {
@@ -80,6 +91,9 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
       }
     } catch (error) {
       console.error('Failed to refresh credit history:', error);
+    } finally {
+      // Clear all updating indicators after refresh completes (success or failure)
+      clearAllUpdatingIndicators();
     }
   };
 
@@ -845,6 +859,9 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                 showAllPeriods={!isMobileViewport}
                 displayPeriod={false}
                 onUpdateComplete={refreshCalendar}
+                onAddUpdatingCreditId={onAddUpdatingCreditId}
+                onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+                isCreditUpdating={isCreditUpdating}
                 />
             )}
           </div>

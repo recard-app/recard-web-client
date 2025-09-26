@@ -38,9 +38,12 @@ export interface CreditsDisplayProps {
   onUpdateComplete?: () => void; // Optional callback when any credit is updated
   children?: ReactNode; // Optional children to render at the bottom
   isUpdating?: boolean; // Optional flag to show updating indicators
+  onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, children, isUpdating }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, children, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
   const credits = useCredits(); // Get all credit data from the context
 
@@ -98,6 +101,9 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           onUpdateHistoryEntry={onUpdateHistoryEntry}
           onUpdateComplete={onUpdateComplete}
           isUpdating={isUpdating}
+          onAddUpdatingCreditId={onAddUpdatingCreditId}
+          onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+          isCreditUpdating={isCreditUpdating}
         />
         {children}
       </div>
@@ -125,6 +131,9 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           onUpdateHistoryEntry={onUpdateHistoryEntry}
           onUpdateComplete={onUpdateComplete}
           isUpdating={isUpdating}
+          onAddUpdatingCreditId={onAddUpdatingCreditId}
+          onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+          isCreditUpdating={isCreditUpdating}
         />
       ))}
       {children}

@@ -32,6 +32,9 @@ export interface CreditEntryProps {
   }) => void;
   onUpdateComplete?: () => void; // Optional callback to notify parent that an update was successful
   isUpdating?: boolean; // Optional flag to show updating indicators
+  onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
 }
 
 // Simple hook to detect mobile screen size
@@ -52,7 +55,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, isUpdating }) => {
+const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
   const isMobile = useIsMobile();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -185,6 +188,11 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => {
+    // Add this credit to the updating set
+    if (onAddUpdatingCreditId) {
+      onAddUpdatingCreditId(update.cardId, update.creditId, update.periodNumber);
+    }
+
     try {
       // Update enrichedCredit optimistically for immediate UI feedback
       if (enrichedCredit && enrichedCredit.CardId === update.cardId && enrichedCredit.CreditId === update.creditId) {
@@ -220,6 +228,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       }
 
       // Notify parent that update was successful (for data refresh)
+      // The parent is responsible for removing the updating indicator after refresh completes
       if (onUpdateComplete) {
         onUpdateComplete();
       }
@@ -250,6 +259,11 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         }
       }
 
+      // Remove this credit from the updating set (error case)
+      if (onRemoveUpdatingCreditId) {
+        onRemoveUpdatingCreditId(update.cardId, update.creditId, update.periodNumber);
+      }
+
       // Re-throw the error so calling components can handle it if needed
       throw error;
     }
@@ -275,15 +289,13 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     }
 
     // Persist the update immediately
-    if (onUpdateHistoryEntry) {
-      await onUpdateHistoryEntry({
-        cardId: userCredit.CardId,
-        creditId: userCredit.CreditId,
-        periodNumber: currentPeriodNumber,
-        creditUsage: newUsage,
-        valueUsed: val,
-      });
-    }
+    await handleUpdateHistoryEntry({
+      cardId: userCredit.CardId,
+      creditId: userCredit.CreditId,
+      periodNumber: currentPeriodNumber,
+      creditUsage: newUsage,
+      valueUsed: val,
+    });
   };
 
 
