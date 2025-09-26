@@ -12,14 +12,16 @@ export function parseCreditValue(raw: string | number | null | undefined): numbe
 
 export function getMaxValue(creditMaxValue?: number): number {
   const parsed = typeof creditMaxValue === 'number' && isFinite(creditMaxValue) && creditMaxValue > 0
-    ? Math.floor(creditMaxValue)
+    ? creditMaxValue
     : undefined;
   return parsed ?? 100;
 }
 
 export function clampValue(value: number, maxValue: number): number {
   if (!isFinite(value)) return 0;
-  return Math.max(0, Math.min(maxValue, Math.round(value)));
+  // Round to 2 decimal places to avoid floating point issues
+  const rounded = Math.round(value * 100) / 100;
+  return Math.max(0, Math.min(maxValue, rounded));
 }
 
 export function getValueForUsage(usage: CreditUsageType, maxValue: number): number {

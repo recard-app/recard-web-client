@@ -291,6 +291,7 @@ export interface PrioritizedCredit {
     daysUntilExpiration: number;
     expirationDate: string;
     period: CreditPeriodType;
+    isExpiring: boolean;
     usageStatus: 'unused' | 'partially_used' | 'redeemed' | 'not_tracked';
     priority: {
         expiration: number;

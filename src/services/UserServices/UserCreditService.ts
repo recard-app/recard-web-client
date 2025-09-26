@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType, MonthlyStatsResponse } from '../../types';
+import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType, MonthlyStatsResponse, GetMonthlySummaryParams, MonthlySummaryResponse } from '../../types';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 let syncTimeout: NodeJS.Timeout | null = null;
@@ -399,6 +399,47 @@ export const UserCreditService = {
             `${apiurl}/users/cards/credits/monthly-stats`,
             { headers }
         );
+        return response.data;
+    },
+
+    /**
+     * Fetches combined monthly stats and prioritized credits in a single API call
+     * Returns both monthly statistics and prioritized credits list
+     */
+    async fetchMonthlySummary(options?: GetMonthlySummaryParams): Promise<MonthlySummaryResponse> {
+        const headers = await getAuthHeaders();
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        if (options?.includeHidden !== undefined) {
+            params.set('includeHidden', options.includeHidden.toString());
+        }
+        if (options?.limit !== undefined) {
+            params.set('limit', options.limit.toString());
+        }
+        if (options?.year !== undefined) {
+            params.set('year', options.year.toString());
+        }
+        if (options?.cardId) {
+            params.set('cardId', options.cardId);
+        }
+        if (options?.period) {
+            params.set('period', options.period);
+        }
+        if (options?.onlyExpiring) {
+            params.set('onlyExpiring', 'true');
+        }
+        if (options?.showRedeemed) {
+            params.set('showRedeemed', 'true');
+        }
+        if (options?.showUntracked) {
+            params.set('showUntracked', 'true');
+        }
+
+        const queryString = params.toString();
+        const url = `${apiurl}/users/cards/credits/monthly-summary${queryString ? `?${queryString}` : ''}`;
+
+        const response = await axios.get<MonthlySummaryResponse>(url, { headers });
         return response.data;
     },
 

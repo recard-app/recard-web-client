@@ -90,7 +90,7 @@ import {
   CreditCard, 
   CreditCardDetails 
 } from './types/CreditCardTypes';
-import { UserCreditsTrackingPreferences } from './types/CardCreditsTypes';
+import { UserCreditsTrackingPreferences, PrioritizedCredit } from './types/CardCreditsTypes';
 import { FullHeightContext } from './hooks/useFullHeight';
 import { ScrollHeightContext } from './hooks/useScrollHeight';
 
@@ -125,6 +125,9 @@ function AppContent({}: AppContentProps) {
   // State for storing monthly credit stats
   const [monthlyStats, setMonthlyStats] = useState<MonthlyStatsResponse | null>(null);
   const [isLoadingMonthlyStats, setIsLoadingMonthlyStats] = useState<boolean>(true);
+  // State for storing prioritized credits list
+  const [prioritizedCredits, setPrioritizedCredits] = useState<PrioritizedCredit[]>([]);
+  const [isLoadingPrioritizedCredits, setIsLoadingPrioritizedCredits] = useState<boolean>(true);
   // State for storing chat history/conversations
   const [chatHistory, setChatHistory] = useState<Conversation[]>([]);
   // State for tracking the current active chat ID
@@ -214,9 +217,11 @@ function AppContent({}: AppContentProps) {
         setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
         setShowCompletedOnlyPreference(false);
         setMonthlyStats(null);
+        setPrioritizedCredits([]);
         setIsLoadingCreditCards(false);
         setIsLoadingHistory(false);
         setIsLoadingMonthlyStats(false);
+        setIsLoadingPrioritizedCredits(false);
         isLoadingRef.current = false;
         return;
       }
@@ -228,6 +233,7 @@ function AppContent({}: AppContentProps) {
       setIsLoadingCreditCards(true);
       setIsLoadingHistory(true);
       setIsLoadingMonthlyStats(true);
+      setIsLoadingPrioritizedCredits(true);
 
       try {
         // Batch 1: Critical data that's needed immediately (parallel)
@@ -243,7 +249,7 @@ function AppContent({}: AppContentProps) {
         setSubscriptionPlan(subscriptionPlan);
 
         // Batch 2: User preferences and tracking data (parallel)
-        const [trackingPrefs, allPreferences, monthlyStatsData] = await Promise.all([
+        const [trackingPrefs, allPreferences] = await Promise.all([
           UserCreditService.fetchCreditTrackingPreferences().catch(error => {
             console.error('Error fetching credit tracking preferences:', error);
             return { Cards: [] }; // Return empty preferences if fetch fails
@@ -256,10 +262,6 @@ function AppContent({}: AppContentProps) {
               chatHistory: 'keep_history' as ChatHistoryPreference,
               showCompletedOnly: false
             };
-          }),
-          UserCreditService.fetchMonthlyStats().catch(error => {
-            console.error('Error fetching monthly stats:', error);
-            return null;
           })
         ]);
 
@@ -267,7 +269,6 @@ function AppContent({}: AppContentProps) {
         setPreferencesInstructions(allPreferences.instructions || '');
         setChatHistoryPreference(allPreferences.chatHistory);
         setShowCompletedOnlyPreference(allPreferences.showCompletedOnly);
-        setMonthlyStats(monthlyStatsData);
 
         // Batch 3: Card details and chat history with priority loading
         const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
@@ -329,12 +330,31 @@ function AppContent({}: AppContentProps) {
 
         setLastUpdateTimestamp(new Date().toISOString());
 
+        // Batch 4: Monthly credits data (low priority, after core app is loaded)
+        try {
+          const monthlyStatsData = await UserCreditService.fetchMonthlySummary({
+            showRedeemed: true,
+            includeHidden: false,
+            limit: 0 // Get all credits
+          });
+
+          setMonthlyStats(monthlyStatsData);
+          if (monthlyStatsData) {
+            setPrioritizedCredits(monthlyStatsData.PrioritizedCredits.credits);
+          }
+        } catch (error) {
+          console.error('Error fetching monthly stats (low priority):', error);
+        } finally {
+          setIsLoadingPrioritizedCredits(false);
+        }
+
       } catch (error) {
         console.error('Error loading initial data:', error);
       } finally {
         setIsLoadingCreditCards(false);
         setIsLoadingHistory(false);
         setIsLoadingMonthlyStats(false);
+        setIsLoadingPrioritizedCredits(false);
         isLoadingRef.current = false;
       }
     };
@@ -409,13 +429,20 @@ function AppContent({}: AppContentProps) {
       if (!user || monthlyStatsRefreshTrigger === 0) return;
 
       setIsLoadingMonthlyStats(true);
+      setIsLoadingPrioritizedCredits(true);
       try {
-        const statsData = await UserCreditService.fetchMonthlyStats();
-        setMonthlyStats(statsData);
+        const summaryData = await UserCreditService.fetchMonthlySummary({
+          showRedeemed: true,
+          includeHidden: false,
+          limit: 0 // Get all credits
+        });
+        setMonthlyStats(summaryData);
+        setPrioritizedCredits(summaryData.PrioritizedCredits.credits);
       } catch (error) {
         console.error('Error refreshing monthly stats:', error);
       } finally {
         setIsLoadingMonthlyStats(false);
+        setIsLoadingPrioritizedCredits(false);
       }
     };
 
@@ -992,6 +1019,8 @@ function AppContent({}: AppContentProps) {
                       <MyCredits
                         monthlyStats={monthlyStats}
                         isLoadingMonthlyStats={isLoadingMonthlyStats}
+                        prioritizedCredits={prioritizedCredits}
+                        isLoadingPrioritizedCredits={isLoadingPrioritizedCredits}
                         onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
                       />
                     </ProtectedRoute>

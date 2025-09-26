@@ -6,6 +6,7 @@ import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes'
 import { Slider } from '../../../ui/slider';
 import Icon from '@/icons';
 import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './utils';
+import { generateSmartSteps, snapToClosestStep } from '../../../../utils/slider-steps';
 import UsageDropdown from './UsageDropdown';
 
 interface CreditModalControlsProps {
@@ -73,6 +74,9 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   const maxValue = getMaxValue(creditMaxValue);
   const isSliderDisabled = usage === CREDIT_USAGE.INACTIVE || usage === CREDIT_USAGE.DISABLED;
   const isCompletelyDisabled = usage === CREDIT_USAGE.DISABLED;
+
+  // Generate smart steps for this credit's maximum value
+  const smartSteps = useMemo(() => generateSmartSteps(maxValue, 1), [maxValue]);
   
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false);
@@ -190,7 +194,11 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   const handleSliderChange = (vals: number[]) => {
     if (isSliderDisabled) return; // Only undisable via select
 
-    const v = clampValue(vals[0] ?? 0, maxValue);
+    const rawValue = vals[0] ?? 0;
+    // Snap to closest smart step
+    const snappedValue = snapToClosestStep(rawValue, smartSteps);
+    const v = clampValue(snappedValue, maxValue);
+
     // Only update local state during dragging for visual feedback
     setValueUsed(v);
     const status = getUsageForValue(v, maxValue);
@@ -199,21 +207,25 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
 
   const handleSliderCommit = async (vals: number[]) => {
     if (isSliderDisabled) return;
-    const v = clampValue(vals[0] ?? 0, maxValue);
-    
+
+    const rawValue = vals[0] ?? 0;
+    // Snap to closest smart step for final value
+    const snappedValue = snapToClosestStep(rawValue, smartSteps);
+    const v = clampValue(snappedValue, maxValue);
+
     // Use the current local state values instead of recalculating
     // This ensures consistency with what the user sees
     const finalValue = valueUsed;
     const finalStatus = usage;
 
-    // Double-check that our local state matches the slider value
+    // Double-check that our local state matches the snapped slider value
     // This handles any edge cases with precision
     if (Math.abs(finalValue - v) > 0.01) {
-      // If there's a discrepancy, use the slider value and recalculate
+      // If there's a discrepancy, use the snapped slider value and recalculate
       const correctedStatus = getUsageForValue(v, maxValue);
       setValueUsed(v);
       setUsage(correctedStatus);
-      
+
       try {
         await persistUpdate(correctedStatus, v);
       } catch (e) {

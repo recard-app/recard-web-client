@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import PageHeader from '../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, UserCredit } from '../../types';
-import { UserCreditService, UserCreditCardService } from '../../services';
+import { UserCreditCardService } from '../../services';
 import CreditsDisplay from '../../components/CreditsDisplay';
-import { CreditCardDetails, PrioritizedCredit } from '../../types/CreditCardTypes';
+import { CreditCardDetails } from '../../types/CreditCardTypes';
+import { PrioritizedCredit } from '../../types';
 import { MonthlyStatsResponse } from '../../types/CardCreditsTypes';
-import { useCredits } from '../../contexts/ComponentsContext';
 import Icon from '../../icons';
 import { InfoDisplay } from '../../elements/InfoDisplay/InfoDisplay';
 import HeaderControls from '@/components/PageControls/HeaderControls';
@@ -17,27 +17,46 @@ import './MyCredits.scss';
 interface MyCreditsProps {
   monthlyStats: MonthlyStatsResponse | null;
   isLoadingMonthlyStats: boolean;
+  prioritizedCredits: PrioritizedCredit[];
+  isLoadingPrioritizedCredits: boolean;
   onRefreshMonthlyStats?: () => void;
 }
 
 const MyCredits: React.FC<MyCreditsProps> = ({
   monthlyStats,
   isLoadingMonthlyStats,
+  prioritizedCredits,
+  isLoadingPrioritizedCredits,
   onRefreshMonthlyStats
 }) => {
   // Use the full height hook for this page
   useFullHeight(true);
 
-  const [prioritizedCredits, setPrioritizedCredits] = useState<PrioritizedCredit[]>([]);
   const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [showRedeemed, setShowRedeemed] = useState(false);
-  const [isToggleLoading, setIsToggleLoading] = useState(false);
-  const credits = useCredits();
+  const [stableFilteredCredits, setStableFilteredCredits] = useState<PrioritizedCredit[]>([]);
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
+
+  // Update stable credits only when prioritizedCredits or showRedeemed changes
+  // This prevents flickering during the filtering/sorting process
+  useEffect(() => {
+    const newFilteredCredits = showRedeemed
+      ? prioritizedCredits
+      : prioritizedCredits.filter(credit => credit.usageStatus !== 'redeemed');
+
+    setStableFilteredCredits(newFilteredCredits);
+
+    // Mark as initially loaded once we have credits data (regardless of whether it's empty)
+    if (!isLoadingPrioritizedCredits && !hasInitiallyLoaded) {
+      setHasInitiallyLoaded(true);
+    }
+  }, [prioritizedCredits, showRedeemed, isLoadingPrioritizedCredits, hasInitiallyLoaded]);
 
   // Convert prioritized credits to CalendarUserCredits format for CreditsDisplay
-  const calendarUserCredits: CalendarUserCredits | null = prioritizedCredits.length > 0 ? {
-    Credits: prioritizedCredits.map(credit => ({
+  const calendarUserCredits: CalendarUserCredits | null = stableFilteredCredits.length > 0 ? {
+    Credits: stableFilteredCredits.map(credit => ({
       CardId: credit.cardId,
       CreditId: credit.id,
       AssociatedPeriod: credit.period,
@@ -49,89 +68,28 @@ const MyCredits: React.FC<MyCreditsProps> = ({
     Year: new Date().getFullYear()
   } : null;
 
-  // Function to refresh current year credits data using prioritized endpoint
-  const refreshCredits = async () => {
-    try {
-      const currentYear = new Date().getFullYear();
-      const prioritizedResponse = await UserCreditService.fetchPrioritizedCreditsList({
-        year: currentYear,
-        limit: 0, // Get all credits
-        excludeHidden: true,
-        showRedeemed
-      });
 
-      setPrioritizedCredits(prioritizedResponse.credits);
-
-      // Also refresh monthly stats when credits are updated
-      if (onRefreshMonthlyStats) {
-        onRefreshMonthlyStats();
-      }
-    } catch (error) {
-      console.error('Failed to refresh current year credits:', error);
-    }
-  };
-
-  // Handler for toggling showRedeemed with loading state
-  const handleToggleRedeemed = async (newShowRedeemed: boolean) => {
-    setIsToggleLoading(true);
+  // Handler for toggling showRedeemed (client-side only)
+  const handleToggleRedeemed = (newShowRedeemed: boolean) => {
     setShowRedeemed(newShowRedeemed);
-
-    try {
-      const currentYear = new Date().getFullYear();
-      const prioritizedResponse = await UserCreditService.fetchPrioritizedCreditsList({
-        year: currentYear,
-        limit: 0, // Get all credits
-        excludeHidden: true,
-        showRedeemed: newShowRedeemed
-      });
-
-      setPrioritizedCredits(prioritizedResponse.credits);
-    } catch (error) {
-      console.error('Failed to toggle redeemed credits:', error);
-      // Revert the state on error
-      setShowRedeemed(!newShowRedeemed);
-    } finally {
-      setIsToggleLoading(false);
-    }
   };
 
-  // Sync credit history and fetch current year credits using prioritized endpoint
+  // Load user card details only (prioritized credits come from App level)
   useEffect(() => {
-    const loadCredits = async () => {
+    const loadUserCards = async () => {
       try {
-        // First sync the credits to ensure they're up to date
-        await UserCreditService.syncCurrentYearCreditsDebounced();
-
-        // Fetch user card details and prioritized credits in parallel
-        const currentYear = new Date().getFullYear();
-        const [userCardsResponse, prioritizedResponse] = await Promise.all([
-          UserCreditCardService.fetchUserCardsDetailedInfo(),
-          UserCreditService.fetchPrioritizedCreditsList({
-            year: currentYear,
-            limit: 0, // Get all credits
-            excludeHidden: true,
-            showRedeemed
-          })
-        ]);
-
+        const userCardsResponse = await UserCreditCardService.fetchUserCardsDetailedInfo();
         setUserCards(userCardsResponse);
-        setPrioritizedCredits(prioritizedResponse.credits);
       } catch (error) {
-        console.warn('Failed to load current year credits:', error);
+        console.warn('Failed to load user cards:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadCredits();
+    loadUserCards();
   }, []);
 
-  // Refetch credits when showRedeemed changes
-  useEffect(() => {
-    if (!isLoading) {
-      refreshCredits();
-    }
-  }, [showRedeemed]);
 
   return (
     <div className="standard-page-layout">
@@ -148,7 +106,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
             />
           </HeaderControls>
           <div className="credits-history-content">
-            {isLoading ? (
+            {(isLoading || isLoadingPrioritizedCredits) && !hasInitiallyLoaded ? (
               <InfoDisplay
                 type="loading"
                 message="Loading credits..."
@@ -159,6 +117,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
             ) : (
               <>
                 <CreditsDisplay
+                  key={`credits-display-${showRedeemed}-${stableFilteredCredits.length}`}
                   calendar={calendarUserCredits}
                   isLoading={false}
                   userCards={userCards}
@@ -170,35 +129,25 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                   showAllPeriods={true}
                   useSimpleDisplay={true}
                   showPeriodLabel={true}
-                  onUpdateComplete={refreshCredits}
+                  onUpdateComplete={onRefreshMonthlyStats}
                 >
                   <div className="redeemed-credits-toggle-container">
-                    {isToggleLoading ? (
-                      <InfoDisplay
-                        type="loading"
-                        message="Loading..."
-                        showTitle={false}
-                        transparent={true}
-                        centered={true}
-                      />
+                    {!showRedeemed ? (
+                      <button
+                        className="button ghost icon with-text"
+                        onClick={() => handleToggleRedeemed(true)}
+                      >
+                        <Icon name="visibility-on" variant="micro" size={14} />
+                        Show redeemed credits
+                      </button>
                     ) : (
-                      !showRedeemed ? (
-                        <button
-                          className="button ghost icon with-text"
-                          onClick={() => handleToggleRedeemed(true)}
-                        >
-                          <Icon name="visibility-on" variant="micro" size={14} />
-                          Show redeemed credits
-                        </button>
-                      ) : (
-                        <button
-                          className="button ghost icon with-text"
-                          onClick={() => handleToggleRedeemed(false)}
-                        >
-                          <Icon name="visibility-off" variant="micro" size={14} />
-                          Hide redeemed credits
-                        </button>
-                      )
+                      <button
+                        className="button ghost icon with-text"
+                        onClick={() => handleToggleRedeemed(false)}
+                      >
+                        <Icon name="visibility-off" variant="micro" size={14} />
+                        Hide redeemed credits
+                      </button>
                     )}
                   </div>
                 </CreditsDisplay>
