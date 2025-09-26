@@ -2,12 +2,36 @@
 @use '../../styling/mixins' as *;
 
 // Sidebar variant styling
-.credit-summary-sidebar {
+.credit-summary-sidebar, .credit-summary-header {
   display: flex;
   flex-direction: column;
   gap: $space-2;
   padding: $space-1;
   font-size: $font-xs;
+
+  .sidebar-stats-header {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-2;
+
+    .sidebar-stats-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: $space-2;
+    }
+
+    .button.ghost.icon {
+      flex-shrink: 0;
+      padding: $space-1;
+      opacity: 0.6;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
 }
 
 .sidebar-stat-row {

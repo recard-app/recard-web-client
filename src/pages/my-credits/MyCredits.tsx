@@ -32,6 +32,7 @@ interface MyCreditsProps {
   onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
+  onDetailedSummaryClick?: () => void;
 }
 
 const MyCredits: React.FC<MyCreditsProps> = ({
@@ -43,7 +44,8 @@ const MyCredits: React.FC<MyCreditsProps> = ({
   isUpdatingMonthlyStats,
   onAddUpdatingCreditId,
   onRemoveUpdatingCreditId,
-  isCreditUpdating
+  isCreditUpdating,
+  onDetailedSummaryClick
 }) => {
   // Use the full height hook for this page
   useFullHeight(true);
@@ -125,6 +127,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
               monthlyStats={monthlyStats}
               loading={isLoadingMonthlyStats}
               isUpdating={isUpdatingMonthlyStats}
+              onDetailedSummaryClick={onDetailedSummaryClick}
             />
           </HeaderControls>
           <div className="credits-history-content">

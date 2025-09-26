@@ -54,6 +54,7 @@ import { ComponentsProvider, useComponents } from './contexts/ComponentsContext'
 import CreditCardDetailView from './components/CreditCardDetailView';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
 import PromptHelpModal from './components/PromptWindow/PromptHelpModal';
+import CreditDetailedSummary from './components/CreditDetailedSummary';
 import {
   Drawer,
   DrawerContent,
@@ -188,6 +189,7 @@ function AppContent({}: AppContentProps) {
   const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
   const [isCardDetailsOpen, setIsCardDetailsOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isDetailedSummaryOpen, setIsDetailedSummaryOpen] = useState(false);
   const [cardSelectorSaveStatus, setCardSelectorSaveStatus] = useState<string>('');
   const [cardSelectorSaveSuccess, setCardSelectorSaveSuccess] = useState<boolean>(false);
   const [cardsVersion, setCardsVersion] = useState<number>(0);
@@ -997,7 +999,23 @@ function AppContent({}: AppContentProps) {
               </Dialog>
             );
           })()}
-          
+
+          {/* Detailed Summary Modal */}
+          <Dialog open={isDetailedSummaryOpen} onOpenChange={setIsDetailedSummaryOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Detailed Summary</DialogTitle>
+              </DialogHeader>
+              <DialogBody>
+                <CreditDetailedSummary
+                  monthlyStats={monthlyStats}
+                  loading={isLoadingMonthlyStats}
+                  isUpdating={isUpdatingMonthlyStats}
+                />
+              </DialogBody>
+            </DialogContent>
+          </Dialog>
+
           {(() => {
             const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH]);
             const isAuthRoute = authPaths.has(location.pathname);
@@ -1063,6 +1081,7 @@ function AppContent({}: AppContentProps) {
                         onAddUpdatingCreditId={addUpdatingCreditId}
                         onRemoveUpdatingCreditId={removeUpdatingCreditId}
                         isCreditUpdating={isCreditUpdating}
+                        onDetailedSummaryClick={() => setIsDetailedSummaryOpen(true)}
                       />
                     </ProtectedRoute>
                   } />

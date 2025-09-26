@@ -11,6 +11,7 @@ interface CreditSummaryProps {
   loading: boolean;
   isUpdating?: boolean;
   error?: string | null;
+  onDetailedSummaryClick?: () => void;
 }
 
 const CreditSummary: React.FC<CreditSummaryProps> = ({
@@ -18,7 +19,8 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   monthlyStats,
   loading,
   isUpdating = false,
-  error = null
+  error = null,
+  onDetailedSummaryClick
 }) => {
   const navigate = useNavigate();
 
@@ -84,18 +86,32 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount;
 
   return (
-    <div className="credit-summary-sidebar">
-      <div className="sidebar-stat-row">
-        <span className="stat-label">Monthly:</span>
-        <span className="stat-value">
-          {isUpdating ? "Updating..." : `$${monthlyStats.MonthlyCredits.usedValue} / $${monthlyStats.MonthlyCredits.possibleValue} (${usedMonthlyCredits} / ${totalMonthlyCredits} credits used)`}
-        </span>
-      </div>
-      <div className="sidebar-stat-row expiring">
-        <span className="stat-label">Expiring:</span>
-        <span className="stat-value">
-          {isUpdating ? "Updating..." : `${monthlyStats.ExpiringCredits.Total.count} credits ($${monthlyStats.ExpiringCredits.Total.unusedValue})`}
-        </span>
+    <div className="credit-summary-header">
+      <div className="sidebar-stats-header">
+        <div className="sidebar-stats-content">
+          <div className="sidebar-stat-row">
+            <span className="stat-label">Monthly:</span>
+            <span className="stat-value">
+              {isUpdating ? "Updating..." : `$${monthlyStats.MonthlyCredits.usedValue} / $${monthlyStats.MonthlyCredits.possibleValue} (${usedMonthlyCredits} / ${totalMonthlyCredits} credits used)`}
+            </span>
+          </div>
+          <div className="sidebar-stat-row expiring">
+            <span className="stat-label">Expiring:</span>
+            <span className="stat-value">
+              {isUpdating ? "Updating..." : `${monthlyStats.ExpiringCredits.Total.count} credits ($${monthlyStats.ExpiringCredits.Total.unusedValue})`}
+            </span>
+          </div>
+        </div>
+        {onDetailedSummaryClick && (
+          <button
+            className="button ghost icon"
+            onClick={onDetailedSummaryClick}
+            aria-label="View detailed analytics"
+            title="View detailed analytics"
+          >
+            <Icon name="expand-arrows" variant="micro" size={16} />
+          </button>
+        )}
       </div>
       <div>
         <button
