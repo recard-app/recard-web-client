@@ -2,8 +2,10 @@ import React, { useMemo } from 'react';
 import './CreditsDisplay.scss';
 import { CalendarUserCredits, CREDIT_PERIODS, CreditPeriodType, CreditUsageType } from '../../types';
 import CreditPeriodGroup from './CreditPeriodGroup';
+import CreditGroup from './CreditGroup';
 import { CreditCardDetails, CardCredit } from '../../types/CreditCardTypes';
 import { useCredits } from '../../contexts/ComponentsContext';
+import { MONTH_ABBREVIATIONS } from '../../types/Constants';
 
 export interface CreditsDisplayProps {
   calendar: CalendarUserCredits | null;
@@ -20,6 +22,10 @@ export interface CreditsDisplayProps {
   showPartiallyUsed?: boolean;
   showInactive?: boolean;
   showAllPeriods?: boolean;
+  // Display mode - if true, uses CreditGroup (display-only) instead of CreditPeriodGroup
+  useSimpleDisplay?: boolean;
+  // Show period label (calendar icon with month name) in simple display mode
+  showPeriodLabel?: boolean;
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -30,7 +36,7 @@ export interface CreditsDisplayProps {
   onUpdateComplete?: () => void; // Optional callback when any credit is updated
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, onUpdateHistoryEntry, onUpdateComplete }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, onUpdateHistoryEntry, onUpdateComplete }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
   const credits = useCredits(); // Get all credit data from the context
 
@@ -65,6 +71,29 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
   if (!calendar) {
     return (
       <div className="credits-display empty">No credit history found for the current year.</div>
+    );
+  }
+
+  if (useSimpleDisplay) {
+    // Generate period label if requested
+    const periodLabel = showPeriodLabel
+      ? MONTH_ABBREVIATIONS[effectiveNow.getMonth()]
+      : undefined;
+
+    // For simple display mode, just show all credits in a single group
+    return (
+      <div className="credits-display">
+        <CreditGroup
+          title="Prioritized Credits"
+          periodLabel={periodLabel}
+          credits={calendar.Credits}
+          now={effectiveNow}
+          cardById={cardById}
+          creditByPair={creditByPair}
+          onUpdateHistoryEntry={onUpdateHistoryEntry}
+          onUpdateComplete={onUpdateComplete}
+        />
+      </div>
     );
   }
 

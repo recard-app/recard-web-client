@@ -1,15 +1,9 @@
 @use '../../styling/globals' as *;
 
-.my-credits-actions {
-  margin-bottom: 24px;
-}
+// Page-specific styles for MyCredits that are not shared
+// Core layout and action styles are now in shared-credits-layout.scss
 
-.current-month-credits {
-  h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin-bottom: 16px;
-    margin-top: 0;
-  }
+// Additional page-specific styles can be added here if needed
+.credit-period-group {
+    margin-bottom: 0;
 }

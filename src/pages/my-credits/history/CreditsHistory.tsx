@@ -31,6 +31,7 @@ import {
   getPrevYearMonth as utilGetPrevYearMonth,
   isAllowedYearMonth as utilIsAllowedYearMonth,
 } from '../utils';
+import '../shared-credits-layout.scss';
 import './CreditsHistory.scss';
 
 interface CreditsHistoryProps {
