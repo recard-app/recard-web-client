@@ -174,9 +174,9 @@ export const PAGE_ICONS = {
         MINI: (props: any = {}) => createIconVariant('home', 'mini', ICON_PRIMARY, props.size)
     },
     TRANSACTION_HISTORY: {
-        ACTIVE: (props: any = {}) => createIconVariant('history', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
-        INACTIVE: (props: any = {}) => createIconVariant('history', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
-        MINI: (props: any = {}) => createIconVariant('history', 'mini', ICON_PRIMARY, props.size)
+        ACTIVE: (props: any = {}) => createIconVariant('conversation-bubbles', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('conversation-bubbles', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('conversation-bubbles', 'mini', ICON_PRIMARY, props.size)
     },
     MY_CARDS: {
         ACTIVE: (props: any = {}) => createIconVariant('card', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),

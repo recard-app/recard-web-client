@@ -153,7 +153,7 @@ const MyCredits: React.FC = () => {
                   showPeriodLabel={true}
                   onUpdateComplete={refreshCredits}
                 >
-                  <div className="redeemed-credits-toggle-container" style={{ marginTop: '20px', textAlign: 'center', position: 'relative' }}>
+                  <div className="redeemed-credits-toggle-container">
                     {isToggleLoading ? (
                       <InfoDisplay
                         type="loading"
@@ -168,7 +168,7 @@ const MyCredits: React.FC = () => {
                           className="button ghost icon with-text"
                           onClick={() => handleToggleRedeemed(true)}
                         >
-                          <Icon name="used-icon" variant="micro" size={14} />
+                          <Icon name="visibility-on" variant="micro" size={14} />
                           See redeemed credits
                         </button>
                       ) : (
@@ -176,7 +176,7 @@ const MyCredits: React.FC = () => {
                           className="button ghost icon with-text"
                           onClick={() => handleToggleRedeemed(false)}
                         >
-                          <Icon name="used-icon" variant="micro" size={14} />
+                          <Icon name="visibility-off" variant="micro" size={14} />
                           Hide redeemed credits
                         </button>
                       )

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UserCreditService } from '../../services/UserServices/UserCreditService';
 import { MonthlyStatsResponse } from '../../types';
+import Icon from '@/icons';
 
 const CreditSummary: React.FC = () => {
+  const navigate = useNavigate();
   const [statsData, setStatsData] = useState<MonthlyStatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,11 +42,16 @@ const CreditSummary: React.FC = () => {
     <div>
       <div>Monthly Credits: ${statsData.MonthlyCredits.used} / ${statsData.MonthlyCredits.possible}</div>
       <div>All Credits: ${statsData.AllCredits.used} / ${statsData.AllCredits.possible}</div>
-      <div>{statsData.ExpiringCredits.Monthly.count} Monthly credits worth ${statsData.ExpiringCredits.Monthly.unusedValue} expiring soon</div>
-      <div>{statsData.ExpiringCredits.Quarterly.count} Quarterly credits worth ${statsData.ExpiringCredits.Quarterly.unusedValue} expiring soon</div>
-      <div>{statsData.ExpiringCredits.Semiannually.count} Semiannual credits worth ${statsData.ExpiringCredits.Semiannually.unusedValue} expiring soon</div>
-      <div>{statsData.ExpiringCredits.Annually.count} Annual credits worth ${statsData.ExpiringCredits.Annually.unusedValue} expiring soon</div>
       <div>{statsData.ExpiringCredits.Total.count} Total credits worth ${statsData.ExpiringCredits.Total.unusedValue} expiring soon</div>
+      <div>
+        <button
+          className="button ghost icon with-text"
+          onClick={() => navigate('/my-credits/history')}
+        >
+          <Icon name="history-clock" variant="micro" size={14} />
+          See Credit History
+        </button>
+      </div>
     </div>
   );
 };

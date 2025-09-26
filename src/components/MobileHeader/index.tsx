@@ -147,7 +147,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
     switch (currentPath) {
       case PAGES.HISTORY.PATH:
-        return <Icon name="history" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+        return <Icon name="conversation-bubbles" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       case PAGES.MY_CARDS.PATH:
         return <Icon name="card" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       case PAGES.PREFERENCES.PATH:
@@ -287,9 +287,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                       <li className={isActive(PAGES.HISTORY.PATH) ? 'active' : ''}>
                         <Drawer.Close asChild>
                           <Link to={PAGES.HISTORY.PATH}>
-                            <Icon 
-                              name="history" 
-                              variant={isActive(PAGES.HISTORY.PATH) ? 'solid' : 'outline'} 
+                            <Icon
+                              name="conversation-bubbles"
+                              variant={isActive(PAGES.HISTORY.PATH) ? 'solid' : 'outline'}
                               size={18}
                               color={SIDEBAR_INACTIVE_ICON_COLOR}
                             />
