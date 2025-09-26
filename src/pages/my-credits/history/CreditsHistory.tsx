@@ -37,9 +37,10 @@ import './CreditsHistory.scss';
 interface CreditsHistoryProps {
   userCardDetails: CreditCardDetails[];
   reloadTrigger?: number;
+  onRefreshMonthlyStats?: () => void;
 }
 
-const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reloadTrigger }) => {
+const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reloadTrigger, onRefreshMonthlyStats }) => {
   // Use the full height hook for this page
   useFullHeight(true);
 
@@ -72,6 +73,11 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
 
       const updatedCalendar = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
       updateLocalCalendar(updatedCalendar);
+
+      // Also refresh monthly stats when credits are updated
+      if (onRefreshMonthlyStats) {
+        onRefreshMonthlyStats();
+      }
     } catch (error) {
       console.error('Failed to refresh credit history:', error);
     }

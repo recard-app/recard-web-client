@@ -996,6 +996,7 @@ function AppContent({}: AppContentProps) {
                       <CreditsHistory
                         userCardDetails={userDetailedCardDetails}
                         reloadTrigger={cardsVersion}
+                        onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
                       />
                     </ProtectedRoute>
                   } />
