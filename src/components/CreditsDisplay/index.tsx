@@ -85,7 +85,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
     return (
       <div className="credits-display">
         <CreditGroup
-          title="Prioritized Credits"
+          title="Credits this month"
           periodLabel={periodLabel}
           credits={calendar.Credits}
           now={effectiveNow}

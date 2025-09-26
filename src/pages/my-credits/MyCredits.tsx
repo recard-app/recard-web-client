@@ -9,10 +9,14 @@ import Icon from '../../icons';
 import { InfoDisplay } from '../../elements/InfoDisplay/InfoDisplay';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import CreditSummary from '../../components/CreditSummary';
+import { useFullHeight } from '../../hooks/useFullHeight';
 import './shared-credits-layout.scss';
 import './MyCredits.scss';
 
 const MyCredits: React.FC = () => {
+  // Use the full height hook for this page
+  useFullHeight(true);
+
   const [prioritizedCredits, setPrioritizedCredits] = useState<PrioritizedCredit[]>([]);
   const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
