@@ -439,10 +439,14 @@ function AppContent({}: AppContentProps) {
   // Function to refresh tracking preferences when they're updated
   const refreshTrackingPreferences = async (): Promise<void> => {
     if (!user) return;
-    
+
     try {
       const preferences = await UserCreditService.fetchCreditTrackingPreferences();
       setTrackingPreferences(preferences);
+
+      // Also refresh monthly stats when preferences are updated
+      // (hide/show preferences affect monthly stats calculations)
+      setMonthlyStatsRefreshTrigger(prev => prev + 1);
     } catch (error) {
       console.error('Error refreshing credit tracking preferences:', error);
     }
