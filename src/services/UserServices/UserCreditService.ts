@@ -379,6 +379,9 @@ export const UserCreditService = {
         if (options?.excludeHidden) {
             params.set('excludeHidden', 'true');
         }
+        if (options?.showRedeemed) {
+            params.set('showRedeemed', 'true');
+        }
 
         const queryString = params.toString();
         const url = `${apiurl}/users/cards/credits/prioritized-list${queryString ? `?${queryString}` : ''}`;

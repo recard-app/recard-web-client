@@ -6,12 +6,16 @@ import { UserCreditService, UserCreditCardService } from '../../services';
 import CreditList from '../../components/CreditsDisplay/CreditList';
 import { CreditCardDetails, PrioritizedCredit, UserCreditWithExpiration } from '../../types/CreditCardTypes';
 import { useCredits } from '../../contexts/ComponentsContext';
+import Icon from '../../icons';
+import { InfoDisplay } from '../../elements/InfoDisplay/InfoDisplay';
 import './MyCredits.scss';
 
 const MyCredits: React.FC = () => {
   const [prioritizedCredits, setPrioritizedCredits] = useState<PrioritizedCredit[]>([]);
   const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showRedeemed, setShowRedeemed] = useState(false);
+  const [isToggleLoading, setIsToggleLoading] = useState(false);
   const credits = useCredits();
 
   // Convert prioritized credits to UserCreditWithExpiration format for CreditList
@@ -43,12 +47,37 @@ const MyCredits: React.FC = () => {
       const prioritizedResponse = await UserCreditService.fetchPrioritizedCreditsList({
         year: currentYear,
         limit: 0, // Get all credits
-        excludeHidden: true
+        excludeHidden: true,
+        showRedeemed
       });
 
       setPrioritizedCredits(prioritizedResponse.credits);
     } catch (error) {
       console.error('Failed to refresh current year credits:', error);
+    }
+  };
+
+  // Handler for toggling showRedeemed with loading state
+  const handleToggleRedeemed = async (newShowRedeemed: boolean) => {
+    setIsToggleLoading(true);
+    setShowRedeemed(newShowRedeemed);
+
+    try {
+      const currentYear = new Date().getFullYear();
+      const prioritizedResponse = await UserCreditService.fetchPrioritizedCreditsList({
+        year: currentYear,
+        limit: 0, // Get all credits
+        excludeHidden: true,
+        showRedeemed: newShowRedeemed
+      });
+
+      setPrioritizedCredits(prioritizedResponse.credits);
+    } catch (error) {
+      console.error('Failed to toggle redeemed credits:', error);
+      // Revert the state on error
+      setShowRedeemed(!newShowRedeemed);
+    } finally {
+      setIsToggleLoading(false);
     }
   };
 
@@ -66,7 +95,8 @@ const MyCredits: React.FC = () => {
           UserCreditService.fetchPrioritizedCreditsList({
             year: currentYear,
             limit: 0, // Get all credits
-            excludeHidden: true
+            excludeHidden: true,
+            showRedeemed
           })
         ]);
 
@@ -81,6 +111,13 @@ const MyCredits: React.FC = () => {
 
     loadCredits();
   }, []);
+
+  // Refetch credits when showRedeemed changes
+  useEffect(() => {
+    if (!isLoading) {
+      refreshCredits();
+    }
+  }, [showRedeemed]);
 
   return (
     <div className="standard-page-layout">
@@ -100,13 +137,45 @@ const MyCredits: React.FC = () => {
           {isLoading ? (
             <div className="credits-loading">Loading credits...</div>
           ) : (
-            <CreditList
-              credits={userCreditsFromPrioritized}
-              now={new Date()}
-              cardById={cardById}
-              creditByPair={creditByPair}
-              onUpdateComplete={refreshCredits}
-            />
+            <>
+              <CreditList
+                credits={userCreditsFromPrioritized}
+                now={new Date()}
+                cardById={cardById}
+                creditByPair={creditByPair}
+                onUpdateComplete={refreshCredits}
+              />
+
+              <div className="redeemed-credits-toggle-container" style={{ marginTop: '20px', textAlign: 'center', position: 'relative' }}>
+                {isToggleLoading ? (
+                  <InfoDisplay
+                    type="loading"
+                    message="Loading..."
+                    showTitle={false}
+                    transparent={true}
+                    centered={true}
+                  />
+                ) : (
+                  !showRedeemed ? (
+                    <button
+                      className="button ghost icon with-text"
+                      onClick={() => handleToggleRedeemed(true)}
+                    >
+                      <Icon name="used-icon" variant="micro" size={14} />
+                      See redeemed credits
+                    </button>
+                  ) : (
+                    <button
+                      className="button ghost icon with-text"
+                      onClick={() => handleToggleRedeemed(false)}
+                    >
+                      <Icon name="used-icon" variant="micro" size={14} />
+                      Hide redeemed credits
+                    </button>
+                  )
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>

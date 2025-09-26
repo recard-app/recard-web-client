@@ -312,6 +312,7 @@ export interface GetPrioritizedCreditsListParams {
     period?: CreditPeriodType; // Optional period filter (monthly, quarterly, etc.)
     onlyExpiring?: boolean; // Optional flag to only include credits where isExpiring=true
     excludeHidden?: boolean; // Optional flag to exclude credits marked as hidden in user preferences
+    showRedeemed?: boolean; // Optional flag to show redeemed/fully used credits (default false)
 }
 
 export interface GetPrioritizedCreditsListResponse {
