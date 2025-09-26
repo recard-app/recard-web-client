@@ -10,16 +10,19 @@ const PAGE_BACKGROUNDS: Record<string, string> = {
   [PAGES.SIGN_UP.PATH]: 'bg-white',                 // Sign up page - white background
   [PAGES.WELCOME.PATH]: 'bg-white',                 // Welcome page - white background
   [PAGES.FORGOT_PASSWORD.PATH]: 'bg-white',         // Forgot password - white background
+  [PAGES.MY_CREDITS.PATH]: 'bg-lightest',          // My credits page - lightest background
+  [PAGES.MY_CREDITS_HISTORY.PATH]: 'bg-lightest',  // My credits history page - lightest background
+  [PAGES.HISTORY.PATH]: 'bg-lightest',             // History page - lightest background
   // Add more pages here as needed:
   // [PAGES.PREFERENCES.PATH]: 'bg-primary',        // Example: primary color background
   // [PAGES.ACCOUNT.PATH]: 'bg-dark',               // Example: dark background
-  // [PAGES.HISTORY.PATH]: 'bg-light',              // Example: light background (default)
 };
 
 // Available background classes
 export const BACKGROUND_CLASSES = {
   WHITE: 'bg-white',
   LIGHT: 'bg-light',
+  LIGHTEST: 'bg-lightest',
   DARK: 'bg-dark',
   PRIMARY: 'bg-primary',
 } as const;
