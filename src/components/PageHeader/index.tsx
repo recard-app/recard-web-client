@@ -1,6 +1,6 @@
 import React from 'react';
 import { TEMP_ICON, SHOW_HEADER_ICONS, SIDEBAR_TOGGLE_ICON_COLOR } from '../../types';
-import { IconRenderer, Icon } from '../../icons';
+import { IconRenderer, Icon } from '@/icons';
 import './PageHeader.scss';
 
 interface PageHeaderProps {

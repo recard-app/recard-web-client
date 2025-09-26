@@ -594,6 +594,7 @@ function AppContent({}: AppContentProps) {
     if (path === PAGES.MY_CARDS.PATH) return true;
     if (path === PAGES.PREFERENCES.PATH) return true;
     if (path === PAGES.MY_CREDITS.PATH) return true;
+    if (path === PAGES.MY_CREDITS_HISTORY.PATH) return true;
     return false;
   };
 
@@ -612,6 +613,9 @@ function AppContent({}: AppContentProps) {
       return <PreferencesHelpModal />;
     }
     if (path === PAGES.MY_CREDITS.PATH) {
+      return <MyCreditsHelpModal />;
+    }
+    if (path === PAGES.MY_CREDITS_HISTORY.PATH) {
       return <MyCreditsHelpModal />;
     }
     return null;
