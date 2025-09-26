@@ -22,6 +22,7 @@ export interface CreditEntryProps {
   creditMaxValue?: number; // value of the credit in dollars
   hideSlider?: boolean; // flag to hide the slider in card view
   disableDropdown?: boolean; // flag to disable the dropdown functionality
+  displayPeriod?: boolean; // flag to display the period text (default: true)
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -50,7 +51,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, onUpdateHistoryEntry, onUpdateComplete }) => {
+const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete }) => {
   const isMobile = useIsMobile();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,6 +70,14 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     [CREDIT_USAGE.PARTIALLY_USED]: 'partially-used-icon',
     [CREDIT_USAGE.NOT_USED]: 'not-used-icon',
     [CREDIT_USAGE.INACTIVE]: 'inactive',
+  };
+
+  // Mapping for display-friendly period names
+  const PERIOD_DISPLAY_NAMES: Record<string, string> = {
+    'monthly': 'Monthly',
+    'quarterly': 'Quarterly',
+    'semiannually': 'Semiannually',
+    'annually': 'Annually'
   };
 
   // Compute the current period number based on AssociatedPeriod and now
@@ -295,6 +304,11 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 className="card-thumbnail"
               />
               <span className="card-name">{card.CardName}</span>
+            </div>
+          )}
+          {displayPeriod && (
+            <div className="period-text">
+              {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
             </div>
           )}
           {isExpiring && (

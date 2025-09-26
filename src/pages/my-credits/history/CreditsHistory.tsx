@@ -837,6 +837,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                 showPartiallyUsed={showPartiallyUsed}
                 showInactive={showInactive}
                 showAllPeriods={!isMobileViewport}
+                displayPeriod={false}
                 onUpdateComplete={refreshCalendar}
                 />
             )}

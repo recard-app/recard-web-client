@@ -9,6 +9,7 @@ export interface CreditListProps {
   now: Date;
   cardById: Map<string, CreditCardDetails>;
   creditByPair: Map<string, CardCredit>;
+  displayPeriod?: boolean; // flag to display the period text (default: true)
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -37,7 +38,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, onUpdateHistoryEntry, onUpdateComplete }) => {
+const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete }) => {
   const isMobile = useIsMobile();
 
   if (!credits || credits.length === 0) return null;
@@ -57,6 +58,7 @@ const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditB
             cardCredit={cardCredit}
             creditMaxValue={typeof creditMaxValue === 'string' ? Number(creditMaxValue.replace(/[^0-9.]/g, '')) : (creditMaxValue as unknown as number) }
             disableDropdown={isMobile} // Disable dropdown on mobile
+            displayPeriod={displayPeriod}
             onUpdateHistoryEntry={onUpdateHistoryEntry}
             onUpdateComplete={onUpdateComplete}
           />

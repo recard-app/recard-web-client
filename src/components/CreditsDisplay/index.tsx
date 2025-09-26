@@ -26,6 +26,8 @@ export interface CreditsDisplayProps {
   useSimpleDisplay?: boolean;
   // Show period label (calendar icon with month name) in simple display mode
   showPeriodLabel?: boolean;
+  // Show period text on individual credit entries (default: true)
+  displayPeriod?: boolean;
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -37,7 +39,7 @@ export interface CreditsDisplayProps {
   children?: ReactNode; // Optional children to render at the bottom
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, onUpdateHistoryEntry, onUpdateComplete, children }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, children }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
   const credits = useCredits(); // Get all credit data from the context
 
@@ -91,6 +93,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           now={effectiveNow}
           cardById={cardById}
           creditByPair={creditByPair}
+          displayPeriod={displayPeriod}
           onUpdateHistoryEntry={onUpdateHistoryEntry}
           onUpdateComplete={onUpdateComplete}
         />
@@ -116,6 +119,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
           showPartiallyUsed={showPartiallyUsed}
           showInactive={showInactive}
           showAllPeriods={showAllPeriods}
+          displayPeriod={displayPeriod}
           onUpdateHistoryEntry={onUpdateHistoryEntry}
           onUpdateComplete={onUpdateComplete}
         />

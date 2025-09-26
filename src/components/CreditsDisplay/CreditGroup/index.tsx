@@ -12,6 +12,7 @@ export interface CreditGroupProps {
   now: Date;
   cardById: Map<string, CreditCardDetails>;
   creditByPair: Map<string, CardCredit>;
+  displayPeriod?: boolean; // flag to display the period text (default: true)
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -29,6 +30,7 @@ const CreditGroup: React.FC<CreditGroupProps> = ({
   now,
   cardById,
   creditByPair,
+  displayPeriod = true,
   onUpdateHistoryEntry,
   onUpdateComplete
 }) => {
@@ -54,6 +56,7 @@ const CreditGroup: React.FC<CreditGroupProps> = ({
         now={now}
         cardById={cardById}
         creditByPair={creditByPair}
+        displayPeriod={displayPeriod}
         onUpdateHistoryEntry={onUpdateHistoryEntry}
         onUpdateComplete={onUpdateComplete}
       />

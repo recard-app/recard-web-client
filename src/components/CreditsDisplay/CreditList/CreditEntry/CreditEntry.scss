@@ -50,6 +50,13 @@
     }
   }
 
+  .period-text {
+    font-size: $font-xs;
+    color: $neutral-dark-gray;
+    font-weight: $font-medium;
+    text-transform: capitalize;
+  }
+
   .expiring-text {
     font-size: $font-xs;
     color: $neutral-medium-gray;
