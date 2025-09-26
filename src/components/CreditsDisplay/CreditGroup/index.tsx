@@ -1,6 +1,6 @@
 import React from 'react';
 import '../CreditPeriodGroup/CreditPeriodGroup.scss'; // Share the same CSS
-import { CreditUsageType, UserCredit } from '../../../types';
+import { CreditUsageType, UserCredit, UserCreditWithExpiration } from '../../../types';
 import CreditList from '../CreditList';
 import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
 import Icon from '@/icons';
@@ -8,7 +8,7 @@ import Icon from '@/icons';
 export interface CreditGroupProps {
   title: string;
   periodLabel?: string;
-  credits: UserCredit[];
+  credits: (UserCredit | UserCreditWithExpiration)[];
   now: Date;
   cardById: Map<string, CreditCardDetails>;
   creditByPair: Map<string, CardCredit>;

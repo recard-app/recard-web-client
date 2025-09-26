@@ -25,7 +25,9 @@ const MyCredits: React.FC = () => {
       CreditId: credit.id,
       AssociatedPeriod: credit.period,
       History: credit.History || [],
-      ActiveMonths: undefined // Not needed for prioritized view
+      ActiveMonths: undefined, // Not needed for prioritized view
+      isExpiring: credit.isExpiring, // Include expiration flag
+      daysUntilExpiration: credit.daysUntilExpiration // Include days until expiration
     } as UserCredit)),
     Year: new Date().getFullYear()
   } : null;
