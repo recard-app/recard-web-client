@@ -36,6 +36,7 @@ export const CREDIT_USAGE = {
     NOT_USED: 'not_used',
     PARTIALLY_USED: 'partially_used',
     INACTIVE: 'inactive',
+    FUTURE: 'future',
     DISABLED: 'disabled'
 } as const;
 export type CreditUsageType = typeof CREDIT_USAGE[keyof typeof CREDIT_USAGE];
@@ -48,6 +49,7 @@ export const CREDIT_USAGE_DISPLAY_NAMES = {
     NOT_USED: 'Not Used',
     PARTIALLY_USED: 'Partially Used',
     INACTIVE: 'Not Tracked',
+    FUTURE: 'Future',
     DISABLED: 'Disabled'
 } as const;
 export type CreditUsageDisplayNameType = typeof CREDIT_USAGE_DISPLAY_NAMES[keyof typeof CREDIT_USAGE_DISPLAY_NAMES];
@@ -330,13 +332,6 @@ export interface MonthlyStatsResponse {
         unusedCount: number;
     };
     AllCredits: {
-        usedValue: number;
-        possibleValue: number;
-        usedCount: number;
-        partiallyUsedCount: number;
-        unusedCount: number;
-    };
-    CurrentCredits: {
         usedValue: number;
         possibleValue: number;
         usedCount: number;

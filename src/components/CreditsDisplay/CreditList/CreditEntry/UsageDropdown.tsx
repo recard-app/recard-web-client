@@ -19,6 +19,7 @@ const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
   [CREDIT_USAGE.NOT_USED]: 'not-used-icon',
   [CREDIT_USAGE.INACTIVE]: 'inactive',
   [CREDIT_USAGE.DISABLED]: 'disabled',
+  [CREDIT_USAGE.FUTURE]: 'disabled',
 };
 
 const USAGE_COLOR_BY_STATE: Record<CreditUsageType, string> = {
@@ -27,6 +28,7 @@ const USAGE_COLOR_BY_STATE: Record<CreditUsageType, string> = {
   [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_DISPLAY_COLORS.NOT_USED,
   [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE,
   [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
+  [CREDIT_USAGE.FUTURE]: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
 };
 
 const UsageDropdown: React.FC<UsageDropdownProps> = ({
@@ -48,7 +50,7 @@ const UsageDropdown: React.FC<UsageDropdownProps> = ({
         alignOffset={0}
       >
         {Object.entries(CREDIT_USAGE_DISPLAY_NAMES)
-          .filter(([key]) => key !== 'DISABLED') // Exclude DISABLED from dropdown options
+          .filter(([key]) => key !== 'DISABLED' && key !== 'FUTURE') // Exclude DISABLED and FUTURE from dropdown options
           .map(([key, label]) => {
             const usageKey = CREDIT_USAGE[key as keyof typeof CREDIT_USAGE];
             const isSelected = usage === usageKey;

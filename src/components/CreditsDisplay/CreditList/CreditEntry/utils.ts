@@ -30,6 +30,7 @@ export function getValueForUsage(usage: CreditUsageType, maxValue: number): numb
       return Math.ceil(maxValue / 2);
     case CREDIT_USAGE.NOT_USED:
     case CREDIT_USAGE.INACTIVE:
+    case CREDIT_USAGE.FUTURE:
       return 0;
     default:
       return 0;

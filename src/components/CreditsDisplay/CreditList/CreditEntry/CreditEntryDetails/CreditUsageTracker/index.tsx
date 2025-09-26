@@ -94,7 +94,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         usage,
         valueUsed,
         isFuture,
-        isActive: !isFuture && usage !== CREDIT_USAGE.INACTIVE && usage !== CREDIT_USAGE.DISABLED
+        isActive: !isFuture && usage !== CREDIT_USAGE.INACTIVE && usage !== CREDIT_USAGE.DISABLED && usage !== CREDIT_USAGE.FUTURE
       });
     }
 
@@ -136,6 +136,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
       case CREDIT_USAGE.NOT_USED:
         return 'not-used-icon';
       case CREDIT_USAGE.DISABLED:
+      case CREDIT_USAGE.FUTURE:
         return 'disabled';
       case CREDIT_USAGE.INACTIVE:
       default:
@@ -155,6 +156,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
       case CREDIT_USAGE.NOT_USED:
         return CREDIT_USAGE_DISPLAY_COLORS.NOT_USED;
       case CREDIT_USAGE.DISABLED:
+      case CREDIT_USAGE.FUTURE:
         return CREDIT_USAGE_DISPLAY_COLORS.DISABLED;
       case CREDIT_USAGE.INACTIVE:
       default:
@@ -193,6 +195,8 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         return 'Not Used';
       case CREDIT_USAGE.DISABLED:
         return 'Disabled';
+      case CREDIT_USAGE.FUTURE:
+        return 'Future';
       case CREDIT_USAGE.INACTIVE:
       default:
         return 'Untracked';
@@ -206,7 +210,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         className={`tracker-periods ${userCredit.AssociatedPeriod}`}
       >
         {periods.map((period) => {
-          const isDisabled = period.usage === CREDIT_USAGE.DISABLED;
+          const isDisabled = period.usage === CREDIT_USAGE.DISABLED || period.usage === CREDIT_USAGE.FUTURE;
           const usageColor = getUsageColor(period.usage, period.isFuture, isDisabled);
           const backgroundColor = tintHexColor(usageColor, 0.95);
           const isSelected = selectedPeriodNumber === period.periodNumber;
