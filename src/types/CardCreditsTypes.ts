@@ -401,12 +401,12 @@ export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[key
  * Represents the different credit usage icon names
  */
 export const CREDIT_USAGE_ICON_NAMES = {
-    USED: 'used-icon',
-    NOT_USED: 'not-used-icon',
-    PARTIALLY_USED: 'partially-used-icon',
-    INACTIVE: 'inactive',
-    FUTURE: 'future-icon',
-    DISABLED: 'disabled'
+    USED: 'used-icon-filled',
+    NOT_USED: 'not-used-icon-filled',
+    PARTIALLY_USED: 'partially-used-icon-filled',
+    INACTIVE: 'inactive-filled',
+    FUTURE: 'future-icon-filled',
+    DISABLED: 'disabled-filled'
 } as const;
 export type CreditUsageIconNameType = typeof CREDIT_USAGE_ICON_NAMES[keyof typeof CREDIT_USAGE_ICON_NAMES];
 
