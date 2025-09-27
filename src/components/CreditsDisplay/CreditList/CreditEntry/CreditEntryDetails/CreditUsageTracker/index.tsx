@@ -48,16 +48,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
     for (let i = 1; i <= totalPeriods; i++) {
       // Find the historical data for this period
       const historyEntry = userCredit.History.find((h: any) => h.PeriodNumber === i);
-      
-      // Use current usage/value if this is the selected period and we have live data
-      const isSelectedPeriod = selectedPeriodNumber === i;
-      const usage = isSelectedPeriod && currentUsage !== undefined 
-        ? currentUsage 
-        : (historyEntry?.CreditUsage as CreditUsageType ?? CREDIT_USAGE.INACTIVE);
-      const valueUsed = isSelectedPeriod && currentValueUsed !== undefined 
-        ? currentValueUsed 
-        : (historyEntry?.ValueUsed ?? 0);
-      
+
       // Calculate if this period is in the future
       let isFuture = false;
       if (isCurrentYear) {
@@ -76,6 +67,23 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         // Entire year is in the future
         isFuture = true;
       }
+
+      // Use current usage/value if this is the selected period and we have live data
+      const isSelectedPeriod = selectedPeriodNumber === i;
+
+      // Determine usage status - future periods should use FUTURE status
+      let usage: CreditUsageType;
+      if (isFuture) {
+        usage = CREDIT_USAGE.FUTURE;
+      } else if (isSelectedPeriod && currentUsage !== undefined) {
+        usage = currentUsage;
+      } else {
+        usage = (historyEntry?.CreditUsage as CreditUsageType ?? CREDIT_USAGE.INACTIVE);
+      }
+
+      const valueUsed = isSelectedPeriod && currentValueUsed !== undefined
+        ? currentValueUsed
+        : (historyEntry?.ValueUsed ?? 0);
 
       // Generate simplified period labels
       let periodName = '';
@@ -136,8 +144,9 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         return CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED;
       case CREDIT_USAGE.NOT_USED:
         return CREDIT_USAGE_ICON_NAMES.NOT_USED;
-      case CREDIT_USAGE.DISABLED:
       case CREDIT_USAGE.FUTURE:
+        return CREDIT_USAGE_ICON_NAMES.FUTURE;
+      case CREDIT_USAGE.DISABLED:
         return CREDIT_USAGE_ICON_NAMES.DISABLED;
       case CREDIT_USAGE.INACTIVE:
       default:
@@ -146,9 +155,6 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
   };
 
   const getUsageColor = (usage: CreditUsageType, isFuture: boolean, isDisabled: boolean): string => {
-    if (isFuture || isDisabled) {
-      return CREDIT_USAGE_DISPLAY_COLORS.INACTIVE;
-    }
     switch (usage) {
       case CREDIT_USAGE.USED:
         return CREDIT_USAGE_DISPLAY_COLORS.USED;
@@ -156,8 +162,9 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         return CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED;
       case CREDIT_USAGE.NOT_USED:
         return CREDIT_USAGE_DISPLAY_COLORS.NOT_USED;
-      case CREDIT_USAGE.DISABLED:
       case CREDIT_USAGE.FUTURE:
+        return CREDIT_USAGE_DISPLAY_COLORS.FUTURE;
+      case CREDIT_USAGE.DISABLED:
         return CREDIT_USAGE_DISPLAY_COLORS.DISABLED;
       case CREDIT_USAGE.INACTIVE:
       default:
