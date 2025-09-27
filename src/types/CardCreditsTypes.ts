@@ -405,7 +405,7 @@ export const CREDIT_USAGE_ICON_NAMES = {
     NOT_USED: 'not-used-icon',
     PARTIALLY_USED: 'partially-used-icon',
     INACTIVE: 'inactive',
-    FUTURE: 'inactive',
+    FUTURE: 'future-icon',
     DISABLED: 'disabled'
 } as const;
 export type CreditUsageIconNameType = typeof CREDIT_USAGE_ICON_NAMES[keyof typeof CREDIT_USAGE_ICON_NAMES];
