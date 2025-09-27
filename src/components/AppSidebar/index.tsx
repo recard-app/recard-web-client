@@ -54,6 +54,7 @@ interface AppSidebarProps {
   isLoadingMonthlyStats: boolean;
   isUpdatingMonthlyStats?: boolean;
   prioritizedCredits: PrioritizedCredit[];
+  onRefreshMonthlyStats?: () => void;
 }
 
 const AppSidebar: React.FC<AppSidebarProps> = ({
@@ -76,7 +77,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   monthlyStats,
   isLoadingMonthlyStats,
   isUpdatingMonthlyStats,
-  prioritizedCredits
+  prioritizedCredits,
+  onRefreshMonthlyStats
 }) => {
   // Get current location for active state
   const location = useLocation();
@@ -353,6 +355,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                         variant="sidebar"
                         limit={5}
                         displayPeriod={false}
+                        onUpdateComplete={onRefreshMonthlyStats}
+                        isUpdating={isUpdatingMonthlyStats}
                       />
                     );
                   })()

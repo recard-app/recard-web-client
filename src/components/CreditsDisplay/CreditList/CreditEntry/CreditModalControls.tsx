@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType, MOBILE_BREAKPOINT } from '../../../../types';
 import { CardCredit } from '../../../../types/CreditCardTypes';
 import { MONTH_ABBREVIATIONS } from '../../../../types/Constants';
-import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
+import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
 import { Slider } from '../../../ui/slider';
 import Icon from '@/icons';
 import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './utils';
@@ -100,16 +100,18 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
     [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_DISPLAY_COLORS.NOT_USED,
     [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE,
     [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
+    [CREDIT_USAGE.FUTURE]: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
   };
 
   const usageColor = USAGE_COLOR_BY_STATE[usage];
 
   const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
-    [CREDIT_USAGE.USED]: 'used-icon',
-    [CREDIT_USAGE.PARTIALLY_USED]: 'partially-used-icon',
-    [CREDIT_USAGE.NOT_USED]: 'not-used-icon',
-    [CREDIT_USAGE.INACTIVE]: 'inactive',
-    [CREDIT_USAGE.DISABLED]: 'disabled',
+    [CREDIT_USAGE.USED]: CREDIT_USAGE_ICON_NAMES.USED,
+    [CREDIT_USAGE.PARTIALLY_USED]: CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED,
+    [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_ICON_NAMES.NOT_USED,
+    [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_ICON_NAMES.INACTIVE,
+    [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_ICON_NAMES.DISABLED,
+    [CREDIT_USAGE.FUTURE]: CREDIT_USAGE_ICON_NAMES.FUTURE,
   };
 
   // Tinting functions

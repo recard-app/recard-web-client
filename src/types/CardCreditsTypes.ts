@@ -392,9 +392,23 @@ export const CREDIT_USAGE_DISPLAY_COLORS = {
     NOT_USED: COLORS.NEUTRAL_BLACK,
     PARTIALLY_USED: COLORS.ACCENT_MEDIUM,
     INACTIVE: COLORS.NEUTRAL_MEDIUM_GRAY,
+    FUTURE: COLORS.NEUTRAL_MEDIUM_GRAY,
     DISABLED: COLORS.DISABLED_GRAY
 } as const;
 export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[keyof typeof CREDIT_USAGE_DISPLAY_COLORS];
+
+/**
+ * Represents the different credit usage icon names
+ */
+export const CREDIT_USAGE_ICON_NAMES = {
+    USED: 'used-icon',
+    NOT_USED: 'not-used-icon',
+    PARTIALLY_USED: 'partially-used-icon',
+    INACTIVE: 'inactive',
+    FUTURE: 'inactive',
+    DISABLED: 'disabled'
+} as const;
+export type CreditUsageIconNameType = typeof CREDIT_USAGE_ICON_NAMES[keyof typeof CREDIT_USAGE_ICON_NAMES];
 
 /**
  * Represents the different credit tracking preferences. This is correlated to the active/inactive status of the credit.

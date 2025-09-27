@@ -792,6 +792,7 @@ function AppContent({}: AppContentProps) {
               isLoadingMonthlyStats={isLoadingMonthlyStats}
               isUpdatingMonthlyStats={isUpdatingMonthlyStats}
               prioritizedCredits={prioritizedCredits}
+              onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
             />
           )}
           {(() => {
@@ -822,6 +823,7 @@ function AppContent({}: AppContentProps) {
                 isLoadingMonthlyStats={isLoadingMonthlyStats}
                 isUpdatingMonthlyStats={isUpdatingMonthlyStats}
                 prioritizedCredits={prioritizedCredits}
+                onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
               />
             ) : null;
           })()}

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES, MOBILE_BREAKPOINT, DISABLE_MOBILE_CREDITS_STICKY_FOOTER } from '../../../types';
-import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE } from '../../../types/CardCreditsTypes';
+import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CREDIT_USAGE_ICON_NAMES } from '../../../types/CardCreditsTypes';
 import { useCredits } from '../../../contexts/ComponentsContext';
 import {
   Dialog,
@@ -679,15 +679,15 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
               <ToggleBar className="connected items-center gap-2">
                 <span className="caps-label">Credits to Show</span>
                 <ToggleBarButton pressed={showUsed} onPressedChange={setShowUsed} className="small icon with-text">
-                  <Icon name="used-icon" variant="micro" size={14} />
+                  <Icon name={CREDIT_USAGE_ICON_NAMES.USED} variant="micro" size={14} />
                   <span>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
                 </ToggleBarButton>
                 <ToggleBarButton pressed={showNotUsed} onPressedChange={setShowNotUsed} className="small icon with-text">
-                  <Icon name="not-used-icon" variant="micro" size={14} />
+                  <Icon name={CREDIT_USAGE_ICON_NAMES.NOT_USED} variant="micro" size={14} />
                   <span>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
                 </ToggleBarButton>
                 <ToggleBarButton pressed={showPartiallyUsed} onPressedChange={setShowPartiallyUsed} className="small icon with-text">
-                  <Icon name="partially-used-icon" variant="micro" size={14} />
+                  <Icon name={CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED} variant="micro" size={14} />
                   <span>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
                 </ToggleBarButton>
                 <ToggleBarButton pressed={showInactive} onPressedChange={setShowInactive} className="small icon with-text">
@@ -890,15 +890,15 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
             <ToggleBar className="connected items-center gap-2">
               <span className="caps-label">Credits to Show</span>
               <ToggleBarButton pressed={showUsed} onPressedChange={setShowUsed} className="small icon with-text">
-                <Icon name="used-icon" variant="micro" size={14} />
+                <Icon name={CREDIT_USAGE_ICON_NAMES.USED} variant="micro" size={14} />
                 <span>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
               </ToggleBarButton>
               <ToggleBarButton pressed={showNotUsed} onPressedChange={setShowNotUsed} className="small icon with-text">
-                <Icon name="not-used-icon" variant="micro" size={14} />
+                <Icon name={CREDIT_USAGE_ICON_NAMES.NOT_USED} variant="micro" size={14} />
                 <span>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
               </ToggleBarButton>
               <ToggleBarButton pressed={showPartiallyUsed} onPressedChange={setShowPartiallyUsed} className="small icon with-text">
-                <Icon name="partially-used-icon" variant="micro" size={14} />
+                <Icon name={CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED} variant="micro" size={14} />
                 <span>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
               </ToggleBarButton>
               <ToggleBarButton pressed={showInactive} onPressedChange={setShowInactive} className="small icon with-text">

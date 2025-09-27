@@ -6,19 +6,11 @@ import { UserCredit, UserCreditWithExpiration, SingleCreditHistory, CREDIT_USAGE
  */
 export function convertPrioritizedCreditsToUserCredits(prioritizedCredits: PrioritizedCredit[]): UserCreditWithExpiration[] {
   return prioritizedCredits.map((pc): UserCreditWithExpiration => {
-    // Create a single history entry based on the current usage status
-    const history: SingleCreditHistory[] = [{
-      PeriodNumber: 1, // For sidebar display, we use period 1 as default
-      CreditUsage: pc.usedAmount >= pc.totalAmount ? CREDIT_USAGE.USED :
-                   pc.usedAmount > 0 ? CREDIT_USAGE.PARTIALLY_USED :
-                   CREDIT_USAGE.NOT_USED,
-      ValueUsed: pc.usedAmount
-    }];
-
+    // Use the actual History data from PrioritizedCredit instead of creating fake data
     return {
       CardId: pc.cardId,
       CreditId: pc.id,
-      History: history,
+      History: pc.History, // Use the complete history from the server
       AssociatedPeriod: pc.period,
       // Use expiration data directly from server without client-side calculation
       isExpiring: pc.isExpiring,

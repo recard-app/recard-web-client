@@ -44,12 +44,14 @@ interface MobileHeaderProps {
   onOpenCardSelector?: () => void;
   monthlyStats?: MonthlyStatsResponse | null;
   isLoadingMonthlyStats?: boolean;
+  isUpdatingMonthlyStats?: boolean;
   prioritizedCredits?: PrioritizedCredit[];
+  onRefreshMonthlyStats?: () => void;
 }
 
-const MobileHeader: React.FC<MobileHeaderProps> = ({ 
+const MobileHeader: React.FC<MobileHeaderProps> = ({
   // title is intentionally unused; we don't render dynamic titles in mobile header
-  title: _unusedTitle, 
+  title: _unusedTitle,
   rightContent,
   showHelpButton = false,
   onHelpClick,
@@ -69,7 +71,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   onOpenCardSelector,
   monthlyStats = null,
   isLoadingMonthlyStats = false,
-  prioritizedCredits = []
+  isUpdatingMonthlyStats = false,
+  prioritizedCredits = [],
+  onRefreshMonthlyStats
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -397,6 +401,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                         variant="sidebar"
                         limit={5}
                         displayPeriod={false}
+                        onUpdateComplete={onRefreshMonthlyStats}
+                        isUpdating={isUpdatingMonthlyStats}
                       />
                     )}
                   </div>

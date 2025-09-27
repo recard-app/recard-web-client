@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
 import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, MOBILE_BREAKPOINT } from '../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
-import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
+import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
 import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
@@ -71,10 +71,12 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   const [cardValueUsed, setCardValueUsed] = useState<number>(0);
   
   const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
-    [CREDIT_USAGE.USED]: 'used-icon',
-    [CREDIT_USAGE.PARTIALLY_USED]: 'partially-used-icon',
-    [CREDIT_USAGE.NOT_USED]: 'not-used-icon',
-    [CREDIT_USAGE.INACTIVE]: 'inactive',
+    [CREDIT_USAGE.USED]: CREDIT_USAGE_ICON_NAMES.USED,
+    [CREDIT_USAGE.PARTIALLY_USED]: CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED,
+    [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_ICON_NAMES.NOT_USED,
+    [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_ICON_NAMES.INACTIVE,
+    [CREDIT_USAGE.FUTURE]: CREDIT_USAGE_ICON_NAMES.FUTURE,
+    [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_ICON_NAMES.DISABLED,
   };
 
   // Mapping for display-friendly period names
@@ -182,6 +184,128 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
 
   const buttonBackgroundColor = tintHexColor(usageColor, 0.9);
   const buttonHoverColor = tintHexColor(usageColor, 0.85);
+
+  // Shared modal rendering function to ensure consistency between variants
+  const renderModal = () => {
+    return isMobile ? (
+      <Drawer open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DrawerContent fitContent maxHeight="80vh" className="mobile-credit-details-drawer">
+          <DrawerTitle className="sr-only">{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</DrawerTitle>
+          <div className="dialog-header drawer-sticky-header">
+            <h2>{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</h2>
+            {enrichedCredit && card && (
+              <p className="card-bubble-display header-card-display">
+                <CardIcon
+                  title={card.CardName}
+                  size={12}
+                  primary={card.CardPrimaryColor}
+                  secondary={card.CardSecondaryColor}
+                  className="card-thumbnail"
+                />
+                {card.CardName}
+              </p>
+            )}
+          </div>
+          <div className="drawer-content-scroll" style={{ padding: '0 16px 16px', overflow: 'auto' }}>
+            {enrichedCredit && (
+              <CreditEntryDetails
+                userCredit={enrichedCredit}
+                now={now}
+                card={card}
+                cardCredit={cardCredit}
+                creditMaxValue={creditMaxValue}
+                currentYear={now.getFullYear()}
+                onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                hideControls={false}
+                selectedPeriodNumber={selectedPeriodNumber}
+                onPeriodSelect={setSelectedPeriodNumber}
+              />
+            )}
+          </div>
+          <DrawerFooter>
+            {enrichedCredit && (
+              <>
+                <CreditUsageTracker
+                  userCredit={enrichedCredit}
+                  currentYear={now.getFullYear()}
+                  selectedPeriodNumber={selectedPeriodNumber}
+                  onPeriodSelect={setSelectedPeriodNumber}
+                />
+                <CreditModalControls
+                  userCredit={enrichedCredit}
+                  cardCredit={cardCredit}
+                  creditMaxValue={creditMaxValue}
+                  now={now}
+                  onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                  selectedPeriodNumber={selectedPeriodNumber}
+                  onPeriodSelect={setSelectedPeriodNumber}
+                  isUpdating={isUpdating}
+                />
+              </>
+            )}
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    ) : (
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent width="600px">
+          <DialogHeader>
+            <DialogTitle>{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</DialogTitle>
+            {enrichedCredit && card && (
+              <p className="card-bubble-display header-card-display">
+                <CardIcon
+                  title={card.CardName}
+                  size={12}
+                  primary={card.CardPrimaryColor}
+                  secondary={card.CardSecondaryColor}
+                  className="card-thumbnail"
+                />
+                {card.CardName}
+              </p>
+            )}
+          </DialogHeader>
+          <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
+            {enrichedCredit && (
+              <>
+                <CreditEntryDetails
+                  userCredit={enrichedCredit}
+                  now={now}
+                  card={card}
+                  cardCredit={cardCredit}
+                  creditMaxValue={creditMaxValue}
+                  currentYear={now.getFullYear()}
+                  onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                  hideControls={false}
+                  selectedPeriodNumber={selectedPeriodNumber}
+                  onPeriodSelect={setSelectedPeriodNumber}
+                />
+                <CreditUsageTracker
+                  userCredit={enrichedCredit}
+                  currentYear={now.getFullYear()}
+                  selectedPeriodNumber={selectedPeriodNumber}
+                  onPeriodSelect={setSelectedPeriodNumber}
+                />
+              </>
+            )}
+          </div>
+          <DialogFooter>
+            {enrichedCredit && (
+              <CreditModalControls
+                userCredit={enrichedCredit}
+                cardCredit={cardCredit}
+                creditMaxValue={creditMaxValue}
+                now={now}
+                onUpdateHistoryEntry={handleUpdateHistoryEntry}
+                selectedPeriodNumber={selectedPeriodNumber}
+                onPeriodSelect={setSelectedPeriodNumber}
+                isUpdating={isUpdating}
+              />
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  };
 
   // Handle credit history updates by calling the API directly
   const handleUpdateHistoryEntry = async (update: {
@@ -302,30 +426,39 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   };
 
 
-  // Sidebar variant - simplified display
+  // Sidebar variant - simplified display that reuses the same modal system as default variant
   if (variant === 'sidebar') {
     return (
-      <div className="credit-entry-sidebar">
-        <div className="credit-title-row">
-          <Icon
-            name={USAGE_ICON_NAME[cardUsage]}
-            variant="micro"
-            size={16}
-            style={{ color: USAGE_COLOR_BY_STATE[cardUsage] }}
-          />
-          <div className="credit-name">
-            {cardCredit?.Title ?? userCredit.CreditId}
+      <>
+        <div
+          className="credit-entry-sidebar"
+          onClick={() => setIsModalOpen(true)}
+          style={{ cursor: 'pointer' }}
+        >
+          <div className="credit-title-row">
+            <Icon
+              name={USAGE_ICON_NAME[cardUsage]}
+              variant="mini"
+              size={18}
+              style={{ color: USAGE_COLOR_BY_STATE[cardUsage] }}
+            />
+            <div className="credit-name">
+              {cardCredit?.Title ?? userCredit.CreditId}
+            </div>
           </div>
+          {isExpiring && (
+            <div className="expiring-text">
+              {daysUntilExpiration !== undefined
+                ? `Expires in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
+                : 'Expires soon'
+              }
+            </div>
+          )}
         </div>
-        {isExpiring && (
-          <div className="expiring-text">
-            {daysUntilExpiration !== undefined
-              ? `Expires in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
-              : 'Expires soon'
-            }
-          </div>
-        )}
-      </div>
+
+        {/* Modal for sidebar variant - uses shared modal function (same as default) */}
+        {renderModal()}
+      </>
     );
   }
 
@@ -432,125 +565,8 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         </div>
       </div>
 
-      {/* Responsive Modal/Drawer */}
-      {isMobile ? (
-        <Drawer open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DrawerContent fitContent maxHeight="80vh" className="mobile-credit-details-drawer">
-            <DrawerTitle className="sr-only">{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</DrawerTitle>
-            <div className="dialog-header drawer-sticky-header">
-              <h2>{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</h2>
-              {enrichedCredit && card && (
-                <p className="card-bubble-display header-card-display">
-                  <CardIcon 
-                    title={card.CardName}
-                    size={12}
-                    primary={card.CardPrimaryColor}
-                    secondary={card.CardSecondaryColor}
-                    className="card-thumbnail"
-                  />
-                  {card.CardName}
-                </p>
-              )}
-            </div>
-            <div className="drawer-content-scroll" style={{ padding: '0 16px 16px', overflow: 'auto' }}>
-              {enrichedCredit && (
-                <CreditEntryDetails
-                  userCredit={enrichedCredit}
-                  now={now}
-                  card={card}
-                  cardCredit={cardCredit}
-                  creditMaxValue={creditMaxValue}
-                  currentYear={now.getFullYear()}
-                  onUpdateHistoryEntry={handleUpdateHistoryEntry}
-                  hideControls={false}
-                  selectedPeriodNumber={selectedPeriodNumber}
-                  onPeriodSelect={setSelectedPeriodNumber}
-                />
-              )}
-            </div>
-            <DrawerFooter>
-              {enrichedCredit && (
-                <>
-                  <CreditUsageTracker 
-                    userCredit={enrichedCredit} 
-                    currentYear={now.getFullYear()} 
-                    selectedPeriodNumber={selectedPeriodNumber}
-                    onPeriodSelect={setSelectedPeriodNumber}
-                  />
-                  <CreditModalControls
-                    userCredit={enrichedCredit}
-                    cardCredit={cardCredit}
-                    creditMaxValue={creditMaxValue}
-                    now={now}
-                    onUpdateHistoryEntry={handleUpdateHistoryEntry}
-                    selectedPeriodNumber={selectedPeriodNumber}
-                    onPeriodSelect={setSelectedPeriodNumber}
-                    isUpdating={isUpdating}
-                  />
-                </>
-              )}
-            </DrawerFooter>
-          </DrawerContent>
-        </Drawer>
-      ) : (
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent width="600px">
-            <DialogHeader>
-              <DialogTitle>{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</DialogTitle>
-              {enrichedCredit && card && (
-                <p className="card-bubble-display header-card-display">
-                  <CardIcon 
-                    title={card.CardName}
-                    size={12}
-                    primary={card.CardPrimaryColor}
-                    secondary={card.CardSecondaryColor}
-                    className="card-thumbnail"
-                  />
-                  {card.CardName}
-                </p>
-              )}
-            </DialogHeader>
-            <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
-              {enrichedCredit && (
-                <>
-                  <CreditEntryDetails
-                    userCredit={enrichedCredit}
-                    now={now}
-                    card={card}
-                    cardCredit={cardCredit}
-                    creditMaxValue={creditMaxValue}
-                    currentYear={now.getFullYear()}
-                    onUpdateHistoryEntry={handleUpdateHistoryEntry}
-                    hideControls={false}
-                    selectedPeriodNumber={selectedPeriodNumber}
-                    onPeriodSelect={setSelectedPeriodNumber}
-                  />
-                  <CreditUsageTracker 
-                    userCredit={enrichedCredit} 
-                    currentYear={now.getFullYear()} 
-                    selectedPeriodNumber={selectedPeriodNumber}
-                    onPeriodSelect={setSelectedPeriodNumber}
-                  />
-                </>
-              )}
-            </div>
-            <DialogFooter>
-              {enrichedCredit && (
-                <CreditModalControls
-                  userCredit={enrichedCredit}
-                  cardCredit={cardCredit}
-                  creditMaxValue={creditMaxValue}
-                  now={now}
-                  onUpdateHistoryEntry={handleUpdateHistoryEntry}
-                  selectedPeriodNumber={selectedPeriodNumber}
-                  onPeriodSelect={setSelectedPeriodNumber}
-                  isUpdating={isUpdating}
-                />
-              )}
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
+      {/* Responsive Modal/Drawer - uses shared modal function */}
+      {renderModal()}
     </>
   );
 };

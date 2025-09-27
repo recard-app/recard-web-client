@@ -563,6 +563,12 @@ body:has(.mobile-credit-details-drawer) [data-radix-popper-content-wrapper] .usa
   padding: $space-1;
   font-size: $font-xs;
   line-height: 1.2;
+  border-radius: $radius-base;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: $neutral-lightest-gray;
+  }
 
   .credit-title-row {
     display: flex;
@@ -572,7 +578,7 @@ body:has(.mobile-credit-details-drawer) [data-radix-popper-content-wrapper] .usa
     .credit-name {
       font-weight: $font-semibold;
       color: $neutral-dark-gray;
-      font-size: $font-xs;
+      font-size: $font-sm; // Match entry-title and card-name classes
       line-height: 1.2;
       flex: 1;
       min-width: 0; // Allow text truncation

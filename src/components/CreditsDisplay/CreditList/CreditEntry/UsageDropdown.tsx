@@ -1,7 +1,7 @@
 import React from 'react';
 import './UsageDropdown.scss';
 import { CREDIT_USAGE_DISPLAY_NAMES, CreditUsageType, CREDIT_USAGE } from '../../../../types';
-import { CREDIT_USAGE_DISPLAY_COLORS } from '../../../../types/CardCreditsTypes';
+import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
 import Icon from '@/icons';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu/dropdown-menu';
 
@@ -14,12 +14,12 @@ interface UsageDropdownProps {
 }
 
 const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
-  [CREDIT_USAGE.USED]: 'used-icon',
-  [CREDIT_USAGE.PARTIALLY_USED]: 'partially-used-icon',
-  [CREDIT_USAGE.NOT_USED]: 'not-used-icon',
-  [CREDIT_USAGE.INACTIVE]: 'inactive',
-  [CREDIT_USAGE.DISABLED]: 'disabled',
-  [CREDIT_USAGE.FUTURE]: 'disabled',
+  [CREDIT_USAGE.USED]: CREDIT_USAGE_ICON_NAMES.USED,
+  [CREDIT_USAGE.PARTIALLY_USED]: CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED,
+  [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_ICON_NAMES.NOT_USED,
+  [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_ICON_NAMES.INACTIVE,
+  [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_ICON_NAMES.DISABLED,
+  [CREDIT_USAGE.FUTURE]: CREDIT_USAGE_ICON_NAMES.FUTURE,
 };
 
 const USAGE_COLOR_BY_STATE: Record<CreditUsageType, string> = {
