@@ -555,3 +555,39 @@ body:has(.mobile-credit-details-drawer) [data-radix-popper-content-wrapper] .usa
   }
 }
 
+// Sidebar variant styling
+.credit-entry-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  padding: $space-1;
+  font-size: $font-xs;
+  line-height: 1.2;
+
+  .credit-title-row {
+    display: flex;
+    align-items: center;
+    gap: $space-1-5;
+
+    .credit-name {
+      font-weight: $font-semibold;
+      color: $neutral-dark-gray;
+      font-size: $font-xs;
+      line-height: 1.2;
+      flex: 1;
+      min-width: 0; // Allow text truncation
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .expiring-text {
+    font-size: $font-xxs;
+    color: $warning;
+    font-weight: $font-medium;
+    line-height: 1.1;
+    margin-left: calc(16px + #{$space-1-5}); // Align with credit name (icon width + gap)
+  }
+}
+

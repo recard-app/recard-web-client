@@ -23,6 +23,7 @@ export interface CreditEntryProps {
   hideSlider?: boolean; // flag to hide the slider in card view
   disableDropdown?: boolean; // flag to disable the dropdown functionality
   displayPeriod?: boolean; // flag to display the period text (default: true)
+  variant?: 'default' | 'sidebar'; // display variant (default: 'default')
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -55,7 +56,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
+const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, displayPeriod = true, variant = 'default', onUpdateHistoryEntry, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
   const isMobile = useIsMobile();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -153,6 +154,8 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     [CREDIT_USAGE.PARTIALLY_USED]: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
     [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_DISPLAY_COLORS.NOT_USED,
     [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE,
+    [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
+    [CREDIT_USAGE.FUTURE]: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
   };
 
 
@@ -299,6 +302,34 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   };
 
 
+  // Sidebar variant - simplified display
+  if (variant === 'sidebar') {
+    return (
+      <div className="credit-entry-sidebar">
+        <div className="credit-title-row">
+          <Icon
+            name={USAGE_ICON_NAME[cardUsage]}
+            variant="micro"
+            size={16}
+            style={{ color: USAGE_COLOR_BY_STATE[cardUsage] }}
+          />
+          <div className="credit-name">
+            {cardCredit?.Title ?? userCredit.CreditId}
+          </div>
+        </div>
+        {isExpiring && (
+          <div className="expiring-text">
+            {daysUntilExpiration !== undefined
+              ? `Expires in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
+              : 'Expires soon'
+            }
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Default variant - full display
   return (
     <>
       <div className="credit-entry-row" data-period={userCredit.AssociatedPeriod} onClick={() => setIsModalOpen(true)} style={{ cursor: 'pointer' }}>
@@ -330,8 +361,8 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               {isExpiring && (
                 <span className="expiring-text">
                   {daysUntilExpiration !== undefined
-                    ? `Expiring in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
-                    : 'Expiring soon'
+                    ? `Expires in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
+                    : 'Expires soon'
                   }
                 </span>
               )}

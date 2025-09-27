@@ -6,6 +6,7 @@ import CreditGroup from './CreditGroup';
 import { CreditCardDetails, CardCredit } from '../../types/CreditCardTypes';
 import { useCredits } from '../../contexts/ComponentsContext';
 import { MONTH_ABBREVIATIONS } from '../../types/Constants';
+import { InfoDisplay } from '../../elements';
 
 export interface CreditsDisplayProps {
   calendar: CalendarUserCredits | null;
@@ -71,13 +72,29 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
 
   if (isLoading) {
     return (
-      <div className="credits-display loading">Loading credits…</div>
+      <div className="credits-display loading">
+        <InfoDisplay
+          type="loading"
+          message="Loading credits..."
+          showTitle={false}
+          transparent={true}
+          centered={true}
+        />
+      </div>
     );
   }
 
   if (!calendar) {
     return (
-      <div className="credits-display empty">No credit history found for the current year.</div>
+      <div className="credits-display empty">
+        <InfoDisplay
+          type="warning"
+          message="No credit history found for the current year."
+          showTitle={false}
+          transparent={true}
+          centered={true}
+        />
+      </div>
     );
   }
 

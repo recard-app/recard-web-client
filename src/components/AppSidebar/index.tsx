@@ -5,6 +5,9 @@ import { User as FirebaseUser } from 'firebase/auth';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import CreditSummary from '../CreditSummary';
+import CreditList from '../CreditsDisplay/CreditList';
+import { convertPrioritizedCreditsToUserCredits } from '../../utils/creditTransformers';
+import { useCredits } from '../../contexts/ComponentsContext';
 import { SidebarItem } from './SidebarItem';
 import {
   DropdownMenu,
@@ -26,7 +29,7 @@ import {
   PAGES
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { MonthlyStatsResponse } from '../../types/CardCreditsTypes';
+import { MonthlyStatsResponse, PrioritizedCredit } from '../../types/CardCreditsTypes';
 import Icon from '../../icons';
 import './AppSidebar.scss';
 
@@ -50,6 +53,7 @@ interface AppSidebarProps {
   monthlyStats: MonthlyStatsResponse | null;
   isLoadingMonthlyStats: boolean;
   isUpdatingMonthlyStats?: boolean;
+  prioritizedCredits: PrioritizedCredit[];
 }
 
 const AppSidebar: React.FC<AppSidebarProps> = ({
@@ -71,11 +75,15 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   onNewChat,
   monthlyStats,
   isLoadingMonthlyStats,
-  isUpdatingMonthlyStats
+  isUpdatingMonthlyStats,
+  prioritizedCredits
 }) => {
   // Get current location for active state
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Get credits data from context for proper credit matching
+  const credits = useCredits();
   
   // Helper function to determine if current path is home or chat route
   const isHomeOrChatRoute = (pathname: string) => {
@@ -320,6 +328,35 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   loading={isLoadingMonthlyStats}
                   isUpdating={isUpdatingMonthlyStats}
                 />
+
+                {/* Priority Credits List */}
+                {prioritizedCredits && prioritizedCredits.length > 0 && (
+                  (() => {
+                    const convertedCredits = convertPrioritizedCreditsToUserCredits(prioritizedCredits);
+
+                    // Create the cardById map from creditCards array
+                    const cardById = new Map(creditCards.map(card => [card.id, card]));
+
+                    // Create creditByPair map using the same logic as CreditsDisplay
+                    const creditByPair = new Map();
+                    for (const credit of credits) {
+                      // Use ReferenceCardId to map credits to cards
+                      creditByPair.set(`${credit.ReferenceCardId}:${credit.id}`, credit);
+                    }
+
+                    return (
+                      <CreditList
+                        credits={convertedCredits}
+                        now={new Date()}
+                        cardById={cardById}
+                        creditByPair={creditByPair}
+                        variant="sidebar"
+                        limit={5}
+                        displayPeriod={false}
+                      />
+                    );
+                  })()
+                )}
               </SidebarItem>
             </div>
           </>

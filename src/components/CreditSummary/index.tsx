@@ -55,7 +55,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
         showTitle={false}
         transparent={true}
         showIcon={false}
-        centered={variant !== 'sidebar'}
+        centered={true}
       />
     );
   }

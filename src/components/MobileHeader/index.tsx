@@ -6,6 +6,9 @@ import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import CreditSummary from '../CreditSummary';
+import CreditList from '../CreditsDisplay/CreditList';
+import { convertPrioritizedCreditsToUserCredits } from '../../utils/creditTransformers';
+import { useCredits } from '../../contexts/ComponentsContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +17,7 @@ import {
 } from '../ui/dropdown-menu/dropdown-menu';
 import { Conversation, SubscriptionPlan } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { MonthlyStatsResponse } from '../../types/CardCreditsTypes';
+import { MonthlyStatsResponse, PrioritizedCredit } from '../../types/CardCreditsTypes';
 import { User as FirebaseUser } from 'firebase/auth';
 import './MobileHeader.scss';
 
@@ -41,6 +44,7 @@ interface MobileHeaderProps {
   onOpenCardSelector?: () => void;
   monthlyStats?: MonthlyStatsResponse | null;
   isLoadingMonthlyStats?: boolean;
+  prioritizedCredits?: PrioritizedCredit[];
 }
 
 const MobileHeader: React.FC<MobileHeaderProps> = ({ 
@@ -64,11 +68,15 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   onNewChat,
   onOpenCardSelector,
   monthlyStats = null,
-  isLoadingMonthlyStats = false
+  isLoadingMonthlyStats = false,
+  prioritizedCredits = []
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Get credits data from context for proper credit matching
+  const credits = useCredits();
 
   const isActive = (path: string): boolean => {
     // Special handling for MY_CREDITS - highlight for all my-credits/* pages
@@ -372,6 +380,25 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                       monthlyStats={monthlyStats}
                       loading={isLoadingMonthlyStats}
                     />
+
+                    {/* Priority Credits List */}
+                    {prioritizedCredits && prioritizedCredits.length > 0 && (
+                      <CreditList
+                        credits={convertPrioritizedCreditsToUserCredits(prioritizedCredits)}
+                        now={new Date()}
+                        cardById={new Map(creditCards.map(card => [card.id, card]))}
+                        creditByPair={(() => {
+                          const map = new Map();
+                          for (const credit of credits) {
+                            map.set(`${credit.ReferenceCardId}:${credit.id}`, credit);
+                          }
+                          return map;
+                        })()}
+                        variant="sidebar"
+                        limit={5}
+                        displayPeriod={false}
+                      />
+                    )}
                   </div>
                 </div>
 

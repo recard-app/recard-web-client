@@ -10,6 +10,8 @@ export interface CreditListProps {
   cardById: Map<string, CreditCardDetails>;
   creditByPair: Map<string, CardCredit>;
   displayPeriod?: boolean; // flag to display the period text (default: true)
+  variant?: 'default' | 'sidebar'; // display variant (default: 'default')
+  limit?: number; // maximum number of credits to display
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -57,14 +59,18 @@ const calculateCurrentPeriod = (now: Date, associatedPeriod: string): number => 
   return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
 };
 
-const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
+const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, displayPeriod = true, variant = 'default', limit, onUpdateHistoryEntry, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
   const isMobile = useIsMobile();
 
   if (!credits || credits.length === 0) return null;
 
+  // Apply limit if specified
+  const displayCredits = limit ? credits.slice(0, limit) : credits;
+  const isSidebar = variant === 'sidebar';
+
   return (
-    <div className="credit-list">
-      {credits.map((uc) => {
+    <div className={`credit-list ${isSidebar ? 'credit-list--sidebar' : ''}`}>
+      {displayCredits.map((uc) => {
         const card = cardById.get(uc.CardId) || null;
         const cardCredit = creditByPair.get(`${uc.CardId}:${uc.CreditId}`) || null;
         const creditMaxValue = cardCredit?.Value;
@@ -81,8 +87,9 @@ const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditB
             card={card}
             cardCredit={cardCredit}
             creditMaxValue={typeof creditMaxValue === 'string' ? Number(creditMaxValue.replace(/[^0-9.]/g, '')) : (creditMaxValue as unknown as number) }
-            disableDropdown={isMobile} // Disable dropdown on mobile
-            displayPeriod={displayPeriod}
+            disableDropdown={isMobile || isSidebar} // Disable dropdown on mobile or sidebar
+            displayPeriod={displayPeriod && !isSidebar} // Hide period in sidebar
+            variant={variant}
             onUpdateHistoryEntry={onUpdateHistoryEntry}
             onUpdateComplete={onUpdateComplete}
             isUpdating={isThisCreditUpdating}

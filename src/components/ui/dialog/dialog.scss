@@ -66,17 +66,18 @@
   padding: $space-2 $space-3 $space-1-5 $space-3;
   // Reserve space on the right for the close button so it never overflows
   padding-right: calc($space-2 + 28px);
-  min-height: 36px;
+  min-height: 40px;
   display: flex;
   flex-direction: column; // stack title and description vertically
   align-items: flex-start;
+  justify-content: center;
   gap: $space-1;
   margin-bottom: 0;
   text-align: center;
   flex-shrink: 0; // Prevent header from shrinking
 
   h2 {
-    font-size: $font-sm;
+    font-size: $font-base;
     font-weight: $font-bold;
     font-family: $font-inter;
     text-transform: uppercase;
@@ -117,6 +118,19 @@
 
     &:active {
       transform: translateY(-50%) translateY(1px); // subtle 1px shift down when clicked
+    }
+
+    // Mobile-specific styling for larger touch target
+    @media (max-width: $mobile-breakpoint) {
+      margin-right: -12px;
+      width: 40px;
+      height: 40px;
+      padding: $space-2; // 8px padding to center the icon properly
+
+      svg {
+        width: 20px; // Larger icon for better visibility
+        height: 20px;
+      }
     }
   }
 }

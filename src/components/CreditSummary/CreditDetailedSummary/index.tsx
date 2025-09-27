@@ -1,6 +1,6 @@
 import React from 'react';
-import { MonthlyStatsResponse } from '../../types';
-import { InfoDisplay } from '../../elements';
+import { MonthlyStatsResponse } from '../../../types';
+import { InfoDisplay } from '../../../elements';
 import './CreditDetailedSummary.scss';
 
 interface CreditDetailedSummaryProps {
