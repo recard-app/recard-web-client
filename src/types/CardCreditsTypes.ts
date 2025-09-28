@@ -402,7 +402,7 @@ export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[key
  */
 export const CREDIT_USAGE_ICON_NAMES = {
     USED: 'used-icon-filled',
-    NOT_USED: 'not-used-icon-filled',
+    NOT_USED: 'not-used-icon-filled-alt',
     PARTIALLY_USED: 'partially-used-icon-filled',
     INACTIVE: 'inactive-filled',
     FUTURE: 'future-icon-filled',

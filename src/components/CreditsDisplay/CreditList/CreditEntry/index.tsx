@@ -522,7 +522,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 >
                   <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
                   <div className="credit-usage-label">
-                    <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={12} />
+                    <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
                     <span>
                       {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
                       {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
@@ -547,7 +547,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                     >
                       <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
                       <div className="credit-usage-label">
-                        <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={12} />
+                        <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
                         <span>
                           {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
                           {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
