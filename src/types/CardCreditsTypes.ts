@@ -30,13 +30,21 @@ export type CreditIntervalType = typeof CREDIT_INTERVALS[keyof typeof CREDIT_INT
 
 /**
  * Represents the different credit usage types
+ *
+ * - USED: Credit has been fully redeemed (usedAmount >= totalAmount)
+ * - NOT_USED: Credit has not been used yet (applies to current, past, and future periods)
+ * - PARTIALLY_USED: Credit has been partially redeemed (0 < usedAmount < totalAmount)
+ * - INACTIVE: Credit was available in a past period but was not used
+ * - DISABLED: Credit is not available for this period (e.g., outside effective date range)
+ *
+ * Note: Future periods are stored with NOT_USED status. Use the `isPeriodFuture()` utility
+ * function to dynamically determine if a period is in the future for UI display purposes.
  */
 export const CREDIT_USAGE = {
     USED: 'used',
     NOT_USED: 'not_used',
     PARTIALLY_USED: 'partially_used',
     INACTIVE: 'inactive',
-    FUTURE: 'future',
     DISABLED: 'disabled'
 } as const;
 export type CreditUsageType = typeof CREDIT_USAGE[keyof typeof CREDIT_USAGE];
@@ -49,7 +57,6 @@ export const CREDIT_USAGE_DISPLAY_NAMES = {
     NOT_USED: 'Not Used',
     PARTIALLY_USED: 'Partially Used',
     INACTIVE: 'Not Tracked',
-    FUTURE: 'Future',
     DISABLED: 'Disabled'
 } as const;
 export type CreditUsageDisplayNameType = typeof CREDIT_USAGE_DISPLAY_NAMES[keyof typeof CREDIT_USAGE_DISPLAY_NAMES];
@@ -392,7 +399,6 @@ export const CREDIT_USAGE_DISPLAY_COLORS = {
     NOT_USED: COLORS.NEUTRAL_BLACK,
     PARTIALLY_USED: COLORS.ACCENT_MEDIUM,
     INACTIVE: COLORS.NEUTRAL_MEDIUM_GRAY,
-    FUTURE: COLORS.NEUTRAL_MEDIUM_GRAY,
     DISABLED: COLORS.DISABLED_GRAY
 } as const;
 export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[keyof typeof CREDIT_USAGE_DISPLAY_COLORS];
@@ -405,7 +411,6 @@ export const CREDIT_USAGE_ICON_NAMES = {
     NOT_USED: 'not-used-icon-filled-alt',
     PARTIALLY_USED: 'partially-used-icon-filled',
     INACTIVE: 'inactive-filled',
-    FUTURE: 'future-icon-filled',
     DISABLED: 'disabled-filled'
 } as const;
 export type CreditUsageIconNameType = typeof CREDIT_USAGE_ICON_NAMES[keyof typeof CREDIT_USAGE_ICON_NAMES];

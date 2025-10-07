@@ -1,6 +1,8 @@
 import React, { useMemo, useEffect, useRef } from 'react';
 import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, MONTH_LABEL_ABBREVIATIONS } from '../../../../../../types';
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../../../types/CardCreditsTypes';
+import { COLORS } from '../../../../../../types/Colors';
+import { isPeriodFuture } from '../../utils';
 import Icon from '@/icons';
 import './CreditUsageTracker.scss';
 
@@ -49,37 +51,18 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
       // Find the historical data for this period
       const historyEntry = userCredit.History.find((h: any) => h.PeriodNumber === i);
 
-      // Calculate if this period is in the future
-      let isFuture = false;
-      if (isCurrentYear) {
-        if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
-          isFuture = i > currentMonth;
-        } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
-          const currentQuarter = Math.ceil(currentMonth / 3);
-          isFuture = i > currentQuarter;
-        } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
-          const currentHalf = Math.ceil(currentMonth / 6);
-          isFuture = i > currentHalf;
-        } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Annually) {
-          isFuture = false; // Always show annual period for current year
-        }
-      } else if (currentYear > now.getFullYear()) {
-        // Entire year is in the future
-        isFuture = true;
-      }
+      // Calculate if this period is in the future using the utility function
+      const isFuture = isCurrentYear
+        ? isPeriodFuture(i, userCredit.AssociatedPeriod, now)
+        : currentYear > now.getFullYear();
 
       // Use current usage/value if this is the selected period and we have live data
       const isSelectedPeriod = selectedPeriodNumber === i;
 
-      // Determine usage status - future periods should use FUTURE status
-      let usage: CreditUsageType;
-      if (isFuture) {
-        usage = CREDIT_USAGE.FUTURE;
-      } else if (isSelectedPeriod && currentUsage !== undefined) {
-        usage = currentUsage;
-      } else {
-        usage = (historyEntry?.CreditUsage as CreditUsageType ?? CREDIT_USAGE.INACTIVE);
-      }
+      // Determine usage status - use from history or live data
+      const usage: CreditUsageType = isSelectedPeriod && currentUsage !== undefined
+        ? currentUsage
+        : (historyEntry?.CreditUsage as CreditUsageType ?? CREDIT_USAGE.INACTIVE);
 
       const valueUsed = isSelectedPeriod && currentValueUsed !== undefined
         ? currentValueUsed
@@ -103,7 +86,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         usage,
         valueUsed,
         isFuture,
-        isActive: !isFuture && usage !== CREDIT_USAGE.INACTIVE && usage !== CREDIT_USAGE.DISABLED && usage !== CREDIT_USAGE.FUTURE
+        isActive: !isFuture && usage !== CREDIT_USAGE.INACTIVE && usage !== CREDIT_USAGE.DISABLED
       });
     }
 
@@ -136,7 +119,12 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
     }
   }, [selectedPeriodNumber]);
 
-  const getUsageIcon = (usage: CreditUsageType): string => {
+  const getUsageIcon = (usage: CreditUsageType, isFuture: boolean): string => {
+    // Show future icon for future periods with NOT_USED status
+    if (isFuture && usage === CREDIT_USAGE.NOT_USED) {
+      return 'future-icon-filled';
+    }
+
     switch (usage) {
       case CREDIT_USAGE.USED:
         return CREDIT_USAGE_ICON_NAMES.USED;
@@ -144,8 +132,6 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         return CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED;
       case CREDIT_USAGE.NOT_USED:
         return CREDIT_USAGE_ICON_NAMES.NOT_USED;
-      case CREDIT_USAGE.FUTURE:
-        return CREDIT_USAGE_ICON_NAMES.FUTURE;
       case CREDIT_USAGE.DISABLED:
         return CREDIT_USAGE_ICON_NAMES.DISABLED;
       case CREDIT_USAGE.INACTIVE:
@@ -155,6 +141,11 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
   };
 
   const getUsageColor = (usage: CreditUsageType, isFuture: boolean, isDisabled: boolean): string => {
+    // Show gray color for future periods with NOT_USED status
+    if (isFuture && usage === CREDIT_USAGE.NOT_USED) {
+      return COLORS.NEUTRAL_MEDIUM_GRAY;
+    }
+
     switch (usage) {
       case CREDIT_USAGE.USED:
         return CREDIT_USAGE_DISPLAY_COLORS.USED;
@@ -162,8 +153,6 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         return CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED;
       case CREDIT_USAGE.NOT_USED:
         return CREDIT_USAGE_DISPLAY_COLORS.NOT_USED;
-      case CREDIT_USAGE.FUTURE:
-        return CREDIT_USAGE_DISPLAY_COLORS.FUTURE;
       case CREDIT_USAGE.DISABLED:
         return CREDIT_USAGE_DISPLAY_COLORS.DISABLED;
       case CREDIT_USAGE.INACTIVE:
@@ -193,7 +182,12 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
     return `#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`;
   };
 
-  const getUsageLabel = (usage: CreditUsageType): string => {
+  const getUsageLabel = (usage: CreditUsageType, isFuture: boolean): string => {
+    // Show "Future" label for future periods with NOT_USED status
+    if (isFuture && usage === CREDIT_USAGE.NOT_USED) {
+      return 'Future';
+    }
+
     switch (usage) {
       case CREDIT_USAGE.USED:
         return 'Used';
@@ -203,8 +197,6 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         return 'Not Used';
       case CREDIT_USAGE.DISABLED:
         return 'Disabled';
-      case CREDIT_USAGE.FUTURE:
-        return 'Future';
       case CREDIT_USAGE.INACTIVE:
       default:
         return 'Untracked';
@@ -218,7 +210,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
         className={`tracker-periods ${userCredit.AssociatedPeriod}`}
       >
         {periods.map((period) => {
-          const isDisabled = period.usage === CREDIT_USAGE.DISABLED || period.usage === CREDIT_USAGE.FUTURE;
+          const isDisabled = period.usage === CREDIT_USAGE.DISABLED;
           const usageColor = getUsageColor(period.usage, period.isFuture, isDisabled);
           const backgroundColor = tintHexColor(usageColor, 0.95);
           const isSelected = selectedPeriodNumber === period.periodNumber;
@@ -240,7 +232,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
                 color: usageColor,
                 borderColor: usageColor
               }}
-              title={`${period.name}: ${period.isFuture ? 'Future period' : isDisabled ? 'Disabled period' : getUsageLabel(period.usage)}${!isNonInteractive && period.valueUsed > 0 ? ` ($${period.valueUsed})` : ''}${onPeriodSelect && !isNonInteractive ? ' (Click to edit)' : ''}${isSelected ? ' [EDITING]' : ''}`}
+              title={`${period.name}: ${period.isFuture ? 'Future period' : isDisabled ? 'Disabled period' : getUsageLabel(period.usage, period.isFuture)}${!isNonInteractive && period.valueUsed > 0 ? ` ($${period.valueUsed})` : ''}${onPeriodSelect && !isNonInteractive ? ' (Click to edit)' : ''}${isSelected ? ' [EDITING]' : ''}`}
               onClick={() => {
                 if (onPeriodSelect && !isNonInteractive) {
                   onPeriodSelect(period.periodNumber);
@@ -250,7 +242,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
               <div className="period-content">
                 <span className="period-name">{period.name}</span>
                 <Icon
-                  name={getUsageIcon(period.usage)}
+                  name={getUsageIcon(period.usage, period.isFuture)}
                   variant="micro"
                   size={12}
                 />
