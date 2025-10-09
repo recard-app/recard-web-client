@@ -113,7 +113,7 @@ export const TERMINOLOGY = {
     mode: TERMINOLOGY_MODE,
     nounSingular: TERMINOLOGY_MODE === 'chat' ? 'chat' : 'transaction',
     nounPlural: TERMINOLOGY_MODE === 'chat' ? 'chats' : 'transactions',
-    historyTitle: TERMINOLOGY_MODE === 'chat' ? 'Chat History' : 'Transaction History',
+    historyTitle: TERMINOLOGY_MODE === 'chat' ? 'Previous Chats' : 'Transaction History',
     newChatButton: TERMINOLOGY_MODE === 'chat' ? 'New Chat' : 'New Transaction Chat',
     newChatAria: TERMINOLOGY_MODE === 'chat' ? 'Start new chat' : 'Start new transaction chat',
     recentSectionTitle: TERMINOLOGY_MODE === 'chat' ? 'Recent Chats' : 'Recent Transactions',

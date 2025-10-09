@@ -1,4 +1,4 @@
-import { MONTH_ABBREVIATIONS } from '../../../types';
+import { MONTH_ABBREVIATIONS, PAGES } from '../../../types';
 import { UserHistoryService } from '../../../services';
 
 /**
@@ -58,12 +58,12 @@ export const deleteChatEntry = async (
     callbacks.onDelete(chatId);
   }
 
-  // Cancels the renavigation if the user is on the history page. 
-  // It should only redirect to the home page if the user is on the home page and deleted their current chat. 
+  // Cancels the renavigation if the user is on the history page.
+  // It should only redirect to the home page if the user is on the home page and deleted their current chat.
   if (chatId === currentChatId) {
     callbacks.returnCurrentChatId(null);
     // Only navigate if we're NOT on the history page (including any parameters)
-    if (!callbacks.currentPath.startsWith('/history')) {
+    if (!callbacks.currentPath.startsWith(PAGES.HISTORY.PATH)) {
       callbacks.navigate('/', { replace: true });
     }
   }

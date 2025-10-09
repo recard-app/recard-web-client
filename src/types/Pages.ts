@@ -36,7 +36,7 @@ export const PAGES = {
     TITLE: 'Account',
   },
   HISTORY: {
-    PATH: '/history',
+    PATH: '/previous-chats',
     TITLE: PAGE_NAMES.TRANSACTION_HISTORY,
   },
   MY_CARDS: {
