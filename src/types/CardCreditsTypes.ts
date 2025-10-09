@@ -382,6 +382,27 @@ export interface MonthlySummaryResponse extends MonthlyStatsResponse {
 }
 
 /**
+ * Historical Monthly Summary API
+ * GET /users/cards/credits/historical-monthly-summary
+ */
+export interface HistoricalMonthlySummaryResponse {
+    MonthlyCredits: {
+        usedValue: number;
+        possibleValue: number;
+        usedCount: number;
+        partiallyUsedCount: number;
+        unusedCount: number;
+    };
+    CurrentCredits: {
+        usedValue: number;
+        possibleValue: number;
+        usedCount: number;
+        partiallyUsedCount: number;
+        unusedCount: number;
+    };
+}
+
+/**
  * ------------------------------------------------------------------------------------------------
  *
  * CLIENT-SPECIFIC TYPES

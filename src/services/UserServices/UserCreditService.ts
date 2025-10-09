@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType, MonthlyStatsResponse, GetMonthlySummaryParams, MonthlySummaryResponse } from '../../types';
+import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType, MonthlyStatsResponse, GetMonthlySummaryParams, MonthlySummaryResponse, HistoricalMonthlySummaryResponse } from '../../types';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 let syncTimeout: NodeJS.Timeout | null = null;
@@ -440,6 +440,27 @@ export const UserCreditService = {
         const url = `${apiurl}/users/cards/credits/monthly-summary${queryString ? `?${queryString}` : ''}`;
 
         const response = await axios.get<MonthlySummaryResponse>(url, { headers });
+        return response.data;
+    },
+
+    /**
+     * Fetches historical monthly statistics for a specific month/year
+     * Returns MonthlyCredits and CurrentCredits for that point in time
+     */
+    async fetchHistoricalMonthlySummary(year: number, month: number, includeHidden: boolean = false): Promise<HistoricalMonthlySummaryResponse> {
+        const headers = await getAuthHeaders();
+
+        const params = new URLSearchParams();
+        params.set('year', year.toString());
+        params.set('month', month.toString());
+        if (includeHidden) {
+            params.set('includeHidden', 'true');
+        }
+
+        const queryString = params.toString();
+        const url = `${apiurl}/users/cards/credits/historical-monthly-summary?${queryString}`;
+
+        const response = await axios.get<HistoricalMonthlySummaryResponse>(url, { headers });
         return response.data;
     },
 
