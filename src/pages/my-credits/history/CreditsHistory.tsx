@@ -17,6 +17,7 @@ import CreditsDisplay from '../../../components/CreditsDisplay';
 import { CreditCardDetails } from '../../../types/CreditCardTypes';
 import { InfoDisplay } from '../../../elements';
 import HeaderControls from '@/components/PageControls/HeaderControls';
+import FooterControls from '@/components/PageControls/FooterControls';
 import { ToggleBar, ToggleBarButton } from '@/components/ui/toggle-bar/toggle-bar';
 import Icon from '@/icons';
 import SingleCardSelector from '../../../components/CreditCardSelector/SingleCardSelector';
@@ -586,8 +587,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
       <div className="standard-page-content--no-padding">
         <div className="credits-history-panel">
           <HeaderControls>
-            <div className="header-controls-and-actions">
-              {!isMobileViewport && (
+            {!isMobileViewport && (
                 <div className="header-controls">
                 <div className="date-picker">
                   <label className="filter-label">Year</label>
@@ -750,9 +750,9 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                     className="standalone"
                   />
                 </div>
-                </div>
-              )}
-              {isMobileViewport && (
+              </div>
+            )}
+            {isMobileViewport && (
                 <div className="header-controls">
                   <div className="date-picker">
                     <select
@@ -841,8 +841,8 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                     </div>
                   )}
                 </div>
-              )}
-              <div className="header-actions">
+            )}
+            <div className="header-actions">
                 {!isMobileViewport && (
                   <button
                     className="button outline small"
@@ -862,45 +862,6 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                     Filters
                   </button>
                 )}
-              </div>
-            </div>
-
-            {/* Historical Monthly Summary */}
-            <div className="historical-summary-section">
-              {isLoadingHistoricalSummary ? (
-                <InfoDisplay
-                  type="loading"
-                  message="Loading summary..."
-                  showTitle={false}
-                  transparent={true}
-                  centered
-                />
-              ) : historicalSummary ? (
-                <div className="summary-stats">
-                  <div className="stat-group">
-                    <span className="stat-label">Monthly Credits</span>
-                    <div className="stat-value-container">
-                      <span className="stat-value">
-                        ${historicalSummary.MonthlyCredits.usedValue.toFixed(2)} / ${historicalSummary.MonthlyCredits.possibleValue.toFixed(2)}
-                      </span>
-                      <span className="stat-detail">
-                        ({historicalSummary.MonthlyCredits.usedCount} / {historicalSummary.MonthlyCredits.usedCount + historicalSummary.MonthlyCredits.partiallyUsedCount + historicalSummary.MonthlyCredits.unusedCount})
-                      </span>
-                    </div>
-                  </div>
-                  <div className="stat-group">
-                    <span className="stat-label">Current Credits</span>
-                    <div className="stat-value-container">
-                      <span className="stat-value">
-                        ${historicalSummary.CurrentCredits.usedValue.toFixed(2)} / ${historicalSummary.CurrentCredits.possibleValue.toFixed(2)}
-                      </span>
-                      <span className="stat-detail">
-                        ({historicalSummary.CurrentCredits.usedCount} / {historicalSummary.CurrentCredits.usedCount + historicalSummary.CurrentCredits.partiallyUsedCount + historicalSummary.CurrentCredits.unusedCount})
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
             </div>
           </HeaderControls>
 
@@ -1016,57 +977,45 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
         </DrawerContent>
       </Drawer>
 
-      {/* Mobile-only sticky footer controls */}
-      {isMobileViewport && !DISABLE_MOBILE_CREDITS_STICKY_FOOTER && (
-        <div className="mobile-sticky-footer" role="region" aria-label="Month navigation">
-          <div className="footer-date-controls">
-            <div className="date-control-group">
-              <div className="month-controls">
-                <button
-                  type="button"
-                  aria-label="Previous month"
-                  className="button outline small px-2"
-                  onClick={decrementMonth}
-                  disabled={isLoadingMonth || !isAllowedYearMonth(utilGetPrevYearMonth(selectedYear, selectedMonth).y, utilGetPrevYearMonth(selectedYear, selectedMonth).m)}
-                >
-                  <Icon name="chevron-down" variant="mini" size={16} className="rotate-90" />
-                </button>
-                <select
-                  className="month-select default-select"
-                  value={selectedMonth}
-                  onChange={(e) => {
-                    const m = parseInt(e.target.value);
-                    if (isAllowedYearMonth(selectedYear, m)) setSelectedMonth(m);
-                  }}
-                >
-                  {MONTH_OPTIONS.map(m => (
-                    <option key={m.value} value={m.value}>{m.label}</option>
-                  ))}
-                </select>
-                {!isOnCurrentMonth && (
-                  <button
-                    type="button"
-                    aria-label="Go to current period"
-                    className="button outline small px-2"
-                    onClick={goToCurrentPeriod}
-                  >
-                    <Icon name="map-pin" variant="mini" size={16} />
-                  </button>
-                )}
-                <button
-                  type="button"
-                  aria-label="Next month"
-                  className="button outline small px-2"
-                  onClick={incrementMonth}
-                  disabled={isLoadingMonth || !isAllowedYearMonth(utilGetNextYearMonth(selectedYear, selectedMonth).y, utilGetNextYearMonth(selectedYear, selectedMonth).m)}
-                >
-                  <Icon name="chevron-down" variant="mini" size={16} className="-rotate-90" />
-                </button>
+      {/* Footer with historical summary */}
+      <FooterControls>
+        <div className="historical-summary-section">
+          {isLoadingHistoricalSummary ? (
+            <InfoDisplay
+              type="loading"
+              message="Loading summary..."
+              showTitle={false}
+              transparent={true}
+              centered
+            />
+          ) : historicalSummary ? (
+            <div className="summary-stats">
+              <div className="stat-group">
+                <span className="stat-label">Monthly Credits</span>
+                <div className="stat-value-container">
+                  <span className="stat-value">
+                    ${historicalSummary.MonthlyCredits.usedValue.toFixed(2)} / ${historicalSummary.MonthlyCredits.possibleValue.toFixed(2)}
+                  </span>
+                  <span className="stat-detail">
+                    ({historicalSummary.MonthlyCredits.usedCount} / {historicalSummary.MonthlyCredits.usedCount + historicalSummary.MonthlyCredits.partiallyUsedCount + historicalSummary.MonthlyCredits.unusedCount})
+                  </span>
+                </div>
+              </div>
+              <div className="stat-group">
+                <span className="stat-label">Cumulative Credits</span>
+                <div className="stat-value-container">
+                  <span className="stat-value">
+                    ${historicalSummary.CurrentCredits.usedValue.toFixed(2)} / ${historicalSummary.CurrentCredits.possibleValue.toFixed(2)}
+                  </span>
+                  <span className="stat-detail">
+                    ({historicalSummary.CurrentCredits.usedCount} / {historicalSummary.CurrentCredits.usedCount + historicalSummary.CurrentCredits.partiallyUsedCount + historicalSummary.CurrentCredits.unusedCount})
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          ) : null}
         </div>
-      )}
+      </FooterControls>
 
       <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
         <DialogContent>
