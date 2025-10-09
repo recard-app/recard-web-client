@@ -90,16 +90,16 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
         const loadUserCards = async () => {
             try {
                 setIsLoading(true);
-                
+
                 // Load both basic cards and detailed cards in parallel
                 const [cards, detailedCardsData] = await Promise.all([
                     CardService.fetchCreditCards(true),
                     UserCreditCardService.fetchUserCardsDetailedInfo()
                 ]);
-                
+
                 setUserCards(cards);
                 setDetailedCards(detailedCardsData);
-                
+
                 // Notify parent component of card updates
                 notifyCardUpdate(cards);
                 
@@ -296,7 +296,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     // Handle confirmation of card deletion
     const handleDeleteConfirm = async () => {
         if (!cardToDelete) return;
-        
+
         try {
             // Create a copy of the cards with the selected card removed
             const updatedCards = userCards.map(c => ({
@@ -304,7 +304,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                 selected: c.id === cardToDelete.id ? false : c.selected,
                 isDefaultCard: c.id === cardToDelete.id ? false : c.isDefaultCard
             }));
-            
+
             // Format cards for API submission
             const cardsToSubmit = updatedCards
                 .filter(card => card.selected)
@@ -312,7 +312,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                     cardId: card.id,
                     isDefaultCard: card.isDefaultCard || false
                 }));
-            
+
             await UserCreditCardService.updateUserCards(cardsToSubmit);
 
             // Refresh cards after update
@@ -334,11 +334,11 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                 setSelectedCard(null);
                 setCardDetails(null);
             }
-            
+
             // Refresh detailed cards data in the background
             const refreshedDetailedCards = await UserCreditCardService.fetchUserCardsDetailedInfo();
             setDetailedCards(refreshedDetailedCards);
-            
+
             // Close the confirmation modal
             setShowDeleteConfirm(false);
         } catch (error) {
@@ -387,10 +387,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
         // Immediately close BOTH drawers for snappy UX while work continues
         setShowAddNested(false);
         setShowSelector(false);
-        
+
         // Add the card to user's cards if not already present
         const isCardAlreadyAdded = userCards.some(c => c.id === card.id && c.selected);
-        
+
         if (!isCardAlreadyAdded) {
             try {
                 // Update the card as selected
@@ -398,13 +398,13 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                     ...c,
                     selected: c.id === card.id ? true : c.selected
                 }));
-                
+
                 // If no cards are currently selected, make this the default
                 const hasSelectedCards = updatedCards.some(c => c.selected && c.id !== card.id);
                 if (!hasSelectedCards) {
                     updatedCards.find(c => c.id === card.id)!.isDefaultCard = true;
                 }
-                
+
                 // Format cards for API submission
                 const cardsToSubmit = updatedCards
                     .filter(c => c.selected || c.id === card.id)
@@ -412,7 +412,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                         cardId: c.id,
                         isDefaultCard: c.id === card.id && !hasSelectedCards ? true : (c.isDefaultCard || false)
                     }));
-                
+
                 await UserCreditCardService.updateUserCards(cardsToSubmit);
 
                 // Refresh cards after update

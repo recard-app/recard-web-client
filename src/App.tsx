@@ -489,7 +489,7 @@ function AppContent({}: AppContentProps) {
   // Function to update credit cards and refresh user card details
   const getCreditCards = async (returnCreditCards: CreditCard[]): Promise<void> => {
     setCreditCards(returnCreditCards);
-    
+
     // After updating credit cards, fetch fresh user card details
     if (user) {
       try {
@@ -604,11 +604,11 @@ function AppContent({}: AppContentProps) {
   // Function to handle saving credit card selections
   const handleSaveCardSelections = async () => {
     if (!creditCardSelectorRef.current) return;
-    
+
     setIsSavingCards(true);
     setCardSelectorSaveStatus('');
     setCardSelectorSaveSuccess(false);
-    
+
     try {
       await creditCardSelectorRef.current.handleSave();
     } catch (error) {

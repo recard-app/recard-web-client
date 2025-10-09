@@ -15,6 +15,13 @@ export const UserCreditCardService = {
             { returnCreditCards: selectedCards },
             { headers }
         );
+
+        // Invalidate all card-related caches to ensure fresh data on next fetch
+        apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS);
+        apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS_PREVIEWS);
+        apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS_DETAILS);
+        apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS);
+        apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS_FULL);
     },
 
     /**

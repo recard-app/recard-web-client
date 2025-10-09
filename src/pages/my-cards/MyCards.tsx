@@ -24,7 +24,7 @@ interface MyCardsProps {
 const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate, onOpenCardSelector, reloadTrigger, onPreferencesUpdate }) => {
     // Declare that this component needs full height behavior
     useFullHeight(true);
-    
+
     // Help modal state
     const [isHelpOpen, setIsHelpOpen] = useState(false);
     
