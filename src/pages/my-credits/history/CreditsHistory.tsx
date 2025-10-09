@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES, MOBILE_BREAKPOINT, DISABLE_MOBILE_CREDITS_STICKY_FOOTER } from '../../../types';
-import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CREDIT_USAGE_ICON_NAMES } from '../../../types/CardCreditsTypes';
+import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CREDIT_USAGE_ICON_NAMES, HistoricalMonthlySummaryResponse } from '../../../types/CardCreditsTypes';
 import { useCredits } from '../../../contexts/ComponentsContext';
 import {
   Dialog,
@@ -61,6 +61,8 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
   const [accountCreatedAt, setAccountCreatedAt] = useState<Date | null>(null);
   const [selectedFilterCardId, setSelectedFilterCardId] = useState<string | null>(null);
   const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
+  const [historicalSummary, setHistoricalSummary] = useState<HistoricalMonthlySummaryResponse | null>(null);
+  const [isLoadingHistoricalSummary, setIsLoadingHistoricalSummary] = useState<boolean>(false);
 
   // Helper function to clear all updating indicators
   const clearAllUpdatingIndicators = () => {
@@ -88,6 +90,14 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
       // Also refresh monthly stats when credits are updated
       if (onRefreshMonthlyStats) {
         onRefreshMonthlyStats();
+      }
+
+      // Refresh historical summary with updated credit values
+      try {
+        const summary = await UserCreditService.fetchHistoricalMonthlySummary(selectedYear, selectedMonth, false);
+        setHistoricalSummary(summary);
+      } catch (summaryError) {
+        console.error('Failed to refresh historical summary:', summaryError);
       }
     } catch (error) {
       console.error('Failed to refresh credit history:', error);
@@ -212,6 +222,24 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
     })();
     return () => { mounted = false; };
   }, [reloadTrigger, selectedYear, selectedMonth, selectedFilterCardId]);
+
+  // Fetch historical summary when year/month changes
+  useEffect(() => {
+    const fetchHistoricalSummary = async () => {
+      setIsLoadingHistoricalSummary(true);
+      try {
+        const summary = await UserCreditService.fetchHistoricalMonthlySummary(selectedYear, selectedMonth, false);
+        setHistoricalSummary(summary);
+      } catch (error) {
+        console.error('Failed to fetch historical summary:', error);
+        setHistoricalSummary(null);
+      } finally {
+        setIsLoadingHistoricalSummary(false);
+      }
+    };
+
+    fetchHistoricalSummary();
+  }, [selectedYear, selectedMonth]);
 
   // Load tracking preferences on mount
   useEffect(() => {
@@ -558,174 +586,11 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
       <div className="standard-page-content--no-padding">
         <div className="credits-history-panel">
           <HeaderControls>
-            {!isMobileViewport && (
-              <div className="header-controls">
-              <div className="date-picker">
-                <label className="filter-label">Year</label>
-                <select
-                  className="year-select default-select"
-                  value={selectedYear}
-                  onChange={async (e) => {
-                    const newYear = parseInt(e.target.value);
-                    const newMonth = clampMonthForYear(newYear, selectedMonth, accountCreatedAt);
-
-                    setIsLoadingMonth(true);
-
-                    // Build filtering options
-                    const filterOptions: {
-                      cardIds?: string[];
-                      excludeHidden?: boolean;
-                    } = {
-                      excludeHidden: true,
-                    };
-                    if (selectedFilterCardId) {
-                      filterOptions.cardIds = [selectedFilterCardId];
-                    }
-
-                    try {
-                      // Load stale data immediately (fast)
-                      const staleData = await UserCreditService.fetchCreditHistoryForYear(newYear, filterOptions);
-                      updateLocalCalendar(staleData);
-                      setSelectedYear(newYear);
-                      setSelectedMonth(newMonth);
-                      setIsLoadingMonth(false);
-
-                      // Sync in background - sync response already includes filtered data
-                      try {
-                        const syncedData = await UserCreditService.syncYearCreditsDebounced(newYear, { excludeHidden: true });
-                        updateLocalCalendar(syncedData);
-                      } catch (syncError) {
-                        console.warn('Background sync failed for year', newYear, syncError);
-                      }
-                    } catch (error) {
-                      console.error('Failed to load new year:', error);
-                      setIsLoadingMonth(false);
-                    }
-                  }}
-                >
-                  {yearOptions.map(y => (
-                    <option key={y} value={y}>{y}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="date-picker">
-                <label className="filter-label">Month</label>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    aria-label="Previous month"
-                    className="button outline small px-2"
-                    onClick={decrementMonth}
-                    disabled={isLoadingMonth || !isAllowedYearMonth(utilGetPrevYearMonth(selectedYear, selectedMonth).y, utilGetPrevYearMonth(selectedYear, selectedMonth).m)}
-                  >
-                    <Icon name="chevron-down" variant="mini" size={16} className="rotate-90" />
-                  </button>
-                  <select
-                    className="month-select default-select"
-                    value={selectedMonth}
-                    onChange={async (e) => {
-                      const m = parseInt(e.target.value);
-                      if (isAllowedYearMonth(selectedYear, m)) {
-                        setIsLoadingMonth(true);
-                        try {
-                          // Build filtering options
-                          const filterOptions: {
-                            cardIds?: string[];
-                            excludeHidden?: boolean;
-                          } = {
-                            excludeHidden: true,
-                          };
-                          if (selectedFilterCardId) {
-                            filterOptions.cardIds = [selectedFilterCardId];
-                          }
-
-                          // Load new month data
-                          const newData = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
-                          updateLocalCalendar(newData);
-                          setSelectedMonth(m);
-                        } catch (error) {
-                          console.error('Failed to load new month:', error);
-                        } finally {
-                          setIsLoadingMonth(false);
-                        }
-                      }
-                    }}
-                  >
-                    {MONTH_OPTIONS.map(m => (
-                      <option key={m.value} value={m.value}>{m.label}</option>
-                    ))}
-                  </select>
-                  {!isOnCurrentMonth && (
-                    <button
-                      type="button"
-                      aria-label="Go to current period"
-                      className="button outline small px-2"
-                      onClick={goToCurrentPeriod}
-                    >
-                      <Icon name="map-pin" variant="micro" size={16} />
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    aria-label="Next month"
-                    className="button outline small px-2"
-                    onClick={incrementMonth}
-                    disabled={isLoadingMonth || !isAllowedYearMonth(utilGetNextYearMonth(selectedYear, selectedMonth).y, utilGetNextYearMonth(selectedYear, selectedMonth).m)}
-                  >
-                    <Icon name="chevron-down" variant="mini" size={16} className="-rotate-90" />
-                  </button>
-                </div>
-              </div>
-              <ToggleBar className="connected items-center gap-2">
-                <span className="caps-label">Credits to Show</span>
-                <ToggleBarButton pressed={showUsed} onPressedChange={setShowUsed} className="small icon with-text">
-                  <Icon name={CREDIT_USAGE_ICON_NAMES.USED} variant="micro" size={14} />
-                  <span>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
-                </ToggleBarButton>
-                <ToggleBarButton pressed={showNotUsed} onPressedChange={setShowNotUsed} className="small icon with-text">
-                  <Icon name={CREDIT_USAGE_ICON_NAMES.NOT_USED} variant="micro" size={14} />
-                  <span>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
-                </ToggleBarButton>
-                <ToggleBarButton pressed={showPartiallyUsed} onPressedChange={setShowPartiallyUsed} className="small icon with-text">
-                  <Icon name={CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED} variant="micro" size={14} />
-                  <span>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
-                </ToggleBarButton>
-                <ToggleBarButton pressed={showInactive} onPressedChange={setShowInactive} className="small icon with-text">
-                  <Icon name="inactive" variant="micro" size={14} />
-                  <span>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</span>
-                </ToggleBarButton>
-              </ToggleBar>
-              {/* Card Filter */}
-              <div className="filter-section">
-                <label className="caps-label">Filter by Card</label>
-                <SelectCard
-                  selectedCardId={selectedFilterCardId || undefined}
-                  creditCards={userCardDetails.map(card => ({
-                    id: card.id,
-                    CardName: card.CardName,
-                    CardPrimaryColor: card.CardPrimaryColor,
-                    CardSecondaryColor: card.CardSecondaryColor,
-                    CardIssuer: card.CardIssuer || '',
-                    CardNetwork: card.CardNetwork || '',
-                    CardDetails: card.CardDetails || '',
-                    effectiveFrom: card.effectiveFrom,
-                    effectiveTo: card.effectiveTo,
-                    lastUpdated: card.lastUpdated
-                  }))}
-                  isUpdating={false}
-                  onSelectCardClick={handleOpenCardFilter}
-                  onDeselectCard={() => setSelectedFilterCardId(null)}
-                  selectLabel=""
-                  selectedLabel=""
-                  unselectedIcon={<Icon name="card" variant="micro" color="#C9CED3" size={14} />}
-                  className="standalone"
-                />
-              </div>
-              </div>
-            )}
-            {isMobileViewport && (
-              <div className="header-controls">
+            <div className="header-controls-and-actions">
+              {!isMobileViewport && (
+                <div className="header-controls">
                 <div className="date-picker">
+                  <label className="filter-label">Year</label>
                   <select
                     className="year-select default-select"
                     value={selectedYear}
@@ -772,8 +637,18 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                     ))}
                   </select>
                 </div>
-                {DISABLE_MOBILE_CREDITS_STICKY_FOOTER && (
-                  <div className="date-picker">
+                <div className="date-picker">
+                  <label className="filter-label">Month</label>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      aria-label="Previous month"
+                      className="button outline small px-2"
+                      onClick={decrementMonth}
+                      disabled={isLoadingMonth || !isAllowedYearMonth(utilGetPrevYearMonth(selectedYear, selectedMonth).y, utilGetPrevYearMonth(selectedYear, selectedMonth).m)}
+                    >
+                      <Icon name="chevron-down" variant="mini" size={16} className="rotate-90" />
+                    </button>
                     <select
                       className="month-select default-select"
                       value={selectedMonth}
@@ -805,36 +680,230 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                         }
                       }}
                     >
-                      {MONTH_OPTIONS.filter(m => isAllowedYearMonth(selectedYear, m.value)).map(m => (
+                      {MONTH_OPTIONS.map(m => (
                         <option key={m.value} value={m.value}>{m.label}</option>
                       ))}
                     </select>
+                    {!isOnCurrentMonth && (
+                      <button
+                        type="button"
+                        aria-label="Go to current period"
+                        className="button outline small px-2"
+                        onClick={goToCurrentPeriod}
+                      >
+                        <Icon name="map-pin" variant="micro" size={16} />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      aria-label="Next month"
+                      className="button outline small px-2"
+                      onClick={incrementMonth}
+                      disabled={isLoadingMonth || !isAllowedYearMonth(utilGetNextYearMonth(selectedYear, selectedMonth).y, utilGetNextYearMonth(selectedYear, selectedMonth).m)}
+                    >
+                      <Icon name="chevron-down" variant="mini" size={16} className="-rotate-90" />
+                    </button>
                   </div>
-                )}
-              </div>
-            )}
-            <div className="header-actions">
-              {!isMobileViewport && (
-                <button
-                  className="button outline small"
-                  onClick={handleResetFilters}
-                  aria-label="Reset filters to defaults"
-                >
-                  Reset Filters
-                </button>
+                </div>
+                <ToggleBar className="connected items-center gap-2">
+                  <span className="caps-label">Credits to Show</span>
+                  <ToggleBarButton pressed={showUsed} onPressedChange={setShowUsed} className="small icon with-text">
+                    <Icon name={CREDIT_USAGE_ICON_NAMES.USED} variant="micro" size={14} />
+                    <span>{CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
+                  </ToggleBarButton>
+                  <ToggleBarButton pressed={showNotUsed} onPressedChange={setShowNotUsed} className="small icon with-text">
+                    <Icon name={CREDIT_USAGE_ICON_NAMES.NOT_USED} variant="micro" size={14} />
+                    <span>{CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}</span>
+                  </ToggleBarButton>
+                  <ToggleBarButton pressed={showPartiallyUsed} onPressedChange={setShowPartiallyUsed} className="small icon with-text">
+                    <Icon name={CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED} variant="micro" size={14} />
+                    <span>{CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}</span>
+                  </ToggleBarButton>
+                  <ToggleBarButton pressed={showInactive} onPressedChange={setShowInactive} className="small icon with-text">
+                    <Icon name="inactive" variant="micro" size={14} />
+                    <span>{CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}</span>
+                  </ToggleBarButton>
+                </ToggleBar>
+                {/* Card Filter */}
+                <div className="filter-section">
+                  <label className="caps-label">Filter by Card</label>
+                  <SelectCard
+                    selectedCardId={selectedFilterCardId || undefined}
+                    creditCards={userCardDetails.map(card => ({
+                      id: card.id,
+                      CardName: card.CardName,
+                      CardPrimaryColor: card.CardPrimaryColor,
+                      CardSecondaryColor: card.CardSecondaryColor,
+                      CardIssuer: card.CardIssuer || '',
+                      CardNetwork: card.CardNetwork || '',
+                      CardDetails: card.CardDetails || '',
+                      effectiveFrom: card.effectiveFrom,
+                      effectiveTo: card.effectiveTo,
+                      lastUpdated: card.lastUpdated
+                    }))}
+                    isUpdating={false}
+                    onSelectCardClick={handleOpenCardFilter}
+                    onDeselectCard={() => setSelectedFilterCardId(null)}
+                    selectLabel=""
+                    selectedLabel=""
+                    unselectedIcon={<Icon name="card" variant="micro" color="#C9CED3" size={14} />}
+                    className="standalone"
+                  />
+                </div>
+                </div>
               )}
               {isMobileViewport && (
-                <button
-                  className="button small icon with-text"
-                  onClick={() => setIsFiltersDrawerOpen(true)}
-                  aria-label="Open filters drawer"
-                >
-                  <Icon name="filter" variant="mini" size={16} />
-                  Filters
-                </button>
+                <div className="header-controls">
+                  <div className="date-picker">
+                    <select
+                      className="year-select default-select"
+                      value={selectedYear}
+                      onChange={async (e) => {
+                        const newYear = parseInt(e.target.value);
+                        const newMonth = clampMonthForYear(newYear, selectedMonth, accountCreatedAt);
+
+                        setIsLoadingMonth(true);
+
+                        // Build filtering options
+                        const filterOptions: {
+                          cardIds?: string[];
+                          excludeHidden?: boolean;
+                        } = {
+                          excludeHidden: true,
+                        };
+                        if (selectedFilterCardId) {
+                          filterOptions.cardIds = [selectedFilterCardId];
+                        }
+
+                        try {
+                          // Load stale data immediately (fast)
+                          const staleData = await UserCreditService.fetchCreditHistoryForYear(newYear, filterOptions);
+                          updateLocalCalendar(staleData);
+                          setSelectedYear(newYear);
+                          setSelectedMonth(newMonth);
+                          setIsLoadingMonth(false);
+
+                          // Sync in background - sync response already includes filtered data
+                          try {
+                            const syncedData = await UserCreditService.syncYearCreditsDebounced(newYear, { excludeHidden: true });
+                            updateLocalCalendar(syncedData);
+                          } catch (syncError) {
+                            console.warn('Background sync failed for year', newYear, syncError);
+                          }
+                        } catch (error) {
+                          console.error('Failed to load new year:', error);
+                          setIsLoadingMonth(false);
+                        }
+                      }}
+                    >
+                      {yearOptions.map(y => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {DISABLE_MOBILE_CREDITS_STICKY_FOOTER && (
+                    <div className="date-picker">
+                      <select
+                        className="month-select default-select"
+                        value={selectedMonth}
+                        onChange={async (e) => {
+                          const m = parseInt(e.target.value);
+                          if (isAllowedYearMonth(selectedYear, m)) {
+                            setIsLoadingMonth(true);
+                            try {
+                              // Build filtering options
+                              const filterOptions: {
+                                cardIds?: string[];
+                                excludeHidden?: boolean;
+                              } = {
+                                excludeHidden: true,
+                              };
+                              if (selectedFilterCardId) {
+                                filterOptions.cardIds = [selectedFilterCardId];
+                              }
+
+                              // Load new month data
+                              const newData = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
+                              updateLocalCalendar(newData);
+                              setSelectedMonth(m);
+                            } catch (error) {
+                              console.error('Failed to load new month:', error);
+                            } finally {
+                              setIsLoadingMonth(false);
+                            }
+                          }
+                        }}
+                      >
+                        {MONTH_OPTIONS.filter(m => isAllowedYearMonth(selectedYear, m.value)).map(m => (
+                          <option key={m.value} value={m.value}>{m.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
               )}
+              <div className="header-actions">
+                {!isMobileViewport && (
+                  <button
+                    className="button outline small"
+                    onClick={handleResetFilters}
+                    aria-label="Reset filters to defaults"
+                  >
+                    Reset Filters
+                  </button>
+                )}
+                {isMobileViewport && (
+                  <button
+                    className="button small icon with-text"
+                    onClick={() => setIsFiltersDrawerOpen(true)}
+                    aria-label="Open filters drawer"
+                  >
+                    <Icon name="filter" variant="mini" size={16} />
+                    Filters
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Historical Monthly Summary */}
+            <div className="historical-summary-section">
+              {isLoadingHistoricalSummary ? (
+                <InfoDisplay
+                  type="loading"
+                  message="Loading summary..."
+                  showTitle={false}
+                  transparent={true}
+                  centered
+                />
+              ) : historicalSummary ? (
+                <div className="summary-stats">
+                  <div className="stat-group">
+                    <span className="stat-label">Monthly Credits</span>
+                    <div className="stat-value-container">
+                      <span className="stat-value">
+                        ${historicalSummary.MonthlyCredits.usedValue.toFixed(2)} / ${historicalSummary.MonthlyCredits.possibleValue.toFixed(2)}
+                      </span>
+                      <span className="stat-detail">
+                        ({historicalSummary.MonthlyCredits.usedCount} / {historicalSummary.MonthlyCredits.usedCount + historicalSummary.MonthlyCredits.partiallyUsedCount + historicalSummary.MonthlyCredits.unusedCount})
+                      </span>
+                    </div>
+                  </div>
+                  <div className="stat-group">
+                    <span className="stat-label">Current Credits</span>
+                    <div className="stat-value-container">
+                      <span className="stat-value">
+                        ${historicalSummary.CurrentCredits.usedValue.toFixed(2)} / ${historicalSummary.CurrentCredits.possibleValue.toFixed(2)}
+                      </span>
+                      <span className="stat-detail">
+                        ({historicalSummary.CurrentCredits.usedCount} / {historicalSummary.CurrentCredits.usedCount + historicalSummary.CurrentCredits.partiallyUsedCount + historicalSummary.CurrentCredits.unusedCount})
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </HeaderControls>
+
           <div className="credits-history-content">
             {(isLoading || !allCreditsHaveMetadata) ? (
               <InfoDisplay

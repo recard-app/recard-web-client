@@ -384,19 +384,27 @@ export interface MonthlySummaryResponse extends MonthlyStatsResponse {
 /**
  * Historical Monthly Summary API
  * GET /users/cards/credits/historical-monthly-summary
+ *
+ * Returns statistics for a specific historical month/year.
+ * - MonthlyCredits: Stats for monthly credits in the specified month only
+ * - CurrentCredits: Cumulative stats for all credits from year start through the specified month
+ *
+ * Note: usedCount only includes fully redeemed credits (CreditUsage === 'used')
+ * partiallyUsedCount includes credits with partial usage (CreditUsage === 'partially_used')
+ * Total credits = usedCount + partiallyUsedCount + unusedCount
  */
 export interface HistoricalMonthlySummaryResponse {
     MonthlyCredits: {
         usedValue: number;
         possibleValue: number;
-        usedCount: number;
+        usedCount: number; // Only fully redeemed credits
         partiallyUsedCount: number;
         unusedCount: number;
     };
     CurrentCredits: {
         usedValue: number;
         possibleValue: number;
-        usedCount: number;
+        usedCount: number; // Only fully redeemed credits
         partiallyUsedCount: number;
         unusedCount: number;
     };

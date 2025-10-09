@@ -55,13 +55,13 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
 
   // Calculate totals for display
   const totalMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount + monthlyStats.MonthlyCredits.unusedCount;
-  const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount;
+  const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount;
 
   const totalCurrentCredits = monthlyStats.CurrentCredits.usedCount + monthlyStats.CurrentCredits.partiallyUsedCount + monthlyStats.CurrentCredits.unusedCount;
-  const usedCurrentCredits = monthlyStats.CurrentCredits.usedCount + monthlyStats.CurrentCredits.partiallyUsedCount;
+  const usedCurrentCredits = monthlyStats.CurrentCredits.usedCount;
 
   const totalAllCredits = monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount;
-  const usedAllCredits = monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount;
+  const usedAllCredits = monthlyStats.AllCredits.usedCount;
 
   return (
     <div className="credit-detailed-summary">

@@ -8,3 +8,49 @@
   padding: $space-2;
   padding-bottom: 0;
 }
+
+.historical-summary-section {
+  padding: $space-2 0;
+  //background-color: $neutral-lightest-gray;
+
+  .summary-stats {
+    display: flex;
+    flex-direction: row;
+    gap: $space-4;
+
+    .stat-group {
+      display: flex;
+      flex-direction: column;
+
+      .stat-label {
+        font-size: $font-xxs;
+        font-weight: $font-semibold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: $neutral-medium-gray;
+      }
+
+      .stat-value-container {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: $space-1-5;
+      }
+
+      .stat-value {
+        font-size: $font-sm;
+        font-weight: $font-semibold;
+        color: $neutral-dark-gray;
+      }
+
+      .stat-detail {
+        font-size: $font-xs;
+        color: $neutral-medium-gray;
+      }
+    }
+  }
+
+  @media (max-width: $mobile-breakpoint) {
+    padding: $space-2 0;
+  }
+}

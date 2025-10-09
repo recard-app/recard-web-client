@@ -62,7 +62,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
 
   if (variant === 'sidebar') {
     const totalMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount + monthlyStats.MonthlyCredits.unusedCount;
-    const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount;
+    const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount;
 
     return (
       <div className="credit-summary-sidebar">
@@ -83,7 +83,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   }
 
   const totalMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount + monthlyStats.MonthlyCredits.unusedCount;
-  const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount;
+  const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount;
 
   return (
     <div className="credit-summary-header">
