@@ -349,6 +349,10 @@ export const UserCreditService = {
             params,
             { headers }
         );
+
+        // Invalidate cache after successful update
+        apiCache.invalidate(CACHE_KEYS.CREDIT_TRACKING_PREFERENCES);
+
         return response.data;
     },
 
