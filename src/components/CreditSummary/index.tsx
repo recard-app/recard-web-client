@@ -102,24 +102,24 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
             </span>
           </div>
         </div>
+      </div>
+      <div className="credit-summary-buttons">
         {onDetailedSummaryClick && (
           <button
-            className="button ghost icon"
+            className="button ghost icon with-text"
             onClick={onDetailedSummaryClick}
-            aria-label="View detailed analytics"
-            title="View detailed analytics"
+            aria-label="View monthly report"
           >
-            <Icon name="expand-arrows" variant="micro" size={16} />
+            <Icon name="report-icon" variant="micro" size={14} />
+            See Full Report
           </button>
         )}
-      </div>
-      <div>
         <button
           className="button ghost icon with-text"
           onClick={() => navigate('/my-credits/history')}
         >
           <Icon name="history-clock" variant="micro" size={14} />
-          See All Credits
+          View Past Credits
         </button>
       </div>
     </div>

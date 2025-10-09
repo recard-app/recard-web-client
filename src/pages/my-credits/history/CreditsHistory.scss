@@ -3,4 +3,8 @@
 // Page-specific styles for CreditsHistory that are not shared
 // Core layout styles are now in shared-credits-layout.scss
 
-// Additional page-specific styles can be added here if needed
+.credit-summary-button-container {
+  display: flex;
+  padding: $space-2;
+  padding-bottom: 0;
+}

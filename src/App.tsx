@@ -1004,11 +1004,11 @@ function AppContent({}: AppContentProps) {
             );
           })()}
 
-          {/* Detailed Summary Modal */}
+          {/* Credits Report Modal */}
           <Dialog open={isDetailedSummaryOpen} onOpenChange={setIsDetailedSummaryOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Detailed Summary</DialogTitle>
+                <DialogTitle>Credits Report</DialogTitle>
               </DialogHeader>
               <DialogBody>
                 <CreditDetailedSummary
