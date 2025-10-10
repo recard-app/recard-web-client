@@ -564,10 +564,18 @@ body:has(.mobile-credit-details-drawer) [data-radix-popper-content-wrapper] .usa
   font-size: $font-xs;
   line-height: 1.2;
   border-radius: $radius-base;
-  transition: background-color 0.2s ease;
 
-  &:hover {
+  &:not(.updating) {
+    transition: background-color 0.2s ease;
+  }
+
+  &:hover:not(.updating) {
     background-color: $neutral-lightest-gray;
+  }
+
+  // Apply updating state animation to individual sidebar entries
+  &.updating {
+    @include updating-state;
   }
 
   .credit-title-row {

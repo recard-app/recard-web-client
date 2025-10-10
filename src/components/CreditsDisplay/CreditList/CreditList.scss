@@ -13,11 +13,6 @@
     // Limit max items shown and add scrollable behavior if needed
     max-height: 300px;
     overflow-y: auto;
-
-    // Apply updating state animation only for sidebar variant
-    &.updating {
-      @include updating-state;
-    }
   }
 }
 

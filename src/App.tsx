@@ -793,6 +793,9 @@ function AppContent({}: AppContentProps) {
               isUpdatingMonthlyStats={isUpdatingMonthlyStats}
               prioritizedCredits={prioritizedCredits}
               onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
+              onAddUpdatingCreditId={addUpdatingCreditId}
+              onRemoveUpdatingCreditId={removeUpdatingCreditId}
+              isCreditUpdating={isCreditUpdating}
             />
           )}
           {(() => {

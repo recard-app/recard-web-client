@@ -55,6 +55,9 @@ interface AppSidebarProps {
   isUpdatingMonthlyStats?: boolean;
   prioritizedCredits: PrioritizedCredit[];
   onRefreshMonthlyStats?: () => void;
+  onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
 }
 
 const AppSidebar: React.FC<AppSidebarProps> = ({
@@ -77,6 +80,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   monthlyStats,
   isLoadingMonthlyStats,
   isUpdatingMonthlyStats,
+  onAddUpdatingCreditId,
+  onRemoveUpdatingCreditId,
+  isCreditUpdating,
   prioritizedCredits,
   onRefreshMonthlyStats
 }) => {
@@ -357,6 +363,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                         displayPeriod={false}
                         onUpdateComplete={onRefreshMonthlyStats}
                         isUpdating={isUpdatingMonthlyStats}
+                        onAddUpdatingCreditId={onAddUpdatingCreditId}
+                        onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+                        isCreditUpdating={isCreditUpdating}
                       />
                     );
                   })()
