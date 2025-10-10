@@ -9,6 +9,13 @@
   padding: $space-1;
   font-size: $font-xs;
 
+  // Apply updating state animation only to stat values when isUpdating is true
+  &.updating {
+    .stat-value {
+      @include updating-state;
+    }
+  }
+
   .sidebar-stats-header {
     display: flex;
     align-items: flex-start;

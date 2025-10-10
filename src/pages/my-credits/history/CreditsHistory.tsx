@@ -65,6 +65,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
   const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
   const [historicalSummary, setHistoricalSummary] = useState<HistoricalMonthlySummaryResponse | null>(null);
   const [isLoadingHistoricalSummary, setIsLoadingHistoricalSummary] = useState<boolean>(false);
+  const [isUpdatingHistoricalSummary, setIsUpdatingHistoricalSummary] = useState<boolean>(false);
 
   // Helper function to clear all updating indicators
   const clearAllUpdatingIndicators = () => {
@@ -96,10 +97,13 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
 
       // Refresh historical summary with updated credit values
       try {
+        setIsUpdatingHistoricalSummary(true);
         const summary = await UserCreditService.fetchHistoricalMonthlySummary(selectedYear, selectedMonth, false);
         setHistoricalSummary(summary);
       } catch (summaryError) {
         console.error('Failed to refresh historical summary:', summaryError);
+      } finally {
+        setIsUpdatingHistoricalSummary(false);
       }
     } catch (error) {
       console.error('Failed to refresh credit history:', error);
@@ -990,7 +994,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
               centered
             />
           ) : historicalSummary ? (
-            <div className="summary-stats">
+            <div className={`summary-stats ${isUpdatingHistoricalSummary ? 'updating' : ''}`}>
               <div className="stat-group">
                 <span className="stat-label">
                   <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />

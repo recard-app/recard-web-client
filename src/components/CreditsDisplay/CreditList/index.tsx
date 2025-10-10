@@ -69,7 +69,7 @@ const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditB
   const isSidebar = variant === 'sidebar';
 
   return (
-    <div className={`credit-list ${isSidebar ? 'credit-list--sidebar' : ''}`}>
+    <div className={`credit-list ${isSidebar ? 'credit-list--sidebar' : ''} ${isUpdating ? 'updating' : ''}`}>
       {displayCredits.map((uc) => {
         const card = cardById.get(uc.CardId) || null;
         const cardCredit = creditByPair.get(`${uc.CardId}:${uc.CreditId}`) || null;

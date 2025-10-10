@@ -68,14 +68,14 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
     const showExpiringRow = !HIDE_EXPIRING_WHEN_NONE_SIDEBAR || hasExpiringCredits;
 
     return (
-      <div className="credit-summary-sidebar">
+      <div className={`credit-summary-sidebar ${isUpdating ? 'updating' : ''}`}>
         <div className="sidebar-stat-row">
           <span className="stat-label">
             <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
             {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}:
           </span>
           <span className="stat-value">
-            {isUpdating ? "Updating..." : `$${monthlyStats.MonthlyCredits.usedValue} / $${monthlyStats.MonthlyCredits.possibleValue} (${usedMonthlyCredits} / ${totalMonthlyCredits} credits used)`}
+            ${monthlyStats.MonthlyCredits.usedValue} / ${monthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
           </span>
         </div>
         {showExpiringRow && (
@@ -85,7 +85,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
               {CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}:
             </span>
             <span className="stat-value">
-              {isUpdating ? "Updating..." : `${monthlyStats.ExpiringCredits.Total.count} credits ($${monthlyStats.ExpiringCredits.Total.unusedValue})`}
+              {monthlyStats.ExpiringCredits.Total.count} credits (${monthlyStats.ExpiringCredits.Total.unusedValue})
             </span>
           </div>
         )}
@@ -97,7 +97,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount;
 
   return (
-    <div className="credit-summary-header">
+    <div className={`credit-summary-header ${isUpdating ? 'updating' : ''}`}>
       <div className="sidebar-stats-header">
         <div className="sidebar-stats-content">
           <div className="sidebar-stat-row">
@@ -106,7 +106,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
               {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}:
             </span>
             <span className="stat-value">
-              {isUpdating ? "Updating..." : `$${monthlyStats.MonthlyCredits.usedValue} / $${monthlyStats.MonthlyCredits.possibleValue} (${usedMonthlyCredits} / ${totalMonthlyCredits} credits used)`}
+              ${monthlyStats.MonthlyCredits.usedValue} / ${monthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
             </span>
           </div>
           <div className="sidebar-stat-row expiring">
@@ -115,7 +115,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
               {CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}:
             </span>
             <span className="stat-value">
-              {isUpdating ? "Updating..." : `${monthlyStats.ExpiringCredits.Total.count} credits ($${monthlyStats.ExpiringCredits.Total.unusedValue})`}
+              {monthlyStats.ExpiringCredits.Total.count} credits (${monthlyStats.ExpiringCredits.Total.unusedValue})
             </span>
           </div>
         </div>

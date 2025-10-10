@@ -18,6 +18,13 @@
     flex-direction: row;
     gap: $space-4;
 
+    // Apply updating state animation only to stat values when isUpdating is true
+    &.updating {
+      .stat-value-container {
+        @include updating-state;
+      }
+    }
+
     .stat-group {
       display: flex;
       flex-direction: column;
