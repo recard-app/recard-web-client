@@ -60,6 +60,11 @@ html {
   @media (max-width: $mobile-breakpoint) {
     padding: $space-2;
   }
+
+  // Add safe-area bottom padding for iOS standalone mode on mobile
+  @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
+    padding-bottom: calc($space-2 + env(safe-area-inset-bottom));
+  }
 }
 
 // Compact padding variant
@@ -69,12 +74,22 @@ html {
   @media (max-width: $mobile-breakpoint) {
     padding: $space-1;
   }
+
+  // Add safe-area bottom padding for iOS standalone mode on mobile
+  @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
+    padding-bottom: calc($space-1 + env(safe-area-inset-bottom));
+  }
 }
 
 // No padding variant
 .full-page-content--no-padding {
   @extend %full-page-content-base;
   padding: 0;
+
+  // Add safe-area bottom padding for iOS standalone mode on mobile
+  @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
 
 // Standard page layout for pages with PageHeader + content
@@ -95,9 +110,14 @@ html {
 .standard-page-content--padded {
   @extend .standard-page-content;
   padding: $space-3;
-  
+
   @media (max-width: $mobile-breakpoint) {
     padding: $space-2;
+  }
+
+  // Add safe-area bottom padding for iOS standalone mode on mobile
+  @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
+    padding-bottom: calc($space-2 + env(safe-area-inset-bottom));
   }
 }
 
@@ -105,9 +125,14 @@ html {
 .standard-page-content--compact {
   @extend .standard-page-content;
   padding: $space-2;
-  
+
   @media (max-width: $mobile-breakpoint) {
     padding: $space-1;
+  }
+
+  // Add safe-area bottom padding for iOS standalone mode on mobile
+  @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
+    padding-bottom: calc($space-1 + env(safe-area-inset-bottom));
   }
 }
 
@@ -115,4 +140,9 @@ html {
 .standard-page-content--no-padding {
   @extend .standard-page-content;
   padding: 0;
+
+  // Add safe-area bottom padding for iOS standalone mode on mobile
+  @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
