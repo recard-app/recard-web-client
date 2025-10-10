@@ -41,23 +41,22 @@ function PreferencesModule({
         const loadAllPreferences = async () => {
             setIsLoading(true);
             try {
-                const { instructionsResponse, chatHistoryResponse, showCompletedOnlyResponse } = 
-                    await UserPreferencesService.loadAllPreferences();
+                const response = await UserPreferencesService.loadAllPreferences();
 
                 // Update custom instructions
-                if (instructionsResponse.instructions !== undefined) {
-                    setInstructions(instructionsResponse.instructions);
-                    onInstructionsUpdate(instructionsResponse.instructions);
+                if (response.instructions !== undefined) {
+                    setInstructions(response.instructions);
+                    onInstructionsUpdate(response.instructions);
                 }
 
                 // Update chat history preference
-                if (chatHistoryResponse.chatHistory) {
-                    setChatHistoryPreference(chatHistoryResponse.chatHistory);
+                if (response.chatHistory) {
+                    setChatHistoryPreference(response.chatHistory);
                 }
 
                 // Update show completed only preference
-                if (showCompletedOnlyResponse.showCompletedOnly !== undefined) {
-                    setShowCompletedOnlyPreference(showCompletedOnlyResponse.showCompletedOnly);
+                if (response.showCompletedOnly !== undefined) {
+                    setShowCompletedOnlyPreference(response.showCompletedOnly);
                 }
             } catch (error) {
                 console.error('Error loading preferences:', error);

@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES, MOBILE_BREAKPOINT, DISABLE_MOBILE_CREDITS_STICKY_FOOTER } from '../../../types';
-import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CREDIT_USAGE_ICON_NAMES, HistoricalMonthlySummaryResponse } from '../../../types/CardCreditsTypes';
+import { NEUTRAL_DARK_GRAY } from '../../../types/Colors';
+import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CREDIT_USAGE_ICON_NAMES, HistoricalMonthlySummaryResponse, CREDIT_SUMMARY_SECTIONS } from '../../../types/CardCreditsTypes';
 import { useCredits } from '../../../contexts/ComponentsContext';
 import {
   Dialog,
@@ -991,7 +992,10 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
           ) : historicalSummary ? (
             <div className="summary-stats">
               <div className="stat-group">
-                <span className="stat-label">Monthly Credits</span>
+                <span className="stat-label">
+                  <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
+                  {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}
+                </span>
                 <div className="stat-value-container">
                   <span className="stat-value">
                     ${historicalSummary.MonthlyCredits.usedValue.toFixed(2)} / ${historicalSummary.MonthlyCredits.possibleValue.toFixed(2)}
@@ -1002,7 +1006,10 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
                 </div>
               </div>
               <div className="stat-group">
-                <span className="stat-label">Cumulative Credits</span>
+                <span className="stat-label">
+                  <Icon name={CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
+                  {CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.displayName}
+                </span>
                 <div className="stat-value-container">
                   <span className="stat-value">
                     ${historicalSummary.CurrentCredits.usedValue.toFixed(2)} / ${historicalSummary.CurrentCredits.possibleValue.toFixed(2)}

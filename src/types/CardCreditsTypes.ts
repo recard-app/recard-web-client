@@ -452,3 +452,27 @@ export const CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES = {
     DO_NOT_HIDE: 'Show on Credits Page'
 } as const;
 export type CreditHidePreferenceDisplayNameType = typeof CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES[keyof typeof CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES];
+
+/**
+ * Credit summary section configuration for display names and icons
+ */
+export const CREDIT_SUMMARY_SECTIONS = {
+    MONTHLY_CREDITS: {
+        displayName: 'Monthly Credits',
+        icon: 'calendar-days'
+    },
+    CURRENT_CREDITS: {
+        displayName: 'Credits to date',
+        icon: 'arrow-trending-up'
+    },
+    ANNUAL_CREDITS: {
+        displayName: 'Annual Credits',
+        icon: 'globe-alt'
+    },
+    EXPIRING_CREDITS: {
+        displayName: 'Expiring Credits',
+        icon: 'flag'
+    }
+} as const;
+
+export type CreditSummarySectionType = keyof typeof CREDIT_SUMMARY_SECTIONS;

@@ -1,6 +1,8 @@
 import React from 'react';
-import { MonthlyStatsResponse } from '../../../types';
+import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS } from '../../../types';
+import { NEUTRAL_DARK_GRAY } from '../../../types/Colors';
 import { InfoDisplay } from '../../../elements';
+import Icon from '@/icons';
 import './CreditDetailedSummary.scss';
 
 interface CreditDetailedSummaryProps {
@@ -78,28 +80,40 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
 
       <div className="detailed-simple-stats">
         <div className="stat-line">
-          <span className="stat-label">Monthly: </span>
+          <span className="stat-label">
+            <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
+            {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}:
+          </span>
           <span className="stat-value">
             {formatCurrency(monthlyStats.MonthlyCredits.usedValue)} / {formatCurrency(monthlyStats.MonthlyCredits.possibleValue)} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
           </span>
         </div>
 
         <div className="stat-line">
-          <span className="stat-label">Current: </span>
+          <span className="stat-label">
+            <Icon name={CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
+            {CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.displayName}:
+          </span>
           <span className="stat-value">
             {formatCurrency(monthlyStats.CurrentCredits.usedValue)} / {formatCurrency(monthlyStats.CurrentCredits.possibleValue)} ({usedCurrentCredits} / {totalCurrentCredits} credits used)
           </span>
         </div>
 
         <div className="stat-line">
-          <span className="stat-label">All Credits: </span>
+          <span className="stat-label">
+            <Icon name={CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
+            {CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.displayName}:
+          </span>
           <span className="stat-value">
             {formatCurrency(monthlyStats.AllCredits.usedValue)} / {formatCurrency(monthlyStats.AllCredits.possibleValue)} ({usedAllCredits} / {totalAllCredits} credits used)
           </span>
         </div>
 
         <div className="stat-line">
-          <span className="stat-label">Expiring: </span>
+          <span className="stat-label">
+            <Icon name={CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
+            {CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}:
+          </span>
           <span className="stat-value">
             {monthlyStats.ExpiringCredits.Total.count} credits ({formatCurrency(monthlyStats.ExpiringCredits.Total.unusedValue)})
           </span>
@@ -110,7 +124,7 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
         <h3 className="section-title">Detailed Breakdown</h3>
 
         <div className="summary-section">
-          <h4 className="section-title">Monthly Credits</h4>
+          <h4 className="section-title">{CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}</h4>
           <div className="stats-grid">
             <div className="stat-item">
               <span className="stat-label">Used Value</span>
@@ -136,7 +150,7 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
         </div>
 
         <div className="summary-section">
-          <h4 className="section-title">Current Credits</h4>
+          <h4 className="section-title">{CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.displayName}</h4>
           <div className="stats-grid">
             <div className="stat-item">
               <span className="stat-label">Used Value</span>
@@ -162,7 +176,7 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
         </div>
 
         <div className="summary-section">
-          <h4 className="section-title">All Credits</h4>
+          <h4 className="section-title">{CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.displayName}</h4>
           <div className="stats-grid">
             <div className="stat-item">
               <span className="stat-label">Used Value</span>
@@ -188,7 +202,7 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
         </div>
 
         <div className="summary-section">
-          <h4 className="section-title">Expiring Credits</h4>
+          <h4 className="section-title">{CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}</h4>
           <div className="expiring-breakdown">
             <div className="expiring-period">
               <h5 className="period-title">Monthly</h5>
