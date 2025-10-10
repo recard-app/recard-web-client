@@ -426,11 +426,6 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
 
   // Sidebar variant - simplified display that reuses the same modal system as default variant
   if (variant === 'sidebar') {
-    // Debug logging
-    if (isUpdating) {
-      console.log(`Credit ${cardCredit?.Title ?? userCredit.CreditId} is updating - should be pulsing`);
-    }
-
     return (
       <>
         <div

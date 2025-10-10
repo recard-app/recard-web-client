@@ -47,6 +47,9 @@ interface MobileHeaderProps {
   isUpdatingMonthlyStats?: boolean;
   prioritizedCredits?: PrioritizedCredit[];
   onRefreshMonthlyStats?: () => void;
+  onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
+  isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
 }
 
 const MobileHeader: React.FC<MobileHeaderProps> = ({
@@ -73,7 +76,10 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   isLoadingMonthlyStats = false,
   isUpdatingMonthlyStats = false,
   prioritizedCredits = [],
-  onRefreshMonthlyStats
+  onRefreshMonthlyStats,
+  onAddUpdatingCreditId,
+  onRemoveUpdatingCreditId,
+  isCreditUpdating
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -383,6 +389,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                       variant="sidebar"
                       monthlyStats={monthlyStats}
                       loading={isLoadingMonthlyStats}
+                      isUpdating={isUpdatingMonthlyStats}
                     />
 
                     {/* Priority Credits List */}
@@ -403,6 +410,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                         displayPeriod={false}
                         onUpdateComplete={onRefreshMonthlyStats}
                         isUpdating={isUpdatingMonthlyStats}
+                        onAddUpdatingCreditId={onAddUpdatingCreditId}
+                        onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+                        isCreditUpdating={isCreditUpdating}
                       />
                     )}
                   </div>
