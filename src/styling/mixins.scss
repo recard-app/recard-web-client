@@ -594,17 +594,17 @@
 // Mixin for content that is refreshing/updating while showing stale data
 // Different from loading state - this is for when data exists but is being refreshed
 @mixin updating-state {
-  opacity: 0.3;
+  opacity: 0.2;
   animation: updating-pulse 2s ease-in-out infinite;
   transition: opacity $transition-base;
 }
 
-// Keyframe for pulsing effect during updates (30% to 90% opacity)
+// Keyframe for pulsing effect during updates (20% to 75% opacity)
 @keyframes updating-pulse {
   0%, 100% {
-    opacity: 0.3;
+    opacity: 0.2;
   }
   50% {
-    opacity: 0.9;
+    opacity: 0.75;
   }
 }
