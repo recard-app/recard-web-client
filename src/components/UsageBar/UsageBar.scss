@@ -1,0 +1,77 @@
+@use '../../styling/variables' as *;
+@use '../../styling/mixins' as *;
+
+.usage-bar-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.usage-bar {
+  width: 100%;
+  display: flex;
+  overflow: hidden;
+  background-color: $neutral-light-gray;
+  position: relative;
+}
+
+.usage-bar-segment {
+  flex-shrink: 0;
+  transition: width 0.3s ease;
+
+  &--remaining {
+    background-color: $neutral-light-gray;
+  }
+
+  &--empty {
+    background-color: $neutral-light-gray;
+  }
+}
+
+// Animation on mount
+.usage-bar--animate {
+  .usage-bar-segment {
+    animation: usage-bar-grow 0.6s ease-out;
+  }
+}
+
+@keyframes usage-bar-grow {
+  from {
+    width: 0;
+  }
+}
+
+// Labels section
+.usage-bar-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2 $space-3;
+  font-size: $font-xs;
+  color: $neutral-dark-gray;
+}
+
+.usage-bar-label {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  white-space: nowrap;
+}
+
+.usage-bar-label-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &--remaining {
+    background-color: $neutral-light-gray;
+    border: 1px solid $neutral-gray;
+  }
+}
+
+.usage-bar-label-text {
+  font-size: $font-xs;
+  font-weight: $font-medium;
+  color: $neutral-dark-gray;
+}

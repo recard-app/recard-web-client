@@ -1,9 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, HIDE_EXPIRING_WHEN_NONE_SIDEBAR } from '../../types';
-import { NEUTRAL_DARK_GRAY } from '../../types/Colors';
+import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR } from '../../types/Colors';
 import { InfoDisplay } from '../../elements';
 import Icon from '@/icons';
+import UsageBar from '../UsageBar';
 import './CreditSummary.scss';
 
 interface CreditSummaryProps {
@@ -78,6 +79,21 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
             ${monthlyStats.MonthlyCredits.usedValue} / ${monthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
           </span>
         </div>
+        <UsageBar
+          segments={[
+            {
+              label: 'Used Value',
+              value: monthlyStats.MonthlyCredits.usedValue,
+              color: PRIMARY_COLOR,
+            },
+          ]}
+          maxValue={monthlyStats.MonthlyCredits.possibleValue}
+          height={8}
+          borderRadius={4}
+          showLabels={false}
+          animate={true}
+          className="credit-summary-usage-bar"
+        />
         {showExpiringRow && (
           <div className="sidebar-stat-row expiring">
             <span className="stat-label">
@@ -109,6 +125,21 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
               ${monthlyStats.MonthlyCredits.usedValue} / ${monthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
             </span>
           </div>
+          <UsageBar
+            segments={[
+              {
+                label: 'Used Value',
+                value: monthlyStats.MonthlyCredits.usedValue,
+                color: PRIMARY_COLOR,
+              },
+            ]}
+            maxValue={monthlyStats.MonthlyCredits.possibleValue}
+            height={8}
+            borderRadius={4}
+            showLabels={false}
+            animate={true}
+            className="credit-summary-usage-bar"
+          />
           <div className="sidebar-stat-row expiring">
             <span className="stat-label">
               <Icon name={CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
