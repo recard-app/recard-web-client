@@ -227,10 +227,25 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             {(() => {
               const currentTitle = getCurrentPageTitle();
               if (isHomeOrChatRoute(location.pathname)) return null;
-              return (
-                <h1 className="mobile-header__title">
+
+              // Special case: My Credits History page should link back to My Credits
+              const isCreditsHistoryPage = location.pathname === PAGES.MY_CREDITS_HISTORY.PATH;
+              const titleContent = (
+                <>
                   {getCurrentPageIcon()}
                   <span>{currentTitle}</span>
+                </>
+              );
+
+              return (
+                <h1 className="mobile-header__title">
+                  {isCreditsHistoryPage ? (
+                    <Link to={PAGES.MY_CREDITS.PATH}>
+                      {titleContent}
+                    </Link>
+                  ) : (
+                    titleContent
+                  )}
                 </h1>
               );
             })()}

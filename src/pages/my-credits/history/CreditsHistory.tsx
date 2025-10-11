@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES, MOBILE_BREAKPOINT, DISABLE_MOBILE_CREDITS_STICKY_FOOTER } from '../../../types';
+import { PAGE_ICONS, PAGE_NAMES, PAGES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES, MOBILE_BREAKPOINT, DISABLE_MOBILE_CREDITS_STICKY_FOOTER } from '../../../types';
 import { NEUTRAL_DARK_GRAY } from '../../../types/Colors';
 import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CREDIT_USAGE_ICON_NAMES, HistoricalMonthlySummaryResponse, CREDIT_SUMMARY_SECTIONS } from '../../../types/CardCreditsTypes';
 import { useCredits } from '../../../contexts/ComponentsContext';
@@ -547,12 +547,13 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
 
   return (
     <div className="standard-page-layout">
-      <PageHeader 
+      <PageHeader
         title={PAGE_NAMES.MY_CREDITS}
         icon={PAGE_ICONS.MY_CREDITS.MINI}
         subtitle={"Full History"}
         showHelpButton={true}
         onHelpClick={() => setIsHelpOpen(true)}
+        titleLink={PAGES.MY_CREDITS.PATH}
       />
       {/* Card Filter Selector: drawer on mobile, dialog on desktop */}
       {isMobileViewport ? (
