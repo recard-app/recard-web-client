@@ -11,6 +11,7 @@ export interface UsageBarProps {
   segments: UsageBarSegment[];
   maxValue: number;
   height?: number;
+  thickness?: number;
   borderRadius?: number;
   showLabels?: boolean;
   animate?: boolean;
@@ -21,11 +22,14 @@ const UsageBar: React.FC<UsageBarProps> = ({
   segments,
   maxValue,
   height = 8,
+  thickness,
   borderRadius = 4,
   showLabels = false,
   animate = true,
   className = '',
 }) => {
+  // Use thickness if provided, otherwise fall back to height
+  const barHeight = thickness ?? height;
   // Filter out segments with zero or negative values
   const validSegments = segments.filter(segment => segment.value > 0);
 
@@ -47,7 +51,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
       <div
         className={`usage-bar ${animate ? 'usage-bar--animate' : ''}`}
         style={{
-          height: `${height}px`,
+          height: `${barHeight}px`,
           borderRadius: `${borderRadius}px`,
         }}
         role="progressbar"

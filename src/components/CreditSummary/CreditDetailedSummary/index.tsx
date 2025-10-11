@@ -1,8 +1,9 @@
 import React from 'react';
 import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS } from '../../../types';
-import { NEUTRAL_DARK_GRAY } from '../../../types/Colors';
+import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR } from '../../../types/Colors';
 import { InfoDisplay } from '../../../elements';
 import Icon from '@/icons';
+import UsageBar from '../../UsageBar';
 import './CreditDetailedSummary.scss';
 
 interface CreditDetailedSummaryProps {
@@ -88,6 +89,21 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
             {formatCurrency(monthlyStats.MonthlyCredits.usedValue)} / {formatCurrency(monthlyStats.MonthlyCredits.possibleValue)} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
           </span>
         </div>
+        <UsageBar
+          segments={[
+            {
+              label: 'Used Value',
+              value: monthlyStats.MonthlyCredits.usedValue,
+              color: PRIMARY_COLOR,
+            },
+          ]}
+          maxValue={monthlyStats.MonthlyCredits.possibleValue}
+          height={8}
+          borderRadius={4}
+          showLabels={false}
+          animate={true}
+          className="detailed-summary-usage-bar"
+        />
 
         <div className="stat-line">
           <span className="stat-label">
@@ -98,6 +114,21 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
             {formatCurrency(monthlyStats.CurrentCredits.usedValue)} / {formatCurrency(monthlyStats.CurrentCredits.possibleValue)} ({usedCurrentCredits} / {totalCurrentCredits} credits used)
           </span>
         </div>
+        <UsageBar
+          segments={[
+            {
+              label: 'Used Value',
+              value: monthlyStats.CurrentCredits.usedValue,
+              color: PRIMARY_COLOR,
+            },
+          ]}
+          maxValue={monthlyStats.CurrentCredits.possibleValue}
+          height={8}
+          borderRadius={4}
+          showLabels={false}
+          animate={true}
+          className="detailed-summary-usage-bar"
+        />
 
         <div className="stat-line">
           <span className="stat-label">
@@ -108,6 +139,21 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
             {formatCurrency(monthlyStats.AllCredits.usedValue)} / {formatCurrency(monthlyStats.AllCredits.possibleValue)} ({usedAllCredits} / {totalAllCredits} credits used)
           </span>
         </div>
+        <UsageBar
+          segments={[
+            {
+              label: 'Used Value',
+              value: monthlyStats.AllCredits.usedValue,
+              color: PRIMARY_COLOR,
+            },
+          ]}
+          maxValue={monthlyStats.AllCredits.possibleValue}
+          height={8}
+          borderRadius={4}
+          showLabels={false}
+          animate={true}
+          className="detailed-summary-usage-bar"
+        />
 
         <div className="stat-line">
           <span className="stat-label">
