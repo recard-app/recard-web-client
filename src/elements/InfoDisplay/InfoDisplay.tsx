@@ -13,6 +13,7 @@ interface InfoDisplayProps {
   transparent?: boolean;
   showIcon?: boolean;
   centered?: boolean;
+  hideOverflow?: boolean;
 }
 
 export const InfoDisplay: React.FC<InfoDisplayProps> = ({
@@ -24,7 +25,8 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
   showTitle = true,
   transparent = false,
   showIcon = true,
-  centered = false
+  centered = false,
+  hideOverflow = false
 }) => {
   // Default values based on type
   const getDefaultValues = () => {
@@ -94,9 +96,9 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
   };
 
   return (
-    <div 
-      className={`info-component ${centered ? 'centered' : ''}`}
-      style={{ 
+    <div
+      className={`info-component ${centered ? 'centered' : ''} ${hideOverflow ? 'hide-overflow' : ''}`}
+      style={{
         backgroundColor: getBackgroundColor(displayColor),
         color: displayColor,
         // Keep text left-aligned when not centered; let CSS control centered variant

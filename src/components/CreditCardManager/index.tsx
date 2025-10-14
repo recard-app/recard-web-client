@@ -73,6 +73,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     const [isAddingCard, setIsAddingCard] = useState(false);
     const [selectedCardForAdding, setSelectedCardForAdding] = useState<CreditCard | null>(null);
     const [showAddNested, setShowAddNested] = useState(false);
+
+    // Remove card loading state
+    const [isRemovingCard, setIsRemovingCard] = useState(false);
+    const [cardBeingRemoved, setCardBeingRemoved] = useState<CreditCard | null>(null);
     // Ref to restore focus to the parent drawer when nested drawer closes
     const parentDrawerHeaderRef = useRef<HTMLDivElement | null>(null);
     
@@ -298,6 +302,13 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
         if (!cardToDelete) return;
 
         try {
+            // Set loading state before closing dialog
+            setIsRemovingCard(true);
+            setCardBeingRemoved(cardToDelete);
+
+            // Close the confirmation modal immediately for snappy UX
+            setShowDeleteConfirm(false);
+
             // Create a copy of the cards with the selected card removed
             const updatedCards = userCards.map(c => ({
                 ...c,
@@ -339,14 +350,17 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             const refreshedDetailedCards = await UserCreditCardService.fetchUserCardsDetailedInfo();
             setDetailedCards(refreshedDetailedCards);
 
-            // Close the confirmation modal
-            setShowDeleteConfirm(false);
+            // Clear loading state
+            setIsRemovingCard(false);
+            setCardBeingRemoved(null);
         } catch (error) {
             console.error('Error removing card:', error);
             setErrorMessage('Unable to remove this card. Please try again.');
             setShowError(true);
-            // Close the modal even if there's an error
-            setShowDeleteConfirm(false);
+
+            // Clear loading state on error
+            setIsRemovingCard(false);
+            setCardBeingRemoved(null);
         }
     };
 
@@ -515,9 +529,13 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             
             {/* Main content area for card details */}
             <div className="card-details-panel">
-                <CreditCardDetailView 
+                <CreditCardDetailView
                     cardDetails={cardDetails}
                     isLoading={isLoading}
+                    isAddingCard={isAddingCard}
+                    cardBeingAdded={selectedCardForAdding}
+                    isRemovingCard={isRemovingCard}
+                    cardBeingRemoved={cardBeingRemoved}
                     noCards={selectedCards.length === 0}
                     onSetPreferred={selectedCard ? () => handleSetPreferred(selectedCard) : undefined}
                     onRemoveCard={selectedCard ? () => handleRemoveCard(selectedCard) : undefined}

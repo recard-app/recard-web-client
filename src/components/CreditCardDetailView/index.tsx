@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './CreditCardDetailView.scss';
-import { CreditCardDetails, CardMultiplier } from '../../types/CreditCardTypes';
+import { CreditCardDetails, CardMultiplier, CreditCard } from '../../types/CreditCardTypes';
 import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CreditHidePreferenceType } from '../../types/CardCreditsTypes';
 import { ICON_RED } from '../../types';
 import { COLORS } from '../../types/Colors';
@@ -13,6 +13,10 @@ import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId } from '..
 interface CreditCardDetailViewProps {
     cardDetails: CreditCardDetails | null;
     isLoading: boolean;
+    isAddingCard?: boolean;
+    cardBeingAdded?: CreditCard | null;
+    isRemovingCard?: boolean;
+    cardBeingRemoved?: CreditCard | null;
     onSetPreferred?: () => void;
     onRemoveCard?: () => void;
     noCards?: boolean;
@@ -23,6 +27,10 @@ interface CreditCardDetailViewProps {
 const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     cardDetails,
     isLoading,
+    isAddingCard = false,
+    cardBeingAdded = null,
+    isRemovingCard = false,
+    cardBeingRemoved = null,
     onSetPreferred,
     onRemoveCard,
     noCards = false,
@@ -94,7 +102,42 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
             // TODO: Show user-friendly error message
         }
     };
-    // For initial load, show loading state
+    // Priority order for loading states:
+    // 1. Adding a card
+    // 2. Removing a card
+    // 3. Loading card details
+    // 4. No card selected
+
+    if (isAddingCard && cardBeingAdded) {
+        return (
+            <div className="card-details-loading">
+                <InfoDisplay
+                    type="loading"
+                    message={`Adding ${cardBeingAdded.CardName}...`}
+                    showTitle={false}
+                    transparent={true}
+                    centered={true}
+                    hideOverflow={true}
+                />
+            </div>
+        );
+    }
+
+    if (isRemovingCard && cardBeingRemoved) {
+        return (
+            <div className="card-details-loading">
+                <InfoDisplay
+                    type="loading"
+                    message={`Removing ${cardBeingRemoved.CardName}...`}
+                    showTitle={false}
+                    transparent={true}
+                    centered={true}
+                    hideOverflow={true}
+                />
+            </div>
+        );
+    }
+
     if (isLoading) {
         return (
             <div className="card-details-loading">
@@ -103,11 +146,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     message="Loading card details..."
                     showTitle={false}
                     transparent={true}
+                    centered={true}
                 />
             </div>
         );
     }
-    
+
     if (!cardDetails) {
         return <div className="no-card-details">{noCards ? 'Add your Credit Cards to get started' : 'Select a card to view details'}</div>;
     }

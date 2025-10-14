@@ -14,7 +14,7 @@
     justify-content: center; // center the whole group horizontally
     text-align: center;
     width: 100%;
-    
+
     .info-message {
       flex: 0 0 auto; // keep text sized to its content when centered
     }
@@ -68,6 +68,15 @@
     min-width: 0;
     overflow-wrap: anywhere;
     word-break: break-word;
+  }
+
+  &.hide-overflow {
+    .info-message {
+      max-width: 350px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 }
 
