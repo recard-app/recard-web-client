@@ -8,6 +8,7 @@
   gap: $space-2;
   padding: $space-1;
   font-size: $font-xs;
+  width: 100%;
 
   // Apply updating state animation only to stat values when isUpdating is true
   &.updating {

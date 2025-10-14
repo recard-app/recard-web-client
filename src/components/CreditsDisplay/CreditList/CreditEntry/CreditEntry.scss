@@ -560,7 +560,7 @@ body:has(.mobile-credit-details-drawer) [data-radix-popper-content-wrapper] .usa
   display: flex;
   flex-direction: column;
   gap: $space-1;
-  padding: $space-1;
+  padding: $space-2 $space-1;
   font-size: $font-xs;
   line-height: 1.2;
   border-radius: $radius-base;
