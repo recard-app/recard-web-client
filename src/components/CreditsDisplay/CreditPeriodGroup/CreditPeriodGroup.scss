@@ -20,6 +20,26 @@
     gap: 0; // Remove gap, use space-between instead
     margin-bottom: $space-2;
   }
+
+  // When custom header actions are present
+  &.with-custom-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+
+    .period-title-group {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+    }
+
+    .custom-header-actions {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+  }
 }
 
 .period-title {

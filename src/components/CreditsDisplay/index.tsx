@@ -29,6 +29,8 @@ export interface CreditsDisplayProps {
   showPeriodLabel?: boolean;
   // Show period text on individual credit entries (default: true)
   displayPeriod?: boolean;
+  // Custom actions to display on the right side of the period header (simple display mode only)
+  customHeaderActions?: ReactNode;
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -44,7 +46,7 @@ export interface CreditsDisplayProps {
   isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, children, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, showPeriodLabel = false, displayPeriod = true, customHeaderActions, onUpdateHistoryEntry, onUpdateComplete, children, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
   const credits = useCredits(); // Get all credit data from the context
 
@@ -108,13 +110,14 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
     return (
       <div className="credits-display">
         <CreditGroup
-          title="Credits this month"
+          title="Credits"
           periodLabel={periodLabel}
           credits={calendar.Credits}
           now={effectiveNow}
           cardById={cardById}
           creditByPair={creditByPair}
           displayPeriod={displayPeriod}
+          customHeaderActions={customHeaderActions}
           onUpdateHistoryEntry={onUpdateHistoryEntry}
           onUpdateComplete={onUpdateComplete}
           isUpdating={isUpdating}

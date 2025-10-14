@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, UserCredit } from '../../types';
 import { UserCreditCardService } from '../../services';
@@ -49,6 +50,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
 }) => {
   // Use the full height hook for this page
   useFullHeight(true);
+  const navigate = useNavigate();
 
   // Help modal state
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -154,6 +156,15 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                   showAllPeriods={true}
                   useSimpleDisplay={true}
                   showPeriodLabel={true}
+                  customHeaderActions={
+                    <button
+                      className="button ghost icon with-text no-padding"
+                      onClick={() => navigate('/my-credits/history')}
+                    >
+                      <Icon name="history-clock" variant="micro" size={14} />
+                      View Past Credits
+                    </button>
+                  }
                   onUpdateComplete={onRefreshMonthlyStats}
                   isUpdating={isUpdatingMonthlyStats}
                   onAddUpdatingCreditId={onAddUpdatingCreditId}

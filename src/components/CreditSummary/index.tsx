@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, HIDE_EXPIRING_WHEN_NONE_SIDEBAR } from '../../types';
 import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR } from '../../types/Colors';
 import { InfoDisplay } from '../../elements';
@@ -24,7 +23,6 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   error = null,
   onDetailedSummaryClick
 }) => {
-  const navigate = useNavigate();
 
   // Only show loading spinner if we're loading and have no data yet (initial load)
   if (loading && !monthlyStats) {
@@ -151,25 +149,18 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
           </div>
         </div>
       </div>
-      <div className="credit-summary-buttons">
-        {onDetailedSummaryClick && (
+      {onDetailedSummaryClick && (
+        <div className="credit-summary-buttons">
           <button
-            className="button ghost icon with-text"
+            className="button ghost icon with-text no-padding"
             onClick={onDetailedSummaryClick}
             aria-label="View monthly report"
           >
             <Icon name="report-icon" variant="micro" size={14} />
             See Full Report
           </button>
-        )}
-        <button
-          className="button ghost icon with-text"
-          onClick={() => navigate('/my-credits/history')}
-        >
-          <Icon name="history-clock" variant="micro" size={14} />
-          View Past Credits
-        </button>
-      </div>
+        </div>
+      )}
     </div>
   );
 };

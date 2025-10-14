@@ -194,31 +194,31 @@ button, .button {
   
   &.icon {
     @include button-icon-only;
-    
+
     &.with-text {
       @include button-icon-with-text;
     }
-    
+
     // Size combinations for icon-only buttons
     &.mini {
       @include button-icon-only($icon-micro, $space-1, $space-1);
-      
+
       &.with-text {
         @include button-icon-with-text($icon-micro, $space-1, $space-2);
       }
     }
-    
+
     &.small {
       @include button-icon-only($icon-mini, $space-2, $space-2);
-      
+
       &.with-text {
         @include button-icon-with-text($icon-mini, $space-2, $space-2);
       }
     }
-    
+
     &.large {
       @include button-icon-only($icon-small, $space-4, $space-4);
-      
+
       &.with-text {
         @include button-icon-with-text($icon-small, $space-4, $space-8);
       }
@@ -243,6 +243,11 @@ button, .button {
   // Ensure ghost destructive icon buttons keep a red border even with icon-only base
   &.ghost.destructive.icon {
     border: $border-half solid $error;
+  }
+
+  // No padding variant - removes all padding from button
+  &.no-padding {
+    padding: 0 !important;
   }
 }
 
