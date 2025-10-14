@@ -1,6 +1,6 @@
 import React from 'react';
-import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS } from '../../../types';
-import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR } from '../../../types/Colors';
+import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, CREDIT_USAGE_DISPLAY_COLORS } from '../../../types';
+import COLORS from '../../../types/Colors';
 import { InfoDisplay } from '../../../elements';
 import Icon from '@/icons';
 import UsageBar from '../../UsageBar';
@@ -19,6 +19,8 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
   isUpdating = false,
   error = null
 }) => {
+  // Toggle this flag to show/hide mock expiring credits data
+  const SHOW_MOCK_EXPIRING_DATA = false;
   if (loading && !monthlyStats) {
     return (
       <InfoDisplay
@@ -56,15 +58,39 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
 
   const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
 
-  // Calculate totals for display
+  // Calculate totals for each section
   const totalMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount + monthlyStats.MonthlyCredits.unusedCount;
-  const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount;
-
   const totalCurrentCredits = monthlyStats.CurrentCredits.usedCount + monthlyStats.CurrentCredits.partiallyUsedCount + monthlyStats.CurrentCredits.unusedCount;
-  const usedCurrentCredits = monthlyStats.CurrentCredits.usedCount;
-
   const totalAllCredits = monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount;
-  const usedAllCredits = monthlyStats.AllCredits.usedCount;
+
+  // Calculate totals for expiring credits
+  const totalExpiringValue =
+    monthlyStats.ExpiringCredits.Monthly.unusedValue +
+    monthlyStats.ExpiringCredits.Quarterly.unusedValue +
+    monthlyStats.ExpiringCredits.Semiannually.unusedValue +
+    monthlyStats.ExpiringCredits.Annually.unusedValue;
+
+  const totalExpiringCount =
+    monthlyStats.ExpiringCredits.Monthly.count +
+    monthlyStats.ExpiringCredits.Quarterly.count +
+    monthlyStats.ExpiringCredits.Semiannually.count +
+    monthlyStats.ExpiringCredits.Annually.count;
+
+  // Mock data for expiring credits (for testing visualization)
+  const mockExpiringCredits = {
+    Monthly: { count: 3, unusedValue: 150.00 },
+    Quarterly: { count: 2, unusedValue: 200.00 },
+    Semiannually: { count: 1, unusedValue: 100.00 },
+    Annually: { count: 1, unusedValue: 300.00 },
+  };
+  const mockTotalExpiringValue = 750.00;
+  const mockTotalExpiringCount = 7;
+
+  // Use mock data if flag is enabled and no real data exists
+  const useMockData = SHOW_MOCK_EXPIRING_DATA && totalExpiringValue === 0 && totalExpiringCount === 0;
+  const expiringData = useMockData ? mockExpiringCredits : monthlyStats.ExpiringCredits;
+  const expiringTotalValue = useMockData ? mockTotalExpiringValue : totalExpiringValue;
+  const expiringTotalCount = useMockData ? mockTotalExpiringCount : totalExpiringCount;
 
   return (
     <div className="credit-detailed-summary">
@@ -79,247 +105,233 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
         </div>
       )}
 
-      <div className="detailed-simple-stats">
-        <div className="stat-line">
-          <span className="stat-label">
-            <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
-            {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}:
-          </span>
-          <span className="stat-value">
-            {formatCurrency(monthlyStats.MonthlyCredits.usedValue)} / {formatCurrency(monthlyStats.MonthlyCredits.possibleValue)} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
-          </span>
+      {/* Section 1: Monthly Credits */}
+      <div className="summary-section">
+        <div className="section-header">
+          <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
+          <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}</h3>
         </div>
-        <UsageBar
-          segments={[
-            {
-              label: 'Used Value',
-              value: monthlyStats.MonthlyCredits.usedValue,
-              color: PRIMARY_COLOR,
-            },
-          ]}
-          maxValue={monthlyStats.MonthlyCredits.possibleValue}
-          height={8}
-          borderRadius={4}
-          showLabels={false}
-          animate={true}
-          className="detailed-summary-usage-bar"
-        />
-
-        <div className="stat-line">
-          <span className="stat-label">
-            <Icon name={CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
-            {CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.displayName}:
-          </span>
-          <span className="stat-value">
-            {formatCurrency(monthlyStats.CurrentCredits.usedValue)} / {formatCurrency(monthlyStats.CurrentCredits.possibleValue)} ({usedCurrentCredits} / {totalCurrentCredits} credits used)
-          </span>
-        </div>
-        <UsageBar
-          segments={[
-            {
-              label: 'Used Value',
-              value: monthlyStats.CurrentCredits.usedValue,
-              color: PRIMARY_COLOR,
-            },
-          ]}
-          maxValue={monthlyStats.CurrentCredits.possibleValue}
-          height={8}
-          borderRadius={4}
-          showLabels={false}
-          animate={true}
-          className="detailed-summary-usage-bar"
-        />
-
-        <div className="stat-line">
-          <span className="stat-label">
-            <Icon name={CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
-            {CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.displayName}:
-          </span>
-          <span className="stat-value">
-            {formatCurrency(monthlyStats.AllCredits.usedValue)} / {formatCurrency(monthlyStats.AllCredits.possibleValue)} ({usedAllCredits} / {totalAllCredits} credits used)
-          </span>
-        </div>
-        <UsageBar
-          segments={[
-            {
-              label: 'Used Value',
-              value: monthlyStats.AllCredits.usedValue,
-              color: PRIMARY_COLOR,
-            },
-          ]}
-          maxValue={monthlyStats.AllCredits.possibleValue}
-          height={8}
-          borderRadius={4}
-          showLabels={false}
-          animate={true}
-          className="detailed-summary-usage-bar"
-        />
-
-        <div className="stat-line">
-          <span className="stat-label">
-            <Icon name={CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
-            {CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}:
-          </span>
-          <span className="stat-value">
-            {monthlyStats.ExpiringCredits.Total.count} credits ({formatCurrency(monthlyStats.ExpiringCredits.Total.unusedValue)})
-          </span>
+        <div className="bar-group">
+          <div className="bar-label">Dollar Value: {formatCurrency(monthlyStats.MonthlyCredits.usedValue)} / {formatCurrency(monthlyStats.MonthlyCredits.possibleValue)}</div>
+          <UsageBar
+            segments={[
+              {
+                label: 'Used Value',
+                value: monthlyStats.MonthlyCredits.usedValue,
+                color: COLORS.PRIMARY_COLOR,
+              },
+            ]}
+            maxValue={monthlyStats.MonthlyCredits.possibleValue}
+            thickness={12}
+            borderRadius={6}
+            showLabels={false}
+            animate={true}
+            className="detailed-summary-usage-bar"
+          />
+          <div className="bar-label">Credit Count Breakdown</div>
+          <UsageBar
+            segments={[
+              {
+                label: 'Used',
+                value: monthlyStats.MonthlyCredits.usedCount,
+                color: CREDIT_USAGE_DISPLAY_COLORS.USED,
+              },
+              {
+                label: 'Partially Used',
+                value: monthlyStats.MonthlyCredits.partiallyUsedCount,
+                color: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
+              },
+              {
+                label: 'Unused',
+                value: monthlyStats.MonthlyCredits.unusedCount,
+                color: COLORS.NEUTRAL_GRAY,
+              },
+            ]}
+            maxValue={totalMonthlyCredits}
+            thickness={12}
+            borderRadius={6}
+            showLabels={true}
+            animate={true}
+            className="detailed-summary-usage-bar"
+          />
         </div>
       </div>
 
+      {/* Section 2: Credits to Date */}
       <div className="summary-section">
-        <h3 className="section-title">Detailed Breakdown</h3>
-
-        <div className="summary-section">
-          <h4 className="section-title">{CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}</h4>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <span className="stat-label">Used Value</span>
-              <span className="stat-value">{formatCurrency(monthlyStats.MonthlyCredits.usedValue)}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Possible Value</span>
-              <span className="stat-value">{formatCurrency(monthlyStats.MonthlyCredits.possibleValue)}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Used Count</span>
-              <span className="stat-value">{monthlyStats.MonthlyCredits.usedCount}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Partially Used Count</span>
-              <span className="stat-value">{monthlyStats.MonthlyCredits.partiallyUsedCount}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Unused Count</span>
-              <span className="stat-value">{monthlyStats.MonthlyCredits.unusedCount}</span>
-            </div>
-          </div>
+        <div className="section-header">
+          <Icon name={CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
+          <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.displayName}</h3>
         </div>
-
-        <div className="summary-section">
-          <h4 className="section-title">{CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.displayName}</h4>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <span className="stat-label">Used Value</span>
-              <span className="stat-value">{formatCurrency(monthlyStats.CurrentCredits.usedValue)}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Possible Value</span>
-              <span className="stat-value">{formatCurrency(monthlyStats.CurrentCredits.possibleValue)}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Used Count</span>
-              <span className="stat-value">{monthlyStats.CurrentCredits.usedCount}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Partially Used Count</span>
-              <span className="stat-value">{monthlyStats.CurrentCredits.partiallyUsedCount}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Unused Count</span>
-              <span className="stat-value">{monthlyStats.CurrentCredits.unusedCount}</span>
-            </div>
-          </div>
+        <div className="bar-group">
+          <div className="bar-label">Dollar Value: {formatCurrency(monthlyStats.CurrentCredits.usedValue)} / {formatCurrency(monthlyStats.CurrentCredits.possibleValue)}</div>
+          <UsageBar
+            segments={[
+              {
+                label: 'Used Value',
+                value: monthlyStats.CurrentCredits.usedValue,
+                color: COLORS.PRIMARY_COLOR,
+              },
+            ]}
+            maxValue={monthlyStats.CurrentCredits.possibleValue}
+            thickness={12}
+            borderRadius={6}
+            showLabels={false}
+            animate={true}
+            className="detailed-summary-usage-bar"
+          />
+          <div className="bar-label">Credit Count Breakdown</div>
+          <UsageBar
+            segments={[
+              {
+                label: 'Used',
+                value: monthlyStats.CurrentCredits.usedCount,
+                color: CREDIT_USAGE_DISPLAY_COLORS.USED,
+              },
+              {
+                label: 'Partially Used',
+                value: monthlyStats.CurrentCredits.partiallyUsedCount,
+                color: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
+              },
+              {
+                label: 'Unused',
+                value: monthlyStats.CurrentCredits.unusedCount,
+                color: COLORS.NEUTRAL_GRAY,
+              },
+            ]}
+            maxValue={totalCurrentCredits}
+            thickness={12}
+            borderRadius={6}
+            showLabels={true}
+            animate={true}
+            className="detailed-summary-usage-bar"
+          />
         </div>
+      </div>
 
-        <div className="summary-section">
-          <h4 className="section-title">{CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.displayName}</h4>
-          <div className="stats-grid">
-            <div className="stat-item">
-              <span className="stat-label">Used Value</span>
-              <span className="stat-value">{formatCurrency(monthlyStats.AllCredits.usedValue)}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Possible Value</span>
-              <span className="stat-value">{formatCurrency(monthlyStats.AllCredits.possibleValue)}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Used Count</span>
-              <span className="stat-value">{monthlyStats.AllCredits.usedCount}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Partially Used Count</span>
-              <span className="stat-value">{monthlyStats.AllCredits.partiallyUsedCount}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Unused Count</span>
-              <span className="stat-value">{monthlyStats.AllCredits.unusedCount}</span>
-            </div>
-          </div>
+      {/* Section 3: Annual Credits */}
+      <div className="summary-section">
+        <div className="section-header">
+          <Icon name={CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
+          <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.displayName}</h3>
         </div>
+        <div className="bar-group">
+          <div className="bar-label">Dollar Value: {formatCurrency(monthlyStats.AllCredits.usedValue)} / {formatCurrency(monthlyStats.AllCredits.possibleValue)}</div>
+          <UsageBar
+            segments={[
+              {
+                label: 'Used Value',
+                value: monthlyStats.AllCredits.usedValue,
+                color: COLORS.PRIMARY_COLOR,
+              },
+            ]}
+            maxValue={monthlyStats.AllCredits.possibleValue}
+            thickness={12}
+            borderRadius={6}
+            showLabels={false}
+            animate={true}
+            className="detailed-summary-usage-bar"
+          />
+          <div className="bar-label">Credit Count Breakdown</div>
+          <UsageBar
+            segments={[
+              {
+                label: 'Used',
+                value: monthlyStats.AllCredits.usedCount,
+                color: CREDIT_USAGE_DISPLAY_COLORS.USED,
+              },
+              {
+                label: 'Partially Used',
+                value: monthlyStats.AllCredits.partiallyUsedCount,
+                color: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
+              },
+              {
+                label: 'Unused',
+                value: monthlyStats.AllCredits.unusedCount,
+                color: COLORS.NEUTRAL_GRAY,
+              },
+            ]}
+            maxValue={totalAllCredits}
+            thickness={12}
+            borderRadius={6}
+            showLabels={true}
+            animate={true}
+            className="detailed-summary-usage-bar"
+          />
+        </div>
+      </div>
 
-        <div className="summary-section">
-          <h4 className="section-title">{CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}</h4>
-          <div className="expiring-breakdown">
-            <div className="expiring-period">
-              <h5 className="period-title">Monthly</h5>
-              <div className="stats-grid-compact">
-                <div className="stat-item">
-                  <span className="stat-label">Count</span>
-                  <span className="stat-value">{monthlyStats.ExpiringCredits.Monthly.count}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Unused Value</span>
-                  <span className="stat-value">{formatCurrency(monthlyStats.ExpiringCredits.Monthly.unusedValue)}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="expiring-period">
-              <h5 className="period-title">Quarterly</h5>
-              <div className="stats-grid-compact">
-                <div className="stat-item">
-                  <span className="stat-label">Count</span>
-                  <span className="stat-value">{monthlyStats.ExpiringCredits.Quarterly.count}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Unused Value</span>
-                  <span className="stat-value">{formatCurrency(monthlyStats.ExpiringCredits.Quarterly.unusedValue)}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="expiring-period">
-              <h5 className="period-title">Semiannually</h5>
-              <div className="stats-grid-compact">
-                <div className="stat-item">
-                  <span className="stat-label">Count</span>
-                  <span className="stat-value">{monthlyStats.ExpiringCredits.Semiannually.count}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Unused Value</span>
-                  <span className="stat-value">{formatCurrency(monthlyStats.ExpiringCredits.Semiannually.unusedValue)}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="expiring-period">
-              <h5 className="period-title">Annually</h5>
-              <div className="stats-grid-compact">
-                <div className="stat-item">
-                  <span className="stat-label">Count</span>
-                  <span className="stat-value">{monthlyStats.ExpiringCredits.Annually.count}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Unused Value</span>
-                  <span className="stat-value">{formatCurrency(monthlyStats.ExpiringCredits.Annually.unusedValue)}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="expiring-total">
-              <h5 className="period-title">Total Expiring</h5>
-              <div className="stats-grid-compact highlight">
-                <div className="stat-item">
-                  <span className="stat-label">Count</span>
-                  <span className="stat-value">{monthlyStats.ExpiringCredits.Total.count}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-label">Unused Value</span>
-                  <span className="stat-value">{formatCurrency(monthlyStats.ExpiringCredits.Total.unusedValue)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Section 4: Expiring Credits */}
+      <div className="summary-section">
+        <div className="section-header">
+          <Icon name={CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
+          <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}</h3>
+        </div>
+        <div className="bar-group">
+          <div className="bar-label">Dollar Value by Period: {formatCurrency(expiringTotalValue)} Total</div>
+          <UsageBar
+            segments={[
+              {
+                label: 'Monthly',
+                value: expiringData.Monthly.unusedValue,
+                color: COLORS.ERROR,
+              },
+              {
+                label: 'Quarterly',
+                value: expiringData.Quarterly.unusedValue,
+                color: COLORS.WARNING,
+              },
+              {
+                label: 'Semiannually',
+                value: expiringData.Semiannually.unusedValue,
+                color: COLORS.WARNING_YELLOW,
+              },
+              {
+                label: 'Annually',
+                value: expiringData.Annually.unusedValue,
+                color: COLORS.ACCENT_MEDIUM,
+              },
+            ]}
+            maxValue={expiringTotalValue}
+            thickness={12}
+            borderRadius={6}
+            showLabels={true}
+            labelsVertical={true}
+            animate={true}
+            className="detailed-summary-usage-bar"
+          />
+          <div className="bar-label">Credit Count by Period: {expiringTotalCount} Total</div>
+          <UsageBar
+            segments={[
+              {
+                label: 'Monthly',
+                value: expiringData.Monthly.count,
+                color: COLORS.ERROR,
+              },
+              {
+                label: 'Quarterly',
+                value: expiringData.Quarterly.count,
+                color: COLORS.WARNING,
+              },
+              {
+                label: 'Semiannually',
+                value: expiringData.Semiannually.count,
+                color: COLORS.WARNING_YELLOW,
+              },
+              {
+                label: 'Annually',
+                value: expiringData.Annually.count,
+                color: COLORS.ACCENT_MEDIUM,
+              },
+            ]}
+            maxValue={expiringTotalCount}
+            thickness={12}
+            borderRadius={6}
+            showLabels={true}
+            labelsVertical={true}
+            animate={true}
+            className="detailed-summary-usage-bar"
+          />
         </div>
       </div>
     </div>

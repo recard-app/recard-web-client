@@ -14,6 +14,7 @@ export interface UsageBarProps {
   thickness?: number;
   borderRadius?: number;
   showLabels?: boolean;
+  labelsVertical?: boolean;
   animate?: boolean;
   className?: string;
 }
@@ -25,6 +26,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
   thickness,
   borderRadius = 4,
   showLabels = false,
+  labelsVertical = false,
   animate = true,
   className = '',
 }) => {
@@ -108,7 +110,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
       </div>
 
       {showLabels && validSegments.length > 0 && (
-        <div className="usage-bar-labels">
+        <div className={`usage-bar-labels ${labelsVertical ? 'usage-bar-labels--vertical' : ''}`}>
           {validSegments.map((segment, index) => (
             <div key={`${segment.label}-label-${index}`} className="usage-bar-label">
               <span

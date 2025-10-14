@@ -49,6 +49,11 @@
   gap: $space-2 $space-3;
   font-size: $font-xs;
   color: $neutral-dark-gray;
+
+  &--vertical {
+    flex-direction: column;
+    gap: $space-1;
+  }
 }
 
 .usage-bar-label {
