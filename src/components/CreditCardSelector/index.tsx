@@ -59,9 +59,13 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
         loadCards();
     }, [user]);
 
+    /**
+     * Re-sync local state with existingCreditCards prop when it changes
+     * This handles the case when modal is re-opened after cancellation
+     */
     useEffect(() => {
-        returnCreditCards(creditCards);
-    }, [creditCards]);
+        setCreditCards(sortCards(existingCreditCards || []));
+    }, [existingCreditCards]);
 
     /**
      * Toggles the selected state of a card
@@ -82,11 +86,14 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
     /**
      * Saves the user's card selections to the backend
      * Updates local state with fresh data after successful save
+     * Only propagates state to parent after successful API save
      */
     const handleSave = async (): Promise<void> => {
         const result = await saveUserCardSelections(creditCards);
         if (result.success && result.updatedCards) {
             setCreditCards(result.updatedCards);
+            // Update parent state only after successful save
+            returnCreditCards(result.updatedCards);
         }
 
         // Notify parent component of save completion
