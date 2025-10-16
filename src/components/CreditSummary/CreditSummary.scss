@@ -38,6 +38,11 @@
     .button {
       // Common styles for all buttons in this container
       // Add any shared button styling here
+
+      svg {
+        width: $icon-small;
+        height: $icon-small;
+      }
     }
   }
 }
