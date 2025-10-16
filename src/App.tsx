@@ -209,6 +209,8 @@ function AppContent({}: AppContentProps) {
   const USE_DRAWER_FOR_CARD_DETAILS_MOBILE = true;
   
   const creditCardSelectorRef = useRef<CreditCardSelectorRef>(null);
+  // Ref to track if we're intentionally clearing the chat (prevents sync effect from redirecting)
+  const isClearingChatRef = useRef<boolean>(false);
 
   // Effect to reset current chat ID when user changes
   useEffect(() => {
@@ -217,7 +219,9 @@ function AppContent({}: AppContentProps) {
 
   // Effect to handle navigation when on root path with active chat
   useEffect(() => {
-    if (location.pathname === PAGES.HOME.PATH && currentChatId) {
+    // Don't redirect if we're intentionally clearing the chat
+    // This prevents the race condition where we try to restore a chat we're actively clearing
+    if (location.pathname === PAGES.HOME.PATH && currentChatId && !isClearingChatRef.current) {
       navigate(`${PAGES.HOME.PATH}${currentChatId}`, { replace: true });
     }
   }, [location.pathname, currentChatId, navigate]);
@@ -393,6 +397,9 @@ function AppContent({}: AppContentProps) {
 
   // Update current chat ID when URL changes (no API calls here)
   useEffect(() => {
+    // Skip if we're intentionally clearing the chat to avoid race conditions
+    if (isClearingChatRef.current) return;
+
     const currentPath = location.pathname;
     const urlChatId = currentPath !== PAGES.HOME.PATH && PageUtils.isPage(currentPath, 'HOME')
       ? currentPath.slice(1) // Remove leading slash
@@ -581,8 +588,19 @@ function AppContent({}: AppContentProps) {
 
   // Function to trigger chat clearing
   const handleClearChat = (): void => {
-    // Increment the callback counter to trigger a clear
+    // Set ref flag to prevent sync effect from redirecting during clear
+    isClearingChatRef.current = true;
+
+    // Clear current chat ID FIRST before triggering child component callback
+    setCurrentChatId(null);
+
+    // Increment the callback counter to trigger a clear in PromptWindow
     setClearChatCallback(prev => prev + 1);
+
+    // Reset the flag after a short delay to allow navigation to complete
+    setTimeout(() => {
+      isClearingChatRef.current = false;
+    }, 100);
   };
 
   // Function to handle card selection for details view

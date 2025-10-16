@@ -72,6 +72,8 @@ function PromptWindow({
     const navigate = useNavigate();
     const promptHistoryRef = useRef<HTMLDivElement>(null);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+    // Ref to track when we're intentionally clearing the chat (prevents loading effects from restoring)
+    const isClearingRef = useRef<boolean>(false);
     
     // Stores the current input value in the prompt field
     const [promptValue, setPromptValue] = useState<string>('');
@@ -202,7 +204,7 @@ function PromptWindow({
     /**
      * Effect hook that loads chat history when accessing an existing chat.
      * Handles loading from existing history list (in-memory) or fetching from API.
-     * 
+     *
      * @dependency {urlChatId} - Chat ID from URL parameters
      * @dependency {user} - Current user object
      * @dependency {existingHistoryList} - List of existing chat histories
@@ -211,6 +213,9 @@ function PromptWindow({
         if (user) {
             const loadHistory = async () => {
                 if (!user) return;
+
+                // Skip if we're intentionally clearing the chat
+                if (isClearingRef.current) return;
 
                 // If there's no urlChatId, we're on the home page - clear everything for a new chat
                 if (!urlChatId) {
@@ -265,6 +270,9 @@ function PromptWindow({
     useEffect(() => {
         if (!urlChatId || !user || chatId === urlChatId) return;
 
+        // Skip if we're intentionally clearing the chat
+        if (isClearingRef.current) return;
+
         const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
         if (existingChat && !chatHistory.length) {
             // Chat just became available and we haven't loaded it yet
@@ -275,14 +283,22 @@ function PromptWindow({
     /**
      * Effect hook that handles clearing the chat when triggered externally.
      * Resets the chat window when clearChatCallback is incremented.
-     * 
+     *
      * @dependency {clearChatCallback} - External trigger to clear chat
      * @dependency {setClearChatCallback} - Function to reset the clear chat trigger
      */
     useEffect(() => {
         if (clearChatCallback > 0) {
+            // Set ref flag to prevent loading effects from restoring chat during clear
+            isClearingRef.current = true;
+
             handleNewTransaction();
             setClearChatCallback(0);
+
+            // Reset the flag after navigation completes
+            setTimeout(() => {
+                isClearingRef.current = false;
+            }, 150);
         }
     }, [clearChatCallback, setClearChatCallback]);
 
@@ -445,14 +461,18 @@ function PromptWindow({
     /**
      * Resets the chat window to start a new transaction.
      * Clears history and content blocks, navigates to root.
+     * NOTE: Parent (App.tsx) handles clearing currentChatId before calling this,
+     * so we don't need to call returnCurrentChatId here.
      */
     const handleNewTransaction = () => {
+        // Parent already cleared currentChatId, just clear local state
         setChatHistory([]);
         setContentBlocks([]);
         setIsNewChat(true);
         setIsNewChatPending(false);
         setChatId('');
-        returnCurrentChatId('');
+
+        // Navigate to home
         navigate(PAGES.HOME.PATH);
     };
 
