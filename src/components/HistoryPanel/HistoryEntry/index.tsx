@@ -1,7 +1,7 @@
 import React from 'react';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_RED } from '../../../types';
+import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_RED, SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW } from '../../../types';
 import { Icon, createIconVariant, CardIcon } from '../../../icons';
 import { formatDate, deleteChatEntry } from './utils';
 import { InfoDisplay } from '../../../elements';
@@ -187,8 +187,8 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
 
   return (
     <>
-      <div 
-        className={`history-entry ${!SHOW_TIMESTAMP_ON_MOBILE ? 'hide-timestamp-on-mobile' : ''} ${variant === 'sidebar' ? 'sidebar-variant' : 'full-page-variant'} ${isCurrent ? 'current' : ''} ${displayCard ? 'has-selected-card' : ''}`}
+      <div
+        className={`history-entry ${!SHOW_TIMESTAMP_ON_MOBILE ? 'hide-timestamp-on-mobile' : ''} ${variant === 'sidebar' ? 'sidebar-variant' : 'full-page-variant'} ${isCurrent ? 'current' : ''} ${SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW && displayCard ? 'has-selected-card' : ''}`}
         id={chatEntry.chatId}
         onClick={handleClick}
         style={{ cursor: 'pointer' }}
@@ -199,14 +199,14 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
             <p className="entry-title">{chatEntry.chatDescription}</p>
             <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
           </div>
-          {displayCard && (
+          {SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW && displayCard && (
             <p className="selected-card-display">
-              <CardIcon 
-                title={displayCard.name} 
-                size={12} 
+              <CardIcon
+                title={displayCard.name}
+                size={12}
                 primary={selectedCard?.CardPrimaryColor}
                 secondary={selectedCard?.CardSecondaryColor}
-                className="card-thumbnail" 
+                className="card-thumbnail"
               />
               {displayCard.name}
             </p>

@@ -104,6 +104,8 @@ export const DISABLE_DESKTOP_PERIOD_BAR = true;
 export const DISABLE_MOBILE_CREDITS_STICKY_FOOTER = true;
 // Hide the "Expiring Credits" row in the sidebar credit summary when there are zero expiring credits
 export const HIDE_EXPIRING_WHEN_NONE_SIDEBAR = true;
+// Show/hide the selected card display on history entry preview in the chat history list
+export const SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW = false;
 
 export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
 export const PLACEHOLDER_PROFILE_IMAGE = '/temp_account.png';
