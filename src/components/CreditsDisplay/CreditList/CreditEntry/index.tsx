@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
-import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, MOBILE_BREAKPOINT } from '../../../../types';
+import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, MOBILE_BREAKPOINT, SHOW_CARD_NAME_BUBBLE_IN_CREDITS } from '../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
 import { CardIcon } from '../../../../icons';
@@ -469,28 +469,55 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           <div className="credit-name">
             {cardCredit?.Title ?? userCredit.CreditId}
           </div>
-          {card && (
-            <div className="card-info">
+          {card && SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
+            <>
+              <div className="card-info">
+                <CardIcon
+                  title={card.CardName}
+                  size={12}
+                  primary={card.CardPrimaryColor}
+                  secondary={card.CardSecondaryColor}
+                  className="card-thumbnail"
+                />
+                <span className="card-name">{card.CardName}</span>
+              </div>
+              {(displayPeriod || isExpiring) && (
+                <div className="period-expiring-text">
+                  {displayPeriod && (
+                    <span className="period-text">
+                      {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
+                    </span>
+                  )}
+                  {displayPeriod && isExpiring && <span className="separator"> • </span>}
+                  {isExpiring && (
+                    <span className="expiring-text">
+                      {daysUntilExpiration !== undefined
+                        ? `Expires in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
+                        : 'Expires soon'
+                      }
+                    </span>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+          {card && !SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
+            <div className="card-info-inline">
               <CardIcon
                 title={card.CardName}
-                size={12}
+                size={16}
                 primary={card.CardPrimaryColor}
                 secondary={card.CardSecondaryColor}
                 className="card-thumbnail"
               />
-              <span className="card-name">{card.CardName}</span>
-            </div>
-          )}
-          {(displayPeriod || isExpiring) && (
-            <div className="period-expiring-text">
               {displayPeriod && (
-                <span className="period-text">
-                  {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
+                <span className="period-text-inline">
+                  - {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
                 </span>
               )}
-              {displayPeriod && isExpiring && <span className="separator"> • </span>}
               {isExpiring && (
-                <span className="expiring-text">
+                <span className="expiring-text-inline">
+                  {displayPeriod && ' • '}
                   {daysUntilExpiration !== undefined
                     ? `Expires in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
                     : 'Expires soon'
