@@ -247,6 +247,7 @@ function PromptWindow({
                 if (existingChat) {
                     // Chat found in pre-loaded history - fast path
                     console.log('Chat found in pre-loaded history - using fast path');
+                    console.log('Content blocks from pre-loaded chat:', existingChat.contentBlocks);
                     setExistingChatStates(existingChat.conversation, existingChat.solutions, urlChatId, existingChat.cardSelection);
                     return;
                 }
@@ -256,6 +257,7 @@ function PromptWindow({
                 console.warn('Chat not found in pre-loaded history, fetching individually:', urlChatId);
                 try {
                     const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
+                    console.log('Loaded chat with content blocks:', response.contentBlocks);
                     setExistingChatStates(response.conversation, response.solutions, urlChatId, response.cardSelection);
                 } catch (error) {
                     console.error('Error loading chat:', error);
