@@ -6,7 +6,6 @@ import {
     HistoryParams,
     PagedHistoryResponse,
     ChatMessage,
-    ChatSolution,
     ChatSolutionSelectedCardId,
     MessageContentBlock,
 } from '../../types';
@@ -78,21 +77,22 @@ export const UserHistoryService = {
     /**
      * Creates a new chat history entry
      * @param chatHistory Array of chat messages
-     * @param promptSolutions Array of solutions
      * @param contentBlocks Array of content blocks
      * @param signal Optional AbortController signal
      * @returns Promise containing the created conversation
      */
     async createChatHistory(
         chatHistory: ChatMessage[],
-        promptSolutions: ChatSolution,
         contentBlocks: MessageContentBlock[],
         signal?: AbortSignal
     ): Promise<Conversation> {
         const headers = await getAuthHeaders();
         const response = await axios.post<Conversation>(
             `${apiurl}/users/history`,
-            { chatHistory, promptSolutions, contentBlocks },
+            {
+                chatHistory,
+                contentBlocks
+            },
             { headers, signal }
         );
         return response.data;
@@ -102,7 +102,6 @@ export const UserHistoryService = {
      * Updates an existing chat history entry
      * @param chatId ID of the chat to update
      * @param chatHistory Updated array of chat messages
-     * @param promptSolutions Updated array of solutions
      * @param contentBlocks Array of content blocks
      * @param signal Optional AbortController signal
      * @returns Promise<void>
@@ -110,14 +109,16 @@ export const UserHistoryService = {
     async updateChatHistory(
         chatId: string,
         chatHistory: ChatMessage[],
-        promptSolutions: ChatSolution,
         contentBlocks: MessageContentBlock[],
         signal?: AbortSignal
     ): Promise<void> {
         const headers = await getAuthHeaders();
         await axios.put(
             `${apiurl}/users/history/${chatId}`,
-            { chatHistory, promptSolutions, contentBlocks },
+            {
+                chatHistory,
+                contentBlocks
+            },
             { headers, signal }
         );
     },

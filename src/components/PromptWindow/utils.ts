@@ -1,4 +1,4 @@
-import { ChatMessage, ChatSolution, ChatRequestData, Conversation, MessageContentBlock } from '../../types/ChatTypes';
+import { ChatMessage, ChatRequestData, Conversation, MessageContentBlock, SolutionContent } from '../../types/ChatTypes';
 import { InstructionsPreference } from '../../types/UserTypes';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { CHAT_SOURCE, RECOMMENDED_MAX_CHAT_MESSAGES, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, DEFAULT_CHAT_NAME_PLACEHOLDER } from '../../types';
@@ -37,7 +37,7 @@ export const prepareRequestData = (
 };
 
 /**
- * Processes the chat interaction and generates solutions.
+ * Processes the chat interaction and generates content blocks.
  * Handles both AI response generation and card recommendations.
  *
  * @param {ChatRequestData} requestData - Data for the API request
@@ -47,8 +47,7 @@ export const prepareRequestData = (
  * @param {Function} setIsLoading - Function to update loading state
  * @param {Function} setIsLoadingSolutions - Function to update solutions loading state
  * @param {Function} setChatHistory - Function to update chat history state
- * @param {ChatSolution} existingSolutions - Current solutions to preserve if new ones are empty
- * @returns {Promise<{updatedHistory: ChatMessage[], solutions: ChatSolution, contentBlocks: MessageContentBlock[]}>} Updated chat history, solutions, and content blocks
+ * @returns {Promise<{updatedHistory: ChatMessage[], contentBlocks: MessageContentBlock[]}>} Updated chat history and content blocks
  */
 export const processChatAndSolutions = async (
     requestData: ChatRequestData,
@@ -57,16 +56,15 @@ export const processChatAndSolutions = async (
     chatHistory: ChatMessage[],
     setIsLoading: (loading: boolean) => void,
     setIsLoadingSolutions: (loading: boolean) => void,
-    setChatHistory: (history: ChatMessage[]) => void,
-    existingSolutions: ChatSolution,
-): Promise<{ updatedHistory: ChatMessage[], solutions: ChatSolution, contentBlocks: MessageContentBlock[] }> => {
+    setChatHistory: (history: ChatMessage[]) => void
+): Promise<{ updatedHistory: ChatMessage[], contentBlocks: MessageContentBlock[] }> => {
     const aiResponse = await ChatService.getChatResponse(requestData, signal);
     const updatedHistory = [...chatHistory, userMessage, {
         id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         chatSource: aiClient,
         chatMessage: aiResponse
     }];
-    
+
     setIsLoading(false);
     setIsLoadingSolutions(true);
 
@@ -79,26 +77,13 @@ export const processChatAndSolutions = async (
 
     if (signal.aborted) throw new Error('Request aborted');
 
-    // Extract solutions and contentBlocks from response
-    const newSolutions = response.solutions;
-    const contentBlocks = response.contentBlocks;
+    // Extract contentBlocks from response
+    const contentBlocks = response.contentBlocks || [];
 
     // Log content blocks to console for verification
     console.log('Content Blocks received from backend:', contentBlocks);
 
-    // Always use new solutions when available. Only preserve existing solutions if:
-    // 1. New solutions are empty/undefined/null
-    // 2. We have valid existing solutions
-    // 3. This is a continuing conversation (has previous chat messages)
-    const hasValidNewSolutions = Array.isArray(newSolutions) && newSolutions.length > 0;
-    const hasValidExistingSolutions = Array.isArray(existingSolutions) && existingSolutions.length > 0;
-    const isContinuingConversation = chatHistory.length > 0;
-
-    const solutions = hasValidNewSolutions
-        ? newSolutions
-        : (hasValidExistingSolutions && isContinuingConversation ? existingSolutions : []);
-
-    return { updatedHistory, solutions, contentBlocks };
+    return { updatedHistory, contentBlocks };
 };
 
 /**
@@ -106,7 +91,6 @@ export const processChatAndSolutions = async (
  * Creates new chat sessions or updates existing ones based on user preferences.
  *
  * @param {ChatMessage[]} updatedHistory - The new chat history to store
- * @param {ChatSolution} solutions - The generated solutions
  * @param {MessageContentBlock[]} contentBlocks - The content blocks to store
  * @param {AbortSignal} signal - Signal for request cancellation
  * @param {any} user - Current user object
@@ -122,7 +106,6 @@ export const processChatAndSolutions = async (
  */
 export const handleHistoryStorage = async (
     updatedHistory: ChatMessage[],
-    solutions: ChatSolution,
     contentBlocks: MessageContentBlock[],
     signal: AbortSignal,
     user: any,
@@ -141,10 +124,16 @@ export const handleHistoryStorage = async (
         return;
     }
 
+    // Extract the most recent solution block's selectedCardId for cardSelection
+    const solutionBlocks = contentBlocks.filter(block => block.contentType === 'solutions');
+    const mostRecentSolutionBlock = solutionBlocks[solutionBlocks.length - 1];
+    const cardSelection = (mostRecentSolutionBlock?.contentType === 'solutions'
+        ? (mostRecentSolutionBlock.content as SolutionContent).selectedCardId
+        : '') || '';
+
     if (isNewChat) {
         const response = await UserHistoryService.createChatHistory(
             updatedHistory,
-            solutions,
             contentBlocks,
             signal
         );
@@ -153,8 +142,7 @@ export const handleHistoryStorage = async (
             chatId: response.chatId,
             timestamp: new Date().toISOString(),
             conversation: updatedHistory,
-            solutions: solutions,
-            cardSelection: '',
+            cardSelection: cardSelection,
             chatDescription: response.chatDescription || DEFAULT_CHAT_NAME,
             contentBlocks: contentBlocks
         };
@@ -169,7 +157,6 @@ export const handleHistoryStorage = async (
         await UserHistoryService.updateChatHistory(
             chatId,
             updatedHistory,
-            solutions,
             contentBlocks,
             signal
         );
@@ -179,8 +166,7 @@ export const handleHistoryStorage = async (
             chatId: chatId,
             timestamp: new Date().toISOString(),
             conversation: updatedHistory,
-            solutions: solutions,
-            cardSelection: existingChat?.cardSelection || '',
+            cardSelection: cardSelection,
             chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME,
             contentBlocks: contentBlocks
         };

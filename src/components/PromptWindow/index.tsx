@@ -17,7 +17,7 @@ import axios from 'axios';
 
 // Import types
 import { CreditCard, PAGES, TERMINOLOGY } from '../../types';
-import { ChatMessage, ChatSolution, ChatSolutionSelectedCardId, Conversation } from '../../types';
+import { ChatMessage, Conversation, MessageContentBlock } from '../../types';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types';
 import { aiClient, userClient, MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER } from '../../types';
@@ -77,10 +77,8 @@ function PromptWindow({
     const [promptValue, setPromptValue] = useState<string>('');
     // Maintains the array of chat messages between user and AI in the current conversation
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
-    // Stores the AI's credit card recommendations and solutions for the current conversation
-    const [promptSolutions, setPromptSolutions] = useState<ChatSolution>([]);
-    // Stores the selected card ID for the current conversation
-    const [selectedCardId, setSelectedCardId] = useState<ChatSolutionSelectedCardId>('');
+    // Stores content blocks (solutions, credits, cards) to display inline with messages
+    const [contentBlocks, setContentBlocks] = useState<MessageContentBlock[]>([]);
     // Unique identifier for the current chat conversation
     const [chatId, setChatId] = useState<string>('');
     // Tracks whether this is a new chat conversation (true) or loading an existing one (false)
@@ -151,25 +149,22 @@ function PromptWindow({
 
     /**
      * Helper function to set chat states when loading existing chat data.
-     * Updates chat history, solutions, chat ID, and related states.
-     * 
+     * Updates chat history, content blocks, chat ID, and related states.
+     *
      * @param {ChatMessage[]} conversation - The chat conversation history
-     * @param {ChatSolution} solutions - The chat solutions
      * @param {string} newChatId - The chat ID to set
-     * @param {ChatSolutionSelectedCardId} cardSelection - The selected card ID
+     * @param {MessageContentBlock[]} blocks - The content blocks
      */
     const setExistingChatStates = (
         conversation: ChatMessage[],
-        solutions: ChatSolution,
         newChatId: string,
-        cardSelection: ChatSolutionSelectedCardId
+        blocks: MessageContentBlock[] = []
     ) => {
         setChatHistory(limitChatHistory(conversation));
-        setPromptSolutions(solutions);
+        setContentBlocks(blocks);
         setChatId(newChatId);
         setIsNewChat(false);
         returnCurrentChatId(newChatId);
-        setSelectedCardId(cardSelection || '');
     };
 
     /**
@@ -219,9 +214,8 @@ function PromptWindow({
 
                 // If there's no urlChatId, we're on the home page - clear everything for a new chat
                 if (!urlChatId) {
-                    setSelectedCardId('');
-                    setPromptSolutions([]);
                     setChatHistory([]);
+                    setContentBlocks([]);
                     setChatId('');
                     setIsNewChat(true);
                     returnCurrentChatId('');
@@ -238,8 +232,6 @@ function PromptWindow({
                 }
 
                 // Always reset state when loading a new chat - do this first before any async operations
-                setSelectedCardId('');
-                setPromptSolutions([]);
                 setChatHistory([]);
 
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
@@ -248,7 +240,7 @@ function PromptWindow({
                     // Chat found in pre-loaded history - fast path
                     console.log('Chat found in pre-loaded history - using fast path');
                     console.log('Content blocks from pre-loaded chat:', existingChat.contentBlocks);
-                    setExistingChatStates(existingChat.conversation, existingChat.solutions, urlChatId, existingChat.cardSelection);
+                    setExistingChatStates(existingChat.conversation, urlChatId, existingChat.contentBlocks || []);
                     return;
                 }
 
@@ -258,7 +250,7 @@ function PromptWindow({
                 try {
                     const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
                     console.log('Loaded chat with content blocks:', response.contentBlocks);
-                    setExistingChatStates(response.conversation, response.solutions, urlChatId, response.cardSelection);
+                    setExistingChatStates(response.conversation, urlChatId, response.contentBlocks || []);
                 } catch (error) {
                     console.error('Error loading chat:', error);
                     setErrorMessage('Error loading chat history');
@@ -276,7 +268,7 @@ function PromptWindow({
         const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
         if (existingChat && !chatHistory.length) {
             // Chat just became available and we haven't loaded it yet
-            setExistingChatStates(existingChat.conversation, existingChat.solutions, urlChatId, existingChat.cardSelection);
+            setExistingChatStates(existingChat.conversation, urlChatId, existingChat.contentBlocks || []);
         }
     }, [existingHistoryList, urlChatId, user, chatId, chatHistory.length]);
 
@@ -293,18 +285,6 @@ function PromptWindow({
             setClearChatCallback(0);
         }
     }, [clearChatCallback, setClearChatCallback]);
-
-    /**
-     * Effect hook that ensures selectedCardId is reset when chatId changes
-     * This helps maintain state consistency when switching between chats
-     * 
-     * @dependency {chatId} - The current chat ID
-     */
-    useEffect(() => {
-        if (!chatId) {
-            setSelectedCardId('');
-        }
-    }, [chatId]);
 
     // Modified auto-scroll effect
     useEffect(() => {
@@ -360,30 +340,35 @@ function PromptWindow({
                 promptValue,
                 chatHistory
             );
-            
-            const { updatedHistory, solutions, contentBlocks } = await processChatAndSolutions(
+
+            const { updatedHistory, contentBlocks: newContentBlocks } = await processChatAndSolutions(
                 requestData,
                 userMessage,
                 signal,
                 chatHistory,
                 setIsLoading,
                 setIsLoadingSolutions,
-                setChatHistory,
-                promptSolutions
+                setChatHistory
             );
 
             // Log content blocks to console for verification
-            console.log('Content Blocks in PromptWindow:', contentBlocks);
+            console.log('New Content Blocks received:', newContentBlocks);
 
-            setPromptSolutions(solutions);
+            // Calculate accumulated content blocks (existing + new)
+            const accumulatedContentBlocks = [...contentBlocks, ...newContentBlocks];
+            console.log('Accumulated Content Blocks:', accumulatedContentBlocks);
+
+            // Update state with accumulated content blocks
+            setContentBlocks(accumulatedContentBlocks);
+
             setIsLoadingSolutions(false);
-            
+
             setChatHistory(limitChatHistory(updatedHistory));
-            
+
+            // Pass accumulated content blocks to storage
             await handleHistoryStorage(
                 updatedHistory,
-                solutions,
-                contentBlocks,
+                accumulatedContentBlocks,
                 signal,
                 user,
                 chatHistoryPreference,
@@ -396,7 +381,7 @@ function PromptWindow({
                 returnCurrentChatId,
                 setIsNewChat
             );
-            
+
             // Clear any errors on success
             setShowError(false);
             setIsRateLimitError(false);
@@ -459,17 +444,61 @@ function PromptWindow({
 
     /**
      * Resets the chat window to start a new transaction.
-     * Clears history, solutions, and navigates to root.
+     * Clears history and content blocks, navigates to root.
      */
     const handleNewTransaction = () => {
         setChatHistory([]);
-        setPromptSolutions([]);
-        setSelectedCardId('');
+        setContentBlocks([]);
         setIsNewChat(true);
         setIsNewChatPending(false);
         setChatId('');
         returnCurrentChatId('');
         navigate(PAGES.HOME.PATH);
+    };
+
+    /**
+     * Handles card selection from content blocks.
+     * Updates the selected card ID for a specific block and syncs with server.
+     *
+     * @param {string} blockId - The ID of the content block being updated
+     * @param {string} cardId - The ID of the selected card
+     */
+    const handleCardSelection = async (blockId: string, cardId: string) => {
+        // Update the specific content block's selectedCardId
+        setContentBlocks(prevBlocks =>
+            prevBlocks.map(block => {
+                if (block.id === blockId && block.contentType === 'solutions') {
+                    return {
+                        ...block,
+                        content: {
+                            ...block.content,
+                            selectedCardId: cardId
+                        }
+                    };
+                }
+                return block;
+            })
+        );
+
+        // Find if this is the most recent solution block
+        const solutionBlocks = contentBlocks.filter(block => block.contentType === 'solutions');
+        const mostRecentBlock = solutionBlocks[solutionBlocks.length - 1];
+        const isRecentBlock = mostRecentBlock && mostRecentBlock.id === blockId;
+
+        // Only update server's cardSelection if this is the most recent solution block
+        if (chatId && isRecentBlock) {
+            try {
+                await UserHistoryService.updateTransactionCardSelection(chatId, cardId);
+
+                // Fetch updated chat and notify parent
+                const updatedChat = await UserHistoryService.fetchChatHistoryById(chatId);
+                if (updatedChat) {
+                    onHistoryUpdate(updatedChat);
+                }
+            } catch (error) {
+                console.error('Error updating card selection:', error);
+            }
+        }
     };
 
     // Add effect to handle initial state
@@ -488,9 +517,12 @@ function PromptWindow({
         <div className='prompt-window'>
             <div ref={promptHistoryRef} className="prompt-history-container">
 
-                <PromptHistory 
-                    chatHistory={chatHistory} 
-                    isNewChat={isNewChat} 
+                <PromptHistory
+                    chatHistory={chatHistory}
+                    contentBlocks={contentBlocks}
+                    creditCards={creditCards}
+                    onCardSelect={handleCardSelection}
+                    isNewChat={isNewChat}
                     isLoading={isLoading}
                     isLoadingSolutions={isLoadingSolutions}
                 />

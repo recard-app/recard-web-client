@@ -19,7 +19,6 @@ export interface Conversation {
     chatDescription: string;
     timestamp: string;
     conversation: ChatMessage[];
-    solutions: ChatSolution;
     cardSelection: ChatSolutionSelectedCardId;
     contentBlocks?: MessageContentBlock[];
 }

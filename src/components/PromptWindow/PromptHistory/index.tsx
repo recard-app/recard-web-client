@@ -1,22 +1,30 @@
 import React, { useMemo } from 'react';
 import showdown from 'showdown';
-import { ChatMessage } from '../../../types/ChatTypes';
+import { ChatMessage, MessageContentBlock } from '../../../types/ChatTypes';
+import { CreditCard } from '../../../types/CreditCardTypes';
 import { InfoDisplay } from '../../../elements';
 import './PromptHistory.scss';
 import { PLACEHOLDER_ASSISTANT_IMAGE, TERMINOLOGY } from '../../../types';
+import ContentBlock from '../ContentBlocks/ContentBlock';
 
 /**
  * Props for the PromptHistory component.
  * @param {ChatMessage[]} chatHistory - An array of chat messages representing the history of the conversation.
+ * @param {MessageContentBlock[]} contentBlocks - An array of content blocks to display inline with messages.
+ * @param {CreditCard[]} creditCards - An array of credit cards for solution display.
+ * @param {function} onCardSelect - Callback when a card is selected (blockId, cardId).
  */
 interface PromptHistoryProps {
   chatHistory: ChatMessage[];
+  contentBlocks?: MessageContentBlock[];
+  creditCards?: CreditCard[];
+  onCardSelect: (blockId: string, cardId: string) => void;
   isNewChat?: boolean;
   isLoading?: boolean;
   isLoadingSolutions?: boolean;
 }
 
-function PromptHistory({ chatHistory, isNewChat = false, isLoading = false, isLoadingSolutions = false }: PromptHistoryProps): React.ReactElement {
+function PromptHistory({ chatHistory, contentBlocks = [], creditCards, onCardSelect, isNewChat = false, isLoading = false, isLoadingSolutions = false }: PromptHistoryProps): React.ReactElement {
   const chatEntries = chatHistory;
   
   // Initialize the showdown converter with options to minimize whitespace
@@ -117,21 +125,38 @@ function PromptHistory({ chatHistory, isNewChat = false, isLoading = false, isLo
         )
       ) : (
         <>
-          {chatEntries.map((chatEntry) => (
-            <div key={chatEntry.id} className={`${(chatEntry.chatSource === 'user') ? 'entry entry-user' : 'entry entry-assistant'}`}>
-              <div className="entry-content">
-                {chatEntry.chatSource === 'assistant' && (
-                  <img src={PLACEHOLDER_ASSISTANT_IMAGE} alt="AI Assistant" className="assistant-avatar" />
-                )}
-                <div 
-                  className="message-text" 
-                  dangerouslySetInnerHTML={{ 
-                    __html: processHtml(converter.makeHtml(chatEntry.chatMessage))
-                  }} 
-                ></div>
+          {chatEntries.map((chatEntry) => {
+            // Find content blocks associated with this message
+            const associatedBlocks = contentBlocks
+              .filter(block => block.messageId === chatEntry.id)
+              .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            return (
+              <div key={chatEntry.id} className={`${(chatEntry.chatSource === 'user') ? 'entry entry-user' : 'entry entry-assistant'}`}>
+                <div className="entry-content">
+                  {chatEntry.chatSource === 'assistant' && (
+                    <img src={PLACEHOLDER_ASSISTANT_IMAGE} alt="AI Assistant" className="assistant-avatar" />
+                  )}
+                  <div className="message-text">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: processHtml(converter.makeHtml(chatEntry.chatMessage))
+                      }}
+                    ></div>
+                    {/* Render content blocks inside the message-text div */}
+                    {associatedBlocks.map(block => (
+                      <ContentBlock
+                        key={block.id}
+                        block={block}
+                        creditCards={creditCards}
+                        onCardSelect={onCardSelect}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {isLoading && (
             <div className="loading-indicator">
               <InfoDisplay

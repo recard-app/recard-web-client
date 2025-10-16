@@ -343,3 +343,17 @@ $collapse-transition-duration: 0.15s;
     margin-top: $space-1;
   }
 }
+
+// Styling overrides for inline content blocks (rendered inside message-text)
+.solutions-container.inline-content-block {
+  padding: 0;
+  margin-top: $space-2;
+
+  .collapsible-content.expanded {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    grid-template-rows: 1fr;
+    overflow: visible;
+  }
+}
