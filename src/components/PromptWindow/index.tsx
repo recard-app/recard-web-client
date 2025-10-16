@@ -359,7 +359,7 @@ function PromptWindow({
                 chatHistory
             );
             
-            const { updatedHistory, solutions } = await processChatAndSolutions(
+            const { updatedHistory, solutions, contentBlocks } = await processChatAndSolutions(
                 requestData,
                 userMessage,
                 signal,
@@ -369,7 +369,10 @@ function PromptWindow({
                 setChatHistory,
                 promptSolutions
             );
-            
+
+            // Log content blocks to console for verification
+            console.log('Content Blocks in PromptWindow:', contentBlocks);
+
             setPromptSolutions(solutions);
             setIsLoadingSolutions(false);
             
@@ -378,6 +381,7 @@ function PromptWindow({
             await handleHistoryStorage(
                 updatedHistory,
                 solutions,
+                contentBlocks,
                 signal,
                 user,
                 chatHistoryPreference,

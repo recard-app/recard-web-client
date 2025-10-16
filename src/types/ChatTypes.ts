@@ -21,6 +21,7 @@ export interface Conversation {
     conversation: ChatMessage[];
     solutions: ChatSolution;
     cardSelection: ChatSolutionSelectedCardId;
+    contentBlocks?: MessageContentBlock[];
 }
 
 export interface ChatRequestData {
@@ -51,9 +52,59 @@ export interface ChatSolutionCard {
 }
 
 /**
+ * Content block that can be displayed inline after messages
+ * Supports multiple content types: solutions, credits, and card details
+ */
+export interface MessageContentBlock {
+    id: string;
+    messageId: string;
+    contentType: 'solutions' | 'credits' | 'card';
+    timestamp: string;
+    order?: number;
+    content: SolutionContent | CreditContent | CardContent;
+}
+
+/**
+ * Solution content block - displays card recommendations
+ */
+export interface SolutionContent {
+    type: 'solutions';
+    solutions: ChatSolution;
+    selectedCardId: string;
+}
+
+/**
+ * Credit content block - displays credit usage information
+ * Structure is prepared for future implementation
+ */
+export interface CreditContent {
+    type: 'credits';
+    creditData: {
+        usedValue: number;
+        totalValue: number;
+        period: 'monthly' | 'annual';
+        credits: Array<{
+            id: string;
+            title: string;
+            value: number;
+            used: boolean;
+        }>;
+    };
+}
+
+/**
+ * Card content block - displays single card details
+ * Structure is prepared for future implementation
+ */
+export interface CardContent {
+    type: 'card';
+    cardId: string;
+}
+
+/**
  * ------------------------------------------------------------------------------------------------
- * 
+ *
  * CLIENT TYPES
- * 
+ *
  * ------------------------------------------------------------------------------------------------
  */

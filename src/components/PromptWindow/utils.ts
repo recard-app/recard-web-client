@@ -1,4 +1,4 @@
-import { ChatMessage, ChatSolution, ChatRequestData, Conversation } from '../../types/ChatTypes';
+import { ChatMessage, ChatSolution, ChatRequestData, Conversation, MessageContentBlock } from '../../types/ChatTypes';
 import { InstructionsPreference } from '../../types/UserTypes';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { CHAT_SOURCE, RECOMMENDED_MAX_CHAT_MESSAGES, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, DEFAULT_CHAT_NAME_PLACEHOLDER } from '../../types';
@@ -39,7 +39,7 @@ export const prepareRequestData = (
 /**
  * Processes the chat interaction and generates solutions.
  * Handles both AI response generation and card recommendations.
- * 
+ *
  * @param {ChatRequestData} requestData - Data for the API request
  * @param {ChatMessage} userMessage - The user's message
  * @param {AbortSignal} signal - Signal for request cancellation
@@ -48,7 +48,7 @@ export const prepareRequestData = (
  * @param {Function} setIsLoadingSolutions - Function to update solutions loading state
  * @param {Function} setChatHistory - Function to update chat history state
  * @param {ChatSolution} existingSolutions - Current solutions to preserve if new ones are empty
- * @returns {Promise<{updatedHistory: ChatMessage[], solutions: ChatSolution}>} Updated chat history and solutions
+ * @returns {Promise<{updatedHistory: ChatMessage[], solutions: ChatSolution, contentBlocks: MessageContentBlock[]}>} Updated chat history, solutions, and content blocks
  */
 export const processChatAndSolutions = async (
     requestData: ChatRequestData,
@@ -59,7 +59,7 @@ export const processChatAndSolutions = async (
     setIsLoadingSolutions: (loading: boolean) => void,
     setChatHistory: (history: ChatMessage[]) => void,
     existingSolutions: ChatSolution,
-): Promise<{ updatedHistory: ChatMessage[], solutions: ChatSolution }> => {
+): Promise<{ updatedHistory: ChatMessage[], solutions: ChatSolution, contentBlocks: MessageContentBlock[] }> => {
     const aiResponse = await ChatService.getChatResponse(requestData, signal);
     const updatedHistory = [...chatHistory, userMessage, {
         id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -72,34 +72,42 @@ export const processChatAndSolutions = async (
 
     setChatHistory(limitChatHistory(updatedHistory));
 
-    const newSolutions = await ChatService.getChatSolution({
+    const response = await ChatService.getChatSolution({
         ...requestData,
         chatHistory: limitChatHistory(updatedHistory)
     }, signal);
 
     if (signal.aborted) throw new Error('Request aborted');
-    
+
+    // Extract solutions and contentBlocks from response
+    const newSolutions = response.solutions;
+    const contentBlocks = response.contentBlocks;
+
+    // Log content blocks to console for verification
+    console.log('Content Blocks received from backend:', contentBlocks);
+
     // Always use new solutions when available. Only preserve existing solutions if:
     // 1. New solutions are empty/undefined/null
-    // 2. We have valid existing solutions 
+    // 2. We have valid existing solutions
     // 3. This is a continuing conversation (has previous chat messages)
     const hasValidNewSolutions = Array.isArray(newSolutions) && newSolutions.length > 0;
     const hasValidExistingSolutions = Array.isArray(existingSolutions) && existingSolutions.length > 0;
     const isContinuingConversation = chatHistory.length > 0;
-    
-    const solutions = hasValidNewSolutions 
-        ? newSolutions 
+
+    const solutions = hasValidNewSolutions
+        ? newSolutions
         : (hasValidExistingSolutions && isContinuingConversation ? existingSolutions : []);
-    
-    return { updatedHistory, solutions };
+
+    return { updatedHistory, solutions, contentBlocks };
 };
 
 /**
  * Handles the storage and updating of chat history.
  * Creates new chat sessions or updates existing ones based on user preferences.
- * 
+ *
  * @param {ChatMessage[]} updatedHistory - The new chat history to store
  * @param {ChatSolution} solutions - The generated solutions
+ * @param {MessageContentBlock[]} contentBlocks - The content blocks to store
  * @param {AbortSignal} signal - Signal for request cancellation
  * @param {any} user - Current user object
  * @param {string} chatHistoryPreference - User's chat history preference
@@ -115,6 +123,7 @@ export const processChatAndSolutions = async (
 export const handleHistoryStorage = async (
     updatedHistory: ChatMessage[],
     solutions: ChatSolution,
+    contentBlocks: MessageContentBlock[],
     signal: AbortSignal,
     user: any,
     chatHistoryPreference: string,
@@ -136,6 +145,7 @@ export const handleHistoryStorage = async (
         const response = await UserHistoryService.createChatHistory(
             updatedHistory,
             solutions,
+            contentBlocks,
             signal
         );
 
@@ -145,7 +155,8 @@ export const handleHistoryStorage = async (
             conversation: updatedHistory,
             solutions: solutions,
             cardSelection: '',
-            chatDescription: response.chatDescription || DEFAULT_CHAT_NAME
+            chatDescription: response.chatDescription || DEFAULT_CHAT_NAME,
+            contentBlocks: contentBlocks
         };
         onHistoryUpdate(newChat);
 
@@ -159,6 +170,7 @@ export const handleHistoryStorage = async (
             chatId,
             updatedHistory,
             solutions,
+            contentBlocks,
             signal
         );
 
@@ -169,7 +181,8 @@ export const handleHistoryStorage = async (
             conversation: updatedHistory,
             solutions: solutions,
             cardSelection: existingChat?.cardSelection || '',
-            chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME
+            chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME,
+            contentBlocks: contentBlocks
         };
         onHistoryUpdate(updatedChat);
     }
