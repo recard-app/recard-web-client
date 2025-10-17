@@ -6,6 +6,41 @@ import Icon from '@/icons';
 import UsageBar from '../UsageBar';
 import './CreditSummary.scss';
 
+// Debug flag to use mock data with expiring credits for design testing
+const DEBUG_USE_MOCK_EXPIRING_CREDITS = true;
+
+// Mock data with expiring credits for testing
+const MOCK_MONTHLY_STATS: MonthlyStatsResponse = {
+  MonthlyCredits: {
+    usedValue: 150,
+    possibleValue: 425,
+    usedCount: 3,
+    partiallyUsedCount: 2,
+    unusedCount: 4
+  },
+  CurrentCredits: {
+    usedValue: 150,
+    possibleValue: 425,
+    usedCount: 3,
+    partiallyUsedCount: 2,
+    unusedCount: 4
+  },
+  AllCredits: {
+    usedValue: 150,
+    possibleValue: 425,
+    usedCount: 3,
+    partiallyUsedCount: 2,
+    unusedCount: 4
+  },
+  ExpiringCredits: {
+    Monthly: { count: 0, unusedValue: 0 },
+    Quarterly: { count: 0, unusedValue: 0 },
+    Semiannually: { count: 0, unusedValue: 0 },
+    Annually: { count: 0, unusedValue: 0 },
+    Total: { count: 4, unusedValue: 54 }
+  }
+};
+
 interface CreditSummaryProps {
   variant?: 'header' | 'sidebar';
   monthlyStats: MonthlyStatsResponse | null;
@@ -23,9 +58,11 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   error = null,
   onDetailedSummaryClick
 }) => {
+  // Use mock data if debug flag is enabled
+  const effectiveMonthlyStats = DEBUG_USE_MOCK_EXPIRING_CREDITS ? MOCK_MONTHLY_STATS : monthlyStats;
 
   // Only show loading spinner if we're loading and have no data yet (initial load)
-  if (loading && !monthlyStats) {
+  if (loading && !effectiveMonthlyStats) {
     return (
       <InfoDisplay
         type="loading"
@@ -47,7 +84,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
     );
   }
 
-  if (!monthlyStats) {
+  if (!effectiveMonthlyStats) {
     return (
       <InfoDisplay
         type="default"
@@ -61,9 +98,9 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   }
 
   if (variant === 'sidebar') {
-    const totalMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount + monthlyStats.MonthlyCredits.unusedCount;
-    const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount;
-    const hasExpiringCredits = monthlyStats.ExpiringCredits.Total.count > 0;
+    const totalMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount + effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount + effectiveMonthlyStats.MonthlyCredits.unusedCount;
+    const usedMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount;
+    const hasExpiringCredits = effectiveMonthlyStats.ExpiringCredits.Total.count > 0;
     const showExpiringRow = ALWAYS_SHOW_EXPIRING_CREDITS || hasExpiringCredits;
 
     return (
@@ -74,18 +111,18 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
             {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}:
           </span>
           <span className="stat-value">
-            ${monthlyStats.MonthlyCredits.usedValue} / ${monthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
+            ${effectiveMonthlyStats.MonthlyCredits.usedValue} / ${effectiveMonthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
           </span>
         </div>
         <UsageBar
           segments={[
             {
               label: 'Used Value',
-              value: monthlyStats.MonthlyCredits.usedValue,
+              value: effectiveMonthlyStats.MonthlyCredits.usedValue,
               color: PRIMARY_COLOR,
             },
           ]}
-          maxValue={monthlyStats.MonthlyCredits.possibleValue}
+          maxValue={effectiveMonthlyStats.MonthlyCredits.possibleValue}
           height={8}
           borderRadius={4}
           showLabels={false}
@@ -99,7 +136,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
               {CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}:
             </span>
             <span className="stat-value">
-              {monthlyStats.ExpiringCredits.Total.count} credits expiring (${monthlyStats.ExpiringCredits.Total.unusedValue})
+              {effectiveMonthlyStats.ExpiringCredits.Total.count} credits expiring (${effectiveMonthlyStats.ExpiringCredits.Total.unusedValue})
             </span>
           </div>
         )}
@@ -107,9 +144,9 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
     );
   }
 
-  const totalMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount + monthlyStats.MonthlyCredits.unusedCount;
-  const usedMonthlyCredits = monthlyStats.MonthlyCredits.usedCount;
-  const hasExpiringCredits = monthlyStats.ExpiringCredits.Total.count > 0;
+  const totalMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount + effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount + effectiveMonthlyStats.MonthlyCredits.unusedCount;
+  const usedMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount;
+  const hasExpiringCredits = effectiveMonthlyStats.ExpiringCredits.Total.count > 0;
   const showExpiringRow = ALWAYS_SHOW_EXPIRING_CREDITS || hasExpiringCredits;
 
   return (
@@ -122,18 +159,18 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
               {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}:
             </span>
             <span className="stat-value">
-              ${monthlyStats.MonthlyCredits.usedValue} / ${monthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
+              ${effectiveMonthlyStats.MonthlyCredits.usedValue} / ${effectiveMonthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
             </span>
           </div>
           <UsageBar
             segments={[
               {
                 label: 'Used Value',
-                value: monthlyStats.MonthlyCredits.usedValue,
+                value: effectiveMonthlyStats.MonthlyCredits.usedValue,
                 color: PRIMARY_COLOR,
               },
             ]}
-            maxValue={monthlyStats.MonthlyCredits.possibleValue}
+            maxValue={effectiveMonthlyStats.MonthlyCredits.possibleValue}
             height={8}
             borderRadius={4}
             showLabels={false}
@@ -147,7 +184,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
                 {CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}:
               </span>
               <span className="stat-value">
-                {monthlyStats.ExpiringCredits.Total.count} credits expiring (${monthlyStats.ExpiringCredits.Total.unusedValue})
+                {effectiveMonthlyStats.ExpiringCredits.Total.count} credits expiring (${effectiveMonthlyStats.ExpiringCredits.Total.unusedValue})
               </span>
             </div>
           )}
