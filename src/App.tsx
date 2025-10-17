@@ -103,7 +103,8 @@ function AppContent({}: AppContentProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const { refetch: refetchComponents } = useComponents();
+
   // Enable dynamic page background colors
   usePageBackground();
   // Ensure iOS Safari uses visible viewport height
@@ -502,6 +503,9 @@ function AppContent({}: AppContentProps) {
       try {
         const details = await UserCreditCardService.fetchUserCardsDetailedInfo();
         setUserDetailedCardDetails(details);
+
+        // Refetch components (perks, credits, multipliers) for the updated cards
+        await refetchComponents();
       } catch (error) {
         console.error('Error fetching updated user card details:', error);
       }
@@ -647,6 +651,8 @@ function AppContent({}: AppContentProps) {
           const cards = await CardService.fetchCreditCards(true);
           setCreditCards(cards);
           setCardsVersion(v => v + 1);
+          // Refetch components (perks, credits, multipliers) for new cards
+          await refetchComponents();
         } catch (err) {
           console.error('Error refreshing cards after save:', err);
         }

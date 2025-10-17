@@ -31,12 +31,12 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchComponents = async () => {
+  const fetchComponents = async (forceRefresh: boolean = false) => {
     try {
       setIsLoading(true);
       setError(null);
 
-      const componentData = await ComponentService.fetchAllUserCardComponents();
+      const componentData = await ComponentService.fetchAllUserCardComponents(forceRefresh);
 
       setPerks(componentData.perks);
       setCredits(componentData.credits);
@@ -50,7 +50,8 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
   };
 
   const refetch = async () => {
-    await fetchComponents();
+    // Force refresh to bypass cache and ensure fresh data
+    await fetchComponents(true);
   };
 
   useEffect(() => {

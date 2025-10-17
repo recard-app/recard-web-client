@@ -47,8 +47,9 @@ export const ComponentService = {
   /**
    * Fetch all components (perks, credits, multipliers) for the user's selected cards
    * Returns a combined object with all three component types
+   * @param forceRefresh - If true, bypasses cache and fetches fresh data
    */
-  async fetchAllUserCardComponents(): Promise<{
+  async fetchAllUserCardComponents(forceRefresh: boolean = false): Promise<{
     perks: CardPerk[];
     credits: CardCredit[];
     multipliers: CardMultiplier[];
@@ -56,9 +57,24 @@ export const ComponentService = {
     return apiCache.get(CACHE_KEYS.COMPONENTS_ALL, async () => {
       // Execute all three requests in parallel for better performance
       const [perks, credits, multipliers] = await Promise.all([
-        this.fetchUserCardPerks(),
-        this.fetchUserCardCredits(),
-        this.fetchUserCardMultipliers()
+        apiCache.get(CACHE_KEYS.COMPONENTS_PERKS, async () => {
+          const headers = await getAuthHeaders();
+          const url = `${apiurl}/users/cards/components/perks`;
+          const response = await axios.get<{ perks: CardPerk[] }>(url, { headers });
+          return response.data.perks;
+        }, { forceRefresh }),
+        apiCache.get(CACHE_KEYS.COMPONENTS_CREDITS, async () => {
+          const headers = await getAuthHeaders();
+          const url = `${apiurl}/users/cards/components/credits`;
+          const response = await axios.get<{ credits: CardCredit[] }>(url, { headers });
+          return response.data.credits;
+        }, { forceRefresh }),
+        apiCache.get(CACHE_KEYS.COMPONENTS_MULTIPLIERS, async () => {
+          const headers = await getAuthHeaders();
+          const url = `${apiurl}/users/cards/components/multipliers`;
+          const response = await axios.get<{ multipliers: CardMultiplier[] }>(url, { headers });
+          return response.data.multipliers;
+        }, { forceRefresh })
       ]);
 
       return {
@@ -66,7 +82,7 @@ export const ComponentService = {
         credits,
         multipliers
       };
-    });
+    }, { forceRefresh });
   },
 
   /**
