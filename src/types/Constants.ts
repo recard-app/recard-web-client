@@ -102,8 +102,10 @@ export const MOBILE_BREAKPOINT = 780;
 // Feature flags
 export const DISABLE_DESKTOP_PERIOD_BAR = true;
 export const DISABLE_MOBILE_CREDITS_STICKY_FOOTER = true;
-// Hide the "Expiring Credits" row in the sidebar credit summary when there are zero expiring credits
-export const HIDE_EXPIRING_WHEN_NONE_SIDEBAR = true;
+// Always show the "Expiring Credits" section even when there are none
+// If false, expiring credits section only shows when there are credits expiring
+// This applies to both the sidebar and the credits page header
+export const ALWAYS_SHOW_EXPIRING_CREDITS = false;
 // Show/hide the selected card display on history entry preview in the chat history list
 export const SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW = false;
 // Show card name bubble in credits display
