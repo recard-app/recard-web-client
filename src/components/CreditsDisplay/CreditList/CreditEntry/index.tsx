@@ -463,7 +463,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   // Default variant - full display
   return (
     <>
-      <div className="credit-entry-row" data-period={userCredit.AssociatedPeriod} onClick={() => setIsModalOpen(true)} style={{ cursor: 'pointer' }}>
+      <div className={`credit-entry-row ${isUpdating ? 'updating' : ''}`} data-period={userCredit.AssociatedPeriod} onClick={() => setIsModalOpen(true)} style={{ cursor: 'pointer' }}>
         {/* Left side: Credit info */}
         <div className="credit-info">
           <div className="credit-name">

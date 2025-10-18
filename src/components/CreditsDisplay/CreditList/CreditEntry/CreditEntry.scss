@@ -14,15 +14,23 @@
   justify-content: space-between;
   gap: $space-3;
   cursor: pointer;
-  transition: all 0.2s ease;
   min-height: 42px;
   border: $border-half solid $neutral-light-gray;
-  
-  &:hover {
+
+  &:not(.updating) {
+    transition: all 0.2s ease;
+  }
+
+  &:hover:not(.updating) {
     background-color: $neutral-lightest-gray;
     border-color: $neutral-gray;
   }
-  
+
+  // Apply updating state animation to list view entries
+  &.updating {
+    @include updating-state;
+  }
+
   // Mobile styling
   @media (max-width: $mobile-breakpoint) {
     border-color: $neutral-lightest-gray;
