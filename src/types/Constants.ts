@@ -106,6 +106,10 @@ export const DISABLE_MOBILE_CREDITS_STICKY_FOOTER = true;
 // If false, expiring credits section only shows when there are credits expiring
 // This applies to both the sidebar and the credits page header
 export const ALWAYS_SHOW_EXPIRING_CREDITS = false;
+// Show the monthly credits stats and usage bar in the sidebar/menu for both mobile and desktop
+// If false, only expiring credits will show in sidebar (when they exist)
+// The MyCredits page header always shows monthly credits and usage bar regardless of this flag
+export const SHOW_USAGE_BAR_IN_SIDEBAR_MENU = false;
 // Show/hide the selected card display on history entry preview in the chat history list
 export const SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW = false;
 // Show card name bubble in credits display

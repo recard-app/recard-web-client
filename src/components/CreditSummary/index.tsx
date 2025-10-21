@@ -1,5 +1,5 @@
 import React from 'react';
-import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, ALWAYS_SHOW_EXPIRING_CREDITS } from '../../types';
+import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, ALWAYS_SHOW_EXPIRING_CREDITS, SHOW_USAGE_BAR_IN_SIDEBAR_MENU } from '../../types';
 import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR } from '../../types/Colors';
 import { InfoDisplay } from '../../elements';
 import Icon from '@/icons';
@@ -7,7 +7,7 @@ import UsageBar from '../UsageBar';
 import './CreditSummary.scss';
 
 // Debug flag to use mock data with expiring credits for design testing
-const DEBUG_USE_MOCK_EXPIRING_CREDITS = true;
+const DEBUG_USE_MOCK_EXPIRING_CREDITS = false;
 
 // Mock data with expiring credits for testing
 const MOCK_MONTHLY_STATS: MonthlyStatsResponse = {
@@ -105,30 +105,34 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
 
     return (
       <div className={`credit-summary-sidebar ${isUpdating ? 'updating' : ''}`}>
-        <div className="sidebar-stat-row">
-          <span className="stat-label">
-            <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
-            {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}:
-          </span>
-          <span className="stat-value">
-            ${effectiveMonthlyStats.MonthlyCredits.usedValue} / ${effectiveMonthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
-          </span>
-        </div>
-        <UsageBar
-          segments={[
-            {
-              label: 'Used Value',
-              value: effectiveMonthlyStats.MonthlyCredits.usedValue,
-              color: PRIMARY_COLOR,
-            },
-          ]}
-          maxValue={effectiveMonthlyStats.MonthlyCredits.possibleValue}
-          height={8}
-          borderRadius={4}
-          showLabels={false}
-          animate={true}
-          className="credit-summary-usage-bar"
-        />
+        {SHOW_USAGE_BAR_IN_SIDEBAR_MENU && (
+          <>
+            <div className="sidebar-stat-row">
+              <span className="stat-label">
+                <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
+                {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}:
+              </span>
+              <span className="stat-value">
+                ${effectiveMonthlyStats.MonthlyCredits.usedValue} / ${effectiveMonthlyStats.MonthlyCredits.possibleValue} ({usedMonthlyCredits} / {totalMonthlyCredits} credits used)
+              </span>
+            </div>
+            <UsageBar
+              segments={[
+                {
+                  label: 'Used Value',
+                  value: effectiveMonthlyStats.MonthlyCredits.usedValue,
+                  color: PRIMARY_COLOR,
+                },
+              ]}
+              maxValue={effectiveMonthlyStats.MonthlyCredits.possibleValue}
+              height={8}
+              borderRadius={4}
+              showLabels={false}
+              animate={true}
+              className="credit-summary-usage-bar"
+            />
+          </>
+        )}
         {showExpiringRow && (
           <div className="sidebar-stat-row expiring">
             <span className="stat-label">
