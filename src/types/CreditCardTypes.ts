@@ -24,6 +24,13 @@ export interface CreditCard {
 
 /**
  * Represents a perk associated with a credit card
+ *
+ * Date Handling:
+ * - EffectiveFrom: ISO date string when perk becomes available (e.g., "2025-01-01")
+ * - EffectiveTo: ISO date string when perk expires, or "9999-12-31" for ongoing perks
+ *
+ * The sentinel value "9999-12-31" represents an ongoing/present perk with no end date.
+ * This value is used by the server for better database indexing and queries.
  */
 export interface CardPerk {
     id: string;
@@ -34,17 +41,20 @@ export interface CardPerk {
     Description: string;
     Requirements: string;
     Details?: string;
-    EffectiveFrom: string;
-    EffectiveTo: string;
+    EffectiveFrom: string;   // ISO date: "2025-01-01"
+    EffectiveTo: string;      // ISO date: "2025-12-31" or "9999-12-31" for ongoing
     LastUpdated: string;
-}
-
-export interface CardPerkPointer {
-    id: string;
 }
 
 /**
  * Represents a credit/benefit associated with a credit card
+ *
+ * Date Handling:
+ * - EffectiveFrom: ISO date string when credit becomes available (e.g., "2025-01-01")
+ * - EffectiveTo: ISO date string when credit expires, or "9999-12-31" for ongoing credits
+ *
+ * The sentinel value "9999-12-31" represents an ongoing/present credit with no end date.
+ * This value is used by the server for better database indexing and queries.
  */
 export interface CardCredit {
     id: string;
@@ -57,18 +67,21 @@ export interface CardCredit {
     TimePeriod: string;
     Requirements: string;
     Details?: string;
-    EffectiveFrom: string;
-    EffectiveTo: string;
+    EffectiveFrom: string;   // ISO date: "2025-01-01"
+    EffectiveTo: string;      // ISO date: "2025-12-31" or "9999-12-31" for ongoing
     LastUpdated: string;
-}
-
-export interface CardCreditPointer {
-    id: string;
 }
 
 
 /**
  * Represents a rewards multiplier for specific spending categories
+ *
+ * Date Handling:
+ * - EffectiveFrom: ISO date string when multiplier becomes available (e.g., "2025-01-01")
+ * - EffectiveTo: ISO date string when multiplier expires, or "9999-12-31" for ongoing multipliers
+ *
+ * The sentinel value "9999-12-31" represents an ongoing/present multiplier with no end date.
+ * This value is used by the server for better database indexing and queries.
  */
 export interface CardMultiplier {
     id: string;
@@ -80,17 +93,22 @@ export interface CardMultiplier {
     Multiplier: number | null;
     Requirements: string;
     Details?: string;
-    EffectiveFrom: string;
-    EffectiveTo: string;
+    EffectiveFrom: string;   // ISO date: "2025-01-01"
+    EffectiveTo: string;      // ISO date: "2025-12-31" or "9999-12-31" for ongoing
     LastUpdated: string;
 }
 
-export interface CardMultiplierPointer {
-    id: string;
-}
-
 /**
- * Represents detailed information about a credit card including all benefits and features
+ * Represents detailed information about a credit card including all benefits and features.
+ * This is the standard format for credit card data received from the API.
+ *
+ * Date Handling:
+ * - effectiveFrom: ISO date string when version became active (e.g., "2025-01-01")
+ * - effectiveTo: ISO date string when version ended, or "9999-12-31" for current/ongoing versions
+ *
+ * The sentinel value "9999-12-31" represents an ongoing version with no end date.
+ *
+ * Note: Components (credits, perks, multipliers) are fetched separately via ComponentService.
  */
 export interface CreditCardDetails extends CreditCard {
     AnnualFee: number | null;
@@ -98,16 +116,35 @@ export interface CreditCardDetails extends CreditCard {
     ForeignExchangeFeePercentage: number | null;
     RewardsCurrency: string;
     PointsPerDollar: number | null;
-    Perks: CardPerkPointer[];
-    Credits: CardCreditPointer[];
-    Multipliers: CardMultiplierPointer[];
     VersionName: string;        // Name/label for this version
     ReferenceCardId: string;    // Reference to the base card this version belongs to
     IsActive: boolean;          // Whether this version is currently active
     // Versioning fields
-    effectiveFrom: string;   // ISO date string when this version became active
-    effectiveTo: string;    // ISO date string when this version ended (optional, missing for current version)
-    lastUpdated: string;     // ISO date string when this record was created/modified
+    effectiveFrom: string;   // ISO date: "2025-01-01"
+    effectiveTo: string;     // ISO date: "2025-12-31" or "9999-12-31" for ongoing
+    lastUpdated: string;     // ISO timestamp
+}
+
+/**
+ * Enhanced version of CreditCardDetails with full component objects embedded.
+ * Used when card data with all components is needed in a single object.
+ */
+export interface CreditCardDetailsEnhanced extends CreditCard {
+    AnnualFee: number | null;
+    ForeignExchangeFee: string;
+    ForeignExchangeFeePercentage: number | null;
+    RewardsCurrency: string;
+    PointsPerDollar: number | null;
+    Perks: CardPerk[];          // Full perk objects with all details
+    Credits: CardCredit[];      // Full credit objects with all details
+    Multipliers: CardMultiplier[]; // Full multiplier objects with all details
+    VersionName: string;        // Name/label for this version
+    ReferenceCardId: string;    // Reference to the base card this version belongs to
+    IsActive: boolean;          // Whether this version is currently active
+    // Versioning fields
+    effectiveFrom: string;   // ISO date: "2025-01-01"
+    effectiveTo: string;     // ISO date: "2025-12-31" or "9999-12-31" for ongoing
+    lastUpdated: string;     // ISO timestamp
 }
 
 // Response types
