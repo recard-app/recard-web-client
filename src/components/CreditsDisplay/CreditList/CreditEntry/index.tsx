@@ -70,6 +70,16 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   const [cardUsage, setCardUsage] = useState<CreditUsageType>(CREDIT_USAGE.INACTIVE);
   const [cardValueUsed, setCardValueUsed] = useState<number>(0);
   
+  const getExpirationText = (days?: number): string => {
+    if (days === undefined) {
+      return 'Expires soon';
+    }
+    if (days === 0) {
+      return 'Expires today';
+    }
+    return `Expires in ${days} day${days === 1 ? '' : 's'}`;
+  };
+  
   const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
     [CREDIT_USAGE.USED]: CREDIT_USAGE_ICON_NAMES.USED,
     [CREDIT_USAGE.PARTIALLY_USED]: CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED,
@@ -446,10 +456,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           </div>
           {isExpiring && (
             <div className="expiring-text">
-              {daysUntilExpiration !== undefined
-                ? `Expires in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
-                : 'Expires soon'
-              }
+              {getExpirationText(daysUntilExpiration)}
             </div>
           )}
         </div>
@@ -491,10 +498,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                   {displayPeriod && isExpiring && <span className="separator"> • </span>}
                   {isExpiring && (
                     <span className="expiring-text">
-                      {daysUntilExpiration !== undefined
-                        ? `Expires in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
-                        : 'Expires soon'
-                      }
+                      {getExpirationText(daysUntilExpiration)}
                     </span>
                   )}
                 </div>
@@ -518,10 +522,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               {isExpiring && (
                 <span className="expiring-text-inline">
                   {displayPeriod && ' • '}
-                  {daysUntilExpiration !== undefined
-                    ? `Expires in ${daysUntilExpiration} day${daysUntilExpiration === 1 ? '' : 's'}`
-                    : 'Expires soon'
-                  }
+                  {getExpirationText(daysUntilExpiration)}
                 </span>
               )}
             </div>
