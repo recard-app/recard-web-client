@@ -8,7 +8,6 @@ import {
   ChatMessage,
   CreditCard,
   CreditCardDetails,
-  CardCredit,
   UserCredit,
   UserCreditWithExpiration,
   MonthlyStatsResponse,
@@ -17,6 +16,7 @@ import {
   CREDIT_PERIODS,
   CREDIT_USAGE,
 } from '../../../types';
+import type { CardCredit } from '../../../types/CreditCardTypes';
 
 // ============================================================================
 // MOCK CREDIT CARDS

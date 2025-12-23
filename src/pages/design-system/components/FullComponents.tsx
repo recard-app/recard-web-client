@@ -11,15 +11,12 @@ import SingleCardSelector from '../../../components/CreditCardSelector/SingleCar
 import { SelectCard } from '../../../components/ui/select-card/select-card';
 import PromptSolution from '../../../components/PromptWindow/PromptSolution';
 import PromptHistory from '../../../components/PromptWindow/PromptHistory';
-import { CardIcon, Icon } from '../../../icons';
+import { CardIcon } from '../../../icons';
 import { CheckIcon } from 'lucide-react';
 
 // Mock Data
 import {
   mockCreditCards,
-  mockCreditCardDetails,
-  mockCardCredits,
-  mockUserCredits,
   mockUserCreditsWithExpiration,
   mockConversations,
   mockMonthlyStats,
@@ -44,11 +41,10 @@ const FullComponents: React.FC = () => {
 
   // State for interactive demos
   const [selectedCardId, setSelectedCardId] = useState<string>('card-amex-gold');
-  const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
   const [multiCardSelection, setMultiCardSelection] = useState(mockCreditCards.slice(0, 3));
 
   useEffect(() => {
-    if (location.pathname.startsWith('/design-system')) {
+    if (location.pathname.startsWith('/design')) {
       document.body.classList.add('design-system-body');
     }
     return () => {
@@ -59,7 +55,6 @@ const FullComponents: React.FC = () => {
   // Mock handlers for interactive components
   const handleCardSelect = (card: CreditCard) => {
     setSelectedCardId(card.id);
-    setIsCardSelectorOpen(false);
   };
 
   const handleHistoryUpdate = (chat: Conversation) => {
@@ -86,7 +81,7 @@ const FullComponents: React.FC = () => {
             Mobile
           </button>
           </div>
-          <Link to="/design-system" className="ds-header-link">
+          <Link to="/design" className="ds-header-link">
             Design System
           </Link>
         </div>
@@ -520,7 +515,7 @@ const FullComponents: React.FC = () => {
                 <span className="ds-component-name">Unselected</span>
                 <SelectCard
                   creditCards={mockCreditCards}
-                  onSelectCardClick={() => setIsCardSelectorOpen(true)}
+                  onSelectCardClick={() => {}}
                   onDeselectCard={() => {}}
                 />
               </div>
@@ -529,7 +524,7 @@ const FullComponents: React.FC = () => {
                 <SelectCard
                   selectedCardId={selectedCardId}
                   creditCards={mockCreditCards}
-                  onSelectCardClick={() => setIsCardSelectorOpen(true)}
+                  onSelectCardClick={() => {}}
                   onDeselectCard={() => setSelectedCardId('')}
                 />
               </div>
@@ -548,7 +543,7 @@ const FullComponents: React.FC = () => {
                 <SelectCard
                   selectedCardId={selectedCardId}
                   creditCards={mockCreditCards}
-                  onSelectCardClick={() => setIsCardSelectorOpen(true)}
+                  onSelectCardClick={() => {}}
                   onDeselectCard={() => setSelectedCardId('')}
                   className="expanded"
                 />
@@ -657,64 +652,6 @@ const FullComponents: React.FC = () => {
             </div>
           </div>
 
-          {/* Collapsed Header */}
-          <div className="ds-variant-group">
-            <h3 className="ds-variant-label">Collapsed Header</h3>
-            <span className="ds-component-class">class="solutions-header"</span>
-            <div className="ds-solutions-demo">
-              <div className="solutions-container" style={{ padding: 0 }}>
-                <div className="solutions-header" style={{ borderRadius: '8px', border: '1px solid #E5E7EB' }}>
-                  <div className="header-title">
-                    <Icon 
-                      name="card"
-                      variant="mini"
-                      color="#B5BBC2"
-                      size={18}
-                    />
-                    <p className="caps-label">Select Card for Purchase</p>
-                  </div>
-                  <button className="collapse-button" aria-label="Expand solutions">
-                    <Icon 
-                      name="chevron-down"
-                      variant="mini"
-                      color="black"
-                      size={18}
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Expanded Header */}
-          <div className="ds-variant-group">
-            <h3 className="ds-variant-label">Expanded Header</h3>
-            <span className="ds-component-class">class="solutions-header" (expanded)</span>
-            <div className="ds-solutions-demo">
-              <div className="solutions-container" style={{ padding: 0 }}>
-                <div className="solutions-header">
-                  <div className="header-title">
-                    <Icon 
-                      name="card"
-                      variant="mini"
-                      color="#B5BBC2"
-                      size={18}
-                    />
-                    <p className="caps-label">Select Card for Purchase</p>
-                  </div>
-                  <button className="collapse-button expanded" aria-label="Collapse solutions">
-                    <Icon 
-                      name="chevron-up"
-                      variant="mini"
-                      color="black"
-                      size={18}
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Full Component (Interactive) */}
           <div className="ds-variant-group">
             <h3 className="ds-variant-label">Full Component (Interactive)</h3>
@@ -744,7 +681,7 @@ const FullComponents: React.FC = () => {
                   <SelectCard
                     selectedCardId={selectedCardId}
                     creditCards={mockCreditCards}
-                    onSelectCardClick={() => setIsCardSelectorOpen(true)}
+                    onSelectCardClick={() => {}}
                     onDeselectCard={() => setSelectedCardId('')}
                     selectLabel="Select a different card:"
                     className="expanded"

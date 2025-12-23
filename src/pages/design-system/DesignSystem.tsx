@@ -53,7 +53,7 @@ const DesignSystem: React.FC = () => {
             </ToggleBarButton>
           </ToggleBar>
           </div>
-          <Link to="/design-system/components" className="ds-header-link">
+        <Link to="/design/components" className="ds-header-link">
             Full Components
           </Link>
         </div>
@@ -65,7 +65,7 @@ const DesignSystem: React.FC = () => {
             {section.label}
           </a>
         ))}
-        <Link to="/design-system/components" className="ds-nav-link-page">
+        <Link to="/design/components" className="ds-nav-link-page">
           Full Components →
         </Link>
       </nav>

@@ -105,7 +105,7 @@ function AppContent({}: AppContentProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const isDesignSystemPage = location.pathname.startsWith('/design-system');
+  const isDesignSystemPage = location.pathname.startsWith('/design');
   const { refetch: refetchComponents } = useComponents();
 
   // Enable dynamic page background colors
@@ -1068,8 +1068,8 @@ function AppContent({}: AppContentProps) {
           {/* Design System Route - rendered outside of normal app wrapper */}
           {isDesignSystemPage ? (
             <Routes>
-              <Route path="/design-system" element={<DesignSystem />} />
-              <Route path="/design-system/components" element={<FullComponents />} />
+            <Route path="/design" element={<DesignSystem />} />
+              <Route path="/design/components" element={<FullComponents />} />
             </Routes>
           ) : (
           (() => {

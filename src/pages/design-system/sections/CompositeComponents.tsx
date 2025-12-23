@@ -60,7 +60,7 @@ const CompositeComponents: React.FC = () => {
             <div className="ds-page-header-demo">
               <PageHeader 
                 title="Back to Dashboard" 
-                titleLink="/design-system"
+                titleLink="/design"
               />
             </div>
           </div>
