@@ -1,0 +1,224 @@
+@use '../../../styling/variables' as *;
+@use '../../../styling/mixins' as *;
+
+// Note: Base design system styles (.design-system-page, .ds-section, etc.)
+// are imported via the shared DesignSystem.scss loaded by the DesignSystem page.
+// This file only contains styles specific to the Full Components page.
+
+// ============================================================================
+// FULL COMPONENTS PAGE SPECIFIC STYLES
+// ============================================================================
+
+.full-components-page {
+  // Override preview container CSS variables for Tailwind compatibility
+  .ds-preview-container {
+    --primary: #{$primary-color};
+    --primary-foreground: #{$neutral-white};
+    --secondary: #{$primary-lightest};
+    --secondary-foreground: #{$primary-color};
+    --destructive: #{$error};
+    --destructive-foreground: #{$neutral-white};
+    --accent: #{$primary-light};
+    --accent-foreground: #{$primary-medium};
+    --border: #{$neutral-light-gray};
+    --input: #{$neutral-light-gray};
+    --ring: #{$accent-color};
+    --background: #{$neutral-white};
+    --foreground: #{$neutral-black};
+  }
+}
+
+// ============================================================================
+// HISTORY ENTRY DEMO
+// ============================================================================
+
+.ds-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-4;
+  background-color: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+  border: 1px solid $border-lighter-gray;
+  max-width: 600px;
+
+  &.sidebar-demo {
+    max-width: 300px;
+    background-color: $neutral-white;
+    padding: $space-3;
+  }
+}
+
+// ============================================================================
+// CREDIT CARD PREVIEW DEMO
+// ============================================================================
+
+.ds-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-4;
+  background-color: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+  border: 1px solid $border-lighter-gray;
+  max-width: 400px;
+
+  &.sidebar-demo {
+    max-width: 280px;
+    background-color: $neutral-white;
+    padding: $space-3;
+  }
+
+  &.my-cards-demo {
+    max-width: 350px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  &.mobile-demo {
+    max-width: 200px;
+    padding: $space-2;
+  }
+}
+
+// ============================================================================
+// CREDIT SUMMARY DEMO
+// ============================================================================
+
+.ds-credit-summary-demo {
+  padding: $space-4;
+  background-color: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+  border: 1px solid $border-lighter-gray;
+  max-width: 600px;
+
+  &.sidebar-demo {
+    max-width: 300px;
+    background-color: $neutral-white;
+    padding: $space-3;
+  }
+}
+
+.ds-states-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+}
+
+.ds-state-item {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-4;
+  background-color: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+  border: 1px solid $border-lighter-gray;
+}
+
+// ============================================================================
+// CREDIT ENTRY DEMO
+// ============================================================================
+
+.ds-credit-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-4;
+  background-color: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+  border: 1px solid $border-lighter-gray;
+  max-width: 600px;
+
+  &.sidebar-demo {
+    max-width: 300px;
+    background-color: $neutral-white;
+    padding: $space-3;
+  }
+}
+
+// ============================================================================
+// CARD SELECTOR DEMO
+// ============================================================================
+
+.ds-card-selector-demo {
+  padding: $space-4;
+  background-color: $neutral-white;
+  border-radius: $radius-lg;
+  border: 1px solid $border-lighter-gray;
+  max-width: 500px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+// ============================================================================
+// SELECT CARD DEMO
+// ============================================================================
+
+.ds-component-grid-wide {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: $space-6 $space-4;
+  align-items: flex-start;
+}
+
+// ============================================================================
+// CHAT SOLUTIONS DEMO
+// ============================================================================
+
+.ds-solutions-demo {
+  padding: $space-4;
+  background-color: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+  border: 1px solid $border-lighter-gray;
+  max-width: 700px;
+
+  // Reset any conflicting styles from the prompt solution
+  .solutions-container {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+}
+
+// ============================================================================
+// CARD BUBBLE DISPLAY (already defined globally, just demo wrapper)
+// ============================================================================
+
+.ds-bubble-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-4;
+  padding: $space-4;
+  background-color: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+  border: 1px solid $border-lighter-gray;
+}
+
+// ============================================================================
+// RESPONSIVE ADJUSTMENTS FOR MOBILE PREVIEW
+// ============================================================================
+
+.ds-preview-container.mobile {
+  .ds-history-list,
+  .ds-card-list,
+  .ds-credit-summary-demo,
+  .ds-credit-list,
+  .ds-card-selector-demo,
+  .ds-solutions-demo {
+    max-width: 100%;
+  }
+
+  .ds-component-grid-wide {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ============================================================================
+// COMPONENT CLASS DISPLAY (code snippets)
+// ============================================================================
+
+.ds-variant-group > .ds-component-class {
+  display: inline-block;
+  margin-bottom: $space-3;
+}
+

@@ -1,0 +1,438 @@
+@use '../../styling/variables' as *;
+
+// Design System Page Styles
+.design-system-page {
+  min-height: 100vh;
+  background-color: $neutral-lightest-gray;
+  padding: $space-8;
+
+  @media (max-width: $mobile-breakpoint) {
+    padding: $space-4;
+  }
+}
+
+.ds-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-8;
+  padding-bottom: $space-4;
+  border-bottom: 1px solid $neutral-gray;
+
+  h1 {
+    font-family: $font-cal-sans;
+    font-size: $font-h2;
+    font-weight: $font-bold;
+    color: $neutral-black;
+    margin: 0;
+  }
+}
+
+.ds-header-actions {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+}
+
+.ds-header-link {
+  font-size: $font-sm;
+  font-weight: $font-semibold;
+  color: $primary-color;
+  background: rgba($primary-color, 0.1);
+  padding: $space-2 $space-3;
+  border-radius: $radius-md;
+  text-decoration: none;
+  transition: $transition-fast;
+
+  &:hover {
+    background: $primary-lightest;
+  }
+}
+
+.ds-viewport-toggle {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+
+  .ds-toggle-label {
+    font-size: $font-sm;
+    color: $neutral-dark-gray;
+    font-weight: $font-medium;
+  }
+}
+
+// Navigation
+.ds-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  margin-bottom: $space-6;
+  padding: $space-3;
+  background: $neutral-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+
+  a {
+    padding: $space-2 $space-3;
+    font-size: $font-sm;
+    color: $neutral-dark-gray;
+    text-decoration: none;
+    border-radius: $radius-md;
+    transition: $transition-fast;
+
+    &:hover {
+      background: $neutral-light-gray;
+      color: $primary-color;
+    }
+  }
+
+  // Page link styling (for links to other design system pages)
+  .ds-nav-link-page {
+    margin-left: auto;
+    background: $primary-lightest;
+    color: $primary-color;
+    font-weight: $font-medium;
+
+    &:hover {
+      background: $primary-light;
+      color: $primary-dark;
+    }
+  }
+}
+
+// Preview Container
+.ds-preview-container {
+  background: $neutral-white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-md;
+  padding: $space-6;
+  transition: $transition-base;
+  --primary: #22CC9D;
+  --primary-foreground: #ffffff;
+  --secondary: #2563EB;
+  --secondary-foreground: #ffffff;
+  --accent: #2563EB;
+  --accent-foreground: #ffffff;
+  --destructive: #EF4444;
+  --border: #E5E7EB;
+
+  &.mobile {
+    max-width: 375px;
+    margin: 0 auto;
+    border: 3px solid $neutral-gray;
+    border-radius: 32px;
+    padding: $space-5;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 6px;
+      background: $neutral-gray;
+      border-radius: $radius-full;
+    }
+  }
+
+  &.desktop {
+    width: 100%;
+  }
+}
+
+// Section Styles
+.ds-section {
+  margin-bottom: $space-12;
+  scroll-margin-top: $space-8;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.ds-section-title {
+  font-family: $font-cal-sans;
+  font-size: $font-h4;
+  font-weight: $font-bold;
+  color: $neutral-black;
+  margin: 0 0 $space-2 0;
+  padding-bottom: $space-2;
+  border-bottom: 2px solid $primary-color;
+  display: inline-block;
+}
+
+.ds-section-description {
+  font-size: $font-sm;
+  color: $neutral-dark-gray;
+  margin: 0 0 $space-6 0;
+  max-width: 600px;
+}
+
+// Variant Groups
+.ds-variant-group {
+  margin-bottom: $space-8;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.ds-variant-label {
+  font-family: $font-inter;
+  font-size: $font-sm;
+  font-weight: $font-semibold;
+  color: $neutral-dark-gray;
+  margin: 0 0 $space-3 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// Component Grid
+.ds-component-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-4;
+  align-items: flex-start;
+}
+
+.ds-component-item {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-3;
+  background: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+  border: 1px solid $neutral-light-gray;
+  min-width: 150px;
+}
+
+.ds-component-name {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: $font-xs;
+  color: $accent-color;
+  background: rgba($accent-color, 0.1);
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
+  display: inline-block;
+  width: fit-content;
+}
+
+.ds-component-class {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 10px;
+  color: $neutral-dark-gray;
+  margin-top: -4px;
+}
+
+// Color Swatches
+.ds-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: $space-3;
+}
+
+.ds-color-swatch {
+  display: flex;
+  flex-direction: column;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+  border: 1px solid $neutral-light-gray;
+}
+
+.ds-color-preview {
+  height: 60px;
+  width: 100%;
+}
+
+.ds-color-info {
+  padding: $space-2;
+  background: $neutral-white;
+
+  .ds-color-name {
+    font-size: $font-xs;
+    font-weight: $font-semibold;
+    color: $neutral-black;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .ds-color-value {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 10px;
+    color: $neutral-dark-gray;
+  }
+}
+
+// Typography Samples
+.ds-typography-grid {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+.ds-typography-sample {
+  display: flex;
+  align-items: baseline;
+  gap: $space-4;
+  padding: $space-3;
+  background: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+
+  .ds-typography-label {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: $font-xs;
+    color: $accent-color;
+    min-width: 100px;
+    flex-shrink: 0;
+  }
+
+  .ds-typography-text {
+    color: $neutral-black;
+  }
+}
+
+// Spacing Samples
+.ds-spacing-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+  align-items: flex-end;
+}
+
+.ds-spacing-sample {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-1;
+
+  .ds-spacing-box {
+    background: $primary-color;
+    border-radius: $radius-sm;
+  }
+
+  .ds-spacing-label {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 10px;
+    color: $neutral-dark-gray;
+  }
+}
+
+// Shadow Samples
+.ds-shadow-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-6;
+}
+
+.ds-shadow-sample {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+
+  .ds-shadow-box {
+    width: 80px;
+    height: 80px;
+    background: $neutral-white;
+    border-radius: $radius-lg;
+  }
+
+  .ds-shadow-label {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: $font-xs;
+    color: $neutral-dark-gray;
+  }
+}
+
+// Radius Samples
+.ds-radius-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-4;
+  align-items: flex-end;
+}
+
+.ds-radius-sample {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+
+  .ds-radius-box {
+    width: 60px;
+    height: 60px;
+    background: $primary-color;
+  }
+
+  .ds-radius-label {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 10px;
+    color: $neutral-dark-gray;
+  }
+}
+
+// Full-width component items
+.ds-component-item-full {
+  width: 100%;
+  padding: $space-4;
+  background: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+  border: 1px solid $neutral-light-gray;
+
+  .ds-component-name {
+    margin-bottom: $space-3;
+  }
+}
+
+// Inline variant display
+.ds-inline-variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+  align-items: center;
+}
+
+// State demo container
+.ds-state-demo {
+  display: flex;
+  gap: $space-4;
+  flex-wrap: wrap;
+  
+  .ds-state-item {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    align-items: center;
+
+    .ds-state-label {
+      font-size: $font-xs;
+      color: $neutral-dark-gray;
+    }
+  }
+}
+
+// Dialog/Drawer trigger section
+.ds-trigger-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+}
+
+// Page header demo container
+.ds-page-header-demo {
+  background: $neutral-white;
+  border: 1px solid $neutral-light-gray;
+  border-radius: $radius-lg;
+  padding: $space-4;
+  margin-top: $space-2;
+}
+
+// Usage bar demo
+.ds-usage-bar-demo {
+  max-width: 400px;
+  margin-top: $space-2;
+}
+

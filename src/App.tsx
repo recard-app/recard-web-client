@@ -35,6 +35,8 @@ import MyCreditsHelpModal from './pages/my-credits/MyCreditsHelpModal';
 import MyCredits from './pages/my-credits/MyCredits';
 import CreditsHistory from './pages/my-credits/history/CreditsHistory';
 import CreditsHistoryHelpModal from './pages/my-credits/history/CreditsHistoryHelpModal';
+import DesignSystem from './pages/design-system/DesignSystem';
+import FullComponents from './pages/design-system/components/FullComponents';
 // Components
 
 import AppSidebar from './components/AppSidebar';
@@ -103,12 +105,25 @@ function AppContent({}: AppContentProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isDesignSystemPage = location.pathname.startsWith('/design-system');
   const { refetch: refetchComponents } = useComponents();
 
   // Enable dynamic page background colors
   usePageBackground();
   // Ensure iOS Safari uses visible viewport height
   useViewportHeight();
+
+  useEffect(() => {
+    if (!isDesignSystemPage || typeof document === 'undefined') {
+      document?.body?.classList.remove('design-system-body');
+      return;
+    }
+
+    document.body.classList.add('design-system-body');
+    return () => {
+      document.body.classList.remove('design-system-body');
+    };
+  }, [isDesignSystemPage]);
 
   // State for managing credit cards in the application
   const [creditCards, setCreditCards] = useState<CreditCard[]>([]);
@@ -1050,7 +1065,14 @@ function AppContent({}: AppContentProps) {
             </DialogContent>
           </Dialog>
 
-          {(() => {
+          {/* Design System Route - rendered outside of normal app wrapper */}
+          {isDesignSystemPage ? (
+            <Routes>
+              <Route path="/design-system" element={<DesignSystem />} />
+              <Route path="/design-system/components" element={<FullComponents />} />
+            </Routes>
+          ) : (
+          (() => {
             const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH]);
             const isAuthRoute = authPaths.has(location.pathname);
             return (
@@ -1171,7 +1193,8 @@ function AppContent({}: AppContentProps) {
                 </Routes>
               </UniversalContentWrapper>
             );
-          })()}
+          })()
+          )}
         </div>
       </ScrollHeightContext.Provider>
     </FullHeightContext.Provider>

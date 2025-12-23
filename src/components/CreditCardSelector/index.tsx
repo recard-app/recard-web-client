@@ -22,6 +22,11 @@ interface CreditCardSelectorProps {
   externalSearchTerm?: string;
   onExternalSearchTermChange?: (value: string) => void;
   hideInternalSearch?: boolean;
+  // Props for testing/design system
+  forcedUser?: any;
+  disableAuthCheck?: boolean;
+  disableApiFetch?: boolean;
+  disableApiSave?: boolean;
 }
 
 export interface CreditCardSelectorRef {
@@ -32,15 +37,16 @@ export interface CreditCardSelectorRef {
  * Component for selecting and managing credit cards
  * Allows users to view, select, search, and set default cards
  */
-const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorProps>(({ returnCreditCards, existingCreditCards, showSaveButton = true, onSaveComplete, isSaving = false, externalSearchTerm, onExternalSearchTermChange, hideInternalSearch = false }, ref) => {
+const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorProps>(({ returnCreditCards, existingCreditCards, showSaveButton = true, onSaveComplete, isSaving = false, externalSearchTerm, onExternalSearchTermChange, hideInternalSearch = false, forcedUser, disableAuthCheck = false, disableApiFetch = false, disableApiSave = false }, ref) => {
     // State for managing the list of all credit cards, initialized with existing cards
     const [creditCards, setCreditCards] = useState<CreditCard[]>(sortCards(existingCreditCards || []));
     // State for managing the search input value
     const [searchTerm, setSearchTerm] = useState<string>('');
     // State for tracking if we're loading initial data
-    const [isInitialLoad, setIsInitialLoad] = useState<boolean>(creditCards.length === 0);
+    const [isInitialLoad, setIsInitialLoad] = useState<boolean>(creditCards.length === 0 && !disableApiFetch);
 
-    const { user } = useAuth();
+    const { user: authUser } = useAuth();
+    const user = forcedUser || authUser;
     const navigate = useNavigate();
 
     /**
@@ -49,15 +55,17 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
      */
     useEffect(() => {
         const loadCards = async () => {
-            if (user) {
+            if (user && !disableApiFetch) {
                 const cards = await fetchUserCards(creditCards);
                 setCreditCards(cards);
+                setIsInitialLoad(false);
+            } else if (disableApiFetch) {
                 setIsInitialLoad(false);
             }
         };
 
         loadCards();
-    }, [user]);
+    }, [user, disableApiFetch]);
 
     /**
      * Re-sync local state with existingCreditCards prop when it changes
