@@ -65,9 +65,6 @@ const DesignSystem: React.FC = () => {
             {section.label}
           </a>
         ))}
-        <Link to="/design/components" className="ds-nav-link-page">
-          Full Components →
-        </Link>
       </nav>
 
       <div className={`ds-preview-container ${viewportMode}`}>

@@ -808,8 +808,8 @@ function AppContent({}: AppContentProps) {
           </Helmet>
           
           
-          {/* Universal Sidebar - shown on all pages when user is authenticated */}
-          {user && (
+          {/* Universal Sidebar - shown on all pages when user is authenticated (except design system) */}
+          {user && !isDesignSystemPage && (
             <AppSidebar
               isOpen={isSidePanelOpen}
               onToggle={toggleSidePanel}
@@ -841,8 +841,8 @@ function AppContent({}: AppContentProps) {
             const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH]);
             const isAuthRoute = authPaths.has(location.pathname);
             const mobileHeaderTitle = PageUtils.getTitleByPath(location.pathname) || APP_NAME;
-            // Render mobile header for authenticated, non-auth routes. CSS shows it only under ${MOBILE_BREAKPOINT}px.
-            return user && !isAuthRoute ? (
+            // Render mobile header for authenticated, non-auth routes (except design system). CSS shows it only under ${MOBILE_BREAKPOINT}px.
+            return user && !isAuthRoute && !isDesignSystemPage ? (
               <MobileHeader
                 title={mobileHeaderTitle}
                 showHelpButton={shouldShowMobileHelp()}

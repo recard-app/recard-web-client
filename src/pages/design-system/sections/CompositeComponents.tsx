@@ -2,6 +2,7 @@ import React from 'react';
 import PageHeader from '@/components/PageHeader';
 import UsageBar from '@/components/UsageBar';
 import { Icon } from '@/icons';
+import { ICON_PRIMARY } from '@/types';
 
 const CompositeComponents: React.FC = () => {
   return (
@@ -18,14 +19,18 @@ const CompositeComponents: React.FC = () => {
           <div className="ds-component-item-full">
             <span className="ds-component-name">Basic</span>
             <div className="ds-page-header-demo">
-              <PageHeader title="My Cards" />
+              <PageHeader
+                title="My Cards"
+                icon={() => <Icon name="card" variant="mini" color={ICON_PRIMARY} size={20} />}
+              />
             </div>
           </div>
           <div className="ds-component-item-full">
             <span className="ds-component-name">With subtitle</span>
             <div className="ds-page-header-demo">
-              <PageHeader 
-                title="Credit Cards" 
+              <PageHeader
+                title="Credit Cards"
+                icon={() => <Icon name="card" variant="mini" color={ICON_PRIMARY} size={20} />}
                 subtitle="Manage your credit card collection"
               />
             </div>
@@ -33,8 +38,9 @@ const CompositeComponents: React.FC = () => {
           <div className="ds-component-item-full">
             <span className="ds-component-name">With actions</span>
             <div className="ds-page-header-demo">
-              <PageHeader 
-                title="My Credits" 
+              <PageHeader
+                title="My Credits"
+                icon={() => <Icon name="banknotes" variant="mini" color={ICON_PRIMARY} size={20} />}
                 withActions
                 actions={
                   <button className="button small icon with-text">
@@ -48,8 +54,9 @@ const CompositeComponents: React.FC = () => {
           <div className="ds-component-item-full">
             <span className="ds-component-name">With help button</span>
             <div className="ds-page-header-demo">
-              <PageHeader 
-                title="Transaction History" 
+              <PageHeader
+                title="Transaction History"
+                icon={() => <Icon name="history" variant="mini" color={ICON_PRIMARY} size={20} />}
                 showHelpButton
                 onHelpClick={() => alert('Help clicked!')}
               />
@@ -58,8 +65,9 @@ const CompositeComponents: React.FC = () => {
           <div className="ds-component-item-full">
             <span className="ds-component-name">With title link</span>
             <div className="ds-page-header-demo">
-              <PageHeader 
-                title="Back to Dashboard" 
+              <PageHeader
+                title="Back to Dashboard"
+                icon={() => <Icon name="home" variant="mini" color={ICON_PRIMARY} size={20} />}
                 titleLink="/design"
               />
             </div>
