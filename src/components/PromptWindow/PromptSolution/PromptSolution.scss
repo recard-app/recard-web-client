@@ -157,7 +157,7 @@ $collapse-transition-duration: 0.15s;
         border: $border-full solid $primary-color;
         background-color: $primary-lightest;
         //box-shadow: 0 2px 4px rgba($primary-color, 0.2);
-        
+
         .card-header h3 {
           color: $primary-medium;
           font-weight: $font-semibold;
@@ -174,7 +174,7 @@ $collapse-transition-duration: 0.15s;
         &.primary-solution {
           border-color: $primary-color;
           background-color: $primary-lightest;
-          
+
           .card-header h3 {
             color: $primary-medium;
           }
@@ -203,10 +203,12 @@ $collapse-transition-duration: 0.15s;
         }
 
         h3 {
-          margin: 0;
-          font-size: $font-sm;
-          font-family: $font-inter;
-          font-weight: $font-medium;
+          margin: 0 !important;
+          margin-bottom: 0 !important;
+          font-size: $font-sm !important;
+          font-family: $font-inter !important;
+          font-weight: $font-medium !important;
+          line-height: $leading-normal !important;
           color: $neutral-black;
           display: flex;
           align-items: center;
