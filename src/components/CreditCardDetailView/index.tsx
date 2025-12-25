@@ -5,7 +5,7 @@ import { UserComponentTrackingPreferences, ComponentType, COMPONENT_TYPES } from
 import { ICON_RED } from '../../types';
 import { COLORS } from '../../types/Colors';
 import { CardIcon } from '../../icons';
-import { InfoDisplay } from '../../elements';
+import { InfoDisplay, DatePicker } from '../../elements';
 import { Icon } from '../../icons';
 import { UserComponentService } from '../../services/UserServices';
 import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId } from '../../contexts/ComponentsContext';
@@ -22,6 +22,8 @@ interface CreditCardDetailViewProps {
     noCards?: boolean;
     showTrackingPreferences?: boolean; // Controls whether to show credit tracking preferences
     onPreferencesUpdate?: () => Promise<void>; // Called when preferences are updated
+    openDate?: string | null; // Card open/anniversary date (MM/DD/YYYY)
+    onOpenDateChange?: (date: string | null) => void; // Called when open date changes
 }
 
 const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
@@ -35,7 +37,9 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     onRemoveCard,
     noCards = false,
     showTrackingPreferences = false,
-    onPreferencesUpdate
+    onPreferencesUpdate,
+    openDate,
+    onOpenDateChange
 }) => {
     // Get component data from ComponentsContext using the card ID
     const cardCredits = useCreditsByCardId(cardDetails?.id || '');
@@ -189,12 +193,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <div className="card-actions">
                         <div className="card-action-buttons">
                             {onSetPreferred && (
-                                <button 
+                                <button
                                     className={`preferred-button ${cardDetails.isDefaultCard ? 'is-preferred' : ''}`}
                                     onClick={onSetPreferred}
                                     type="button"
                                 >
-                                    <Icon 
+                                    <Icon
                                         name="star"
                                         variant={cardDetails.isDefaultCard ? 'solid' : 'outline'}
                                         size={16}
@@ -204,14 +208,14 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 </button>
                             )}
                             {onRemoveCard && (
-                                <button 
+                                <button
                                     className="button ghost destructive icon small square"
                                     onClick={onRemoveCard}
                                     aria-label="Remove Card"
                                     title="Remove Card"
                                     type="button"
                                 >
-                                    <Icon 
+                                    <Icon
                                         name="delete"
                                         variant="mini"
                                         size={20}
@@ -222,6 +226,19 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 </button>
                             )}
                         </div>
+
+                        {/* Open Date / Anniversary Date Picker */}
+                        {onOpenDateChange && (
+                            <div className="open-date-field">
+                                <DatePicker
+                                    value={openDate ?? null}
+                                    onChange={onOpenDateChange}
+                                    label="Card Anniversary"
+                                    placeholder="MM/DD/YYYY"
+                                    clearable={true}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

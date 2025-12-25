@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { CardDetailsList, UserWalletHistory } from '../../types';
+import { CardDetailsList, UserWalletHistory, UserCreditCard } from '../../types';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
@@ -8,7 +8,7 @@ export const UserCreditCardService = {
     /**
      * Updates user's selected credit cards
      */
-    async updateUserCards(selectedCards: { cardId: string; isDefaultCard: boolean }[]): Promise<void> {
+    async updateUserCards(selectedCards: { cardId: string; isDefaultCard: boolean; openDate?: string | null }[]): Promise<void> {
         const headers = await getAuthHeaders();
         await axios.post(
             `${apiurl}/users/cards/update`,
@@ -22,6 +22,59 @@ export const UserCreditCardService = {
         apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS_DETAILS);
         apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS);
         apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS_FULL);
+        apiCache.invalidate(CACHE_KEYS.USER_CARDS);
+    },
+
+    /**
+     * Fetches all user's credit cards with metadata from subcollection
+     * @returns Promise containing the user's cards with openDate, isDefault, isFrozen
+     */
+    async fetchUserCards(): Promise<UserCreditCard[]> {
+        return apiCache.get(CACHE_KEYS.USER_CARDS, async () => {
+            const headers = await getAuthHeaders();
+            const response = await axios.get<UserCreditCard[]>(
+                `${apiurl}/users/cards`,
+                { headers }
+            );
+            return response.data;
+        });
+    },
+
+    /**
+     * Updates a specific user card's metadata (openDate, isFrozen)
+     */
+    async updateUserCard(cardId: string, updates: { openDate?: string | null; isFrozen?: boolean }): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.patch(
+            `${apiurl}/users/cards/${cardId}`,
+            updates,
+            { headers }
+        );
+
+        // Invalidate caches
+        apiCache.invalidate(CACHE_KEYS.USER_CARDS);
+        apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS);
+        apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS_FULL);
+        apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS);
+        apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS_PREVIEWS);
+    },
+
+    /**
+     * Removes a card from user's collection
+     */
+    async removeCard(cardId: string): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.delete(
+            `${apiurl}/users/cards/${cardId}`,
+            { headers }
+        );
+
+        // Invalidate caches
+        apiCache.invalidate(CACHE_KEYS.USER_CARDS);
+        apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS);
+        apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS_FULL);
+        apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS);
+        apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS_PREVIEWS);
     },
 
     /**

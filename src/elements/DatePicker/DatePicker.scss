@@ -1,0 +1,84 @@
+@use '../../styling/variables' as *;
+@use '../../styling/mixins' as *;
+
+.date-picker {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  width: 100%;
+
+  .date-picker-label {
+    @include form-label;
+  }
+
+  .date-picker-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .date-picker-input {
+    @include default-input-base;
+    padding-right: $space-12; // Room for buttons
+
+    &.has-warning {
+      border-color: $warning;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  // Hidden native date input positioned over the calendar button
+  .date-picker-native {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .date-picker-actions {
+    position: absolute;
+    right: $space-1;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: $space-half;
+  }
+
+  .date-picker-clear,
+  .date-picker-calendar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: $space-1;
+    border-radius: $radius-base;
+    cursor: pointer;
+    transition: background-color $transition-fast;
+
+    &:hover:not(:disabled) {
+      background-color: $neutral-light-gray;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    svg, img {
+      display: block;
+    }
+  }
+
+  .date-picker-warning {
+    font-size: $font-xs;
+    color: $warning;
+    margin-top: $space-half;
+  }
+}

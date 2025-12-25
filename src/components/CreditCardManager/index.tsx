@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
+import { UserCreditCard } from '../../types/UserTypes';
 import { MOBILE_BREAKPOINT } from '../../types';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService, UserCreditService } from '../../services';
@@ -53,6 +54,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [detailedCards, setDetailedCards] = useState<CreditCardDetails[]>([]);
     const [cardToDelete, setCardToDelete] = useState<CreditCard | null>(null);
+    const [userCardsMetadata, setUserCardsMetadata] = useState<Map<string, UserCreditCard>>(new Map());
     
     // Dialog state management
     const [showSelector, setShowSelector] = useState(false);
@@ -95,14 +97,22 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             try {
                 setIsLoading(true);
 
-                // Load both basic cards and detailed cards in parallel
-                const [cards, detailedCardsData] = await Promise.all([
+                // Load basic cards, detailed cards, and user cards metadata in parallel
+                const [cards, detailedCardsData, userCardsData] = await Promise.all([
                     CardService.fetchCreditCards(true),
-                    UserCreditCardService.fetchUserCardsDetailedInfo()
+                    UserCreditCardService.fetchUserCardsDetailedInfo(),
+                    UserCreditCardService.fetchUserCards()
                 ]);
 
                 setUserCards(cards);
                 setDetailedCards(detailedCardsData);
+
+                // Build a map of user card metadata keyed by cardReferenceId
+                const metadataMap = new Map<string, UserCreditCard>();
+                userCardsData.forEach(uc => {
+                    metadataMap.set(uc.cardReferenceId, uc);
+                });
+                setUserCardsMetadata(metadataMap);
 
                 // Notify parent component of card updates
                 notifyCardUpdate(cards);
@@ -291,10 +301,32 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     const handleRemoveCard = async (card: CreditCard) => {
         // Clear any previous errors
         setShowError(false);
-        
+
         // Set the card to delete and open the confirmation modal
         setCardToDelete(card);
         setShowDeleteConfirm(true);
+    };
+
+    // Handle updating a card's open date
+    const handleOpenDateChange = async (cardId: string, openDate: string | null) => {
+        try {
+            // Update the card's open date via API
+            await UserCreditCardService.updateUserCard(cardId, { openDate });
+
+            // Update local metadata state
+            setUserCardsMetadata(prev => {
+                const newMap = new Map(prev);
+                const existing = newMap.get(cardId);
+                if (existing) {
+                    newMap.set(cardId, { ...existing, openDate });
+                }
+                return newMap;
+            });
+        } catch (error) {
+            console.error('Error updating card open date:', error);
+            setErrorMessage('Unable to update the card anniversary date. Please try again.');
+            setShowError(true);
+        }
     };
 
     // Handle confirmation of card deletion
@@ -541,6 +573,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                     onRemoveCard={selectedCard ? () => handleRemoveCard(selectedCard) : undefined}
                     showTrackingPreferences={true}
                     onPreferencesUpdate={onPreferencesUpdate}
+                    openDate={selectedCard ? userCardsMetadata.get(selectedCard.id)?.openDate ?? null : null}
+                    onOpenDateChange={selectedCard ? (date) => handleOpenDateChange(selectedCard.id, date) : undefined}
                 />
             </div>
 

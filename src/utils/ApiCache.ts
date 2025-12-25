@@ -195,6 +195,7 @@ export const CACHE_KEYS = {
   USER_PREFERENCES_BATCH: 'user_preferences_batch',
 
   // User Credit Card Service
+  USER_CARDS: 'user_cards',
   USER_CARD_DETAILS: 'user_card_details',
   USER_CARD_DETAILS_FULL: 'user_card_details_full',
 

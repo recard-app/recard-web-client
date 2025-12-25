@@ -4,13 +4,22 @@ import { ChatHistoryPreferenceType, RoleType, SubscriptionPlanType } from "./Con
 
 /**
  * ------------------------------------------------------------------------------------------------
- * 
+ *
  * SHARED API AND CLIENT TYPES
- * 
+ *
  * ------------------------------------------------------------------------------------------------
  */
 
-export type SelectedCards = string[];
+/**
+ * Represents a user's credit card in their subcollection
+ * Path: users/{userId}/credit_cards/{cardReferenceId}
+ */
+export interface UserCreditCard {
+    cardReferenceId: string;  // Credit card ID (also the doc ID)
+    openDate: string | null;  // MM/DD/YYYY format or null
+    isDefault: boolean;       // Whether this is the default card
+    isFrozen: boolean;        // For future LLM exclusion
+}
 
 export interface UserPreferences {
     chatHistory?: ChatHistoryPreference;
@@ -26,15 +35,11 @@ export type SubscriptionPlan = SubscriptionPlanType;
 
 export type ChatHistory = Conversation[];
 
-export type DefaultCard = string;
-
 export type CardDetails = string;
 export type CardDetailsList = CardDetails[];
 
 export interface User {
     id: string;
-    selectedCards?: SelectedCards;
-    defaultCard?: DefaultCard;
     preferencesInstructions?: string;
     preferencesChatHistory?: ChatHistoryPreference;
     preferencesShowCompletedOnly?: ShowCompletedOnlyPreference;

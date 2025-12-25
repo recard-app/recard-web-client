@@ -73,7 +73,10 @@
       
       .card-actions {
         margin-top: $space-3;
-        
+        display: flex;
+        flex-direction: column;
+        gap: $space-3;
+
         .card-action-buttons {
           display: flex;
           gap: $space-2;
@@ -129,8 +132,20 @@
               opacity: 1;
             }
           }
-          
+
           // No local size overrides; use global `.preferred-size` when needed
+        }
+
+        .open-date-field {
+          max-width: 200px;
+
+          .date-picker-label {
+            font-size: $font-xxs;
+            font-weight: $font-semibold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: $neutral-dark-gray;
+          }
         }
       }
     }

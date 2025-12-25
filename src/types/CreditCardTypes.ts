@@ -20,6 +20,8 @@ export interface CreditCard {
     CardSecondaryColor?: string;
     selected?: boolean;      // Whether the card is selected by the user (optional, for user context)
     isDefaultCard?: boolean; // Whether this is the user's default card (optional, for user context)
+    openDate?: string | null; // User's card open/anniversary date (MM/DD/YYYY format)
+    isFrozen?: boolean;      // Whether the card is frozen (excluded from LLM)
 }
 
 /**
