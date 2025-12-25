@@ -359,7 +359,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             <span className={`stat-value ${!openDate ? 'not-set' : ''}`}>
                                 {!openDate && (
                                     <Icon
-                                        name="exclamation-circle"
+                                        name="exclamation-triangle"
                                         variant="mini"
                                         size={16}
                                         color={ICON_RED}
@@ -550,7 +550,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                         <div className="credit-description">
                                             {credit.Description}
                                         </div>
-                                        {credit.Details && (
+                                        {(credit.Details || showTrackingPreferences) && (
                                             <button
                                                 className="details-toggle"
                                                 onClick={() => toggleCreditExpanded(credit.id)}
@@ -565,9 +565,9 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                 />
                                             </button>
                                         )}
-                                        {isExpanded && credit.Details && (
+                                        {isExpanded && (credit.Details || showTrackingPreferences) && (
                                             <div className="credit-details-section">
-                                                <p className="details-text">{credit.Details}</p>
+                                                {credit.Details && <p className="details-text">{credit.Details}</p>}
                                                 {showTrackingPreferences && (
                                                     <div className="tracking-toggle">
                                                         <label className="toggle-switch">
@@ -623,7 +623,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                         <div className="perk-description">
                                             {perk.Description}
                                         </div>
-                                        {perk.Details && (
+                                        {(perk.Details || showTrackingPreferences) && (
                                             <button
                                                 className="details-toggle"
                                                 onClick={() => togglePerkExpanded(perk.id)}
@@ -638,9 +638,9 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                 />
                                             </button>
                                         )}
-                                        {isExpanded && perk.Details && (
+                                        {isExpanded && (perk.Details || showTrackingPreferences) && (
                                             <div className="perk-details-section">
-                                                <p className="details-text">{perk.Details}</p>
+                                                {perk.Details && <p className="details-text">{perk.Details}</p>}
                                                 {showTrackingPreferences && (
                                                     <div className="tracking-toggle">
                                                         <label className="toggle-switch">
