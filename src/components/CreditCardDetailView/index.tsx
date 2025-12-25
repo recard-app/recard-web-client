@@ -352,7 +352,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 {(onOpenDateChange || openDate !== undefined) && (
                     <>
                         <div className="stat-divider" />
-                        <div className="stat-item stat-item-date">
+                        <div className="stat-item">
                             {isEditingOpenDate && onOpenDateChange ? (
                                 <div className="date-edit-inline">
                                     <DatePicker

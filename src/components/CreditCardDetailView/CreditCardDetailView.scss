@@ -234,28 +234,26 @@
         gap: $space-1;
       }
 
-      &.stat-item-date {
-        flex: 1.5; // Give date more room
+      .date-edit-inline {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $space-1;
 
-        .date-edit-inline {
-          display: flex;
-          align-items: center;
-          gap: $space-1;
+        .date-picker {
+          width: 116px;
 
-          .date-picker-container {
-            max-width: 120px;
-
-            input {
-              font-size: $font-xs;
-              padding: $space-1;
-            }
-          }
-
-          .save-date-button {
-            padding: $space-1-5 $space-3;
+          .date-picker-input {
             font-size: $font-sm;
-            white-space: nowrap;
+            padding: $space-1;
+            width: 100%;
           }
+        }
+
+        .save-date-button {
+          padding: $space-1 $space-2;
+          font-size: $font-sm;
+          white-space: nowrap;
         }
       }
     }
@@ -988,10 +986,6 @@
         flex: 1 1 45%;
         min-width: 80px;
         padding: $space-1;
-
-        &.stat-item-date {
-          flex: 1 1 100%;
-        }
       }
 
       .stat-divider {
