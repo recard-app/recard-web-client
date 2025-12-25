@@ -396,19 +396,120 @@
     }
   }
   
-  .credit-tracking-preference {
+  // Component tracking preference with toggle switch
+  .component-tracking-preference {
     margin-top: $space-3;
     padding-top: $space-2;
     border-top: $border-half solid $neutral-light-gray;
     display: flex;
-    flex-direction: column;
-    gap: $space-1-5;
-    
+    align-items: center;
+    gap: $space-2;
+
     .preference-label {
       font-size: $font-xs;
       font-weight: $font-medium;
       color: $neutral-dark-gray;
       margin: 0;
+    }
+  }
+
+  // Perk header for toggle alignment
+  .perk-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-2;
+
+    .perk-title {
+      font-weight: $font-medium;
+      color: $neutral-black;
+      font-size: $font-sm;
+      margin-bottom: 0;
+    }
+  }
+
+  // Disabled state styling for all component types
+  .table-row.disabled,
+  .credit-item.disabled,
+  .perk-item.disabled {
+    opacity: 0.5;
+  }
+
+  // Disabled pill badge
+  .disabled-pill {
+    display: inline-block;
+    padding: $space-half $space-1-5;
+    margin-right: $space-1-5;
+    font-size: $font-xxs;
+    font-weight: $font-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $neutral-dark-gray;
+    background-color: $neutral-light-gray;
+    border-radius: $radius-full;
+    vertical-align: middle;
+  }
+
+  // Toggle switch component
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+
+    input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+
+      &:checked + .toggle-slider {
+        background-color: $primary-color;
+      }
+
+      &:checked + .toggle-slider:before {
+        transform: translateX(16px);
+      }
+
+      &:disabled + .toggle-slider {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background-color: $neutral-medium-gray;
+      border-radius: 20px;
+      transition: 0.2s;
+
+      &:before {
+        content: "";
+        position: absolute;
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.2s;
+      }
+    }
+  }
+
+  // Update multipliers table grid to accommodate toggle column
+  .multipliers-table .table .table-row {
+    &:has(.cell.toggle) {
+      grid-template-columns: 2fr 1fr 4fr auto;
+    }
+
+    .cell.toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: $space-2;
     }
   }
 }

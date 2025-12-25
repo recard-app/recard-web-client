@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, CardMultiplier, CreditCard } from '../../types/CreditCardTypes';
-import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CreditHidePreferenceType } from '../../types/CardCreditsTypes';
+import { UserComponentTrackingPreferences, ComponentType, COMPONENT_TYPES } from '../../types/CardCreditsTypes';
 import { ICON_RED } from '../../types';
 import { COLORS } from '../../types/Colors';
 import { CardIcon } from '../../icons';
 import { InfoDisplay } from '../../elements';
 import { Icon } from '../../icons';
-import { UserCreditService } from '../../services/UserServices';
+import { UserComponentService } from '../../services/UserServices';
 import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId } from '../../contexts/ComponentsContext';
 
 interface CreditCardDetailViewProps {
@@ -42,64 +42,68 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     const cardPerks = usePerksByCardId(cardDetails?.id || '');
     const cardMultipliers = useMultipliersByCardId(cardDetails?.id || '');
 
-    const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
+    const [componentPreferences, setComponentPreferences] = useState<UserComponentTrackingPreferences | null>(null);
     const [isLoadingPreferences, setIsLoadingPreferences] = useState(false);
 
     // Fetch tracking preferences when component mounts or when cardDetails changes
+    // Always fetch preferences so disabled styling applies even in preview mode
     useEffect(() => {
         const fetchPreferences = async () => {
-            if (!cardDetails || !showTrackingPreferences) return;
-            
+            if (!cardDetails) return;
+
             setIsLoadingPreferences(true);
             try {
-                const preferences = await UserCreditService.fetchCreditTrackingPreferences();
-                setTrackingPreferences(preferences);
+                const preferences = await UserComponentService.fetchComponentTrackingPreferences();
+                setComponentPreferences(preferences);
             } catch (error) {
-                console.error('Failed to fetch credit tracking preferences:', error);
+                console.error('Failed to fetch component tracking preferences:', error);
                 // Set empty preferences if fetch fails
-                setTrackingPreferences({ Cards: [] });
+                setComponentPreferences({ Cards: [] });
             } finally {
                 setIsLoadingPreferences(false);
             }
         };
 
         fetchPreferences();
-    }, [cardDetails?.id, showTrackingPreferences]);
+    }, [cardDetails?.id]);
 
-    // Get the current hide preference for a specific credit
-    const getCreditHidePreference = (creditId: string): CreditHidePreferenceType => {
-        if (!trackingPreferences || !cardDetails) {
-            return CREDIT_HIDE_PREFERENCE.DO_NOT_HIDE; // Default to showing
-        }
+    // Check if a component is disabled
+    const isComponentDisabled = (componentId: string, componentType: ComponentType): boolean => {
+        if (!componentPreferences || !cardDetails) return false;
 
-        const cardPrefs = trackingPreferences.Cards.find(card => card.CardId === cardDetails.id);
-        if (!cardPrefs) {
-            return CREDIT_HIDE_PREFERENCE.DO_NOT_HIDE;
-        }
+        const cardPref = componentPreferences.Cards.find(c => c.CardId === cardDetails.id);
+        if (!cardPref) return false;
 
-        const creditPref = cardPrefs.Credits.find(credit => credit.CreditId === creditId);
-        return creditPref?.HidePreference || CREDIT_HIDE_PREFERENCE.DO_NOT_HIDE;
+        const arrayKey = componentType === COMPONENT_TYPES.CREDIT ? 'Credits'
+            : componentType === COMPONENT_TYPES.MULTIPLIER ? 'Multipliers'
+            : 'Perks';
+        const pref = cardPref[arrayKey].find(p => p.ComponentId === componentId);
+        return pref?.Disabled || false;
     };
 
-    // Update the hide preference for a specific credit
-    const handleCreditHidePreferenceChange = async (creditId: string, hidePreference: CreditHidePreferenceType) => {
+    // Update the disabled state for any component type
+    const handleComponentDisabledChange = async (
+        componentId: string,
+        componentType: ComponentType,
+        disabled: boolean
+    ) => {
         if (!cardDetails) return;
 
         try {
-            const updatedPreferences = await UserCreditService.updateCreditHidePreference({
+            const updatedPreferences = await UserComponentService.updateComponentDisabledPreference({
                 cardId: cardDetails.id,
-                creditId,
-                hidePreference
+                componentId,
+                componentType,
+                disabled
             });
-            setTrackingPreferences(updatedPreferences);
-            
+            setComponentPreferences(updatedPreferences);
+
             // Notify parent components to refresh their preferences
             if (onPreferencesUpdate) {
                 await onPreferencesUpdate();
             }
         } catch (error) {
-            console.error('Failed to update credit hide preference:', error);
-            // TODO: Show user-friendly error message
+            console.error('Failed to update component disabled preference:', error);
         }
     };
     // Priority order for loading states:
@@ -266,8 +270,13 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                     <div className="category-title">{category}</div>
                                     <div className="table">
                                         {mainItems.map((m, idx) => (
-                                            <div key={m.id ?? `main-${idx}`} className="table-row main-row">
-                                                <div className="cell subcategory">{m.Name}</div>
+                                            <div key={m.id ?? `main-${idx}`} className={`table-row main-row${isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) ? ' disabled' : ''}`}>
+                                                <div className="cell subcategory">
+                                                    {isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) && (
+                                                        <span className="disabled-pill">Disabled</span>
+                                                    )}
+                                                    {m.Name}
+                                                </div>
                                                 <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
                                                 <div className="cell description">
                                                     <div className="multiplier-desc">{m.Description}</div>
@@ -275,11 +284,33 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                         <div className="multiplier-details">{m.Details}</div>
                                                     )}
                                                 </div>
+                                                {showTrackingPreferences && (
+                                                    <div className="cell toggle">
+                                                        <label className="toggle-switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={!isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER)}
+                                                                onChange={(e) => handleComponentDisabledChange(
+                                                                    m.id,
+                                                                    COMPONENT_TYPES.MULTIPLIER,
+                                                                    !e.target.checked
+                                                                )}
+                                                                disabled={isLoadingPreferences}
+                                                            />
+                                                            <span className="toggle-slider"></span>
+                                                        </label>
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                         {subItems.map((m, idx) => (
-                                            <div key={m.id ?? `sub-${idx}-${m.SubCategory}`} className="table-row sub-row">
-                                                <div className="cell subcategory">{m.Name}</div>
+                                            <div key={m.id ?? `sub-${idx}-${m.SubCategory}`} className={`table-row sub-row${isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) ? ' disabled' : ''}`}>
+                                                <div className="cell subcategory">
+                                                    {isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) && (
+                                                        <span className="disabled-pill">Disabled</span>
+                                                    )}
+                                                    {m.Name}
+                                                </div>
                                                 <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
                                                 <div className="cell description">
                                                     <div className="multiplier-desc">{m.Description}</div>
@@ -287,6 +318,23 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                         <div className="multiplier-details">{m.Details}</div>
                                                     )}
                                                 </div>
+                                                {showTrackingPreferences && (
+                                                    <div className="cell toggle">
+                                                        <label className="toggle-switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={!isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER)}
+                                                                onChange={(e) => handleComponentDisabledChange(
+                                                                    m.id,
+                                                                    COMPONENT_TYPES.MULTIPLIER,
+                                                                    !e.target.checked
+                                                                )}
+                                                                disabled={isLoadingPreferences}
+                                                            />
+                                                            <span className="toggle-slider"></span>
+                                                        </label>
+                                                    </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
@@ -302,9 +350,14 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <h3>Card Credits</h3>
                     <div className="credits-list">
                         {cardCredits.map((credit, index) => (
-                            <div key={index} className="credit-item">
+                            <div key={index} className={`credit-item${isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) ? ' disabled' : ''}`}>
                                 <div className="credit-header">
-                                    <span className="credit-title">{credit.Title}</span>
+                                    <span className="credit-title">
+                                        {isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) && (
+                                            <span className="disabled-pill">Disabled</span>
+                                        )}
+                                        {credit.Title}
+                                    </span>
                                     <span className="credit-value">{`$${credit.Value}`}</span>
                                 </div>
                                 <div className="credit-period">{credit.TimePeriod}</div>
@@ -318,24 +371,23 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                     </div>
                                 )}
                                 {showTrackingPreferences && (
-                                    <div className="credit-tracking-preference">
-                                        <label htmlFor={`credit-tracking-${credit.id}`} className="preference-label">
-                                            Do you want to track this credit?
+                                    <div className="component-tracking-preference">
+                                        <label className="toggle-switch">
+                                            <input
+                                                type="checkbox"
+                                                checked={!isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT)}
+                                                onChange={(e) => handleComponentDisabledChange(
+                                                    credit.id,
+                                                    COMPONENT_TYPES.CREDIT,
+                                                    !e.target.checked
+                                                )}
+                                                disabled={isLoadingPreferences}
+                                            />
+                                            <span className="toggle-slider"></span>
                                         </label>
-                                        <select
-                                            id={`credit-tracking-${credit.id}`}
-                                            className="default-select"
-                                            value={getCreditHidePreference(credit.id)}
-                                            onChange={(e) => handleCreditHidePreferenceChange(credit.id, e.target.value as CreditHidePreferenceType)}
-                                            disabled={isLoadingPreferences}
-                                        >
-                                            <option value={CREDIT_HIDE_PREFERENCE.DO_NOT_HIDE}>
-                                                Yes, track this credit
-                                            </option>
-                                            <option value={CREDIT_HIDE_PREFERENCE.HIDE_ALL}>
-                                                No, do not track
-                                            </option>
-                                        </select>
+                                        <span className="preference-label">
+                                            {isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) ? 'Disabled' : 'Enabled'}
+                                        </span>
                                     </div>
                                 )}
                             </div>
@@ -349,8 +401,30 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <h3>Card Perks</h3>
                     <div className="perks-list">
                         {cardPerks.map((perk, index) => (
-                            <div key={index} className="perk-item">
-                                <div className="perk-title">{perk.Title}</div>
+                            <div key={index} className={`perk-item${isComponentDisabled(perk.id, COMPONENT_TYPES.PERK) ? ' disabled' : ''}`}>
+                                <div className="perk-header">
+                                    <div className="perk-title">
+                                        {isComponentDisabled(perk.id, COMPONENT_TYPES.PERK) && (
+                                            <span className="disabled-pill">Disabled</span>
+                                        )}
+                                        {perk.Title}
+                                    </div>
+                                    {showTrackingPreferences && (
+                                        <label className="toggle-switch">
+                                            <input
+                                                type="checkbox"
+                                                checked={!isComponentDisabled(perk.id, COMPONENT_TYPES.PERK)}
+                                                onChange={(e) => handleComponentDisabledChange(
+                                                    perk.id,
+                                                    COMPONENT_TYPES.PERK,
+                                                    !e.target.checked
+                                                )}
+                                                disabled={isLoadingPreferences}
+                                            />
+                                            <span className="toggle-slider"></span>
+                                        </label>
+                                    )}
+                                </div>
                                 <div className="perk-description">{perk.Description}</div>
                                 {perk.Details && (
                                     <div className="perk-details">{perk.Details}</div>

@@ -1,4 +1,4 @@
-import { UserCreditsTrackingPreferences } from "./CardCreditsTypes";
+import { UserComponentTrackingPreferences } from "./CardCreditsTypes";
 import { Conversation } from "./ChatTypes";
 import { ChatHistoryPreferenceType, RoleType, SubscriptionPlanType } from "./Constants";
 
@@ -39,7 +39,7 @@ export interface User {
     preferencesChatHistory?: ChatHistoryPreference;
     preferencesShowCompletedOnly?: ShowCompletedOnlyPreference;
     subscriptionPlan: SubscriptionPlan;
-    userCreditsTrackingPreferences: UserCreditsTrackingPreferences;
+    userComponentTrackingPreferences: UserComponentTrackingPreferences;
     userWalletHistory: UserWalletHistory;
     role: RoleType;
     accountCreatedAt?: string;

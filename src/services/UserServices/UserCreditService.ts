@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditsTrackingPreferences, CreditHidePreferenceType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType, MonthlyStatsResponse, GetMonthlySummaryParams, MonthlySummaryResponse, HistoricalMonthlySummaryResponse } from '../../types';
-import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
+import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType, MonthlyStatsResponse, GetMonthlySummaryParams, MonthlySummaryResponse, HistoricalMonthlySummaryResponse } from '../../types';
 
 let syncTimeout: NodeJS.Timeout | null = null;
 let pendingSyncResolvers: ((value: CalendarUserCredits) => void)[] = [];
@@ -318,42 +317,6 @@ export const UserCreditService = {
 
             yearSyncTimeouts.set(year, timeout);
         });
-    },
-
-    /**
-     * Returns the authenticated user's credit tracking preferences
-     */
-    async fetchCreditTrackingPreferences(): Promise<UserCreditsTrackingPreferences> {
-        return apiCache.get(CACHE_KEYS.CREDIT_TRACKING_PREFERENCES, async () => {
-            const headers = await getAuthHeaders();
-            const response = await axios.get<UserCreditsTrackingPreferences>(
-                `${apiurl}/users/cards/credits/preferences`,
-                { headers }
-            );
-            return response.data;
-        });
-    },
-
-    /**
-     * Updates the hide preference for a specific credit
-     * Returns the updated UserCreditsTrackingPreferences
-     */
-    async updateCreditHidePreference(params: {
-        cardId: string;
-        creditId: string;
-        hidePreference: CreditHidePreferenceType;
-    }): Promise<UserCreditsTrackingPreferences> {
-        const headers = await getAuthHeaders();
-        const response = await axios.put<UserCreditsTrackingPreferences>(
-            `${apiurl}/users/cards/credits/preferences`,
-            params,
-            { headers }
-        );
-
-        // Invalidate cache after successful update
-        apiCache.invalidate(CACHE_KEYS.CREDIT_TRACKING_PREFERENCES);
-
-        return response.data;
     },
 
     /**

@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PageHeader from '@/components/PageHeader';
 import UsageBar from '@/components/UsageBar';
 import { Icon } from '@/icons';
 import { ICON_PRIMARY } from '@/types';
+import '@/components/CreditCardDetailView/CreditCardDetailView.scss';
 
 const CompositeComponents: React.FC = () => {
+  const [toggleStates, setToggleStates] = useState({
+    credit: true,
+    multiplier: false,
+    perk: true,
+  });
   return (
     <>
       <h2 className="ds-section-title">Composite Components</h2>
@@ -176,6 +182,164 @@ const CompositeComponents: React.FC = () => {
                 segments={[]}
                 maxValue={100}
               />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Disabled Pill */}
+      <div className="ds-variant-group">
+        <h3 className="ds-variant-label">Disabled Pill</h3>
+        <p className="ds-variant-description">
+          Small pill badge used to indicate a disabled component (credit, multiplier, or perk) in card detail views.
+        </p>
+        <div className="ds-component-grid">
+          <div className="ds-component-item" style={{ minWidth: '200px' }}>
+            <span className="ds-component-name">Standalone</span>
+            <div className="card-details">
+              <span className="disabled-pill">Disabled</span>
+            </div>
+          </div>
+          <div className="ds-component-item" style={{ minWidth: '300px' }}>
+            <span className="ds-component-name">Before credit title</span>
+            <div className="card-details">
+              <span style={{ fontWeight: 500, color: '#1a1a1a', fontSize: '14px' }}>
+                <span className="disabled-pill">Disabled</span>
+                Uber Cash Credit
+              </span>
+            </div>
+          </div>
+          <div className="ds-component-item" style={{ minWidth: '300px' }}>
+            <span className="ds-component-name">Before multiplier name</span>
+            <div className="card-details">
+              <span style={{ fontWeight: 600, color: '#1a1a1a', fontSize: '14px' }}>
+                <span className="disabled-pill">Disabled</span>
+                Dining
+              </span>
+            </div>
+          </div>
+          <div className="ds-component-item" style={{ minWidth: '300px' }}>
+            <span className="ds-component-name">Before perk title</span>
+            <div className="card-details">
+              <span style={{ fontWeight: 500, color: '#1a1a1a', fontSize: '14px' }}>
+                <span className="disabled-pill">Disabled</span>
+                Priority Pass Lounge Access
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Inline Toggle Switch */}
+      <div className="ds-variant-group">
+        <h3 className="ds-variant-label">Inline Toggle Switch</h3>
+        <p className="ds-variant-description">
+          Compact toggle switch used inline with component items to enable/disable tracking for credits, multipliers, and perks.
+        </p>
+        <div className="ds-component-grid">
+          <div className="ds-component-item" style={{ minWidth: '200px' }}>
+            <span className="ds-component-name">Enabled (checked)</span>
+            <div className="card-details">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={toggleStates.credit}
+                  onChange={(e) => setToggleStates({ ...toggleStates, credit: e.target.checked })}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div className="ds-component-item" style={{ minWidth: '200px' }}>
+            <span className="ds-component-name">Disabled (unchecked)</span>
+            <div className="card-details">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={toggleStates.multiplier}
+                  onChange={(e) => setToggleStates({ ...toggleStates, multiplier: e.target.checked })}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div className="ds-component-item" style={{ minWidth: '200px' }}>
+            <span className="ds-component-name">Input disabled</span>
+            <div className="card-details">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={false}
+                  disabled
+                  onChange={() => {}}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div className="ds-component-grid" style={{ marginTop: '16px' }}>
+          <div className="ds-component-item-full">
+            <span className="ds-component-name">With label (typical usage)</span>
+            <div className="card-details" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={toggleStates.perk}
+                  onChange={(e) => setToggleStates({ ...toggleStates, perk: e.target.checked })}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+              <span style={{ fontSize: '12px', fontWeight: 500, color: toggleStates.perk ? '#22CC9D' : '#666' }}>
+                {toggleStates.perk ? 'Enabled' : 'Disabled'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Disabled Component States */}
+      <div className="ds-variant-group">
+        <h3 className="ds-variant-label">Disabled Component States</h3>
+        <p className="ds-variant-description">
+          Example of how disabled components appear in the card detail view with reduced opacity and the disabled pill.
+        </p>
+        <div className="ds-component-grid" style={{ flexDirection: 'column' }}>
+          <div className="ds-component-item-full">
+            <span className="ds-component-name">Enabled credit item</span>
+            <div className="card-details">
+              <div className="card-section" style={{ padding: 0, border: 'none', background: 'transparent' }}>
+                <div className="credits-list">
+                  <div className="credit-item">
+                    <div className="credit-header">
+                      <span className="credit-title">Uber Cash Credit</span>
+                      <span className="credit-value">$15</span>
+                    </div>
+                    <div className="credit-period">Monthly</div>
+                    <div className="credit-description">Uber Cash for rides or Uber Eats orders</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="ds-component-item-full">
+            <span className="ds-component-name">Disabled credit item (opacity: 0.5 + pill)</span>
+            <div className="card-details">
+              <div className="card-section" style={{ padding: 0, border: 'none', background: 'transparent' }}>
+                <div className="credits-list">
+                  <div className="credit-item disabled">
+                    <div className="credit-header">
+                      <span className="credit-title">
+                        <span className="disabled-pill">Disabled</span>
+                        Uber Cash Credit
+                      </span>
+                      <span className="credit-value">$15</span>
+                    </div>
+                    <div className="credit-period">Monthly</div>
+                    <div className="credit-description">Uber Cash for rides or Uber Eats orders</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

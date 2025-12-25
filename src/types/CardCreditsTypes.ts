@@ -106,35 +106,48 @@ export interface SingleCreditHistory {
 }
 
 /**
- * Represents the different credit tracking preferences. This is correlated to the active/inactive status of the credit.
+ * Represents the different component types for tracking preferences
  */
-export const CREDIT_HIDE_PREFERENCE = {
-    HIDE_ALL: 'hide',
-    DO_NOT_HIDE: 'do_not_hide'
+export const COMPONENT_TYPES = {
+    CREDIT: 'credit',
+    MULTIPLIER: 'multiplier',
+    PERK: 'perk'
 } as const;
-export type CreditHidePreferenceType = typeof CREDIT_HIDE_PREFERENCE[keyof typeof CREDIT_HIDE_PREFERENCE];
+export type ComponentType = typeof COMPONENT_TYPES[keyof typeof COMPONENT_TYPES];
 
 /**
- * Represents the credit tracking preferences for a user
+ * Represents the tracking preference for a single component (credit, multiplier, or perk)
  */
-export interface UserCreditsTrackingPreferences {
-    Cards: CardTrackingPreference[];
+export interface ComponentTrackingPreference {
+    ComponentId: string;
+    Disabled: boolean;
 }
 
 /**
- * Represents the credit tracking preferences for a card
+ * Represents the component tracking preferences for a card
  */
-export interface CardTrackingPreference {
+export interface CardComponentTrackingPreference {
     CardId: string;
-    Credits: CreditTrackingPreference[];
+    Credits: ComponentTrackingPreference[];
+    Multipliers: ComponentTrackingPreference[];
+    Perks: ComponentTrackingPreference[];
 }
 
 /**
- * Represents the credit tracking preferences for a credit
+ * Represents the unified component tracking preferences for a user
  */
-export interface CreditTrackingPreference {
-    CreditId: string;
-    HidePreference: CreditHidePreferenceType;
+export interface UserComponentTrackingPreferences {
+    Cards: CardComponentTrackingPreference[];
+}
+
+/**
+ * Request body for updating a component's disabled preference
+ */
+export interface UpdateComponentDisabledRequest {
+    cardId: string;
+    componentId: string;
+    componentType: ComponentType;
+    disabled: boolean;
 }
 
 /**
@@ -247,22 +260,16 @@ export interface SyncCurrentYearCreditsParams {
 export interface SyncCurrentYearCreditsResponse extends CalendarUserCredits {}
 
 /**
- * Get Credit Tracking Preferences API
- * GET /users/cards/credits/preferences
+ * Get Component Tracking Preferences API
+ * GET /users/cards/components/preferences
  */
-export interface GetCreditTrackingPreferencesResponse extends UserCreditsTrackingPreferences {}
+export interface GetComponentTrackingPreferencesResponse extends UserComponentTrackingPreferences {}
 
 /**
- * Update Credit Hide Preference API
- * PUT /users/cards/credits/preferences
+ * Update Component Disabled Preference API
+ * PUT /users/cards/components/preferences
  */
-export interface UpdateCreditHidePreferenceRequest {
-    cardId: string;
-    creditId: string;
-    hidePreference: CreditHidePreferenceType;
-}
-
-export interface UpdateCreditHidePreferenceResponse extends UserCreditsTrackingPreferences {}
+export interface UpdateComponentDisabledResponse extends UserComponentTrackingPreferences {}
 
 /**
  * Get Card Credits API
@@ -445,13 +452,13 @@ export const CREDIT_USAGE_ICON_NAMES = {
 export type CreditUsageIconNameType = typeof CREDIT_USAGE_ICON_NAMES[keyof typeof CREDIT_USAGE_ICON_NAMES];
 
 /**
- * Represents the different credit tracking preferences. This is correlated to the active/inactive status of the credit.
+ * Display names for component enabled/disabled status
  */
-export const CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES = {
-    HIDE: 'Hide Credit',
-    DO_NOT_HIDE: 'Show on Credits Page'
+export const COMPONENT_DISABLED_DISPLAY_NAMES = {
+    ENABLED: 'Enabled',
+    DISABLED: 'Disabled'
 } as const;
-export type CreditHidePreferenceDisplayNameType = typeof CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES[keyof typeof CREDIT_HIDE_PREFERENCE_DISPLAY_NAMES];
+export type ComponentDisabledDisplayNameType = typeof COMPONENT_DISABLED_DISPLAY_NAMES[keyof typeof COMPONENT_DISABLED_DISPLAY_NAMES];
 
 /**
  * Credit summary section configuration for display names and icons

@@ -188,8 +188,8 @@ export const CACHE_KEYS = {
   // User Service
   USER_SUBSCRIPTION: 'user_subscription',
 
-  // User Credit Service
-  CREDIT_TRACKING_PREFERENCES: 'credit_tracking_preferences',
+  // User Component Service
+  COMPONENT_TRACKING_PREFERENCES: 'component_tracking_preferences',
 
   // User Preferences Service
   USER_PREFERENCES_BATCH: 'user_preferences_batch',

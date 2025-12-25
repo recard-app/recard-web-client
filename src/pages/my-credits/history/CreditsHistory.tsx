@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, PAGES, CalendarUserCredits, MONTH_OPTIONS, CREDIT_USAGE_DISPLAY_NAMES, MOBILE_BREAKPOINT, DISABLE_MOBILE_CREDITS_STICKY_FOOTER } from '../../../types';
 import { NEUTRAL_DARK_GRAY } from '../../../types/Colors';
-import { UserCreditsTrackingPreferences, CREDIT_HIDE_PREFERENCE, CREDIT_USAGE_ICON_NAMES, HistoricalMonthlySummaryResponse, CREDIT_SUMMARY_SECTIONS } from '../../../types/CardCreditsTypes';
+import { UserComponentTrackingPreferences, CREDIT_USAGE_ICON_NAMES, HistoricalMonthlySummaryResponse, CREDIT_SUMMARY_SECTIONS } from '../../../types/CardCreditsTypes';
 import { useCredits } from '../../../contexts/ComponentsContext';
 import {
   Dialog,
@@ -62,7 +62,7 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
   const [accountCreatedAt, setAccountCreatedAt] = useState<Date | null>(null);
   const [selectedFilterCardId, setSelectedFilterCardId] = useState<string | null>(null);
-  const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
+  const [componentPreferences, setComponentPreferences] = useState<UserComponentTrackingPreferences | null>(null);
   const [historicalSummary, setHistoricalSummary] = useState<HistoricalMonthlySummaryResponse | null>(null);
   const [isLoadingHistoricalSummary, setIsLoadingHistoricalSummary] = useState<boolean>(false);
   const [isUpdatingHistoricalSummary, setIsUpdatingHistoricalSummary] = useState<boolean>(false);
@@ -247,31 +247,32 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
     fetchHistoricalSummary();
   }, [selectedYear, selectedMonth]);
 
-  // Load tracking preferences on mount
+  // Load component tracking preferences on mount
   useEffect(() => {
-    const fetchTrackingPreferences = async () => {
+    const fetchComponentPreferences = async () => {
       try {
-        const preferences = await UserCreditService.fetchCreditTrackingPreferences();
-        setTrackingPreferences(preferences);
+        const { UserComponentService } = await import('../../../services/UserServices');
+        const preferences = await UserComponentService.fetchComponentTrackingPreferences();
+        setComponentPreferences(preferences);
       } catch (error) {
-        console.error('Error fetching credit tracking preferences:', error);
-        setTrackingPreferences(null);
+        console.error('Error fetching component tracking preferences:', error);
+        setComponentPreferences(null);
       }
     };
 
-    fetchTrackingPreferences();
+    fetchComponentPreferences();
   }, []);
 
-  // Helper function to check if a credit should be hidden based on tracking preferences
+  // Helper function to check if a credit is disabled based on component tracking preferences
   // (This is kept for potential future use, but server now handles excludeHidden filtering)
-  const isCreditHidden = (cardId: string, creditId: string): boolean => {
-    if (!trackingPreferences) return false;
+  const isCreditDisabled = (cardId: string, creditId: string): boolean => {
+    if (!componentPreferences) return false;
 
-    const cardPrefs = trackingPreferences.Cards.find(card => card.CardId === cardId);
+    const cardPrefs = componentPreferences.Cards.find(card => card.CardId === cardId);
     if (!cardPrefs) return false;
 
-    const creditPref = cardPrefs.Credits.find(credit => credit.CreditId === creditId);
-    return creditPref?.HidePreference === CREDIT_HIDE_PREFERENCE.HIDE_ALL;
+    const creditPref = cardPrefs.Credits.find(credit => credit.ComponentId === creditId);
+    return creditPref?.Disabled === true;
   };
 
   // Server now handles all filtering including user's selected cards validation

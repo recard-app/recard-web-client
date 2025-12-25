@@ -11,6 +11,7 @@ import {
   UserHistoryService,
   UserPreferencesService,
   UserCreditService,
+  UserComponentService,
   ComponentService
 } from './services';
 
@@ -93,7 +94,7 @@ import {
   CreditCard, 
   CreditCardDetails 
 } from './types/CreditCardTypes';
-import { UserCreditsTrackingPreferences, PrioritizedCredit } from './types/CardCreditsTypes';
+import { UserComponentTrackingPreferences, PrioritizedCredit } from './types/CardCreditsTypes';
 import { FullHeightContext } from './hooks/useFullHeight';
 import { ScrollHeightContext } from './hooks/useScrollHeight';
 
@@ -137,8 +138,8 @@ function AppContent({}: AppContentProps) {
   const [selectedCardDetails, setSelectedCardDetails] = useState<CreditCardDetails | null>(null);
   // State for loading card details
   const [isLoadingCardDetails, setIsLoadingCardDetails] = useState<boolean>(false);
-  // State for storing user's credit tracking preferences
-  const [trackingPreferences, setTrackingPreferences] = useState<UserCreditsTrackingPreferences | null>(null);
+  // State for storing user's component tracking preferences
+  const [componentPreferences, setComponentPreferences] = useState<UserComponentTrackingPreferences | null>(null);
   // State for storing monthly credit stats
   const [monthlyStats, setMonthlyStats] = useState<MonthlyStatsResponse | null>(null);
   const [isLoadingMonthlyStats, setIsLoadingMonthlyStats] = useState<boolean>(true);
@@ -258,7 +259,7 @@ function AppContent({}: AppContentProps) {
       if (!user) {
         // Reset all states when user is not authenticated
         setCreditCards([]);
-        setTrackingPreferences(null);
+        setComponentPreferences(null);
         setUserDetailedCardDetails([]);
         setChatHistory([]);
         setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE);
@@ -298,9 +299,9 @@ function AppContent({}: AppContentProps) {
         setSubscriptionPlan(subscriptionPlan);
 
         // Batch 2: User preferences and tracking data (parallel)
-        const [trackingPrefs, allPreferences] = await Promise.all([
-          UserCreditService.fetchCreditTrackingPreferences().catch(error => {
-            console.error('Error fetching credit tracking preferences:', error);
+        const [componentPrefs, allPreferences] = await Promise.all([
+          UserComponentService.fetchComponentTrackingPreferences().catch(error => {
+            console.error('Error fetching component tracking preferences:', error);
             return { Cards: [] }; // Return empty preferences if fetch fails
           }),
           UserPreferencesService.loadAllPreferences().catch(error => {
@@ -314,7 +315,7 @@ function AppContent({}: AppContentProps) {
           })
         ]);
 
-        setTrackingPreferences(trackingPrefs);
+        setComponentPreferences(componentPrefs);
         setPreferencesInstructions(allPreferences.instructions || '');
         setChatHistoryPreference(allPreferences.chatHistory);
         setShowCompletedOnlyPreference(allPreferences.showCompletedOnly);
@@ -527,13 +528,13 @@ function AppContent({}: AppContentProps) {
     }
   };
 
-  // Function to refresh tracking preferences when they're updated
-  const refreshTrackingPreferences = async (): Promise<void> => {
+  // Function to refresh component tracking preferences when they're updated
+  const refreshComponentPreferences = async (): Promise<void> => {
     if (!user) return;
 
     try {
-      const preferences = await UserCreditService.fetchCreditTrackingPreferences();
-      setTrackingPreferences(preferences);
+      const preferences = await UserComponentService.fetchComponentTrackingPreferences();
+      setComponentPreferences(preferences);
 
       // Also refresh monthly stats when preferences are updated
       // (hide/show preferences affect monthly stats calculations)
@@ -553,7 +554,7 @@ function AppContent({}: AppContentProps) {
   const handleLogout = async (): Promise<void> => {
     // Reset all states to their initial values
     setUserDetailedCardDetails([]);
-    setTrackingPreferences(null);
+    setComponentPreferences(null);
     setCurrentChatId(null);
     setChatHistory([]);
     setCreditCards([]);
@@ -1178,7 +1179,7 @@ function AppContent({}: AppContentProps) {
                         onCardsUpdate={getCreditCards} 
                         onOpenCardSelector={() => setIsCardSelectorOpen(true)} 
                         reloadTrigger={cardsVersion}
-                        onPreferencesUpdate={refreshTrackingPreferences}
+                        onPreferencesUpdate={refreshComponentPreferences}
                       />
                     </ProtectedRoute>
                   } />
