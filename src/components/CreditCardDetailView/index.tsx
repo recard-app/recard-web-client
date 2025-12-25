@@ -311,11 +311,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <span className="stat-value">{cardDetails.PointsPerDollar !== null ? `${cardDetails.PointsPerDollar}x` : 'N/A'}</span>
                     <span className="stat-label">Base Rate</span>
                 </div>
-                {onOpenDateChange && (
+                {(onOpenDateChange || openDate !== undefined) && (
                     <>
                         <div className="stat-divider" />
                         <div className="stat-item stat-item-date">
-                            {isEditingOpenDate ? (
+                            {isEditingOpenDate && onOpenDateChange ? (
                                 <div className="date-edit-inline">
                                     <DatePicker
                                         value={editingOpenDateValue}
@@ -350,21 +350,23 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                     </span>
                                     <span className="stat-label">
                                         Opened
-                                        <button
-                                            className="edit-date-inline-button"
-                                            onClick={handleEditOpenDate}
-                                            aria-label="Edit opening date"
-                                            title="Edit opening date"
-                                            type="button"
-                                        >
-                                            <Icon
-                                                name="pencil"
-                                                variant="mini"
-                                                size={16}
-                                                color={!openDate ? ICON_RED : ICON_GRAY}
-                                                aria-hidden="true"
-                                            />
-                                        </button>
+                                        {onOpenDateChange && (
+                                            <button
+                                                className="edit-date-inline-button"
+                                                onClick={handleEditOpenDate}
+                                                aria-label="Edit opening date"
+                                                title="Edit opening date"
+                                                type="button"
+                                            >
+                                                <Icon
+                                                    name="pencil"
+                                                    variant="mini"
+                                                    size={16}
+                                                    color={!openDate ? ICON_RED : ICON_GRAY}
+                                                    aria-hidden="true"
+                                                />
+                                            </button>
+                                        )}
                                     </span>
                                 </>
                             )}

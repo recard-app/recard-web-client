@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
-import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT } from './types';
+import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard } from './types';
 import { Icon } from './icons';
 // Services
 import {
@@ -138,6 +138,8 @@ function AppContent({}: AppContentProps) {
   const [selectedCardDetails, setSelectedCardDetails] = useState<CreditCardDetails | null>(null);
   // State for loading card details
   const [isLoadingCardDetails, setIsLoadingCardDetails] = useState<boolean>(false);
+  // State for storing user's card metadata (openDate, isFrozen, etc.)
+  const [userCardsMetadata, setUserCardsMetadata] = useState<Map<string, UserCreditCard>>(new Map());
   // State for storing user's component tracking preferences
   const [componentPreferences, setComponentPreferences] = useState<UserComponentTrackingPreferences | null>(null);
   // State for storing monthly credit stats
@@ -334,6 +336,10 @@ function AppContent({}: AppContentProps) {
           UserCreditCardService.fetchUserCardsDetailedInfo().catch(error => {
             console.error('Error fetching user detailed card info:', error);
             return [];
+          }),
+          UserCreditCardService.fetchUserCards().catch(error => {
+            console.error('Error fetching user cards metadata:', error);
+            return [];
           })
         ];
 
@@ -350,9 +356,16 @@ function AppContent({}: AppContentProps) {
             })
           );
 
-          const [detailedInfo, priorityChat, historyResponse] = await Promise.all(requests);
+          const [detailedInfo, userCardsData, priorityChat, historyResponse] = await Promise.all(requests);
 
           setUserDetailedCardDetails(detailedInfo);
+
+          // Build a map of user card metadata keyed by cardReferenceId
+          const metadataMap = new Map<string, UserCreditCard>();
+          userCardsData.forEach((uc: UserCreditCard) => {
+            metadataMap.set(uc.cardReferenceId, uc);
+          });
+          setUserCardsMetadata(metadataMap);
 
           // Build chat history with priority chat first
           const chatHistoryList = historyResponse.chatHistory || [];
@@ -372,9 +385,17 @@ function AppContent({}: AppContentProps) {
             })
           );
 
-          const [detailedInfo, historyResponse] = await Promise.all(requests);
+          const [detailedInfo, userCardsData, historyResponse] = await Promise.all(requests);
 
           setUserDetailedCardDetails(detailedInfo);
+
+          // Build a map of user card metadata keyed by cardReferenceId
+          const metadataMap = new Map<string, UserCreditCard>();
+          userCardsData.forEach((uc: UserCreditCard) => {
+            metadataMap.set(uc.cardReferenceId, uc);
+          });
+          setUserCardsMetadata(metadataMap);
+
           setChatHistory(historyResponse.chatHistory);
         }
 
@@ -1015,16 +1036,17 @@ function AppContent({}: AppContentProps) {
             if (useDrawerForCardDetails) {
               return (
                 <Drawer open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen} direction="bottom">
-                  <DrawerContent fitContent maxHeight="80vh">
+                  <DrawerContent>
                     <DrawerHeader>
                       <DrawerTitle className="sr-only">
                         {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
                       </DrawerTitle>
                     </DrawerHeader>
                     <div className="dialog-body">
-                      <CreditCardDetailView 
+                      <CreditCardDetailView
                         cardDetails={selectedCardDetails}
                         isLoading={isLoadingCardDetails}
+                        openDate={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.openDate ?? null : null}
                       />
                     </div>
                   </DrawerContent>
@@ -1040,9 +1062,10 @@ function AppContent({}: AppContentProps) {
                     </DialogTitle>
                   </DialogHeader>
                   <DialogBody>
-                    <CreditCardDetailView 
+                    <CreditCardDetailView
                       cardDetails={selectedCardDetails}
                       isLoading={isLoadingCardDetails}
+                      openDate={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.openDate ?? null : null}
                     />
                   </DialogBody>
                 </DialogContent>
