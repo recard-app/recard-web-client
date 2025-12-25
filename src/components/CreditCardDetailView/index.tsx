@@ -2,13 +2,21 @@ import React, { useState, useEffect } from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, CardMultiplier, CreditCard } from '../../types/CreditCardTypes';
 import { UserComponentTrackingPreferences, ComponentType, COMPONENT_TYPES } from '../../types/CardCreditsTypes';
-import { ICON_RED, ICON_GRAY } from '../../types';
+import { ICON_RED, ICON_GRAY, LOADING_ICON, LOADING_ICON_SIZE } from '../../types';
 import { COLORS } from '../../types/Colors';
 import { CardIcon } from '../../icons';
 import { InfoDisplay, DatePicker } from '../../elements';
 import { Icon } from '../../icons';
 import { UserComponentService } from '../../services/UserServices';
 import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId } from '../../contexts/ComponentsContext';
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogBody,
+} from '../ui/dialog/dialog';
 
 type TabType = 'multipliers' | 'credits' | 'perks';
 
@@ -98,8 +106,8 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
         }
     };
 
-    // Open date editing state
-    const [isEditingOpenDate, setIsEditingOpenDate] = useState(false);
+    // Open date modal state
+    const [isOpenDateModalOpen, setIsOpenDateModalOpen] = useState(false);
     const [editingOpenDateValue, setEditingOpenDateValue] = useState<string | null>(null);
     const [isSavingOpenDate, setIsSavingOpenDate] = useState(false);
 
@@ -165,29 +173,24 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
         }
     };
 
-    // Handle entering edit mode for open date
-    const handleEditOpenDate = () => {
+    // Handle opening the date modal
+    const handleOpenDateModal = () => {
         setEditingOpenDateValue(openDate ?? null);
-        setIsEditingOpenDate(true);
+        setIsOpenDateModalOpen(true);
     };
 
-    // Handle saving open date
-    const handleSaveOpenDate = async () => {
+    // Handle saving open date from modal
+    const handleSaveOpenDate = async (e: React.FormEvent) => {
+        e.preventDefault();
         if (!onOpenDateChange) return;
 
         setIsSavingOpenDate(true);
         try {
             onOpenDateChange(editingOpenDateValue);
-            setIsEditingOpenDate(false);
+            setIsOpenDateModalOpen(false);
         } finally {
             setIsSavingOpenDate(false);
         }
-    };
-
-    // Handle canceling open date edit
-    const handleCancelOpenDateEdit = () => {
-        setEditingOpenDateValue(null);
-        setIsEditingOpenDate(false);
     };
 
     // Priority order for loading states:
@@ -353,61 +356,39 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <>
                         <div className="stat-divider" />
                         <div className="stat-item">
-                            {isEditingOpenDate && onOpenDateChange ? (
-                                <div className="date-edit-inline">
-                                    <DatePicker
-                                        value={editingOpenDateValue}
-                                        onChange={setEditingOpenDateValue}
-                                        placeholder="MM/DD/YYYY"
-                                        clearable={true}
-                                        disabled={false}
+                            <span className={`stat-value ${!openDate ? 'not-set' : ''}`}>
+                                {!openDate && (
+                                    <Icon
+                                        name="exclamation-circle"
+                                        variant="mini"
+                                        size={16}
+                                        color={ICON_RED}
+                                        className="not-set-icon"
+                                        aria-hidden="true"
                                     />
+                                )}
+                                {openDate || 'Not set'}
+                            </span>
+                            <span className="stat-label">
+                                Open Date
+                                {onOpenDateChange && (
                                     <button
-                                        className="button save-date-button"
-                                        onClick={handleSaveOpenDate}
-                                        disabled={isSavingOpenDate}
+                                        className="edit-date-inline-button"
+                                        onClick={handleOpenDateModal}
+                                        aria-label="Edit opening date"
+                                        title="Edit opening date"
                                         type="button"
                                     >
-                                        {isSavingOpenDate ? 'Saving...' : 'Save'}
+                                        <Icon
+                                            name="pencil"
+                                            variant="mini"
+                                            size={16}
+                                            color={!openDate ? ICON_RED : ICON_GRAY}
+                                            aria-hidden="true"
+                                        />
                                     </button>
-                                </div>
-                            ) : (
-                                <>
-                                    <span className={`stat-value ${!openDate ? 'not-set' : ''}`}>
-                                        {!openDate && (
-                                            <Icon
-                                                name="exclamation-circle"
-                                                variant="mini"
-                                                size={16}
-                                                color={ICON_RED}
-                                                className="not-set-icon"
-                                                aria-hidden="true"
-                                            />
-                                        )}
-                                        {openDate || 'Not set'}
-                                    </span>
-                                    <span className="stat-label">
-                                        Open Date
-                                        {onOpenDateChange && (
-                                            <button
-                                                className="edit-date-inline-button"
-                                                onClick={handleEditOpenDate}
-                                                aria-label="Edit opening date"
-                                                title="Edit opening date"
-                                                type="button"
-                                            >
-                                                <Icon
-                                                    name="pencil"
-                                                    variant="mini"
-                                                    size={16}
-                                                    color={!openDate ? ICON_RED : ICON_GRAY}
-                                                    aria-hidden="true"
-                                                />
-                                            </button>
-                                        )}
-                                    </span>
-                                </>
-                            )}
+                                )}
+                            </span>
                         </div>
                     </>
                 )}
@@ -691,6 +672,47 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     )
                 )}
             </div>
+
+            {/* Open Date Edit Modal */}
+            <Dialog open={isOpenDateModalOpen} onOpenChange={setIsOpenDateModalOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Edit Open Date</DialogTitle>
+                    </DialogHeader>
+                    <DialogBody>
+                        <form onSubmit={handleSaveOpenDate}>
+                            <DatePicker
+                                value={editingOpenDateValue}
+                                onChange={setEditingOpenDateValue}
+                                placeholder="MM/DD/YYYY"
+                                clearable={true}
+                                disabled={false}
+                            />
+                        </form>
+                    </DialogBody>
+                    <DialogFooter>
+                        <div className="button-group">
+                            <button
+                                type="submit"
+                                className={`button ${isSavingOpenDate ? 'loading icon with-text' : ''}`}
+                                disabled={isSavingOpenDate}
+                                onClick={handleSaveOpenDate}
+                            >
+                                {isSavingOpenDate && <LOADING_ICON size={LOADING_ICON_SIZE} />}
+                                {isSavingOpenDate ? 'Saving...' : 'Save'}
+                            </button>
+                            <button
+                                type="button"
+                                className={`button outline ${isSavingOpenDate ? 'disabled' : ''}`}
+                                onClick={() => setIsOpenDateModalOpen(false)}
+                                disabled={isSavingOpenDate}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
