@@ -286,7 +286,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             size={16}
                             className="preferred-icon"
                         />
-                        {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set as Preferred Card'}
+                        {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set Preferred Card'}
                     </button>
                 )}
                 {onFreezeToggle && (
@@ -389,7 +389,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                         {openDate || 'Not set'}
                                     </span>
                                     <span className="stat-label">
-                                        Opened
+                                        Open Date
                                         {onOpenDateChange && (
                                             <button
                                                 className="edit-date-inline-button"
