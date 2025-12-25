@@ -347,7 +347,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                         {cardDetails.RewardsCurrency || 'N/A'}
                         {cardDetails.PointsPerDollar !== null && ` (${cardDetails.PointsPerDollar}x)`}
                     </span>
-                    <span className="stat-label">Base Rewards</span>
+                    <span className="stat-label">Rewards</span>
                 </div>
                 {(onOpenDateChange || openDate !== undefined) && (
                     <>
