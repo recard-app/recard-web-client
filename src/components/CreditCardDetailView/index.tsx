@@ -53,6 +53,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     const [componentPreferences, setComponentPreferences] = useState<UserComponentTrackingPreferences | null>(null);
     const [isLoadingPreferences, setIsLoadingPreferences] = useState(false);
 
+    // Open date editing state
+    const [isEditingOpenDate, setIsEditingOpenDate] = useState(false);
+    const [editingOpenDateValue, setEditingOpenDateValue] = useState<string | null>(null);
+    const [isSavingOpenDate, setIsSavingOpenDate] = useState(false);
+
     // Fetch tracking preferences when component mounts or when cardDetails changes
     // Always fetch preferences so disabled styling applies even in preview mode
     useEffect(() => {
@@ -114,6 +119,32 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
             console.error('Failed to update component disabled preference:', error);
         }
     };
+
+    // Handle entering edit mode for open date
+    const handleEditOpenDate = () => {
+        setEditingOpenDateValue(openDate ?? null);
+        setIsEditingOpenDate(true);
+    };
+
+    // Handle saving open date
+    const handleSaveOpenDate = async () => {
+        if (!onOpenDateChange) return;
+
+        setIsSavingOpenDate(true);
+        try {
+            onOpenDateChange(editingOpenDateValue);
+            setIsEditingOpenDate(false);
+        } finally {
+            setIsSavingOpenDate(false);
+        }
+    };
+
+    // Handle canceling open date edit
+    const handleCancelOpenDateEdit = () => {
+        setEditingOpenDateValue(null);
+        setIsEditingOpenDate(false);
+    };
+
     // Priority order for loading states:
     // 1. Adding a card
     // 2. Removing a card
@@ -251,12 +282,39 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                         {onOpenDateChange && (
                             <div className="open-date-field">
                                 <DatePicker
-                                    value={openDate ?? null}
-                                    onChange={onOpenDateChange}
+                                    value={isEditingOpenDate ? editingOpenDateValue : (openDate ?? null)}
+                                    onChange={isEditingOpenDate ? setEditingOpenDateValue : onOpenDateChange}
                                     label="Card Opening Date"
                                     placeholder="MM/DD/YYYY"
                                     clearable={true}
+                                    disabled={!isEditingOpenDate}
                                 />
+                                {isEditingOpenDate ? (
+                                    <button
+                                        className="button small save-date-button"
+                                        onClick={handleSaveOpenDate}
+                                        disabled={isSavingOpenDate}
+                                        type="button"
+                                    >
+                                        {isSavingOpenDate ? 'Saving...' : 'Save'}
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="button outline icon small square edit-date-button"
+                                        onClick={handleEditOpenDate}
+                                        aria-label="Edit opening date"
+                                        title="Edit opening date"
+                                        type="button"
+                                    >
+                                        <Icon
+                                            name="pencil"
+                                            variant="mini"
+                                            size={16}
+                                            color={ICON_GRAY}
+                                            aria-hidden="true"
+                                        />
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>

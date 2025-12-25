@@ -182,7 +182,13 @@
         }
 
         .open-date-field {
-          max-width: 200px;
+          display: flex;
+          align-items: flex-end;
+          gap: $space-2;
+
+          .date-picker-container {
+            max-width: 200px;
+          }
 
           .date-picker-label {
             font-size: $font-xxs;
@@ -190,6 +196,12 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: $neutral-dark-gray;
+          }
+
+          .edit-date-button,
+          .save-date-button {
+            flex-shrink: 0;
+            margin-bottom: 1px; // Align with input
           }
         }
       }

@@ -1,0 +1,177 @@
+@use '../../styling/variables' as *;
+
+// Card Switcher Dropdown Trigger
+.card-switcher-trigger {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 $space-3;
+  background-color: $neutral-lightest-gray;
+  border: $border-full solid $neutral-gray;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: border-color $transition-base, background-color $transition-base;
+
+  &:hover:not(.disabled) {
+    border-color: $neutral-medium-gray;
+    background-color: $neutral-lightest-gray;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    background-color: $neutral-lightest-gray;
+  }
+
+  .trigger-card-icon {
+    flex-shrink: 0;
+  }
+
+  .trigger-empty-icon {
+    width: 36px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .trigger-card-info {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+
+    .trigger-card-name {
+      font-weight: $font-semibold;
+      font-size: $font-sm;
+      font-family: $font-manrope;
+      color: $neutral-black;
+      margin-bottom: 0;
+      line-height: $leading-normal;
+
+      &.placeholder {
+        color: $neutral-dark-gray;
+        font-weight: $font-regular;
+      }
+
+      .frozen-icon {
+        display: inline-flex;
+        flex-shrink: 0;
+        margin-right: 4px;
+        vertical-align: middle;
+      }
+
+      .preferred-star-icon {
+        display: inline;
+        margin-right: 2px;
+        margin-top: 1px;
+        vertical-align: text-top;
+      }
+    }
+
+    .trigger-card-network {
+      font-size: $font-xs;
+      font-weight: $font-regular;
+      color: $neutral-dark-gray;
+      line-height: $leading-normal;
+    }
+  }
+
+  .trigger-chevron {
+    flex-shrink: 0;
+    margin-left: auto;
+    transition: transform $transition-base;
+  }
+
+  &[data-state='open'] .trigger-chevron {
+    transform: rotate(180deg);
+  }
+}
+
+// Card Switcher Dropdown Content - override global dropdown styles
+.card-switcher-content[data-slot="dropdown-menu-content"] {
+  // Match the width of the trigger - override global styles
+  width: var(--radix-dropdown-menu-trigger-width) !important;
+  min-width: unset !important;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: $space-1 !important;
+  background-color: $neutral-white !important;
+  border: $border-full solid $neutral-light-gray !important;
+  border-radius: $radius-base !important;
+  box-shadow: $shadow-md !important;
+
+  // Dropdown item styles - using Radix primitive directly (no wrapper span)
+  .card-switcher-item {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-3;
+    padding: $space-1-5;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    min-height: 48px;
+    transition: background-color 0.2s;
+    outline: none;
+
+    &:hover {
+      background-color: $neutral-lightest-gray;
+    }
+
+    &.selected {
+      background-color: $neutral-light-gray;
+    }
+
+    &:focus {
+      background-color: $neutral-lightest-gray;
+    }
+
+    &[data-highlighted] {
+      background-color: $neutral-lightest-gray;
+    }
+
+    .item-card-icon {
+      flex-shrink: 0;
+      margin-top: 5px;
+    }
+
+    .item-card-info {
+      flex: 1;
+      min-width: 0;
+
+      .item-card-name {
+        font-weight: $font-semibold;
+        font-size: $font-sm;
+        font-family: $font-manrope;
+        color: $neutral-black;
+        margin-bottom: 0;
+        line-height: $leading-normal;
+
+        .frozen-icon {
+          display: inline-flex;
+          flex-shrink: 0;
+          margin-right: 4px;
+          vertical-align: middle;
+        }
+
+        .preferred-star-icon {
+          display: inline;
+          margin-right: 2px;
+          margin-top: 1px;
+          vertical-align: text-top;
+        }
+      }
+
+      .item-card-network {
+        font-size: $font-xs;
+        font-weight: $font-regular;
+        color: $neutral-dark-gray;
+        line-height: $leading-normal;
+      }
+    }
+  }
+}

@@ -27,6 +27,8 @@ import {
 } from '../ui/drawer';
 import Icon from '../../icons';
 import { CardIcon } from '../../icons';
+import CardSwitcherDropdown from '../CardSwitcherDropdown';
+import HeaderControls from '../PageControls/HeaderControls';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -585,34 +587,31 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
 
     return (
         <div className="credit-card-manager">
-            
-            {/* Sidebar for card selection using CreditCardPreviewList */}
-            <div className="card-sidebar">
-                {showError && (
-                    <div className="error-container">
-                        <InfoDisplay
-                            type="error"
-                            message={errorMessage}
-                        />
-                    </div>
-                )}
-                
-                <CreditCardPreviewList
-                    cards={selectedCards}
-                    selectedCardId={selectedCard?.id}
-                    onCardSelect={handleCardSelect}
-                    loading={isLoading}
-                    variant="my-cards"
-                />
 
-                <div className="sidebar-action">
-                    <button className="icon with-text" onClick={handleAddCard}>
+            {/* Desktop header with card switcher dropdown */}
+            {!isMobileViewport && (
+                <HeaderControls className="card-switcher-header">
+                    {showError && (
+                        <div className="error-container">
+                            <InfoDisplay
+                                type="error"
+                                message={errorMessage}
+                            />
+                        </div>
+                    )}
+                    <CardSwitcherDropdown
+                        cards={selectedCards}
+                        selectedCard={selectedCard}
+                        onCardSelect={handleCardSelect}
+                        loading={isLoading}
+                    />
+                    <button className="button icon with-text" onClick={handleAddCard}>
                         <Icon name="card" variant="solid" />
-                        Add Cards
+                        Manage Cards
                     </button>
-                </div>
-            </div>
-            
+                </HeaderControls>
+            )}
+
             {/* Main content area for card details */}
             <div className="card-details-panel">
                 <CreditCardDetailView
