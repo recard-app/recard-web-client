@@ -10,6 +10,8 @@ import { Icon } from '../../icons';
 import { UserComponentService } from '../../services/UserServices';
 import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId } from '../../contexts/ComponentsContext';
 
+type TabType = 'multipliers' | 'credits' | 'perks';
+
 interface CreditCardDetailViewProps {
     cardDetails: CreditCardDetails | null;
     isLoading: boolean;
@@ -52,6 +54,9 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
 
     const [componentPreferences, setComponentPreferences] = useState<UserComponentTrackingPreferences | null>(null);
     const [isLoadingPreferences, setIsLoadingPreferences] = useState(false);
+
+    // Tab state for switching between multipliers, credits, and perks
+    const [activeTab, setActiveTab] = useState<TabType>('multipliers');
 
     // Open date editing state
     const [isEditingOpenDate, setIsEditingOpenDate] = useState(false);
@@ -201,10 +206,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
 
     return (
         <div className="card-details">
+            {/* Compact Header: CardIcon, Name/Meta, Action Buttons */}
             <div className="card-header">
-                <CardIcon 
-                    title={`${cardDetails.CardName} card`} 
-                    size={36} 
+                <CardIcon
+                    title={`${cardDetails.CardName} card`}
+                    size={36}
                     primary={cardDetails.CardPrimaryColor}
                     secondary={cardDetails.CardSecondaryColor}
                     className="card-image"
@@ -223,317 +229,381 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             <span className="meta-value">{cardDetails.CardNetwork}</span>
                         </div>
                     </div>
-                    
-                    {/* Preferred Card Button or Badge */}
-                    <div className="card-actions">
-                        <div className="card-action-buttons">
-                            {onSetPreferred && (
-                                <button
-                                    className={`preferred-button ${cardDetails.isDefaultCard ? 'is-preferred' : ''}`}
-                                    onClick={onSetPreferred}
-                                    type="button"
-                                >
-                                    <Icon
-                                        name="star"
-                                        variant={cardDetails.isDefaultCard ? 'solid' : 'outline'}
-                                        size={16}
-                                        className="preferred-icon"
-                                    />
-                                    {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set as Preferred Card'}
-                                </button>
-                            )}
-                            {onFreezeToggle && (
-                                <button
-                                    className={`freeze-button ${isFrozen ? 'is-frozen' : ''}`}
-                                    onClick={onFreezeToggle}
-                                    type="button"
-                                >
-                                    <Icon
-                                        name="snowflake"
-                                        variant="solid"
-                                        size={16}
-                                        color={isFrozen ? COLORS.NEUTRAL_WHITE : ICON_GRAY}
-                                        className="freeze-icon"
-                                    />
-                                    {isFrozen ? 'Card Frozen' : 'Freeze Card'}
-                                </button>
-                            )}
-                            {onRemoveCard && (
-                                <button
-                                    className="button ghost destructive icon small square"
-                                    onClick={onRemoveCard}
-                                    aria-label="Remove Card"
-                                    title="Remove Card"
-                                    type="button"
-                                >
-                                    <Icon
-                                        name="delete"
-                                        variant="mini"
-                                        size={20}
-                                        color={ICON_RED}
-                                        className="delete-icon"
-                                        aria-hidden="true"
-                                    />
-                                </button>
-                            )}
-                        </div>
+                </div>
+            </div>
 
-                        {/* Open Date / Anniversary Date Picker */}
-                        {onOpenDateChange && (
-                            <div className="open-date-field">
-                                <DatePicker
-                                    value={isEditingOpenDate ? editingOpenDateValue : (openDate ?? null)}
-                                    onChange={isEditingOpenDate ? setEditingOpenDateValue : onOpenDateChange}
-                                    label="Card Opening Date"
-                                    placeholder="MM/DD/YYYY"
-                                    clearable={true}
-                                    disabled={!isEditingOpenDate}
-                                />
-                                {isEditingOpenDate ? (
+            {/* Action Buttons */}
+            <div className="card-action-buttons">
+                {onSetPreferred && (
+                    <button
+                        className={`preferred-button ${cardDetails.isDefaultCard ? 'is-preferred' : ''}`}
+                        onClick={onSetPreferred}
+                        type="button"
+                    >
+                        <Icon
+                            name="star"
+                            variant={cardDetails.isDefaultCard ? 'solid' : 'outline'}
+                            size={16}
+                            className="preferred-icon"
+                        />
+                        {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set as Preferred Card'}
+                    </button>
+                )}
+                {onFreezeToggle && (
+                    <button
+                        className={`freeze-button ${isFrozen ? 'is-frozen' : ''}`}
+                        onClick={onFreezeToggle}
+                        type="button"
+                    >
+                        <Icon
+                            name="snowflake"
+                            variant="solid"
+                            size={16}
+                            color={isFrozen ? COLORS.NEUTRAL_WHITE : ICON_GRAY}
+                            className="freeze-icon"
+                        />
+                        {isFrozen ? 'Card Frozen' : 'Freeze Card'}
+                    </button>
+                )}
+                {onRemoveCard && (
+                    <button
+                        className="button ghost destructive icon small square"
+                        onClick={onRemoveCard}
+                        aria-label="Remove Card"
+                        title="Remove Card"
+                        type="button"
+                    >
+                        <Icon
+                            name="delete"
+                            variant="mini"
+                            size={20}
+                            color={ICON_RED}
+                            className="delete-icon"
+                            aria-hidden="true"
+                        />
+                    </button>
+                )}
+            </div>
+
+            {/* Card Description (if available) */}
+            {cardDetails.CardDetails && cardDetails.CardDetails.trim() !== '' && (
+                <p className="card-description">{cardDetails.CardDetails}</p>
+            )}
+
+            {/* Horizontal Stats Bar */}
+            <div className="card-stats-bar">
+                <div className="stat-item">
+                    <span className="stat-value">{cardDetails.AnnualFee !== null ? `$${cardDetails.AnnualFee}` : '$0'}</span>
+                    <span className="stat-label">Annual Fee</span>
+                </div>
+                <div className="stat-divider" />
+                <div className="stat-item">
+                    <span className="stat-value">{cardDetails.ForeignExchangeFee || 'None'}</span>
+                    <span className="stat-label">FX Fee</span>
+                </div>
+                <div className="stat-divider" />
+                <div className="stat-item">
+                    <span className="stat-value">{cardDetails.RewardsCurrency || 'N/A'}</span>
+                    <span className="stat-label">Currency</span>
+                </div>
+                <div className="stat-divider" />
+                <div className="stat-item">
+                    <span className="stat-value">{cardDetails.PointsPerDollar !== null ? `${cardDetails.PointsPerDollar}x` : 'N/A'}</span>
+                    <span className="stat-label">Base Rate</span>
+                </div>
+                {onOpenDateChange && (
+                    <>
+                        <div className="stat-divider" />
+                        <div className="stat-item stat-item-date">
+                            {isEditingOpenDate ? (
+                                <div className="date-edit-inline">
+                                    <DatePicker
+                                        value={editingOpenDateValue}
+                                        onChange={setEditingOpenDateValue}
+                                        placeholder="MM/DD/YYYY"
+                                        clearable={true}
+                                        disabled={false}
+                                    />
                                     <button
-                                        className="button small save-date-button"
+                                        className="button save-date-button"
                                         onClick={handleSaveOpenDate}
                                         disabled={isSavingOpenDate}
                                         type="button"
                                     >
                                         {isSavingOpenDate ? 'Saving...' : 'Save'}
                                     </button>
-                                ) : (
-                                    <button
-                                        className="button outline icon small square edit-date-button"
-                                        onClick={handleEditOpenDate}
-                                        aria-label="Edit opening date"
-                                        title="Edit opening date"
-                                        type="button"
-                                    >
-                                        <Icon
-                                            name="pencil"
-                                            variant="mini"
-                                            size={16}
-                                            color={ICON_GRAY}
-                                            aria-hidden="true"
-                                        />
-                                    </button>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-            
-            <div className="card-info-section">
-                <h3>Card Details</h3>
-                {cardDetails.CardDetails && cardDetails.CardDetails.trim() !== '' && (
-                    <p className="card-description">{cardDetails.CardDetails}</p>
-                )}
-                <div className="card-basic-info">
-                    <div className="info-item">
-                        <span className="label">Annual Fee</span>
-                        <span className="value">{cardDetails.AnnualFee !== null ? `$${cardDetails.AnnualFee}` : 'None'}</span>
-                    </div>
-                    <div className="info-item">
-                        <span className="label">Foreign Transaction Fee</span>
-                        <span className="value">{cardDetails.ForeignExchangeFee}</span>
-                    </div>
-                    <div className="info-item">
-                        <span className="label">Rewards Currency</span>
-                        <span className="value">{cardDetails.RewardsCurrency}</span>
-                    </div>
-                    <div className="info-item">
-                        <span className="label">Points Per Dollar</span>
-                        <span className="value">{cardDetails.PointsPerDollar !== null ? cardDetails.PointsPerDollar : 'N/A'}</span>
-                    </div>
-                </div>
-            </div>
-            
-            {cardMultipliers && cardMultipliers.length > 0 && (
-                <div className="card-section">
-                    <h3>Reward Multipliers</h3>
-                    <div className="multipliers-table">
-                        {Array.from(
-                            cardMultipliers.reduce((map, m) => {
-                                const key = (m.Category && m.Category.trim() !== '') ? m.Category : 'Other';
-                                if (!map.has(key)) map.set(key, [] as CardMultiplier[]);
-                                map.get(key)!.push(m);
-                                return map;
-                            }, new Map<string, CardMultiplier[]>())
-                        ).map(([category, items]) => {
-                            const mainItems = items.filter(i => !i.SubCategory || i.SubCategory.trim() === '');
-                            const subItems = items.filter(i => i.SubCategory && i.SubCategory.trim() !== '');
-                            return (
-                                <div key={category} className="category-group">
-                                    <div className="category-title">{category}</div>
-                                    <div className="table">
-                                        {mainItems.map((m, idx) => (
-                                            <div key={m.id ?? `main-${idx}`} className={`table-row main-row${isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) ? ' disabled' : ''}`}>
-                                                <div className="cell subcategory">
-                                                    {isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) && (
-                                                        <span className="disabled-pill">Disabled</span>
-                                                    )}
-                                                    {m.Name}
-                                                </div>
-                                                <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
-                                                <div className="cell description">
-                                                    <div className="multiplier-desc">{m.Description}</div>
-                                                    {m.Details && (
-                                                        <div className="multiplier-details">{m.Details}</div>
-                                                    )}
-                                                </div>
-                                                {showTrackingPreferences && (
-                                                    <div className="cell toggle">
-                                                        <label className="toggle-switch">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={!isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER)}
-                                                                onChange={(e) => handleComponentDisabledChange(
-                                                                    m.id,
-                                                                    COMPONENT_TYPES.MULTIPLIER,
-                                                                    !e.target.checked
-                                                                )}
-                                                                disabled={isLoadingPreferences}
-                                                            />
-                                                            <span className="toggle-slider"></span>
-                                                        </label>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                        {subItems.map((m, idx) => (
-                                            <div key={m.id ?? `sub-${idx}-${m.SubCategory}`} className={`table-row sub-row${isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) ? ' disabled' : ''}`}>
-                                                <div className="cell subcategory">
-                                                    {isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) && (
-                                                        <span className="disabled-pill">Disabled</span>
-                                                    )}
-                                                    {m.Name}
-                                                </div>
-                                                <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
-                                                <div className="cell description">
-                                                    <div className="multiplier-desc">{m.Description}</div>
-                                                    {m.Details && (
-                                                        <div className="multiplier-details">{m.Details}</div>
-                                                    )}
-                                                </div>
-                                                {showTrackingPreferences && (
-                                                    <div className="cell toggle">
-                                                        <label className="toggle-switch">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={!isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER)}
-                                                                onChange={(e) => handleComponentDisabledChange(
-                                                                    m.id,
-                                                                    COMPONENT_TYPES.MULTIPLIER,
-                                                                    !e.target.checked
-                                                                )}
-                                                                disabled={isLoadingPreferences}
-                                                            />
-                                                            <span className="toggle-slider"></span>
-                                                        </label>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
                                 </div>
-                            );
-                        })}
-                    </div>
-                </div>
-            )}
-            
-            {cardCredits && cardCredits.length > 0 && (
-                <div className="card-section">
-                    <h3>Card Credits</h3>
-                    <div className="credits-list">
-                        {cardCredits.map((credit, index) => (
-                            <div key={index} className={`credit-item${isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) ? ' disabled' : ''}`}>
-                                <div className="credit-header">
-                                    <span className="credit-title">
-                                        {isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) && (
-                                            <span className="disabled-pill">Disabled</span>
+                            ) : (
+                                <>
+                                    <span className={`stat-value ${!openDate ? 'not-set' : ''}`}>
+                                        {!openDate && (
+                                            <Icon
+                                                name="exclamation-circle"
+                                                variant="mini"
+                                                size={16}
+                                                color={ICON_RED}
+                                                className="not-set-icon"
+                                                aria-hidden="true"
+                                            />
                                         )}
-                                        {credit.Title}
+                                        {openDate || 'Not set'}
                                     </span>
-                                    <span className="credit-value">{`$${credit.Value}`}</span>
-                                </div>
-                                <div className="credit-period">{credit.TimePeriod}</div>
-                                <div className="credit-description">{credit.Description}</div>
-                                {credit.Details && (
-                                    <div className="credit-details">{credit.Details}</div>
-                                )}
-                                {(credit.Category || credit.SubCategory) && (
-                                    <div className="credit-category">
-                                        {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
-                                    </div>
-                                )}
-                                {showTrackingPreferences && (
-                                    <div className="component-tracking-preference">
-                                        <label className="toggle-switch">
-                                            <input
-                                                type="checkbox"
-                                                checked={!isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT)}
-                                                onChange={(e) => handleComponentDisabledChange(
-                                                    credit.id,
-                                                    COMPONENT_TYPES.CREDIT,
-                                                    !e.target.checked
-                                                )}
-                                                disabled={isLoadingPreferences}
+                                    <span className="stat-label">
+                                        Opened
+                                        <button
+                                            className="edit-date-inline-button"
+                                            onClick={handleEditOpenDate}
+                                            aria-label="Edit opening date"
+                                            title="Edit opening date"
+                                            type="button"
+                                        >
+                                            <Icon
+                                                name="pencil"
+                                                variant="mini"
+                                                size={16}
+                                                color={!openDate ? ICON_RED : ICON_GRAY}
+                                                aria-hidden="true"
                                             />
-                                            <span className="toggle-slider"></span>
-                                        </label>
-                                        <span className="preference-label">
-                                            {isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) ? 'Disabled' : 'Enabled'}
-                                        </span>
-                                    </div>
-                                )}
+                                        </button>
+                                    </span>
+                                </>
+                            )}
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {/* Tabs for switching between Multipliers, Credits, and Perks */}
+            <div className="component-tabs">
+                <button
+                    className={`tab-button ${activeTab === 'multipliers' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('multipliers')}
+                    type="button"
+                >
+                    <span className="tab-label">Multipliers</span>
+                    <span className="tab-count">{cardMultipliers?.length || 0}</span>
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'credits' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('credits')}
+                    type="button"
+                >
+                    <span className="tab-label">Credits</span>
+                    <span className="tab-count">{cardCredits?.length || 0}</span>
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'perks' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('perks')}
+                    type="button"
+                >
+                    <span className="tab-label">Perks</span>
+                    <span className="tab-count">{cardPerks?.length || 0}</span>
+                </button>
+            </div>
+
+            {/* Tab Content */}
+            <div className="tab-content">
+                {/* Multipliers Tab */}
+                {activeTab === 'multipliers' && (
+                    cardMultipliers && cardMultipliers.length > 0 ? (
+                        <div className="multipliers-content">
+                            <div className="multipliers-table">
+                                {Array.from(
+                                    cardMultipliers.reduce((map, m) => {
+                                        const key = (m.Category && m.Category.trim() !== '') ? m.Category : 'Other';
+                                        if (!map.has(key)) map.set(key, [] as CardMultiplier[]);
+                                        map.get(key)!.push(m);
+                                        return map;
+                                    }, new Map<string, CardMultiplier[]>())
+                                ).map(([category, items]) => {
+                                    const mainItems = items.filter(i => !i.SubCategory || i.SubCategory.trim() === '');
+                                    const subItems = items.filter(i => i.SubCategory && i.SubCategory.trim() !== '');
+                                    return (
+                                        <div key={category} className="category-group">
+                                            <div className="category-title">{category}</div>
+                                            <div className="table">
+                                                {mainItems.map((m, idx) => (
+                                                    <div key={m.id ?? `main-${idx}`} className={`table-row main-row${isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) ? ' disabled' : ''}`}>
+                                                        <div className="cell subcategory">
+                                                            {isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) && (
+                                                                <span className="disabled-pill">Disabled</span>
+                                                            )}
+                                                            {m.Name}
+                                                        </div>
+                                                        <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
+                                                        <div className="cell description">
+                                                            <div className="multiplier-desc">{m.Description}</div>
+                                                            {m.Details && (
+                                                                <div className="multiplier-details">{m.Details}</div>
+                                                            )}
+                                                        </div>
+                                                        {showTrackingPreferences && (
+                                                            <div className="cell toggle">
+                                                                <label className="toggle-switch">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={!isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER)}
+                                                                        onChange={(e) => handleComponentDisabledChange(
+                                                                            m.id,
+                                                                            COMPONENT_TYPES.MULTIPLIER,
+                                                                            !e.target.checked
+                                                                        )}
+                                                                        disabled={isLoadingPreferences}
+                                                                    />
+                                                                    <span className="toggle-slider"></span>
+                                                                </label>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                                {subItems.map((m, idx) => (
+                                                    <div key={m.id ?? `sub-${idx}-${m.SubCategory}`} className={`table-row sub-row${isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) ? ' disabled' : ''}`}>
+                                                        <div className="cell subcategory">
+                                                            {isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) && (
+                                                                <span className="disabled-pill">Disabled</span>
+                                                            )}
+                                                            {m.Name}
+                                                        </div>
+                                                        <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
+                                                        <div className="cell description">
+                                                            <div className="multiplier-desc">{m.Description}</div>
+                                                            {m.Details && (
+                                                                <div className="multiplier-details">{m.Details}</div>
+                                                            )}
+                                                        </div>
+                                                        {showTrackingPreferences && (
+                                                            <div className="cell toggle">
+                                                                <label className="toggle-switch">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={!isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER)}
+                                                                        onChange={(e) => handleComponentDisabledChange(
+                                                                            m.id,
+                                                                            COMPONENT_TYPES.MULTIPLIER,
+                                                                            !e.target.checked
+                                                                        )}
+                                                                        disabled={isLoadingPreferences}
+                                                                    />
+                                                                    <span className="toggle-slider"></span>
+                                                                </label>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-            
-            {cardPerks && cardPerks.length > 0 && (
-                <div className="card-section">
-                    <h3>Card Perks</h3>
-                    <div className="perks-list">
-                        {cardPerks.map((perk, index) => (
-                            <div key={index} className={`perk-item${isComponentDisabled(perk.id, COMPONENT_TYPES.PERK) ? ' disabled' : ''}`}>
-                                <div className="perk-header">
-                                    <div className="perk-title">
-                                        {isComponentDisabled(perk.id, COMPONENT_TYPES.PERK) && (
-                                            <span className="disabled-pill">Disabled</span>
+                        </div>
+                    ) : (
+                        <div className="empty-tab-state">No multipliers available for this card</div>
+                    )
+                )}
+
+                {/* Credits Tab */}
+                {activeTab === 'credits' && (
+                    cardCredits && cardCredits.length > 0 ? (
+                        <div className="credits-content">
+                            <div className="credits-list">
+                                {cardCredits.map((credit, index) => (
+                                    <div key={index} className={`credit-item${isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) ? ' disabled' : ''}`}>
+                                        <div className="credit-header">
+                                            <span className="credit-title">
+                                                {isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) && (
+                                                    <span className="disabled-pill">Disabled</span>
+                                                )}
+                                                {credit.Title}
+                                            </span>
+                                            <span className="credit-value">{`$${credit.Value}`}</span>
+                                        </div>
+                                        <div className="credit-period">{credit.TimePeriod}</div>
+                                        <div className="credit-description">{credit.Description}</div>
+                                        {credit.Details && (
+                                            <div className="credit-details">{credit.Details}</div>
                                         )}
-                                        {perk.Title}
+                                        {(credit.Category || credit.SubCategory) && (
+                                            <div className="credit-category">
+                                                {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
+                                            </div>
+                                        )}
+                                        {showTrackingPreferences && (
+                                            <div className="component-tracking-preference">
+                                                <label className="toggle-switch">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={!isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT)}
+                                                        onChange={(e) => handleComponentDisabledChange(
+                                                            credit.id,
+                                                            COMPONENT_TYPES.CREDIT,
+                                                            !e.target.checked
+                                                        )}
+                                                        disabled={isLoadingPreferences}
+                                                    />
+                                                    <span className="toggle-slider"></span>
+                                                </label>
+                                                <span className="preference-label">
+                                                    {isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) ? 'Disabled' : 'Enabled'}
+                                                </span>
+                                            </div>
+                                        )}
                                     </div>
-                                    {showTrackingPreferences && (
-                                        <label className="toggle-switch">
-                                            <input
-                                                type="checkbox"
-                                                checked={!isComponentDisabled(perk.id, COMPONENT_TYPES.PERK)}
-                                                onChange={(e) => handleComponentDisabledChange(
-                                                    perk.id,
-                                                    COMPONENT_TYPES.PERK,
-                                                    !e.target.checked
-                                                )}
-                                                disabled={isLoadingPreferences}
-                                            />
-                                            <span className="toggle-slider"></span>
-                                        </label>
-                                    )}
-                                </div>
-                                <div className="perk-description">{perk.Description}</div>
-                                {perk.Details && (
-                                    <div className="perk-details">{perk.Details}</div>
-                                )}
-                                {(perk.Category || perk.SubCategory) && (
-                                    <div className="perk-category">
-                                        {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
-                                    </div>
-                                )}
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                </div>
-            )}
+                        </div>
+                    ) : (
+                        <div className="empty-tab-state">No credits available for this card</div>
+                    )
+                )}
+
+                {/* Perks Tab */}
+                {activeTab === 'perks' && (
+                    cardPerks && cardPerks.length > 0 ? (
+                        <div className="perks-content">
+                            <div className="perks-list">
+                                {cardPerks.map((perk, index) => (
+                                    <div key={index} className={`perk-item${isComponentDisabled(perk.id, COMPONENT_TYPES.PERK) ? ' disabled' : ''}`}>
+                                        <div className="perk-header">
+                                            <div className="perk-title">
+                                                {isComponentDisabled(perk.id, COMPONENT_TYPES.PERK) && (
+                                                    <span className="disabled-pill">Disabled</span>
+                                                )}
+                                                {perk.Title}
+                                            </div>
+                                            {showTrackingPreferences && (
+                                                <label className="toggle-switch">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={!isComponentDisabled(perk.id, COMPONENT_TYPES.PERK)}
+                                                        onChange={(e) => handleComponentDisabledChange(
+                                                            perk.id,
+                                                            COMPONENT_TYPES.PERK,
+                                                            !e.target.checked
+                                                        )}
+                                                        disabled={isLoadingPreferences}
+                                                    />
+                                                    <span className="toggle-slider"></span>
+                                                </label>
+                                            )}
+                                        </div>
+                                        <div className="perk-description">{perk.Description}</div>
+                                        {perk.Details && (
+                                            <div className="perk-details">{perk.Details}</div>
+                                        )}
+                                        {(perk.Category || perk.SubCategory) && (
+                                            <div className="perk-category">
+                                                {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="empty-tab-state">No perks available for this card</div>
+                    )
+                )}
+            </div>
         </div>
     );
 };

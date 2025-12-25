@@ -14,47 +14,47 @@
 
 .card-details {
   text-align: left;
-  
+
+  // Compact Header with action buttons on right
   .card-header {
     display: flex;
-    align-items: flex-start;
-    margin-bottom: $space-2;
+    align-items: center;
     gap: $space-3;
-    
+    margin-bottom: $space-3;
+
     .card-image {
-      width: 72px;
+      width: 48px;
       height: auto;
-      margin-right: $space-2;
       flex-shrink: 0;
     }
-    
+
     .card-header-info {
-      text-align: left;
-      
+      flex: 1;
+      min-width: 0;
+
       h2 {
-        margin-top: 0;
-        margin-bottom: $space-2;
-        font-size: $font-h3;
-        font-weight: $font-medium;
+        margin: 0 0 $space-1 0;
+        font-size: $font-h5;
+        font-weight: $font-semibold;
         color: $neutral-black;
+        line-height: 1.2;
       }
 
       .header-meta {
         display: flex;
         flex-direction: column;
         gap: $space-1;
-        margin-bottom: $space-3;
 
         .meta-item {
           display: inline-flex;
           align-items: center;
           gap: $space-1;
           line-height: 1;
-          margin-bottom: $space-1-5;
 
           .meta-icon {
-            width: $icon-mini;
-            height: $icon-mini;
+            width: $icon-micro;
+            height: $icon-micro;
+            flex-shrink: 0;
           }
 
           .meta-label {
@@ -70,189 +70,307 @@
           }
         }
       }
-      
-      .card-actions {
-        margin-top: $space-3;
-        display: flex;
-        flex-direction: column;
-        gap: $space-3;
+    }
+  }
 
-        .card-action-buttons {
-          display: flex;
-          gap: $space-2;
-          align-items: center;
-          
-          .preferred-button {
-            // Base: subtle neutral button
-            background-color: $neutral-lightest-gray;
-            color: $neutral-black;
-            border: $border-full solid $neutral-gray;
-            border-radius: $radius-base;
-            font-size: $font-xs;
-            font-weight: $font-medium;
-            cursor: pointer;
-            transition: all $transition-base;
-            display: flex;
-            align-items: center;
-            gap: $space-1-5;
+  // Action buttons (below header)
+  .card-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    margin-bottom: $space-3;
 
-            .preferred-icon {
-              color: $neutral-medium-gray;
-              stroke: $neutral-medium-gray;
-              fill: $neutral-medium-gray;
-              opacity: 0.9;
-            }
+    .preferred-button {
+      background-color: $neutral-lightest-gray;
+      color: $neutral-black;
+      border: $border-full solid $neutral-gray;
+      border-radius: $radius-base;
+      font-size: $font-sm;
+      font-weight: $font-medium;
+      cursor: pointer;
+      transition: all $transition-base;
+      display: flex;
+      align-items: center;
+      gap: $space-1-5;
+      padding: $space-2 $space-3;
 
-            &:hover {
-              background-color: $neutral-light-gray;
-              border-color: $neutral-medium-gray;
-            }
+      .preferred-icon {
+        color: $neutral-medium-gray;
+        stroke: $neutral-medium-gray;
+        fill: $neutral-medium-gray;
+        opacity: 0.9;
+      }
 
-            // Active state: ghost button treatment
-            &.is-preferred {
-              background-color: $primary-lightest;
-              color: $primary-medium;
-              border-color: $primary-light;
+      &:hover {
+        background-color: $neutral-light-gray;
+        border-color: $neutral-medium-gray;
+      }
 
-              &:hover {
-                background-color: $primary-light;
-                border-color: $primary-medium;
-              }
+      &.is-preferred {
+        background-color: $primary-lightest;
+        color: $primary-medium;
+        border-color: $primary-light;
 
-              .preferred-icon {
-                color: currentColor;
-                stroke: currentColor;
-                fill: currentColor;
-                opacity: 1;
-                filter: none;
-              }
-            }
-
-            &:hover .preferred-icon {
-              opacity: 1;
-            }
-          }
-
-          .freeze-button {
-            // Base: subtle neutral button (same as preferred-button)
-            background-color: $neutral-lightest-gray;
-            color: $neutral-black;
-            border: $border-full solid $neutral-gray;
-            border-radius: $radius-base;
-            font-size: $font-xs;
-            font-weight: $font-medium;
-            cursor: pointer;
-            transition: all $transition-base;
-            display: flex;
-            align-items: center;
-            gap: $space-1-5;
-
-            .freeze-icon {
-              opacity: 0.7;
-              flex-shrink: 0;
-            }
-
-            &:hover {
-              background-color: $neutral-light-gray;
-              border-color: $neutral-medium-gray;
-
-              .freeze-icon {
-                opacity: 1;
-              }
-            }
-
-            // Active/frozen state: blue accent colors
-            &.is-frozen {
-              background-color: $accent-lightest;
-              color: $neutral-white;
-              border-color: $accent-color;
-
-              &:hover {
-                background-color: $accent-medium;
-                border-color: $accent-medium;
-              }
-
-              .freeze-icon {
-                opacity: 1;
-              }
-            }
-          }
-
-          // No local size overrides; use global `.preferred-size` when needed
+        &:hover {
+          background-color: $primary-light;
+          border-color: $primary-medium;
         }
 
-        .open-date-field {
+        .preferred-icon {
+          color: currentColor;
+          stroke: currentColor;
+          fill: currentColor;
+          opacity: 1;
+        }
+      }
+
+      &:hover .preferred-icon {
+        opacity: 1;
+      }
+    }
+
+    .freeze-button {
+      background-color: $neutral-lightest-gray;
+      color: $neutral-black;
+      border: $border-full solid $neutral-gray;
+      border-radius: $radius-base;
+      font-size: $font-sm;
+      font-weight: $font-medium;
+      cursor: pointer;
+      transition: all $transition-base;
+      display: flex;
+      align-items: center;
+      gap: $space-1-5;
+      padding: $space-2 $space-3;
+
+      .freeze-icon {
+        opacity: 0.7;
+        flex-shrink: 0;
+      }
+
+      &:hover {
+        background-color: $neutral-light-gray;
+        border-color: $neutral-medium-gray;
+
+        .freeze-icon {
+          opacity: 1;
+        }
+      }
+
+      &.is-frozen {
+        background-color: $accent-lightest;
+        color: $neutral-white;
+        border-color: $accent-color;
+
+        &:hover {
+          background-color: $accent-medium;
+          border-color: $accent-medium;
+        }
+
+        .freeze-icon {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  // Card description (standalone)
+  .card-description {
+    margin: 0 0 $space-3 0;
+    font-size: $font-sm;
+    line-height: $leading-relaxed;
+    color: $neutral-dark-gray;
+  }
+
+  // Horizontal Stats Bar
+  .card-stats-bar {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    background-color: $neutral-white;
+    border: $border-half solid $neutral-light-gray;
+    border-radius: $radius-base;
+    padding: $space-2 0;
+    margin-bottom: $space-4;
+
+    .stat-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 $space-2;
+
+      .stat-value {
+        font-size: $font-base;
+        font-weight: $font-semibold;
+        color: $neutral-black;
+        margin-bottom: $space-half;
+        white-space: nowrap;
+        text-transform: capitalize;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: $space-1;
+
+        &.not-set {
+          color: $error;
+
+          .not-set-icon {
+            flex-shrink: 0;
+          }
+        }
+      }
+
+      .stat-label {
+        font-size: $font-xxs;
+        font-weight: $font-medium;
+        color: $neutral-dark-gray;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: $space-1;
+      }
+
+      &.stat-item-date {
+        flex: 1.5; // Give date more room
+
+        .date-edit-inline {
           display: flex;
-          align-items: flex-end;
-          gap: $space-2;
+          align-items: center;
+          gap: $space-1;
 
           .date-picker-container {
-            max-width: 200px;
+            max-width: 120px;
+
+            input {
+              font-size: $font-xs;
+              padding: $space-1;
+            }
           }
 
-          .date-picker-label {
-            font-size: $font-xxs;
-            font-weight: $font-semibold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: $neutral-dark-gray;
-          }
-
-          .edit-date-button,
           .save-date-button {
-            flex-shrink: 0;
-            margin-bottom: 1px; // Align with input
+            padding: $space-1-5 $space-3;
+            font-size: $font-sm;
+            white-space: nowrap;
           }
         }
       }
     }
-  }
-  
-  .card-info-section {
-    @include card-panel;
-    
-    .card-description {
-      margin: 0 0 $space-5 0;
-      font-size: $font-sm;
-      line-height: $leading-relaxed;
-      color: $neutral-dark-gray;
+
+    .stat-divider {
+      width: 1px;
+      background-color: $neutral-light-gray;
+      align-self: stretch;
     }
 
-    h3 { @include section-header; }
+    .edit-date-inline-button {
+      background: none;
+      border: none;
+      padding: $space-half;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: $radius-sm;
+      opacity: 0.6;
+      transition: opacity $transition-base;
 
-    .card-basic-info {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: $space-3;
-      
-      .info-item {
-        display: flex;
-        flex-direction: column;
-        //background-color: $neutral-lightest-gray;
-        border: $border-half solid $neutral-light-gray;
-        border-radius: $radius-base;
-        padding: $space-2;
-        
-        .label {
-          font-size: $font-xxs;
-          color: $neutral-dark-gray;
-          margin-bottom: $space-1;
-          text-transform: uppercase;
-          font-weight: $font-medium;
-          letter-spacing: 0.5px;
-        }
-        
-        .value {
-          font-size: $font-sm;
-          font-weight: $font-medium;
-          color: $neutral-black;
-          text-transform: capitalize;
+      &:hover {
+        opacity: 1;
+        background-color: $neutral-light-gray;
+      }
+    }
+  }
+
+  // Full-width Tabs
+  .component-tabs {
+    display: flex;
+    width: 100%;
+    margin-bottom: $space-4;
+    background-color: $neutral-light-gray;
+    border-radius: $radius-base;
+    padding: $space-half;
+    gap: $space-half;
+
+    .tab-button {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $space-1-5;
+      padding: $space-2 $space-3;
+      font-size: $font-sm;
+      font-weight: $font-semibold;
+      color: $neutral-dark-gray;
+      background-color: transparent;
+      border: none;
+      border-radius: $radius-sm;
+      cursor: pointer;
+      transition: all $transition-base;
+      text-align: center;
+
+      .tab-label {
+        // Inherits font styles from parent
+      }
+
+      .tab-count {
+        font-size: $font-xs;
+        font-weight: $font-semibold;
+        color: $neutral-dark-gray;
+        background-color: $neutral-gray;
+        padding: $space-half $space-1-5;
+        border-radius: $radius-md;
+        min-width: 20px;
+        text-align: center;
+      }
+
+      &:hover:not(.active) {
+        background-color: $neutral-white;
+        color: $neutral-black;
+      }
+
+      &.active {
+        background-color: $neutral-white;
+        color: $primary-color;
+        box-shadow: $shadow-sm;
+
+        .tab-count {
+          background-color: $primary-light;
+          color: $primary-color;
         }
       }
     }
   }
+
+  // Tab Content
+  .tab-content {
+    .multipliers-content,
+    .credits-content,
+    .perks-content {
+      // Content wrappers
+    }
+
+    .empty-tab-state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: $space-8;
+      color: $neutral-dark-gray;
+      font-size: $font-sm;
+      text-align: center;
+      background-color: $neutral-white;
+      border: $border-half solid $neutral-light-gray;
+      border-radius: $radius-base;
+    }
+  }
   
-  .card-section {
+  // Multipliers, Credits, Perks content styling (inside tab content)
+  .multipliers-content,
+  .credits-content,
+  .perks-content {
     @include card-panel;
     
     h3 { @include section-header; }
@@ -586,26 +704,38 @@
   }
 }
 
-/* Mobile: stack action buttons vertically */
+/* Mobile responsiveness */
 @media (max-width: $mobile-breakpoint) {
   .card-details {
-    .card-header {
-      .card-header-info {
-        .card-actions {
-          .card-action-buttons {
-            flex-direction: row;
-            align-items: center;
-            gap: $space-2;
+    // Action buttons wrap on mobile
+    .card-action-buttons {
+      flex-wrap: wrap;
 
-            .preferred-button,
-            .freeze-button {
-              flex: 0 0 auto;
-            }
-            .button.ghost.icon {
-              flex: 0 0 auto;
-            }
-          }
+      .preferred-button,
+      .freeze-button {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+
+    // Make stats bar wrap on mobile
+    .card-stats-bar {
+      flex-wrap: wrap;
+      padding: $space-2;
+      gap: $space-2;
+
+      .stat-item {
+        flex: 1 1 45%;
+        min-width: 80px;
+        padding: $space-1;
+
+        &.stat-item-date {
+          flex: 1 1 100%;
         }
+      }
+
+      .stat-divider {
+        display: none;
       }
     }
   }
