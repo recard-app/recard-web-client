@@ -1,6 +1,6 @@
 import React from 'react';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { ICON_PRIMARY } from '../../types';
+import { ICON_PRIMARY, ICON_BLUE } from '../../types';
 import { Icon, CardIcon } from '../../icons';
 import './CreditCardPreviewList.scss';
 
@@ -45,12 +45,21 @@ const CreditCardPreview: React.FC<CreditCardPreviewProps> = ({
         />
         <div className="card-info">
           <div className="card-name">
+            {card.isFrozen && (
+              <Icon
+                name="snowflake"
+                variant="mini"
+                size={16}
+                color={ICON_BLUE}
+                className="frozen-icon"
+              />
+            )}
             {card.isDefaultCard && (
-              <Icon 
-                name="star" 
-                variant="mini" 
-                size={16} 
-                color={ICON_PRIMARY} 
+              <Icon
+                name="star"
+                variant="mini"
+                size={16}
+                color={ICON_PRIMARY}
                 className="preferred-star-icon"
               />
             )}

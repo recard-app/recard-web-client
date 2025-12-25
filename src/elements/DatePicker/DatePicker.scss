@@ -22,8 +22,13 @@
     @include default-input-base;
     padding-right: $space-12; // Room for buttons
 
-    &.has-warning {
-      border-color: $warning;
+    // Hide native date picker calendar icon
+    &::-webkit-calendar-picker-indicator {
+      display: none;
+    }
+
+    &::-webkit-inner-spin-button {
+      display: none;
     }
 
     &:disabled {

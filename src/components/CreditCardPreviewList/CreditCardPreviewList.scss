@@ -81,6 +81,13 @@
           margin-top: 1px;
           vertical-align: text-top;
         }
+
+        .frozen-icon {
+          display: inline-flex;
+          flex-shrink: 0;
+          margin-right: 4px;
+          vertical-align: middle;
+        }
       }
     }
 

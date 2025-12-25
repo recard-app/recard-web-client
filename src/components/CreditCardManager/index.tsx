@@ -329,6 +329,60 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
         }
     };
 
+    // Handle toggling a card's frozen state
+    const handleFreezeToggle = async (cardId: string, currentFrozenState: boolean) => {
+        try {
+            // Clear any previous errors
+            setShowError(false);
+
+            const newFrozenState = !currentFrozenState;
+
+            // Update the card's frozen state via API
+            await UserCreditCardService.updateUserCard(cardId, { isFrozen: newFrozenState });
+
+            // Update local metadata state
+            setUserCardsMetadata(prev => {
+                const newMap = new Map(prev);
+                const existing = newMap.get(cardId);
+                if (existing) {
+                    newMap.set(cardId, { ...existing, isFrozen: newFrozenState });
+                }
+                return newMap;
+            });
+
+            // Refresh cards after update (same pattern as handleSetPreferred)
+            const refreshedCards = await CardService.fetchCreditCards(true);
+            setUserCards(refreshedCards);
+
+            // Notify parent component of card updates
+            notifyCardUpdate(refreshedCards);
+
+            // Immediately update local state for a responsive UI
+            if (selectedCard && selectedCard.id === cardId) {
+                setSelectedCard({ ...selectedCard, isFrozen: newFrozenState });
+                if (cardDetails) {
+                    setCardDetails({ ...cardDetails, isFrozen: newFrozenState });
+                }
+            }
+
+            // Refresh detailed cards data in the background
+            const refreshedDetailedCards = await UserCreditCardService.fetchUserCardsDetailedInfo();
+            setDetailedCards(refreshedDetailedCards);
+
+            // If we're currently viewing a card, update its details
+            if (selectedCard) {
+                const updatedCardDetails = refreshedDetailedCards.find(detail => detail.id === selectedCard.id);
+                if (updatedCardDetails) {
+                    setCardDetails(updatedCardDetails);
+                }
+            }
+        } catch (error) {
+            console.error('Error toggling card freeze state:', error);
+            setErrorMessage('Unable to update card freeze state. Please try again.');
+            setShowError(true);
+        }
+    };
+
     // Handle confirmation of card deletion
     const handleDeleteConfirm = async () => {
         if (!cardToDelete) return;
@@ -575,6 +629,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                     onPreferencesUpdate={onPreferencesUpdate}
                     openDate={selectedCard ? userCardsMetadata.get(selectedCard.id)?.openDate ?? null : null}
                     onOpenDateChange={selectedCard ? (date) => handleOpenDateChange(selectedCard.id, date) : undefined}
+                    isFrozen={selectedCard ? userCardsMetadata.get(selectedCard.id)?.isFrozen ?? false : false}
+                    onFreezeToggle={selectedCard ? () => handleFreezeToggle(selectedCard.id, userCardsMetadata.get(selectedCard.id)?.isFrozen ?? false) : undefined}
                 />
             </div>
 

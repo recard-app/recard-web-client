@@ -133,6 +133,51 @@
             }
           }
 
+          .freeze-button {
+            // Base: subtle neutral button (same as preferred-button)
+            background-color: $neutral-lightest-gray;
+            color: $neutral-black;
+            border: $border-full solid $neutral-gray;
+            border-radius: $radius-base;
+            font-size: $font-xs;
+            font-weight: $font-medium;
+            cursor: pointer;
+            transition: all $transition-base;
+            display: flex;
+            align-items: center;
+            gap: $space-1-5;
+
+            .freeze-icon {
+              opacity: 0.7;
+              flex-shrink: 0;
+            }
+
+            &:hover {
+              background-color: $neutral-light-gray;
+              border-color: $neutral-medium-gray;
+
+              .freeze-icon {
+                opacity: 1;
+              }
+            }
+
+            // Active/frozen state: blue accent colors
+            &.is-frozen {
+              background-color: $accent-lightest;
+              color: $neutral-white;
+              border-color: $accent-color;
+
+              &:hover {
+                background-color: $accent-medium;
+                border-color: $accent-medium;
+              }
+
+              .freeze-icon {
+                opacity: 1;
+              }
+            }
+          }
+
           // No local size overrides; use global `.preferred-size` when needed
         }
 
@@ -540,7 +585,8 @@
             align-items: center;
             gap: $space-2;
 
-            .preferred-button {
+            .preferred-button,
+            .freeze-button {
               flex: 0 0 auto;
             }
             .button.ghost.icon {

@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
-import './DatePicker.scss';
+import React, { useRef } from 'react';
 import Icon from '../../icons';
 import { ICON_GRAY } from '@/types/Constants';
+import './DatePicker.scss';
 
 export interface DatePickerProps {
   value: string | null;  // MM/DD/YYYY format or null
@@ -14,103 +14,54 @@ export interface DatePickerProps {
   containerClassName?: string;
 }
 
-/**
- * Validates if a string is a valid MM/DD/YYYY date
- */
-const isValidDateFormat = (value: string): boolean => {
-  const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
-  if (!regex.test(value)) return false;
-
-  const [month, day, year] = value.split('/').map(Number);
-  const date = new Date(year, month - 1, day);
-  return date.getMonth() === month - 1 && date.getDate() === day;
+// Convert MM/DD/YYYY to YYYY-MM-DD for native input
+const toNativeFormat = (val: string | null): string => {
+  if (!val) return '';
+  const parts = val.split('/');
+  if (parts.length !== 3) return '';
+  const [month, day, year] = parts;
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 };
 
-/**
- * Converts MM/DD/YYYY to YYYY-MM-DD for native date input
- */
-const toNativeFormat = (value: string | null): string => {
-  if (!value) return '';
-  const [month, day, year] = value.split('/');
-  return `${year}-${month}-${day}`;
-};
-
-/**
- * Converts YYYY-MM-DD from native date input to MM/DD/YYYY
- */
-const fromNativeFormat = (value: string): string | null => {
-  if (!value) return null;
-  const [year, month, day] = value.split('-');
+// Convert YYYY-MM-DD to MM/DD/YYYY for display
+const toDisplayFormat = (val: string): string | null => {
+  if (!val) return null;
+  const parts = val.split('-');
+  if (parts.length !== 3) return null;
+  const [year, month, day] = parts;
   return `${month}/${day}/${year}`;
 };
 
 /**
- * DatePicker component for entering dates in MM/DD/YYYY format
- * Supports direct text input, native date picker, and optional clearing
+ * DatePicker component using native browser date picker
  */
 const DatePicker: React.FC<DatePickerProps> = ({
   value,
   onChange,
-  placeholder = 'MM/DD/YYYY',
   disabled = false,
   label,
   clearable = true,
   className = '',
   containerClassName = '',
 }) => {
-  const [inputValue, setInputValue] = useState(value || '');
-  const [formatWarning, setFormatWarning] = useState(false);
-  const nativeInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Sync input value when prop changes externally
-  useEffect(() => {
-    setInputValue(value || '');
-    setFormatWarning(false);
-  }, [value]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setInputValue(newValue);
-
-    if (newValue === '') {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nativeValue = e.target.value;
+    if (nativeValue === '') {
       onChange(null);
-      setFormatWarning(false);
-      return;
-    }
-
-    if (isValidDateFormat(newValue)) {
-      onChange(newValue);
-      setFormatWarning(false);
     } else {
-      setFormatWarning(true);
+      onChange(toDisplayFormat(nativeValue));
     }
   };
 
-  const handleNativeDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nativeValue = e.target.value;
-    const formattedValue = fromNativeFormat(nativeValue);
-    setInputValue(formattedValue || '');
-    onChange(formattedValue);
-    setFormatWarning(false);
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange(null);
   };
 
   const handleCalendarClick = () => {
-    if (!disabled && nativeInputRef.current) {
-      // showPicker() may not be available in all browsers
-      if (typeof nativeInputRef.current.showPicker === 'function') {
-        nativeInputRef.current.showPicker();
-      } else {
-        // Fallback: focus and click the input
-        nativeInputRef.current.focus();
-        nativeInputRef.current.click();
-      }
-    }
-  };
-
-  const handleClear = () => {
-    setInputValue('');
-    onChange(null);
-    setFormatWarning(false);
+    inputRef.current?.showPicker();
   };
 
   const showClearButton = clearable && value && !disabled;
@@ -120,23 +71,12 @@ const DatePicker: React.FC<DatePickerProps> = ({
       {label && <label className="date-picker-label">{label}</label>}
       <div className="date-picker-input-wrapper">
         <input
-          type="text"
-          value={inputValue}
-          onChange={handleInputChange}
-          placeholder={placeholder}
-          disabled={disabled}
-          className={`date-picker-input default-input ${formatWarning ? 'has-warning' : ''} ${className}`.trim()}
-        />
-
-        {/* Hidden native date input for calendar picker */}
-        <input
-          ref={nativeInputRef}
+          ref={inputRef}
           type="date"
           value={toNativeFormat(value)}
-          onChange={handleNativeDateChange}
+          onChange={handleChange}
           disabled={disabled}
-          className="date-picker-native"
-          tabIndex={-1}
+          className={`date-picker-input default-input ${className}`.trim()}
         />
 
         <div className="date-picker-actions">
@@ -152,19 +92,15 @@ const DatePicker: React.FC<DatePickerProps> = ({
           )}
           <button
             type="button"
-            onClick={handleCalendarClick}
             disabled={disabled}
             className="date-picker-calendar-btn"
             aria-label="Open calendar"
+            onClick={handleCalendarClick}
           >
             <Icon name="calendar" variant="mini" size={16} color={ICON_GRAY} />
           </button>
         </div>
       </div>
-
-      {formatWarning && (
-        <span className="date-picker-warning">Please use format: MM/DD/YYYY</span>
-      )}
     </div>
   );
 };

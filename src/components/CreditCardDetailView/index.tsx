@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, CardMultiplier, CreditCard } from '../../types/CreditCardTypes';
 import { UserComponentTrackingPreferences, ComponentType, COMPONENT_TYPES } from '../../types/CardCreditsTypes';
-import { ICON_RED } from '../../types';
+import { ICON_RED, ICON_GRAY } from '../../types';
 import { COLORS } from '../../types/Colors';
 import { CardIcon } from '../../icons';
 import { InfoDisplay, DatePicker } from '../../elements';
@@ -24,6 +24,8 @@ interface CreditCardDetailViewProps {
     onPreferencesUpdate?: () => Promise<void>; // Called when preferences are updated
     openDate?: string | null; // Card open/anniversary date (MM/DD/YYYY)
     onOpenDateChange?: (date: string | null) => void; // Called when open date changes
+    isFrozen?: boolean; // Whether the card is frozen (excluded from LLM context)
+    onFreezeToggle?: () => void; // Called when freeze state is toggled
 }
 
 const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
@@ -39,7 +41,9 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     showTrackingPreferences = false,
     onPreferencesUpdate,
     openDate,
-    onOpenDateChange
+    onOpenDateChange,
+    isFrozen = false,
+    onFreezeToggle
 }) => {
     // Get component data from ComponentsContext using the card ID
     const cardCredits = useCreditsByCardId(cardDetails?.id || '');
@@ -207,6 +211,22 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                     {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set as Preferred Card'}
                                 </button>
                             )}
+                            {onFreezeToggle && (
+                                <button
+                                    className={`freeze-button ${isFrozen ? 'is-frozen' : ''}`}
+                                    onClick={onFreezeToggle}
+                                    type="button"
+                                >
+                                    <Icon
+                                        name="snowflake"
+                                        variant="solid"
+                                        size={16}
+                                        color={isFrozen ? COLORS.NEUTRAL_WHITE : ICON_GRAY}
+                                        className="freeze-icon"
+                                    />
+                                    {isFrozen ? 'Card Frozen' : 'Freeze Card'}
+                                </button>
+                            )}
                             {onRemoveCard && (
                                 <button
                                     className="button ghost destructive icon small square"
@@ -233,7 +253,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 <DatePicker
                                     value={openDate ?? null}
                                     onChange={onOpenDateChange}
-                                    label="Card Anniversary"
+                                    label="Card Opening Date"
                                     placeholder="MM/DD/YYYY"
                                     clearable={true}
                                 />
