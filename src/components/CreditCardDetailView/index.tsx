@@ -58,6 +58,46 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     // Tab state for switching between multipliers, credits, and perks
     const [activeTab, setActiveTab] = useState<TabType>('multipliers');
 
+    // Expandable state for credits and perks
+    const [expandedCredits, setExpandedCredits] = useState<Set<string>>(new Set());
+    const [expandedPerks, setExpandedPerks] = useState<Set<string>>(new Set());
+
+    const toggleCreditExpanded = (id: string) => {
+        setExpandedCredits(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
+
+    const togglePerkExpanded = (id: string) => {
+        setExpandedPerks(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
+
+    const toggleAllCredits = () => {
+        if (!cardCredits) return;
+        if (expandedCredits.size === cardCredits.length) {
+            setExpandedCredits(new Set());
+        } else {
+            setExpandedCredits(new Set(cardCredits.map(c => c.id)));
+        }
+    };
+
+    const toggleAllPerks = () => {
+        if (!cardPerks) return;
+        if (expandedPerks.size === cardPerks.length) {
+            setExpandedPerks(new Set());
+        } else {
+            setExpandedPerks(new Set(cardPerks.map(p => p.id)));
+        }
+    };
+
     // Open date editing state
     const [isEditingOpenDate, setIsEditingOpenDate] = useState(false);
     const [editingOpenDateValue, setEditingOpenDateValue] = useState<string | null>(null);
@@ -506,52 +546,74 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 {/* Credits Tab */}
                 {activeTab === 'credits' && (
                     cardCredits && cardCredits.length > 0 ? (
-                        <div className="credits-content">
-                            <div className="credits-list">
-                                {cardCredits.map((credit, index) => (
-                                    <div key={index} className={`credit-item${isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) ? ' disabled' : ''}`}>
-                                        <div className="credit-header">
-                                            <span className="credit-title">
-                                                {isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) && (
-                                                    <span className="disabled-pill">Disabled</span>
-                                                )}
+                        <div className="credits-grid">
+                            {cardCredits.map((credit) => {
+                                const isExpanded = expandedCredits.has(credit.id);
+                                const isDisabled = isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT);
+
+                                return (
+                                    <div key={credit.id} className={`credit-card ${isExpanded ? 'expanded' : ''} ${isDisabled ? 'disabled' : ''}`}>
+                                        <div className="credit-card-header">
+                                            <div className="credit-title">
+                                                {isDisabled && <span className="disabled-pill">Disabled</span>}
                                                 {credit.Title}
-                                            </span>
-                                            <span className="credit-value">{`$${credit.Value}`}</span>
-                                        </div>
-                                        <div className="credit-period">{credit.TimePeriod}</div>
-                                        <div className="credit-description">{credit.Description}</div>
-                                        {credit.Details && (
-                                            <div className="credit-details">{credit.Details}</div>
-                                        )}
-                                        {(credit.Category || credit.SubCategory) && (
-                                            <div className="credit-category">
-                                                {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
                                             </div>
+                                            <div className="credit-badges">
+                                                <span className="credit-value-badge">${credit.Value}</span>
+                                                <span className="credit-period-badge">{credit.TimePeriod}</span>
+                                            </div>
+                                        </div>
+                                        {(credit.Category || credit.SubCategory) && (
+                                            <span className="category-badge">
+                                                {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
+                                            </span>
                                         )}
-                                        {showTrackingPreferences && (
-                                            <div className="component-tracking-preference">
-                                                <label className="toggle-switch">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={!isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT)}
-                                                        onChange={(e) => handleComponentDisabledChange(
-                                                            credit.id,
-                                                            COMPONENT_TYPES.CREDIT,
-                                                            !e.target.checked
-                                                        )}
-                                                        disabled={isLoadingPreferences}
-                                                    />
-                                                    <span className="toggle-slider"></span>
-                                                </label>
-                                                <span className="preference-label">
-                                                    {isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT) ? 'Disabled' : 'Enabled'}
-                                                </span>
+                                        <div className="credit-description">
+                                            {credit.Description}
+                                        </div>
+                                        {credit.Details && (
+                                            <button
+                                                className="details-toggle"
+                                                onClick={() => toggleCreditExpanded(credit.id)}
+                                                type="button"
+                                            >
+                                                {isExpanded ? 'Hide Details' : 'Show Details'}
+                                                <Icon
+                                                    name="chevron-down"
+                                                    variant="mini"
+                                                    size={14}
+                                                    className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
+                                                />
+                                            </button>
+                                        )}
+                                        {isExpanded && credit.Details && (
+                                            <div className="credit-details-section">
+                                                <p className="details-text">{credit.Details}</p>
+                                                {showTrackingPreferences && (
+                                                    <div className="tracking-toggle">
+                                                        <label className="toggle-switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={!isDisabled}
+                                                                onChange={(e) => handleComponentDisabledChange(
+                                                                    credit.id,
+                                                                    COMPONENT_TYPES.CREDIT,
+                                                                    !e.target.checked
+                                                                )}
+                                                                disabled={isLoadingPreferences}
+                                                            />
+                                                            <span className="toggle-slider"></span>
+                                                        </label>
+                                                        <span className="preference-label">
+                                                            {isDisabled ? 'Disabled' : 'Enabled'}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>
-                                ))}
-                            </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="empty-tab-state">No credits available for this card</div>
@@ -561,45 +623,70 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 {/* Perks Tab */}
                 {activeTab === 'perks' && (
                     cardPerks && cardPerks.length > 0 ? (
-                        <div className="perks-content">
-                            <div className="perks-list">
-                                {cardPerks.map((perk, index) => (
-                                    <div key={index} className={`perk-item${isComponentDisabled(perk.id, COMPONENT_TYPES.PERK) ? ' disabled' : ''}`}>
-                                        <div className="perk-header">
+                        <div className="perks-grid">
+                            {cardPerks.map((perk) => {
+                                const isExpanded = expandedPerks.has(perk.id);
+                                const isDisabled = isComponentDisabled(perk.id, COMPONENT_TYPES.PERK);
+
+                                return (
+                                    <div key={perk.id} className={`perk-card ${isExpanded ? 'expanded' : ''} ${isDisabled ? 'disabled' : ''}`}>
+                                        <div className="perk-card-header">
                                             <div className="perk-title">
-                                                {isComponentDisabled(perk.id, COMPONENT_TYPES.PERK) && (
-                                                    <span className="disabled-pill">Disabled</span>
-                                                )}
+                                                {isDisabled && <span className="disabled-pill">Disabled</span>}
                                                 {perk.Title}
                                             </div>
-                                            {showTrackingPreferences && (
-                                                <label className="toggle-switch">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={!isComponentDisabled(perk.id, COMPONENT_TYPES.PERK)}
-                                                        onChange={(e) => handleComponentDisabledChange(
-                                                            perk.id,
-                                                            COMPONENT_TYPES.PERK,
-                                                            !e.target.checked
-                                                        )}
-                                                        disabled={isLoadingPreferences}
-                                                    />
-                                                    <span className="toggle-slider"></span>
-                                                </label>
-                                            )}
                                         </div>
-                                        <div className="perk-description">{perk.Description}</div>
-                                        {perk.Details && (
-                                            <div className="perk-details">{perk.Details}</div>
-                                        )}
                                         {(perk.Category || perk.SubCategory) && (
-                                            <div className="perk-category">
+                                            <span className="category-badge">
                                                 {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
+                                            </span>
+                                        )}
+                                        <div className="perk-description">
+                                            {perk.Description}
+                                        </div>
+                                        {perk.Details && (
+                                            <button
+                                                className="details-toggle"
+                                                onClick={() => togglePerkExpanded(perk.id)}
+                                                type="button"
+                                            >
+                                                {isExpanded ? 'Hide Details' : 'Show Details'}
+                                                <Icon
+                                                    name="chevron-down"
+                                                    variant="mini"
+                                                    size={14}
+                                                    className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
+                                                />
+                                            </button>
+                                        )}
+                                        {isExpanded && perk.Details && (
+                                            <div className="perk-details-section">
+                                                <p className="details-text">{perk.Details}</p>
+                                                {showTrackingPreferences && (
+                                                    <div className="tracking-toggle">
+                                                        <label className="toggle-switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={!isDisabled}
+                                                                onChange={(e) => handleComponentDisabledChange(
+                                                                    perk.id,
+                                                                    COMPONENT_TYPES.PERK,
+                                                                    !e.target.checked
+                                                                )}
+                                                                disabled={isLoadingPreferences}
+                                                            />
+                                                            <span className="toggle-slider"></span>
+                                                        </label>
+                                                        <span className="preference-label">
+                                                            {isDisabled ? 'Disabled' : 'Enabled'}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                     </div>
-                                ))}
-                            </div>
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="empty-tab-state">No perks available for this card</div>
