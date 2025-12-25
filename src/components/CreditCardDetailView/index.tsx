@@ -286,7 +286,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             size={16}
                             className="preferred-icon"
                         />
-                        {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set Preferred Card'}
+                        {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set Preferred'}
                     </button>
                 )}
                 {onFreezeToggle && (
