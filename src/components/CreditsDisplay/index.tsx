@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, ReactNode } from 'react';
+import React, { useMemo, ReactNode } from 'react';
 import './CreditsDisplay.scss';
 import { CalendarUserCredits, CREDIT_PERIODS, CreditPeriodType, CreditUsageType } from '../../types';
 import CreditPeriodGroup from './CreditPeriodGroup';
@@ -71,28 +71,6 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
     }
     return map;
   }, [credits]);
-
-  // DEBUG: Log data sources
-  useEffect(() => {
-    console.group('[CreditsDisplay DEBUG] Data Sources');
-    console.log('userCards prop:', userCards);
-    console.log('userCards length:', userCards?.length || 0);
-    console.log('credits from ComponentsContext:', credits);
-    console.log('credits length:', credits?.length || 0);
-    console.log('calendar:', calendar);
-    console.log('calendar.Credits length:', calendar?.Credits?.length || 0);
-
-    if (credits && credits.length > 0) {
-      console.log('Sample credit ReferenceCardIds:', credits.slice(0, 5).map(c => c.ReferenceCardId));
-    }
-    if (userCards && userCards.length > 0) {
-      console.log('Sample userCard IDs:', userCards.slice(0, 5).map(c => c.id));
-    }
-    if (calendar?.Credits && calendar.Credits.length > 0) {
-      console.log('Sample calendar CardIds:', calendar.Credits.slice(0, 5).map(c => c.CardId));
-    }
-    console.groupEnd();
-  }, [userCards, credits, calendar]);
 
   if (isLoading) {
     return (

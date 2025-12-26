@@ -183,16 +183,6 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
         // API Call #1: Load current month immediately for quick display
         const currentMonthData = await UserCreditService.fetchCreditHistoryForYear(selectedYear, filterOptions);
 
-        // DEBUG: Log API response
-        console.group('[CreditsHistory DEBUG] API Response');
-        console.log('filterOptions:', filterOptions);
-        console.log('API response:', currentMonthData);
-        console.log('Credits count:', currentMonthData?.Credits?.length || 0);
-        if (currentMonthData?.Credits?.length > 0) {
-          console.log('Sample credits:', currentMonthData.Credits.slice(0, 3));
-        }
-        console.groupEnd();
-
         if (!mounted) return;
         updateLocalCalendar(currentMonthData);
         setIsLoading(false);
