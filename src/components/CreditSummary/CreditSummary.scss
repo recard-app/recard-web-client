@@ -1,28 +1,104 @@
 @use '../../styling/variables' as *;
 @use '../../styling/mixins' as *;
 
-// Sidebar variant styling
-.credit-summary-sidebar, .credit-summary-header {
+// Shared hero layout base for both sidebar and header variants
+.credit-summary-hero {
   display: flex;
   flex-direction: column;
   gap: $space-2;
-  padding: $space-1;
-  font-size: $font-xs;
+  padding: $space-3;
   width: 100%;
 
-  // Apply updating state animation only to stat values when isUpdating is true
+  // Apply updating state animation to values
   &.updating {
-    .stat-value {
+    .hero-value,
+    .supporting-text,
+    .expiring-text {
       @include updating-state;
     }
   }
 
-  .sidebar-stats-header {
+  // Hero value row: "$150 used"
+  .hero-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: $space-1;
+
+    .hero-value {
+      font-size: $font-h5;
+      font-weight: $font-bold;
+      color: $neutral-dark-gray;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hero-label {
+      font-size: $font-sm;
+      font-weight: $font-medium;
+      color: $neutral-medium-gray;
+    }
+  }
+
+  // Supporting row: "[icon] you have used X/X credits worth up to $XXX this month"
+  .supporting-row {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+    font-size: $font-xs;
+    color: $neutral-dark-gray;
+
+    .supporting-icon {
+      display: flex;
+      align-items: center;
+    }
+
+    .supporting-text {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .supporting-value {
+      font-weight: $font-bold;
+      color: $neutral-dark-gray;
+    }
+  }
+
+  // Expiring row: "X credits expiring worth $XXX"
+  .expiring-row {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+    font-size: $font-xs;
+    font-weight: $font-medium;
+    color: $neutral-dark-gray;
+
+    .expiring-icon {
+      display: flex;
+      align-items: center;
+    }
+
+    .expiring-text {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .expiring-value {
+      color: $warning;
+      font-weight: $font-bold;
+    }
+  }
+
+  // Usage bar spacing
+  .credit-summary-usage-bar {
+    margin: $space-1 0;
+  }
+}
+
+// Header variant specifics
+.credit-summary-header {
+  .header-content {
     display: flex;
     align-items: flex-start;
     gap: $space-2;
 
-    .sidebar-stats-content {
+    .header-stats {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -34,11 +110,9 @@
     display: flex;
     gap: $space-2;
     align-items: center;
+    flex-shrink: 0;
 
     .button {
-      // Common styles for all buttons in this container
-      // Add any shared button styling here
-
       svg {
         width: $icon-small;
         height: $icon-small;
@@ -47,38 +121,29 @@
   }
 }
 
-.sidebar-stat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: $space-2;
+// Sidebar variant specifics (mostly inherits from hero base)
+.credit-summary-sidebar {
+  padding: $space-2;
+}
 
-  .stat-label {
-    color: $neutral-medium-gray;
-    font-weight: $font-medium;
-    white-space: nowrap;
-  }
+// Responsive adjustments for mobile
+@media (max-width: $mobile-breakpoint) {
+  .credit-summary-hero {
+    padding: $space-2;
+    gap: $space-1;
 
-  .stat-value {
-    color: $neutral-dark-gray;
-    font-weight: $font-semibold;
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+    .hero-value-row {
+      .hero-value {
+        font-size: $font-base;
+      }
 
-  &.expiring {
-    .stat-label,
-    .stat-value {
-      color: $neutral-dark-gray;
+      .hero-label {
+        font-size: $font-xs;
+      }
+    }
+
+    .credit-summary-usage-bar {
+      margin: $space-half 0;
     }
   }
 }
-
-.credit-summary-usage-bar {
-  margin-top: $space-1;
-  margin-bottom: $space-1;
-}
-
