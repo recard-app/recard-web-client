@@ -450,7 +450,6 @@
             .multiplier-expanded-content {
               grid-column: 1 / -1;
               padding: $space-3;
-              border-top: $border-half solid $neutral-light-gray;
               background-color: $neutral-white;
 
               .multiplier-requirements,
@@ -856,8 +855,7 @@
 
     .component-details-section {
       padding: $space-3;
-      padding-top: $space-3;
-      border-top: $border-half solid $neutral-light-gray;
+      padding-top: 0;
 
       .category-badge {
         display: inline-block;
@@ -872,11 +870,17 @@
         margin-bottom: $space-2;
       }
 
-      .details-text {
+      .component-requirements,
+      .component-details-text {
         font-size: $font-xs;
         color: $neutral-dark-gray;
         line-height: $leading-normal;
-        margin: 0 0 $space-2 0;
+        margin-bottom: $space-2;
+
+        .label {
+          font-weight: $font-semibold;
+          color: $neutral-black;
+        }
       }
 
       .tracking-toggle {

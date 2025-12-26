@@ -624,7 +624,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             {cardCredits.map((credit) => {
                                 const isExpanded = expandedCredits.has(credit.id);
                                 const isDisabled = isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT);
-                                const hasDetails = credit.Details || showTrackingPreferences || credit.Category || credit.SubCategory;
+                                const hasDetails = credit.Requirements || credit.Details || showTrackingPreferences || credit.Category || credit.SubCategory;
 
                                 return (
                                     <div key={credit.id} className={`component-card ${isExpanded ? 'expanded' : ''} ${isDisabled ? 'disabled' : ''}`}>
@@ -669,7 +669,16 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                         {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
                                                     </span>
                                                 )}
-                                                {credit.Details && <p className="details-text">{credit.Details}</p>}
+                                                {credit.Requirements && (
+                                                    <div className="component-requirements">
+                                                        <span className="label">Requirements:</span> {credit.Requirements}
+                                                    </div>
+                                                )}
+                                                {credit.Details && (
+                                                    <div className="component-details-text">
+                                                        <span className="label">Details:</span> {credit.Details}
+                                                    </div>
+                                                )}
                                                 {showTrackingPreferences && (
                                                     <div className="tracking-toggle">
                                                         <label className="toggle-switch">
@@ -708,7 +717,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             {cardPerks.map((perk) => {
                                 const isExpanded = expandedPerks.has(perk.id);
                                 const isDisabled = isComponentDisabled(perk.id, COMPONENT_TYPES.PERK);
-                                const hasDetails = perk.Details || showTrackingPreferences || perk.Category || perk.SubCategory;
+                                const hasDetails = perk.Requirements || perk.Details || showTrackingPreferences || perk.Category || perk.SubCategory;
 
                                 return (
                                     <div key={perk.id} className={`component-card ${isExpanded ? 'expanded' : ''} ${isDisabled ? 'disabled' : ''}`}>
@@ -749,7 +758,16 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                         {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
                                                     </span>
                                                 )}
-                                                {perk.Details && <p className="details-text">{perk.Details}</p>}
+                                                {perk.Requirements && (
+                                                    <div className="component-requirements">
+                                                        <span className="label">Requirements:</span> {perk.Requirements}
+                                                    </div>
+                                                )}
+                                                {perk.Details && (
+                                                    <div className="component-details-text">
+                                                        <span className="label">Details:</span> {perk.Details}
+                                                    </div>
+                                                )}
                                                 {showTrackingPreferences && (
                                                     <div className="tracking-toggle">
                                                         <label className="toggle-switch">
