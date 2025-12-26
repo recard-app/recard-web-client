@@ -529,44 +529,49 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             {cardCredits.map((credit) => {
                                 const isExpanded = expandedCredits.has(credit.id);
                                 const isDisabled = isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT);
+                                const hasDetails = credit.Details || showTrackingPreferences || credit.Category || credit.SubCategory;
 
                                 return (
-                                    <div key={credit.id} className={`credit-card ${isExpanded ? 'expanded' : ''} ${isDisabled ? 'disabled' : ''}`}>
-                                        <div className="credit-card-header">
-                                            <div className="credit-title">
-                                                {isDisabled && <span className="disabled-pill">Disabled</span>}
-                                                {credit.Title}
+                                    <div key={credit.id} className={`component-card ${isExpanded ? 'expanded' : ''} ${isDisabled ? 'disabled' : ''}`}>
+                                        <div
+                                            className="component-clickable-area"
+                                            onClick={() => toggleCreditExpanded(credit.id)}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={(e) => e.key === 'Enter' && toggleCreditExpanded(credit.id)}
+                                        >
+                                            <div className="component-header">
+                                                <div className="component-title">
+                                                    {isDisabled && <span className="disabled-pill">Disabled</span>}
+                                                    {credit.Title}
+                                                </div>
                                             </div>
-                                            <div className="credit-badges">
-                                                <span className="credit-value-badge">${credit.Value}</span>
-                                                <span className="credit-period-badge">{credit.TimePeriod}</span>
+                                            <div className="component-value-info">
+                                                <span className="value-badge">${credit.Value}</span>
+                                                <span className="period-badge">{credit.TimePeriod}</span>
                                             </div>
+                                            <div className="component-description">
+                                                {credit.Description}
+                                            </div>
+                                            {hasDetails && (
+                                                <div className="details-toggle">
+                                                    {isExpanded ? 'Hide Details' : 'Show Details'}
+                                                    <Icon
+                                                        name="chevron-down"
+                                                        variant="mini"
+                                                        size={14}
+                                                        className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
-                                        {(credit.Category || credit.SubCategory) && (
-                                            <span className="category-badge">
-                                                {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
-                                            </span>
-                                        )}
-                                        <div className="credit-description">
-                                            {credit.Description}
-                                        </div>
-                                        {(credit.Details || showTrackingPreferences) && (
-                                            <button
-                                                className="details-toggle"
-                                                onClick={() => toggleCreditExpanded(credit.id)}
-                                                type="button"
-                                            >
-                                                {isExpanded ? 'Hide Details' : 'Show Details'}
-                                                <Icon
-                                                    name="chevron-down"
-                                                    variant="mini"
-                                                    size={14}
-                                                    className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
-                                                />
-                                            </button>
-                                        )}
-                                        {isExpanded && (credit.Details || showTrackingPreferences) && (
-                                            <div className="credit-details-section">
+                                        {isExpanded && hasDetails && (
+                                            <div className="component-details-section">
+                                                {(credit.Category || credit.SubCategory) && (
+                                                    <span className="category-badge">
+                                                        {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
+                                                    </span>
+                                                )}
                                                 {credit.Details && <p className="details-text">{credit.Details}</p>}
                                                 {showTrackingPreferences && (
                                                     <div className="tracking-toggle">
@@ -584,7 +589,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                             <span className="toggle-slider"></span>
                                                         </label>
                                                         <span className="preference-label">
-                                                            {isDisabled ? 'Disabled' : 'Enabled'}
+                                                            {isDisabled ? 'Not Tracking Credit' : 'Tracking Credit'}
                                                         </span>
                                                     </div>
                                                 )}
@@ -606,40 +611,45 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             {cardPerks.map((perk) => {
                                 const isExpanded = expandedPerks.has(perk.id);
                                 const isDisabled = isComponentDisabled(perk.id, COMPONENT_TYPES.PERK);
+                                const hasDetails = perk.Details || showTrackingPreferences || perk.Category || perk.SubCategory;
 
                                 return (
-                                    <div key={perk.id} className={`perk-card ${isExpanded ? 'expanded' : ''} ${isDisabled ? 'disabled' : ''}`}>
-                                        <div className="perk-card-header">
-                                            <div className="perk-title">
-                                                {isDisabled && <span className="disabled-pill">Disabled</span>}
-                                                {perk.Title}
+                                    <div key={perk.id} className={`component-card ${isExpanded ? 'expanded' : ''} ${isDisabled ? 'disabled' : ''}`}>
+                                        <div
+                                            className="component-clickable-area"
+                                            onClick={() => togglePerkExpanded(perk.id)}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={(e) => e.key === 'Enter' && togglePerkExpanded(perk.id)}
+                                        >
+                                            <div className="component-header">
+                                                <div className="component-title">
+                                                    {isDisabled && <span className="disabled-pill">Disabled</span>}
+                                                    {perk.Title}
+                                                </div>
                                             </div>
+                                            <div className="component-description">
+                                                {perk.Description}
+                                            </div>
+                                            {hasDetails && (
+                                                <div className="details-toggle">
+                                                    {isExpanded ? 'Hide Details' : 'Show Details'}
+                                                    <Icon
+                                                        name="chevron-down"
+                                                        variant="mini"
+                                                        size={14}
+                                                        className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
-                                        {(perk.Category || perk.SubCategory) && (
-                                            <span className="category-badge">
-                                                {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
-                                            </span>
-                                        )}
-                                        <div className="perk-description">
-                                            {perk.Description}
-                                        </div>
-                                        {(perk.Details || showTrackingPreferences) && (
-                                            <button
-                                                className="details-toggle"
-                                                onClick={() => togglePerkExpanded(perk.id)}
-                                                type="button"
-                                            >
-                                                {isExpanded ? 'Hide Details' : 'Show Details'}
-                                                <Icon
-                                                    name="chevron-down"
-                                                    variant="mini"
-                                                    size={14}
-                                                    className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
-                                                />
-                                            </button>
-                                        )}
-                                        {isExpanded && (perk.Details || showTrackingPreferences) && (
-                                            <div className="perk-details-section">
+                                        {isExpanded && hasDetails && (
+                                            <div className="component-details-section">
+                                                {(perk.Category || perk.SubCategory) && (
+                                                    <span className="category-badge">
+                                                        {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
+                                                    </span>
+                                                )}
                                                 {perk.Details && <p className="details-text">{perk.Details}</p>}
                                                 {showTrackingPreferences && (
                                                     <div className="tracking-toggle">
@@ -657,7 +667,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                             <span className="toggle-slider"></span>
                                                         </label>
                                                         <span className="preference-label">
-                                                            {isDisabled ? 'Disabled' : 'Enabled'}
+                                                            {isDisabled ? 'Perk Inactive' : 'Perk Active'}
                                                         </span>
                                                     </div>
                                                 )}
