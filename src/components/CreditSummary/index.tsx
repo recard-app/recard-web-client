@@ -109,7 +109,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
       {/* Hero value row: "$150 used" */}
       <div className="hero-value-row">
         <span className="hero-value">${effectiveMonthlyStats.MonthlyCredits.usedValue}</span>
-        <span className="hero-label">used this month</span>
+        <span className="hero-label">of monthly credits used</span>
       </div>
 
       {/* Usage bar */}
@@ -135,7 +135,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
           <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
         </span>
         <span className="supporting-text">
-          You have fully used <span className="supporting-value">{usedMonthlyCredits}/{totalMonthlyCredits}</span> monthly credits worth up to <span className="supporting-value">${effectiveMonthlyStats.MonthlyCredits.possibleValue}</span>
+          You have fully used <span className="supporting-value">{usedMonthlyCredits}/{totalMonthlyCredits}</span> monthly credits worth <span className="supporting-value">${effectiveMonthlyStats.MonthlyCredits.possibleValue}</span>
         </span>
       </div>
     </>
