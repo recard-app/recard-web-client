@@ -62,6 +62,40 @@ const calculateCurrentPeriod = (now: Date, associatedPeriod: string): number => 
 const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, displayPeriod = true, variant = 'default', limit, onUpdateHistoryEntry, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
   const isMobile = useIsMobile();
 
+  // DEBUG: Log map contents and credit lookups
+  useEffect(() => {
+    if (credits && credits.length > 0) {
+      console.group('[CreditList DEBUG] Map Analysis');
+      console.log('cardById keys:', Array.from(cardById.keys()));
+      console.log('cardById size:', cardById.size);
+      console.log('creditByPair keys:', Array.from(creditByPair.keys()));
+      console.log('creditByPair size:', creditByPair.size);
+      console.log('Calendar credits CardIds:', credits.map(uc => uc.CardId));
+      console.log('Calendar credits CreditIds:', credits.map(uc => uc.CreditId));
+
+      // Check for mismatches
+      const missingCards: string[] = [];
+      const missingCredits: string[] = [];
+      credits.forEach(uc => {
+        if (!cardById.has(uc.CardId)) {
+          missingCards.push(uc.CardId);
+        }
+        const creditKey = `${uc.CardId}:${uc.CreditId}`;
+        if (!creditByPair.has(creditKey)) {
+          missingCredits.push(creditKey);
+        }
+      });
+
+      if (missingCards.length > 0) {
+        console.warn('MISSING CARDS - CardIds not found in cardById:', [...new Set(missingCards)]);
+      }
+      if (missingCredits.length > 0) {
+        console.warn('MISSING CREDITS - Keys not found in creditByPair:', [...new Set(missingCredits)]);
+      }
+      console.groupEnd();
+    }
+  }, [credits, cardById, creditByPair]);
+
   if (!credits || credits.length === 0) return null;
 
   // Apply limit if specified
