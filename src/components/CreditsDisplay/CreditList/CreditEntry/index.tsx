@@ -72,12 +72,12 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   
   const getExpirationText = (days?: number): string => {
     if (days === undefined) {
-      return 'Expires soon';
+      return 'Soon';
     }
     if (days === 0) {
-      return 'Expires today';
+      return 'Today';
     }
-    return `Expires in ${days} day${days === 1 ? '' : 's'}`;
+    return `${days} day${days === 1 ? '' : 's'}`;
   };
   
   const USAGE_ICON_NAME: Record<CreditUsageType, string> = {
@@ -456,6 +456,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           </div>
           {isExpiring && (
             <div className="expiring-text">
+              <Icon name="clock" variant="micro" size={12} />
               {getExpirationText(daysUntilExpiration)}
             </div>
           )}
@@ -495,9 +496,9 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                       {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
                     </span>
                   )}
-                  {displayPeriod && isExpiring && <span className="separator"> • </span>}
                   {isExpiring && (
                     <span className="expiring-text">
+                      <Icon name="clock" variant="micro" size={12} />
                       {getExpirationText(daysUntilExpiration)}
                     </span>
                   )}
@@ -507,21 +508,23 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           )}
           {card && !SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
             <div className="card-info-inline">
-              <CardIcon
-                title={card.CardName}
-                size={16}
-                primary={card.CardPrimaryColor}
-                secondary={card.CardSecondaryColor}
-                className="card-thumbnail"
-              />
-              {displayPeriod && (
-                <span className="period-text-inline">
-                  - {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
-                </span>
-              )}
+              <div className="card-period-group">
+                <CardIcon
+                  title={card.CardName}
+                  size={16}
+                  primary={card.CardPrimaryColor}
+                  secondary={card.CardSecondaryColor}
+                  className="card-thumbnail"
+                />
+                {displayPeriod && (
+                  <span className="period-text-inline">
+                    {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
+                  </span>
+                )}
+              </div>
               {isExpiring && (
                 <span className="expiring-text-inline">
-                  {displayPeriod && ' • '}
+                  <Icon name="clock" variant="micro" size={12} />
                   {getExpirationText(daysUntilExpiration)}
                 </span>
               )}

@@ -80,8 +80,11 @@
     }
 
     .expiring-text {
+      display: flex;
+      align-items: center;
+      gap: $space-1;
       color: $neutral-medium-gray;
-      font-style: italic;
+      font-weight: $font-bold;
     }
   }
   
@@ -113,10 +116,16 @@
   .card-info-inline {
     display: flex;
     align-items: center;
-    gap: $space-1;
+    gap: $space-2;
     font-size: $font-xs;
     color: $neutral-dark-gray;
     min-width: 0;
+
+    .card-period-group {
+      display: flex;
+      align-items: center;
+      gap: $space-1;
+    }
 
     .card-thumbnail {
       width: auto;
@@ -131,8 +140,11 @@
     }
 
     .expiring-text-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
       color: $warning;
-      font-style: italic;
+      font-weight: $font-bold;
       white-space: nowrap;
     }
   }
@@ -633,9 +645,12 @@ body:has(.mobile-credit-details-drawer) [data-radix-popper-content-wrapper] .usa
   }
 
   .expiring-text {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
     font-size: $font-xxs;
     color: $warning;
-    font-weight: $font-medium;
+    font-weight: $font-bold;
     line-height: 1.1;
     margin-left: calc(16px + #{$space-1-5}); // Align with credit name (icon width + gap)
   }

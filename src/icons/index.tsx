@@ -387,6 +387,33 @@ export const iconRegistry: IconDefinition = {
       ]
     }
   },
+  'clock': {
+    solid: {
+      viewBox: VIEWBOX.DEFAULT,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clipRule="evenodd" />
+      ]
+    },
+    outline: {
+      viewBox: VIEWBOX.DEFAULT,
+      strokeWidth: 1.5,
+      paths: [
+        <path key="1" strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      ]
+    },
+    mini: {
+      viewBox: VIEWBOX.MINI,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clipRule="evenodd" />
+      ]
+    },
+    micro: {
+      viewBox: VIEWBOX.MICRO,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8Zm7.75-4.25a.75.75 0 0 0-1.5 0V8c0 .414.336.75.75.75h3.25a.75.75 0 0 0 0-1.5h-2.5v-3.5Z" clipRule="evenodd" />
+      ]
+    }
+  },
   'preferences': {
     solid: {
       viewBox: VIEWBOX.DEFAULT,
@@ -788,6 +815,13 @@ export const iconRegistry: IconDefinition = {
   ,
   'history-clock': {
     // From Google Material Icons
+    mini: {
+      // Use original viewBox from provided SVG to preserve proportions
+      viewBox: '0 -960 960 960',
+      paths: [
+        <path key="1" d="M480-144q-140 0-238-98t-98-238h72q0 109 77.5 186.5T480-216q109 0 186.5-77.5T744-480q0-109-77.5-186.5T480-744q-62 0-114.55 25.6Q312.91-692.8 277-648h107v72H144v-240h72v130q46-60 114.5-95T480-816q70 0 131.13 26.6 61.14 26.6 106.4 71.87 45.27 45.26 71.87 106.4Q816-550 816-480t-26.6 131.13q-26.6 61.14-71.87 106.4-45.26 45.27-106.4 71.87Q550-144 480-144Zm100-200L444-480v-192h72v162l115 115-51 51Z" />
+      ]
+    },
     micro: {
       // Use original viewBox from provided SVG to preserve proportions
       viewBox: '0 -960 960 960',

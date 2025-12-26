@@ -478,7 +478,7 @@ export const CREDIT_SUMMARY_SECTIONS = {
     },
     EXPIRING_CREDITS: {
         displayName: 'Expiring Credits',
-        icon: 'flag'
+        icon: 'clock'
     }
 } as const;
 
