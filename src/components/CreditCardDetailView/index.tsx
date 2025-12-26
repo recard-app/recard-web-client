@@ -628,37 +628,33 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                             tabIndex={0}
                                             onKeyDown={(e) => e.key === 'Enter' && toggleCreditExpanded(credit.id)}
                                         >
-                                            <div className="component-header">
-                                                <div className="component-title">
-                                                    {isDisabled && <span className="disabled-pill">Disabled</span>}
-                                                    {credit.Title}
+                                            <div className="component-content">
+                                                <div className="component-header">
+                                                    <div className="component-title">
+                                                        {isDisabled && <span className="disabled-pill">Disabled</span>}
+                                                        {credit.Title}
+                                                    </div>
+                                                </div>
+                                                <div className="component-value-info">
+                                                    <span className="value-badge">${credit.Value}</span>
+                                                    <span className="period-badge">{credit.TimePeriod}</span>
+                                                </div>
+                                                <div className="component-description">
+                                                    {credit.Description}
                                                 </div>
                                             </div>
-                                            <div className="component-value-info">
-                                                <span className="value-badge">${credit.Value}</span>
-                                                <span className="period-badge">{credit.TimePeriod}</span>
-                                            </div>
-                                            <div className="component-description">
-                                                {credit.Description}
-                                            </div>
+                                            {hasDetails && (
+                                                <div className="component-chevron">
+                                                    <Icon
+                                                        name="chevron-down"
+                                                        variant="mini"
+                                                        size={16}
+                                                        color={ICON_GRAY}
+                                                        className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
-                                        {hasDetails && (
-                                            <div
-                                                className={`expand-indicator ${isExpanded ? 'expanded' : ''}`}
-                                                onClick={() => toggleCreditExpanded(credit.id)}
-                                                role="button"
-                                                tabIndex={0}
-                                                onKeyDown={(e) => e.key === 'Enter' && toggleCreditExpanded(credit.id)}
-                                            >
-                                                <Icon
-                                                    name="chevron-down"
-                                                    variant="mini"
-                                                    size={16}
-                                                    color={ICON_PRIMARY}
-                                                    className={`indicator-icon ${isExpanded ? 'rotated' : ''}`}
-                                                />
-                                            </div>
-                                        )}
                                         {isExpanded && hasDetails && (
                                             <div className="component-details-section">
                                                 {(credit.Category || credit.SubCategory) && (
@@ -716,33 +712,29 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                             tabIndex={0}
                                             onKeyDown={(e) => e.key === 'Enter' && togglePerkExpanded(perk.id)}
                                         >
-                                            <div className="component-header">
-                                                <div className="component-title">
-                                                    {isDisabled && <span className="disabled-pill">Disabled</span>}
-                                                    {perk.Title}
+                                            <div className="component-content">
+                                                <div className="component-header">
+                                                    <div className="component-title">
+                                                        {isDisabled && <span className="disabled-pill">Disabled</span>}
+                                                        {perk.Title}
+                                                    </div>
+                                                </div>
+                                                <div className="component-description">
+                                                    {perk.Description}
                                                 </div>
                                             </div>
-                                            <div className="component-description">
-                                                {perk.Description}
-                                            </div>
+                                            {hasDetails && (
+                                                <div className="component-chevron">
+                                                    <Icon
+                                                        name="chevron-down"
+                                                        variant="mini"
+                                                        size={16}
+                                                        color={ICON_GRAY}
+                                                        className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
-                                        {hasDetails && (
-                                            <div
-                                                className={`expand-indicator ${isExpanded ? 'expanded' : ''}`}
-                                                onClick={() => togglePerkExpanded(perk.id)}
-                                                role="button"
-                                                tabIndex={0}
-                                                onKeyDown={(e) => e.key === 'Enter' && togglePerkExpanded(perk.id)}
-                                            >
-                                                <Icon
-                                                    name="chevron-down"
-                                                    variant="mini"
-                                                    size={16}
-                                                    color={ICON_PRIMARY}
-                                                    className={`indicator-icon ${isExpanded ? 'rotated' : ''}`}
-                                                />
-                                            </div>
-                                        )}
                                         {isExpanded && hasDetails && (
                                             <div className="component-details-section">
                                                 {(perk.Category || perk.SubCategory) && (
