@@ -71,6 +71,13 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     const [expandedCredits, setExpandedCredits] = useState<Set<string>>(new Set());
     const [expandedPerks, setExpandedPerks] = useState<Set<string>>(new Set());
 
+    // Reset expanded states when card changes
+    useEffect(() => {
+        setExpandedMultipliers(new Set());
+        setExpandedCredits(new Set());
+        setExpandedPerks(new Set());
+    }, [cardDetails?.id]);
+
     const toggleMultiplierExpanded = (id: string) => {
         setExpandedMultipliers(prev => {
             const next = new Set(prev);
