@@ -879,5 +879,14 @@
     .perks-grid {
       grid-template-columns: 1fr;
     }
+
+    // Remove 3-line clamp on mobile - let cards be natural height
+    .component-card .component-description {
+      display: block;
+      -webkit-line-clamp: unset;
+      overflow: visible;
+      text-overflow: unset;
+      min-height: unset;
+    }
   }
 }
