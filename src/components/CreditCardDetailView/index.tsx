@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, CardMultiplier, CreditCard } from '../../types/CreditCardTypes';
 import { UserComponentTrackingPreferences, ComponentType, COMPONENT_TYPES } from '../../types/CardCreditsTypes';
-import { ICON_RED, ICON_GRAY, LOADING_ICON, LOADING_ICON_SIZE } from '../../types';
+import { ICON_RED, ICON_GRAY, ICON_PRIMARY, LOADING_ICON, LOADING_ICON_SIZE } from '../../types';
 import { COLORS } from '../../types/Colors';
 import { CardIcon } from '../../icons';
 import { InfoDisplay, DatePicker } from '../../elements';
@@ -637,18 +637,24 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                             <div className="component-description">
                                                 {credit.Description}
                                             </div>
-                                            {hasDetails && (
-                                                <div className="details-toggle">
-                                                    {isExpanded ? 'Hide Details' : 'Show Details'}
-                                                    <Icon
-                                                        name="chevron-down"
-                                                        variant="mini"
-                                                        size={14}
-                                                        className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
-                                                    />
-                                                </div>
-                                            )}
                                         </div>
+                                        {hasDetails && (
+                                            <div
+                                                className={`expand-indicator ${isExpanded ? 'expanded' : ''}`}
+                                                onClick={() => toggleCreditExpanded(credit.id)}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => e.key === 'Enter' && toggleCreditExpanded(credit.id)}
+                                            >
+                                                <Icon
+                                                    name="chevron-down"
+                                                    variant="mini"
+                                                    size={16}
+                                                    color={ICON_PRIMARY}
+                                                    className={`indicator-icon ${isExpanded ? 'rotated' : ''}`}
+                                                />
+                                            </div>
+                                        )}
                                         {isExpanded && hasDetails && (
                                             <div className="component-details-section">
                                                 {(credit.Category || credit.SubCategory) && (
@@ -715,18 +721,24 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                             <div className="component-description">
                                                 {perk.Description}
                                             </div>
-                                            {hasDetails && (
-                                                <div className="details-toggle">
-                                                    {isExpanded ? 'Hide Details' : 'Show Details'}
-                                                    <Icon
-                                                        name="chevron-down"
-                                                        variant="mini"
-                                                        size={14}
-                                                        className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
-                                                    />
-                                                </div>
-                                            )}
                                         </div>
+                                        {hasDetails && (
+                                            <div
+                                                className={`expand-indicator ${isExpanded ? 'expanded' : ''}`}
+                                                onClick={() => togglePerkExpanded(perk.id)}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => e.key === 'Enter' && togglePerkExpanded(perk.id)}
+                                            >
+                                                <Icon
+                                                    name="chevron-down"
+                                                    variant="mini"
+                                                    size={16}
+                                                    color={ICON_PRIMARY}
+                                                    className={`indicator-icon ${isExpanded ? 'rotated' : ''}`}
+                                                />
+                                            </div>
+                                        )}
                                         {isExpanded && hasDetails && (
                                             <div className="component-details-section">
                                                 {(perk.Category || perk.SubCategory) && (

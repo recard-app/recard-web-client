@@ -829,25 +829,22 @@
       min-height: unset;
     }
 
-    .details-toggle {
+    .expand-indicator {
       display: flex;
       align-items: center;
-      gap: $space-half;
-      margin: $space-2 0 0 0;
-      padding: 0;
-      font-size: $font-sm;
-      font-weight: $font-medium;
-      color: $primary-color;
-      background: none;
-      border: none;
+      justify-content: center;
+      width: 100%;
+      padding: $space-1-5 0;
+      background-color: $primary-lightest;
       cursor: pointer;
-      transition: color $transition-base;
+      transition: background-color $transition-base;
+      outline: none;
 
       &:hover {
-        color: $primary-dark;
+        background-color: $primary-light;
       }
 
-      .toggle-icon {
+      .indicator-icon {
         flex-shrink: 0;
         transition: transform $transition-base;
 
