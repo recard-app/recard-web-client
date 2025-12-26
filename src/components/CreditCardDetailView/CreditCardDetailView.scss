@@ -428,6 +428,10 @@
                 &:hover {
                   background-color: $neutral-lightest-gray;
                 }
+
+                &:hover ~ .multiplier-expanded-content {
+                  background-color: $neutral-lightest-gray;
+                }
               }
             }
 
@@ -451,6 +455,7 @@
               grid-column: 1 / -1;
               padding: $space-3;
               background-color: $neutral-white;
+              transition: background-color $transition-base;
 
               .multiplier-requirements,
               .multiplier-details-text {
@@ -772,6 +777,10 @@
       &:hover {
         background-color: $neutral-lightest-gray;
       }
+
+      &:hover ~ .component-details-section {
+        background-color: $neutral-lightest-gray;
+      }
     }
 
     .component-content {
@@ -856,6 +865,7 @@
     .component-details-section {
       padding: $space-3;
       padding-top: 0;
+      transition: background-color $transition-base;
 
       .category-badge {
         display: inline-block;
