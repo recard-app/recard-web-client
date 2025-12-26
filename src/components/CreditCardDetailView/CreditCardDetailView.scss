@@ -414,7 +414,7 @@
             // Expandable row structure
             .multiplier-row-clickable {
               display: grid;
-              grid-template-columns: auto 1fr;
+              grid-template-columns: auto 1fr 2fr;
               gap: 0;
               align-items: start;
               width: 100%;
@@ -422,7 +422,7 @@
               transition: background-color $transition-base;
 
               &.has-expandable {
-                grid-template-columns: auto 1fr auto;
+                grid-template-columns: auto 1fr 2fr auto;
                 cursor: pointer;
 
                 &:hover {
@@ -484,27 +484,23 @@
               padding: $space-2 $space-2;
 
               &.subcategory {
-                .multiplier-name {
-                  display: block;
-                  font-weight: $font-semibold;
-                  color: $neutral-black;
-                  font-size: $font-sm;
-                  text-transform: capitalize;
-                }
-
-                .multiplier-desc {
-                  display: block;
-                  font-size: $font-xs;
-                  color: $neutral-dark-gray;
-                  line-height: $leading-normal;
-                  margin-top: $space-1;
-                }
+                font-weight: $font-semibold;
+                color: $neutral-black;
+                text-transform: capitalize;
               }
 
               &.rate {
                 font-weight: $font-semibold;
                 color: $primary-color;
                 white-space: nowrap;
+              }
+
+              &.description {
+                .multiplier-desc {
+                  font-size: $font-xs;
+                  color: $neutral-dark-gray;
+                  line-height: $leading-normal;
+                }
               }
             }
           }
@@ -835,13 +831,13 @@
       justify-content: center;
       width: 100%;
       padding: $space-1-5 0;
-      background-color: $primary-lightest;
+      background-color: $neutral-white;
       cursor: pointer;
       transition: background-color $transition-base;
       outline: none;
 
       &:hover {
-        background-color: $primary-light;
+        background-color: $neutral-lightest-gray;
       }
 
       .indicator-icon {
@@ -941,13 +937,43 @@
       min-height: unset;
     }
 
-    // Multiplier rows on mobile - simple 3-column grid
+    // Multiplier rows on mobile - stack description under title
     .multipliers-content .multipliers-table .table .table-row {
       .multiplier-row-clickable {
-        grid-template-columns: auto 1fr auto;
+        // Base mobile styles (non-expandable rows)
+        grid-template-columns: auto 1fr !important;
+        grid-template-areas:
+          "rate title"
+          ". description" !important;
 
-        &:not(.has-expandable) {
-          grid-template-columns: auto 1fr;
+        .cell.rate {
+          grid-area: rate;
+        }
+
+        .cell.subcategory {
+          grid-area: title;
+        }
+
+        .cell.description {
+          grid-area: description;
+          padding-top: 0;
+        }
+
+        .cell.chevron {
+          display: none;
+        }
+
+        // Expandable rows on mobile - show chevron
+        &.has-expandable {
+          grid-template-columns: auto 1fr auto !important;
+          grid-template-areas:
+            "rate title chevron"
+            ". description ." !important;
+
+          .cell.chevron {
+            display: flex;
+            grid-area: chevron;
+          }
         }
       }
     }

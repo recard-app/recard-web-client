@@ -472,8 +472,10 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                                     {isDisabled && (
                                                                         <span className="disabled-pill">Disabled</span>
                                                                     )}
-                                                                    <span className="multiplier-name">{m.Name}</span>
-                                                                    <p className="multiplier-desc">{m.Description}</p>
+                                                                    {m.Name}
+                                                                </div>
+                                                                <div className="cell description">
+                                                                    <div className="multiplier-desc">{m.Description}</div>
                                                                 </div>
                                                                 {hasExpandableContent && (
                                                                     <div className="cell chevron">
@@ -543,8 +545,10 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                                     {isDisabled && (
                                                                         <span className="disabled-pill">Disabled</span>
                                                                     )}
-                                                                    <span className="multiplier-name">{m.Name}</span>
-                                                                    <p className="multiplier-desc">{m.Description}</p>
+                                                                    {m.Name}
+                                                                </div>
+                                                                <div className="cell description">
+                                                                    <div className="multiplier-desc">{m.Description}</div>
                                                                 </div>
                                                                 {hasExpandableContent && (
                                                                     <div className="cell chevron">
