@@ -190,7 +190,7 @@
     border: $border-half solid $neutral-light-gray;
     border-radius: $radius-base;
     padding: $space-2 0;
-    margin-bottom: $space-4;
+    margin-bottom: $space-5;
 
     .stat-item {
       flex: 1;
@@ -263,7 +263,7 @@
   .component-tabs {
     display: flex;
     width: 100%;
-    margin-bottom: $space-4;
+    margin-bottom: $space-3;
     background-color: $neutral-light-gray;
     border-radius: $radius-base;
     padding: $space-half;
@@ -657,11 +657,13 @@
     }
   }
 
-  // Disabled state styling for all component types
-  .table-row.disabled,
-  .credit-item.disabled,
-  .perk-item.disabled {
-    opacity: 0.5;
+  // Disabled state styling - apply opacity to text only, not entire row/card
+  .table-row.disabled {
+    .cell.subcategory,
+    .cell.rate,
+    .cell.description {
+      opacity: 0.5;
+    }
   }
 
   // Disabled pill badge
@@ -752,7 +754,11 @@
     }
 
     &.disabled {
-      opacity: 0.5;
+      .component-title,
+      .component-description,
+      .component-value-info {
+        opacity: 0.5;
+      }
     }
 
     .component-clickable-area {
