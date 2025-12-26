@@ -66,9 +66,19 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     // Tab state for switching between multipliers, credits, and perks
     const [activeTab, setActiveTab] = useState<TabType>('multipliers');
 
-    // Expandable state for credits and perks
+    // Expandable state for multipliers, credits and perks
+    const [expandedMultipliers, setExpandedMultipliers] = useState<Set<string>>(new Set());
     const [expandedCredits, setExpandedCredits] = useState<Set<string>>(new Set());
     const [expandedPerks, setExpandedPerks] = useState<Set<string>>(new Set());
+
+    const toggleMultiplierExpanded = (id: string) => {
+        setExpandedMultipliers(prev => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    };
 
     const toggleCreditExpanded = (id: string) => {
         setExpandedCredits(prev => {
@@ -443,74 +453,148 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                         <div key={category} className="category-group">
                                             <div className="category-title">{category}</div>
                                             <div className="table">
-                                                {mainItems.map((m, idx) => (
-                                                    <div key={m.id ?? `main-${idx}`} className={`table-row main-row${isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) ? ' disabled' : ''}`}>
-                                                        <div className="cell subcategory">
-                                                            {isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) && (
-                                                                <span className="disabled-pill">Disabled</span>
-                                                            )}
-                                                            {m.Name}
-                                                        </div>
-                                                        <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
-                                                        <div className="cell description">
-                                                            <div className="multiplier-desc">{m.Description}</div>
-                                                            {m.Details && (
-                                                                <div className="multiplier-details">{m.Details}</div>
-                                                            )}
-                                                        </div>
-                                                        {showTrackingPreferences && (
-                                                            <div className="cell toggle">
-                                                                <label className="toggle-switch">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={!isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER)}
-                                                                        onChange={(e) => handleComponentDisabledChange(
-                                                                            m.id,
-                                                                            COMPONENT_TYPES.MULTIPLIER,
-                                                                            !e.target.checked
-                                                                        )}
-                                                                        disabled={isLoadingPreferences}
-                                                                    />
-                                                                    <span className="toggle-slider"></span>
-                                                                </label>
+                                                {mainItems.map((m, idx) => {
+                                                    const isExpanded = expandedMultipliers.has(m.id);
+                                                    const isDisabled = isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER);
+                                                    const hasExpandableContent = m.Requirements || m.Details || showTrackingPreferences;
+
+                                                    return (
+                                                        <div key={m.id ?? `main-${idx}`} className={`table-row main-row${isDisabled ? ' disabled' : ''}${isExpanded ? ' expanded' : ''}`}>
+                                                            <div
+                                                                className={`multiplier-row-clickable${hasExpandableContent ? ' has-expandable' : ''}`}
+                                                                onClick={() => hasExpandableContent && toggleMultiplierExpanded(m.id)}
+                                                                role={hasExpandableContent ? 'button' : undefined}
+                                                                tabIndex={hasExpandableContent ? 0 : undefined}
+                                                                onKeyDown={(e) => hasExpandableContent && e.key === 'Enter' && toggleMultiplierExpanded(m.id)}
+                                                            >
+                                                                <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
+                                                                <div className="cell subcategory">
+                                                                    {isDisabled && (
+                                                                        <span className="disabled-pill">Disabled</span>
+                                                                    )}
+                                                                    <span className="multiplier-name">{m.Name}</span>
+                                                                    <p className="multiplier-desc">{m.Description}</p>
+                                                                </div>
+                                                                {hasExpandableContent && (
+                                                                    <div className="cell chevron">
+                                                                        <Icon
+                                                                            name="chevron-down"
+                                                                            variant="mini"
+                                                                            size={16}
+                                                                            color={ICON_GRAY}
+                                                                            className={`toggle-icon${isExpanded ? ' rotated' : ''}`}
+                                                                        />
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                                {subItems.map((m, idx) => (
-                                                    <div key={m.id ?? `sub-${idx}-${m.SubCategory}`} className={`table-row sub-row${isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) ? ' disabled' : ''}`}>
-                                                        <div className="cell subcategory">
-                                                            {isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER) && (
-                                                                <span className="disabled-pill">Disabled</span>
+                                                            {isExpanded && hasExpandableContent && (
+                                                                <div className="multiplier-expanded-content">
+                                                                    {m.Requirements && (
+                                                                        <div className="multiplier-requirements">
+                                                                            <span className="label">Requirements:</span> {m.Requirements}
+                                                                        </div>
+                                                                    )}
+                                                                    {m.Details && (
+                                                                        <div className="multiplier-details-text">
+                                                                            <span className="label">Details:</span> {m.Details}
+                                                                        </div>
+                                                                    )}
+                                                                    {showTrackingPreferences && (
+                                                                        <div className="tracking-toggle">
+                                                                            <label className="toggle-switch">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={!isDisabled}
+                                                                                    onChange={(e) => handleComponentDisabledChange(
+                                                                                        m.id,
+                                                                                        COMPONENT_TYPES.MULTIPLIER,
+                                                                                        !e.target.checked
+                                                                                    )}
+                                                                                    disabled={isLoadingPreferences}
+                                                                                />
+                                                                                <span className="toggle-slider"></span>
+                                                                            </label>
+                                                                            <span className="preference-label">
+                                                                                {isDisabled ? 'Multiplier Inactive' : 'Multiplier Active'}
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             )}
-                                                            {m.Name}
                                                         </div>
-                                                        <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
-                                                        <div className="cell description">
-                                                            <div className="multiplier-desc">{m.Description}</div>
-                                                            {m.Details && (
-                                                                <div className="multiplier-details">{m.Details}</div>
-                                                            )}
-                                                        </div>
-                                                        {showTrackingPreferences && (
-                                                            <div className="cell toggle">
-                                                                <label className="toggle-switch">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        checked={!isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER)}
-                                                                        onChange={(e) => handleComponentDisabledChange(
-                                                                            m.id,
-                                                                            COMPONENT_TYPES.MULTIPLIER,
-                                                                            !e.target.checked
-                                                                        )}
-                                                                        disabled={isLoadingPreferences}
-                                                                    />
-                                                                    <span className="toggle-slider"></span>
-                                                                </label>
+                                                    );
+                                                })}
+                                                {subItems.map((m, idx) => {
+                                                    const isExpanded = expandedMultipliers.has(m.id);
+                                                    const isDisabled = isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER);
+                                                    const hasExpandableContent = m.Requirements || m.Details || showTrackingPreferences;
+
+                                                    return (
+                                                        <div key={m.id ?? `sub-${idx}-${m.SubCategory}`} className={`table-row sub-row${isDisabled ? ' disabled' : ''}${isExpanded ? ' expanded' : ''}`}>
+                                                            <div
+                                                                className={`multiplier-row-clickable${hasExpandableContent ? ' has-expandable' : ''}`}
+                                                                onClick={() => hasExpandableContent && toggleMultiplierExpanded(m.id)}
+                                                                role={hasExpandableContent ? 'button' : undefined}
+                                                                tabIndex={hasExpandableContent ? 0 : undefined}
+                                                                onKeyDown={(e) => hasExpandableContent && e.key === 'Enter' && toggleMultiplierExpanded(m.id)}
+                                                            >
+                                                                <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
+                                                                <div className="cell subcategory">
+                                                                    {isDisabled && (
+                                                                        <span className="disabled-pill">Disabled</span>
+                                                                    )}
+                                                                    <span className="multiplier-name">{m.Name}</span>
+                                                                    <p className="multiplier-desc">{m.Description}</p>
+                                                                </div>
+                                                                {hasExpandableContent && (
+                                                                    <div className="cell chevron">
+                                                                        <Icon
+                                                                            name="chevron-down"
+                                                                            variant="mini"
+                                                                            size={16}
+                                                                            color={ICON_GRAY}
+                                                                            className={`toggle-icon${isExpanded ? ' rotated' : ''}`}
+                                                                        />
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                ))}
+                                                            {isExpanded && hasExpandableContent && (
+                                                                <div className="multiplier-expanded-content">
+                                                                    {m.Requirements && (
+                                                                        <div className="multiplier-requirements">
+                                                                            <span className="label">Requirements:</span> {m.Requirements}
+                                                                        </div>
+                                                                    )}
+                                                                    {m.Details && (
+                                                                        <div className="multiplier-details-text">
+                                                                            <span className="label">Details:</span> {m.Details}
+                                                                        </div>
+                                                                    )}
+                                                                    {showTrackingPreferences && (
+                                                                        <div className="tracking-toggle">
+                                                                            <label className="toggle-switch">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    checked={!isDisabled}
+                                                                                    onChange={(e) => handleComponentDisabledChange(
+                                                                                        m.id,
+                                                                                        COMPONENT_TYPES.MULTIPLIER,
+                                                                                        !e.target.checked
+                                                                                    )}
+                                                                                    disabled={isLoadingPreferences}
+                                                                                />
+                                                                                <span className="toggle-slider"></span>
+                                                                            </label>
+                                                                            <span className="preference-label">
+                                                                                {isDisabled ? 'Multiplier Inactive' : 'Multiplier Active'}
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     );
