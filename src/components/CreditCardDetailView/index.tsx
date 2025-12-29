@@ -28,6 +28,7 @@ interface CreditCardDetailViewProps {
     isRemovingCard?: boolean;
     cardBeingRemoved?: CreditCard | null;
     onSetPreferred?: () => void;
+    isSettingPreferred?: boolean; // Loading state for setting preferred
     onRemoveCard?: () => void;
     noCards?: boolean;
     showTrackingPreferences?: boolean; // Controls whether to show credit tracking preferences
@@ -46,6 +47,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     isRemovingCard = false,
     cardBeingRemoved = null,
     onSetPreferred,
+    isSettingPreferred = false,
     onRemoveCard,
     noCards = false,
     showTrackingPreferences = false,
@@ -296,16 +298,26 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
             <div className="card-action-buttons">
                 {onSetPreferred && (
                     <button
-                        className={`preferred-button ${cardDetails.isDefaultCard ? 'is-preferred' : ''}`}
+                        className={`preferred-button ${cardDetails.isDefaultCard ? 'is-preferred' : ''} ${isSettingPreferred ? 'is-loading' : ''}`}
                         onClick={onSetPreferred}
                         type="button"
+                        disabled={isSettingPreferred}
                     >
-                        <Icon
-                            name="star"
-                            variant={cardDetails.isDefaultCard ? 'solid' : 'outline'}
-                            size={16}
-                            className="preferred-icon"
-                        />
+                        {isSettingPreferred ? (
+                            <Icon
+                                name="spinner"
+                                variant="default"
+                                size={16}
+                                className="loading-spinner"
+                            />
+                        ) : (
+                            <Icon
+                                name="star"
+                                variant={cardDetails.isDefaultCard ? 'solid' : 'outline'}
+                                size={16}
+                                className="preferred-icon"
+                            />
+                        )}
                         {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set Preferred'}
                     </button>
                 )}

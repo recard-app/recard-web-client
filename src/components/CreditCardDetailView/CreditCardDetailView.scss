@@ -80,6 +80,7 @@
     margin-bottom: $space-3;
 
     .preferred-button {
+      min-width: 130px; // Prevent size shift during loading
       background-color: $neutral-lightest-gray;
       color: $neutral-black;
       border: $border-full solid $neutral-gray;
@@ -125,6 +126,22 @@
 
       &:hover .preferred-icon {
         opacity: 1;
+      }
+
+      // Loading state
+      &:disabled,
+      &.is-loading {
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+
+      .loading-spinner {
+        stroke: $neutral-medium-gray;
+        fill: none;
+      }
+
+      &.is-preferred .loading-spinner {
+        stroke: $primary-dark;
       }
     }
 

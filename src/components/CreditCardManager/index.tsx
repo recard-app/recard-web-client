@@ -81,6 +81,9 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     // Remove card loading state
     const [isRemovingCard, setIsRemovingCard] = useState(false);
     const [cardBeingRemoved, setCardBeingRemoved] = useState<CreditCard | null>(null);
+
+    // Preferred loading state
+    const [isSettingPreferred, setIsSettingPreferred] = useState(false);
     // Ref to restore focus to the parent drawer when nested drawer closes
     const parentDrawerHeaderRef = useRef<HTMLDivElement | null>(null);
     
@@ -232,6 +235,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
         try {
             // Clear any previous errors
             setShowError(false);
+            setIsSettingPreferred(true);
             
             // Toggle the preferred status
             const newIsDefault = !card.isDefaultCard;
@@ -292,10 +296,14 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                     setCardDetails(updatedCardDetails);
                 }
             }
+
+            // Clear loading state after all state updates are queued
+            setIsSettingPreferred(false);
         } catch (error) {
             console.error('Error setting preferred card:', error);
             setErrorMessage('Unable to set this card as preferred. Please try again.');
             setShowError(true);
+            setIsSettingPreferred(false);
         }
     };
 
@@ -623,6 +631,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                     cardBeingRemoved={cardBeingRemoved}
                     noCards={selectedCards.length === 0}
                     onSetPreferred={selectedCard ? () => handleSetPreferred(selectedCard) : undefined}
+                    isSettingPreferred={isSettingPreferred}
                     onRemoveCard={selectedCard ? () => handleRemoveCard(selectedCard) : undefined}
                     showTrackingPreferences={true}
                     onPreferencesUpdate={onPreferencesUpdate}
