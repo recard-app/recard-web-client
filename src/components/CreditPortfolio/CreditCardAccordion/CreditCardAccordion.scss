@@ -1,0 +1,179 @@
+@use '../../../styling/variables' as *;
+
+.credit-card-accordion {
+  background-color: $neutral-white;
+  border: $border-full solid $neutral-light-gray;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: $shadow-sm;
+  }
+
+  &.expanded {
+    box-shadow: $shadow-md;
+  }
+
+  // Accordion header - clickable
+  .accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: $space-4;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.15s ease;
+    position: relative;
+
+    &:hover {
+      background-color: $neutral-lightest-gray;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary-medium;
+      outline-offset: -2px;
+    }
+  }
+
+  // Card identity section
+  .card-identity {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    flex: 1;
+    min-width: 0;
+
+    .card-icon {
+      flex-shrink: 0;
+    }
+
+    .card-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+
+      .card-name {
+        font-family: $font-manrope;
+        font-size: $font-sm;
+        font-weight: $font-semibold;
+        color: $neutral-black;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .card-meta {
+        font-family: $font-manrope;
+        font-size: $font-xs;
+        color: $neutral-dark-gray;
+      }
+    }
+  }
+
+  // Header stats section
+  .header-stats {
+    display: flex;
+    align-items: center;
+    gap: $space-4;
+    flex-shrink: 0;
+
+    .usage-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+
+      .usage-value {
+        font-family: $font-manrope;
+        font-size: $font-sm;
+        font-weight: $font-semibold;
+        color: $neutral-black;
+      }
+
+      .usage-label {
+        font-family: $font-manrope;
+        font-size: $font-xs;
+        color: $neutral-dark-gray;
+      }
+    }
+
+    .usage-percentage {
+      .percentage-value {
+        font-family: $font-manrope;
+        font-size: $font-sm;
+        font-weight: $font-bold;
+        padding: $space-1 $space-2;
+        border-radius: $radius-sm;
+
+        &.high {
+          color: $success;
+          background-color: rgba($success, 0.1);
+        }
+
+        &.medium {
+          color: $warning;
+          background-color: rgba($warning, 0.1);
+        }
+
+        &.low {
+          color: $neutral-dark-gray;
+          background-color: $neutral-lightest-gray;
+        }
+      }
+    }
+
+    .chevron-icon {
+      transition: transform 0.2s ease;
+
+      &.rotated {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  // Accordion content
+  .accordion-content {
+    border-top: $border-full solid $neutral-light-gray;
+    padding: 0 $space-4 $space-4;
+  }
+
+  // Responsive
+  @media (max-width: $mobile-breakpoint) {
+    .accordion-header {
+      padding: $space-3;
+      padding-right: $space-8; // Make room for absolute chevron
+      flex-wrap: wrap;
+      gap: $space-2;
+    }
+
+    .card-identity {
+      flex: 1 1 100%;
+    }
+
+    .header-stats {
+      flex: 1 1 100%;
+      justify-content: space-between;
+
+      .usage-stat {
+        flex-direction: row;
+        align-items: baseline;
+        gap: $space-1;
+      }
+
+      .chevron-icon {
+        position: absolute;
+        top: $space-3;
+        right: $space-3;
+      }
+    }
+
+    .accordion-content {
+      padding: 0 $space-3 $space-3;
+    }
+  }
+}

@@ -1,0 +1,167 @@
+@use '../../../styling/variables' as *;
+
+.credit-portfolio-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: $space-6;
+
+  // Portfolio header
+  .portfolio-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $space-6;
+    flex-wrap: wrap;
+    gap: $space-4;
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: $space-1;
+
+      .portfolio-title {
+        font-family: $font-cal-sans;
+        font-size: $font-h4;
+        color: $neutral-black;
+        margin: 0;
+      }
+
+      .portfolio-subtitle {
+        font-family: $font-manrope;
+        font-size: $font-sm;
+        color: $neutral-dark-gray;
+      }
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: $space-3;
+
+      .expand-collapse-button {
+        padding: $space-2 $space-3;
+        background-color: transparent;
+        border: $border-full solid $neutral-light-gray;
+        border-radius: $radius-md;
+        font-family: $font-manrope;
+        font-size: $font-sm;
+        font-weight: $font-medium;
+        color: $neutral-dark-gray;
+        cursor: pointer;
+        transition: all 0.15s ease;
+
+        &:hover {
+          background-color: $neutral-lightest-gray;
+          border-color: $neutral-gray;
+        }
+
+        &:focus-visible {
+          outline: 2px solid $primary-medium;
+          outline-offset: 2px;
+        }
+      }
+    }
+  }
+
+  // Portfolio content area
+  .portfolio-content {
+    flex: 1;
+    overflow-y: auto;
+    position: relative;
+
+    .portfolio-refreshing {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: $space-2;
+      background-color: rgba($primary-light, 0.9);
+      text-align: center;
+      font-family: $font-manrope;
+      font-size: $font-xs;
+      color: $primary-dark;
+      z-index: 10;
+      border-radius: $radius-sm;
+    }
+  }
+
+  // Card accordions container
+  .card-accordions {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+  }
+
+  // Loading state
+  .portfolio-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 200px;
+  }
+
+  // Error state
+  .portfolio-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 200px;
+    gap: $space-4;
+
+    .retry-button {
+      padding: $space-2 $space-4;
+      background-color: $primary-medium;
+      border: none;
+      border-radius: $radius-md;
+      font-family: $font-manrope;
+      font-size: $font-sm;
+      font-weight: $font-medium;
+      color: $neutral-white;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+
+      &:hover {
+        background-color: $primary-dark;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary-medium;
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  // Empty state
+  .portfolio-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 200px;
+  }
+
+  // Responsive
+  @media (max-width: $mobile-breakpoint) {
+    padding: $space-4;
+
+    .portfolio-header {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .header-left {
+        .portfolio-title {
+          font-size: $font-h5;
+        }
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  }
+}

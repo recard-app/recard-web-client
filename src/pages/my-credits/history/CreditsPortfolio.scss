@@ -1,0 +1,59 @@
+@use '../../../styling/variables' as *;
+
+// Credits Portfolio page styles
+// Most styling is in the CreditPortfolioView component
+
+.standard-page-content--no-padding {
+  .credit-portfolio-view {
+    height: 100%;
+    padding: $space-4;
+
+    @media (min-width: $mobile-breakpoint) {
+      padding: $space-6;
+    }
+  }
+}
+
+// Help modal content styling
+.help-modal-content {
+  section {
+    margin-bottom: $space-4;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    h3 {
+      font-family: $font-manrope;
+      font-size: $font-base;
+      font-weight: $font-semibold;
+      color: $neutral-black;
+      margin: 0 0 $space-2 0;
+    }
+
+    p {
+      font-family: $font-manrope;
+      font-size: $font-sm;
+      color: $neutral-dark-gray;
+      margin: 0 0 $space-2 0;
+      line-height: 1.5;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: $space-4;
+
+      li {
+        font-family: $font-manrope;
+        font-size: $font-sm;
+        color: $neutral-dark-gray;
+        margin-bottom: $space-1;
+        line-height: 1.4;
+
+        strong {
+          color: $neutral-black;
+        }
+      }
+    }
+  }
+}

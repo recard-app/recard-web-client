@@ -17,6 +17,7 @@ export interface UsageBarProps {
   labelsVertical?: boolean;
   animate?: boolean;
   className?: string;
+  valuePrefix?: string;
 }
 
 const UsageBar: React.FC<UsageBarProps> = ({
@@ -29,6 +30,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
   labelsVertical = false,
   animate = true,
   className = '',
+  valuePrefix = '',
 }) => {
   // Use thickness if provided, otherwise fall back to height
   const barHeight = thickness ?? height;
@@ -81,7 +83,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
                     borderTopRightRadius: (isLast && remainingPercentage === 0) || isOnlySegment ? `${borderRadius}px` : '0',
                     borderBottomRightRadius: (isLast && remainingPercentage === 0) || isOnlySegment ? `${borderRadius}px` : '0',
                   }}
-                  title={`${segment.label}: ${segment.value}`}
+                  title={`${segment.label}: ${valuePrefix}${segment.value}`}
                 />
               );
             })}
@@ -93,7 +95,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
                   borderTopRightRadius: `${borderRadius}px`,
                   borderBottomRightRadius: `${borderRadius}px`,
                 }}
-                title={`Remaining: ${maxValue - totalValue}`}
+                title={`Remaining: ${valuePrefix}${maxValue - totalValue}`}
               />
             )}
           </>
@@ -118,7 +120,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
                 style={{ backgroundColor: segment.color }}
               />
               <span className="usage-bar-label-text">
-                {segment.label}: {segment.value}
+                {segment.label}: {valuePrefix}{segment.value}
               </span>
             </div>
           ))}
@@ -126,7 +128,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
             <div className="usage-bar-label">
               <span className="usage-bar-label-dot usage-bar-label-dot--remaining" />
               <span className="usage-bar-label-text">
-                Remaining: {maxValue - totalValue}
+                Remaining: {valuePrefix}{maxValue - totalValue}
               </span>
             </div>
           )}

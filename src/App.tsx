@@ -34,8 +34,9 @@ import MyCardsHelpModal from './pages/my-cards/MyCardsHelpModal';
 import PreferencesHelpModal from './pages/preferences/PreferencesHelpModal';
 import MyCreditsHelpModal from './pages/my-credits/MyCreditsHelpModal';
 import MyCredits from './pages/my-credits/MyCredits';
-import CreditsHistory from './pages/my-credits/history/CreditsHistory';
-import CreditsHistoryHelpModal from './pages/my-credits/history/CreditsHistoryHelpModal';
+import CreditsHistory from './pages/my-credits/history-legacy/CreditsHistory';
+import CreditsHistoryHelpModal from './pages/my-credits/history-legacy/CreditsHistoryHelpModal';
+import CreditsPortfolio from './pages/my-credits/history/CreditsPortfolio';
 import DesignSystem from './pages/design-system/DesignSystem';
 import FullComponents from './pages/design-system/components/FullComponents';
 // Components
@@ -1166,6 +1167,19 @@ function AppContent({}: AppContentProps) {
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.MY_CREDITS_HISTORY.PATH} element={
+                    <ProtectedRoute>
+                      <CreditsPortfolio
+                        userCardDetails={userDetailedCardDetails}
+                        reloadTrigger={cardsVersion}
+                        onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
+                        onAddUpdatingCreditId={addUpdatingCreditId}
+                        onRemoveUpdatingCreditId={removeUpdatingCreditId}
+                        isCreditUpdating={isCreditUpdating}
+                        onClearAllUpdatingCredits={clearAllUpdatingCredits}
+                      />
+                    </ProtectedRoute>
+                  } />
+                  <Route path={PAGES.MY_CREDITS_HISTORY_LEGACY.PATH} element={
                     <ProtectedRoute>
                       <CreditsHistory
                         userCardDetails={userDetailedCardDetails}

@@ -1,0 +1,107 @@
+@use '../../../styling/variables' as *;
+
+// Year Dropdown Trigger - based on CardSwitcherDropdown pattern
+.year-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background-color: $neutral-lightest-gray;
+  border: $border-full solid $neutral-gray;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: border-color $transition-base, background-color $transition-base;
+
+  &:hover:not(.disabled) {
+    border-color: $neutral-medium-gray;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    background-color: $neutral-lightest-gray;
+  }
+
+  .year-text {
+    font-family: $font-manrope;
+    font-size: $font-sm;
+    font-weight: $font-semibold;
+    color: $neutral-black;
+  }
+
+  .trigger-chevron {
+    transition: transform $transition-base;
+  }
+
+  .trigger-spinner {
+    animation: spin 1s linear infinite;
+  }
+
+  &[data-state='open'] .trigger-chevron {
+    transform: rotate(180deg);
+  }
+}
+
+// Year Dropdown Content - override global dropdown styles
+.year-dropdown-content[data-slot="dropdown-menu-content"] {
+  min-width: 100px !important;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: $space-1 !important;
+  background-color: $neutral-white !important;
+  border: $border-full solid $neutral-light-gray !important;
+  border-radius: $radius-base !important;
+  box-shadow: $shadow-md !important;
+
+  .year-dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space-2 $space-3;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    outline: none;
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background-color: $neutral-lightest-gray;
+    }
+
+    &.selected {
+      background-color: $neutral-light-gray;
+    }
+
+    &:focus {
+      background-color: $neutral-lightest-gray;
+    }
+
+    &[data-highlighted] {
+      background-color: $neutral-lightest-gray;
+    }
+
+    .year-label {
+      font-family: $font-manrope;
+      font-size: $font-sm;
+      font-weight: $font-regular;
+      color: $neutral-black;
+    }
+
+    &.selected .year-label {
+      font-weight: $font-semibold;
+    }
+
+    .check-icon {
+      flex-shrink: 0;
+    }
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

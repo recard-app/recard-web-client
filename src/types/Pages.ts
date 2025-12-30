@@ -49,7 +49,11 @@ export const PAGES = {
   },
   MY_CREDITS_HISTORY: {
     PATH: '/my-credits/history',
-    TITLE: 'My Credits',
+    TITLE: 'Credit History',
+  },
+  MY_CREDITS_HISTORY_LEGACY: {
+    PATH: '/my-credits/history-legacy',
+    TITLE: 'Credit History (Legacy)',
   },
   DELETE_HISTORY: {
     PATH: '/delete-history',
@@ -144,7 +148,7 @@ export const PageUtils = {
 export const {
   HOME,
   SIGN_IN,
-  SIGN_UP, 
+  SIGN_UP,
   FORGOT_PASSWORD,
   WELCOME,
   PREFERENCES,
@@ -153,5 +157,6 @@ export const {
   MY_CARDS,
   MY_CREDITS,
   MY_CREDITS_HISTORY,
+  MY_CREDITS_HISTORY_LEGACY,
   DELETE_HISTORY,
 } = PAGES;

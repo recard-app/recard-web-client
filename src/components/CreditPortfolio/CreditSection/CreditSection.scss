@@ -1,0 +1,60 @@
+@use '../../../styling/variables' as *;
+
+.credit-section {
+  padding: $space-4 0;
+
+  // Divider between credit sections
+  & + & {
+    border-top: $border-full solid $neutral-light-gray;
+  }
+
+  .credit-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: $space-2;
+
+    .credit-info {
+      display: flex;
+      flex-direction: column;
+      gap: $space-1;
+
+      .credit-title {
+        font-family: $font-manrope;
+        font-size: $font-sm;
+        font-weight: $font-semibold;
+        color: $neutral-black;
+        margin: 0;
+      }
+
+      .credit-meta {
+        font-family: $font-manrope;
+        font-size: $font-xs;
+        color: $neutral-dark-gray;
+        display: flex;
+        align-items: center;
+        gap: $space-2;
+
+        .anniversary-badge {
+          display: inline-flex;
+          padding: 2px 6px;
+          background-color: $neutral-light-gray;
+          border-radius: $radius-sm;
+          font-size: $font-xxs;
+          font-weight: $font-medium;
+          color: $neutral-dark-gray;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+  }
+
+  .credit-period-display {
+    margin: $space-2 0;
+  }
+
+  .credit-usage-bar {
+    margin-top: $space-3;
+  }
+}

@@ -1,0 +1,32 @@
+@use '../../../styling/variables' as *;
+
+.credit-edit-modal-drawer {
+  .drawer-content-scroll {
+    padding: 0 $space-4 $space-4;
+    overflow: auto;
+  }
+}
+
+// Shared styles for both modal and drawer
+.dialog-content-scroll {
+  padding: 0 $space-6 $space-6;
+  overflow: auto;
+  max-height: 70vh;
+}
+
+.card-bubble-display {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  font-family: $font-manrope;
+  font-size: $font-xs;
+  color: $neutral-dark-gray;
+
+  .card-thumbnail {
+    flex-shrink: 0;
+  }
+}
+
+.header-card-display {
+  margin-top: $space-1;
+}
