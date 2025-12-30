@@ -10,56 +10,30 @@
   .portfolio-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: $space-6;
-    flex-wrap: wrap;
-    gap: $space-4;
+    justify-content: flex-end;
+    margin-bottom: $space-4;
+    gap: $space-3;
 
-    .header-left {
-      display: flex;
-      flex-direction: column;
-      gap: $space-1;
+    .expand-collapse-button {
+      padding: $space-2 $space-3;
+      background-color: transparent;
+      border: $border-full solid $neutral-light-gray;
+      border-radius: $radius-md;
+      font-family: $font-manrope;
+      font-size: $font-sm;
+      font-weight: $font-medium;
+      color: $neutral-dark-gray;
+      cursor: pointer;
+      transition: all 0.15s ease;
 
-      .portfolio-title {
-        font-family: $font-cal-sans;
-        font-size: $font-h4;
-        color: $neutral-black;
-        margin: 0;
+      &:hover {
+        background-color: $neutral-lightest-gray;
+        border-color: $neutral-gray;
       }
 
-      .portfolio-subtitle {
-        font-family: $font-manrope;
-        font-size: $font-sm;
-        color: $neutral-dark-gray;
-      }
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: $space-3;
-
-      .expand-collapse-button {
-        padding: $space-2 $space-3;
-        background-color: transparent;
-        border: $border-full solid $neutral-light-gray;
-        border-radius: $radius-md;
-        font-family: $font-manrope;
-        font-size: $font-sm;
-        font-weight: $font-medium;
-        color: $neutral-dark-gray;
-        cursor: pointer;
-        transition: all 0.15s ease;
-
-        &:hover {
-          background-color: $neutral-lightest-gray;
-          border-color: $neutral-gray;
-        }
-
-        &:focus-visible {
-          outline: 2px solid $primary-medium;
-          outline-offset: 2px;
-        }
+      &:focus-visible {
+        outline: 2px solid $primary-medium;
+        outline-offset: 2px;
       }
     }
   }
@@ -149,19 +123,7 @@
     padding: $space-4;
 
     .portfolio-header {
-      flex-direction: column;
-      align-items: flex-start;
-
-      .header-left {
-        .portfolio-title {
-          font-size: $font-h5;
-        }
-      }
-
-      .header-right {
-        width: 100%;
-        justify-content: space-between;
-      }
+      justify-content: space-between;
     }
   }
 }

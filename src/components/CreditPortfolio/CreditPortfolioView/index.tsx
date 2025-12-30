@@ -270,7 +270,6 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     return (
       <div className="credit-portfolio-view">
         <div className="portfolio-header">
-          <h1 className="portfolio-title">Credit History</h1>
           <YearDropdown
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
@@ -296,27 +295,19 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   return (
     <div className="credit-portfolio-view">
       <div className="portfolio-header">
-        <div className="header-left">
-          <h1 className="portfolio-title">Credit History</h1>
-          <span className="portfolio-subtitle">
-            {cardsWithCredits.length} card{cardsWithCredits.length !== 1 ? 's' : ''} with credits
-          </span>
-        </div>
-        <div className="header-right">
-          <button
-            className="expand-collapse-button"
-            onClick={allExpanded ? collapseAll : expandAll}
-            type="button"
-          >
-            {allExpanded ? 'Collapse All' : 'Expand All'}
-          </button>
-          <YearDropdown
-            selectedYear={selectedYear}
-            onYearChange={handleYearChange}
-            availableYears={availableYears}
-            loading={isLoading}
-          />
-        </div>
+        <button
+          className="expand-collapse-button"
+          onClick={allExpanded ? collapseAll : expandAll}
+          type="button"
+        >
+          {allExpanded ? 'Collapse All' : 'Expand All'}
+        </button>
+        <YearDropdown
+          selectedYear={selectedYear}
+          onYearChange={handleYearChange}
+          availableYears={availableYears}
+          loading={isLoading}
+        />
       </div>
 
       <div className="portfolio-content">

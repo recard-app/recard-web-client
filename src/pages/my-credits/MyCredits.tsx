@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, UserCredit } from '../../types';
+import { PAGE_ICONS, PAGE_NAMES, PAGES, CalendarUserCredits, UserCredit } from '../../types';
 import { UserCreditCardService } from '../../services';
 import CreditsDisplay from '../../components/CreditsDisplay';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
@@ -163,10 +163,10 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                   customHeaderActions={
                     <button
                       className="button ghost icon with-text no-padding"
-                      onClick={() => navigate('/my-credits/history')}
+                      onClick={() => navigate(PAGES.MY_CREDITS_HISTORY.PATH)}
                     >
                       <Icon name="history-clock" variant="micro" size={14} />
-                      View Past Credits
+                      View All Credits
                     </button>
                   }
                   onUpdateComplete={onRefreshMonthlyStats}

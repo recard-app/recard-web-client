@@ -41,7 +41,7 @@ const CreditsPortfolio: React.FC<CreditsPortfolioProps> = ({
       <PageHeader
         title={PAGE_NAMES.MY_CREDITS}
         icon={PAGE_ICONS.MY_CREDITS.MINI}
-        subtitle="Full History"
+        subtitle="All Credits"
         showHelpButton={true}
         onHelpClick={() => setIsHelpOpen(true)}
         titleLink={PAGES.MY_CREDITS.PATH}
