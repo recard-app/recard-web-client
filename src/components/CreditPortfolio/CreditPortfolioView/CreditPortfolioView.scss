@@ -113,7 +113,11 @@
     padding: $space-4;
 
     .portfolio-header {
-      justify-content: space-between;
+      justify-content: flex-end;
+
+      .expand-collapse-button {
+        display: none;
+      }
     }
   }
 }
