@@ -76,6 +76,48 @@ export interface CardCredit {
 
 
 /**
+ * Multiplier type constants
+ */
+export const MULTIPLIER_TYPES = {
+    STANDARD: 'standard',
+    ROTATING: 'rotating',
+    SELECTABLE: 'selectable'
+} as const;
+export type MultiplierType = typeof MULTIPLIER_TYPES[keyof typeof MULTIPLIER_TYPES];
+
+/**
+ * Spending cap period constants
+ */
+export const SPENDING_CAP_PERIODS = {
+    MONTHLY: 'monthly',
+    QUARTERLY: 'quarterly',
+    SEMIANNUALLY: 'semiannually',
+    ANNUALLY: 'annually'
+} as const;
+export type SpendingCapPeriod = typeof SPENDING_CAP_PERIODS[keyof typeof SPENDING_CAP_PERIODS];
+
+/**
+ * Schedule period type constants (for rotating multipliers)
+ */
+export const SCHEDULE_PERIOD_TYPES = {
+    QUARTER: 'quarter',
+    MONTH: 'month',
+    HALF_YEAR: 'half_year',
+    YEAR: 'year',
+    CUSTOM: 'custom'
+} as const;
+export type SchedulePeriodType = typeof SCHEDULE_PERIOD_TYPES[keyof typeof SCHEDULE_PERIOD_TYPES];
+
+/**
+ * Spending cap for display purposes (no tracking)
+ */
+export interface SpendingCap {
+    amount: number;                // e.g., 1500
+    period: SpendingCapPeriod;
+    currency: string;              // e.g., 'USD'
+}
+
+/**
  * Represents a rewards multiplier for specific spending categories
  *
  * Date Handling:
@@ -89,15 +131,163 @@ export interface CardMultiplier {
     id: string;
     ReferenceCardId: string;
     Name: string;
-    Category: string;
-    SubCategory: string;
+    Category: string;              // For standard: the fixed category
+    SubCategory: string;           // For standard: the fixed subcategory
     Description: string;
     Multiplier: number | null;
     Requirements: string;
     Details?: string;
-    EffectiveFrom: string;   // ISO date: "2025-01-01"
-    EffectiveTo: string;      // ISO date: "2025-12-31" or "9999-12-31" for ongoing
+    EffectiveFrom: string;         // ISO date: "2025-01-01"
+    EffectiveTo: string;           // ISO date: "2025-12-31" or "9999-12-31" for ongoing
     LastUpdated: string;
+
+    // Rotating & Selectable Multiplier Fields
+    multiplierType: MultiplierType;  // Required - 'standard' | 'rotating' | 'selectable'
+    spendingCap?: SpendingCap;       // Optional - for display only
+}
+
+/**
+ * Represents a rotating schedule entry for a multiplier
+ */
+export interface RotatingScheduleEntry {
+    id: string;                      // Auto-generated document ID
+    category: string;                // Category from taxonomy
+    subCategory: string;             // SubCategory from taxonomy
+    periodType: SchedulePeriodType;
+    periodValue?: number;            // For quarter: 1-4, month: 1-12, half_year: 1-2
+    year: number;                    // e.g., 2025
+    startDate: string;               // ISO date - calculated or custom
+    endDate: string;                 // ISO date - calculated or custom
+    isCustomDateRange: boolean;      // True if manually specified dates
+    title: string;                   // REQUIRED - Display name for this period (e.g., "Amazon.com purchases")
+}
+
+/**
+ * Represents an allowed category for a selectable multiplier
+ */
+export interface AllowedCategoryEntry {
+    id: string;                      // Auto-generated document ID
+    category: string;                // Category from taxonomy
+    subCategory: string;             // SubCategory from taxonomy
+    displayName: string;             // User-friendly name (e.g., "Gas Stations")
+}
+
+/**
+ * User's category selections for selectable multipliers
+ */
+export interface UserMultiplierSelections {
+    [multiplierId: string]: {
+        selectedCategoryId: string;    // References AllowedCategoryEntry.id
+        updatedAt: string;             // ISO timestamp
+    };
+}
+
+/**
+ * Enriched multiplier type that includes schedule or selection data
+ */
+export type EnrichedMultiplier = CardMultiplier & {
+    currentSchedules?: RotatingScheduleEntry[];    // Populated for rotating type - array for multiple categories per period
+    allowedCategories?: AllowedCategoryEntry[];    // Populated for selectable type
+    userSelectedCategory?: AllowedCategoryEntry;   // User's current selection
+}
+
+/**
+ * Type guard for rotating multipliers
+ */
+export function isRotatingMultiplier(mult: EnrichedMultiplier): mult is EnrichedMultiplier & { currentSchedules?: RotatingScheduleEntry[] } {
+    return mult.multiplierType === MULTIPLIER_TYPES.ROTATING;
+}
+
+/**
+ * Type guard for selectable multipliers
+ */
+export function isSelectableMultiplier(mult: EnrichedMultiplier): mult is EnrichedMultiplier & { allowedCategories?: AllowedCategoryEntry[]; userSelectedCategory?: AllowedCategoryEntry } {
+    return mult.multiplierType === MULTIPLIER_TYPES.SELECTABLE;
+}
+
+/**
+ * Display names for multiplier types
+ */
+export const MULTIPLIER_TYPE_DISPLAY_NAMES: Record<MultiplierType, string> = {
+    [MULTIPLIER_TYPES.STANDARD]: 'Standard',
+    [MULTIPLIER_TYPES.ROTATING]: 'Rotating',
+    [MULTIPLIER_TYPES.SELECTABLE]: 'Selectable'
+};
+
+/**
+ * Display names for schedule periods
+ */
+export const SCHEDULE_PERIOD_DISPLAY_NAMES: Record<SchedulePeriodType, string> = {
+    [SCHEDULE_PERIOD_TYPES.QUARTER]: 'Quarter',
+    [SCHEDULE_PERIOD_TYPES.MONTH]: 'Month',
+    [SCHEDULE_PERIOD_TYPES.HALF_YEAR]: 'Half Year',
+    [SCHEDULE_PERIOD_TYPES.YEAR]: 'Year',
+    [SCHEDULE_PERIOD_TYPES.CUSTOM]: 'Custom'
+};
+
+/**
+ * Display names for spending cap periods
+ */
+export const SPENDING_CAP_PERIOD_DISPLAY_NAMES: Record<SpendingCapPeriod, string> = {
+    [SPENDING_CAP_PERIODS.MONTHLY]: 'month',
+    [SPENDING_CAP_PERIODS.QUARTERLY]: 'quarter',
+    [SPENDING_CAP_PERIODS.SEMIANNUALLY]: '6 months',
+    [SPENDING_CAP_PERIODS.ANNUALLY]: 'year'
+};
+
+/**
+ * Format a spending cap for display
+ */
+export function formatSpendingCap(cap: SpendingCap): string {
+    const currencySymbol = cap.currency === 'USD' ? '$' : cap.currency;
+    const periodLabel = SPENDING_CAP_PERIOD_DISPLAY_NAMES[cap.period];
+    return `Up to ${currencySymbol}${cap.amount.toLocaleString()}/${periodLabel}`;
+}
+
+/**
+ * Get the effective category for a multiplier
+ * Returns the current schedule category for rotating (first one if multiple), user selected for selectable, or fixed category for standard
+ */
+export function getEffectiveCategory(mult: EnrichedMultiplier): { category: string; subCategory: string } {
+    if (isRotatingMultiplier(mult) && mult.currentSchedules && mult.currentSchedules.length > 0) {
+        return {
+            category: mult.currentSchedules[0].category,
+            subCategory: mult.currentSchedules[0].subCategory
+        };
+    }
+    if (isSelectableMultiplier(mult) && mult.userSelectedCategory) {
+        return {
+            category: mult.userSelectedCategory.category,
+            subCategory: mult.userSelectedCategory.subCategory
+        };
+    }
+    return {
+        category: mult.Category,
+        subCategory: mult.SubCategory
+    };
+}
+
+/**
+ * Get all effective categories for a rotating multiplier
+ * Returns all current schedule categories for rotating multipliers
+ */
+export function getAllEffectiveCategories(mult: EnrichedMultiplier): Array<{ category: string; subCategory: string }> {
+    if (isRotatingMultiplier(mult) && mult.currentSchedules && mult.currentSchedules.length > 0) {
+        return mult.currentSchedules.map(schedule => ({
+            category: schedule.category,
+            subCategory: schedule.subCategory
+        }));
+    }
+    if (isSelectableMultiplier(mult) && mult.userSelectedCategory) {
+        return [{
+            category: mult.userSelectedCategory.category,
+            subCategory: mult.userSelectedCategory.subCategory
+        }];
+    }
+    return [{
+        category: mult.Category,
+        subCategory: mult.SubCategory
+    }];
 }
 
 /**

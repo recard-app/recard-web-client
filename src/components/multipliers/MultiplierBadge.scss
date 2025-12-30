@@ -1,0 +1,14 @@
+@import '../../styling/variables.scss';
+
+.multiplier-badge {
+  display: inline-block;
+  padding: $space-half $space-2;
+  margin-left: $space-1;
+  font-size: $font-xxs;
+  font-weight: $font-medium;
+  color: $primary-color;
+  background-color: $primary-lightest;
+  border-radius: $radius-full;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

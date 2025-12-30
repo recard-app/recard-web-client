@@ -1,0 +1,75 @@
+@use '../../styling/variables' as *;
+
+.category-selector {
+  width: 100%;
+
+  .category-selector-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+
+    .updating-indicator {
+      position: absolute;
+      right: $space-8;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+      pointer-events: none;
+
+      .spinner {
+        width: 16px;
+        height: 16px;
+        color: $primary-color;
+        animation: spin 1s linear infinite;
+      }
+    }
+
+    .category-select {
+      width: 100%;
+
+      &.updating {
+        color: $neutral-medium-gray;
+        cursor: wait;
+      }
+    }
+  }
+
+  .stale-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-1;
+    margin-top: $space-1;
+    font-size: $font-xs;
+    color: $warning-badge-text;
+
+    .warning-icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+  }
+}
+
+.category-selector-empty {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-sm;
+  color: $warning-badge-text;
+
+  .empty-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

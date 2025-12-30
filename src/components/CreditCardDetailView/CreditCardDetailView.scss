@@ -474,6 +474,63 @@
               background-color: $neutral-white;
               transition: background-color $transition-base;
 
+              .multiplier-no-schedule {
+                font-size: $font-xs;
+                color: $warning-badge-text;
+                background-color: rgba($warning-yellow, 0.15);
+                padding: $space-2 $space-3;
+                border-radius: $radius-sm;
+                margin-bottom: $space-2;
+              }
+
+              .current-category-display {
+                font-size: $font-xs;
+                line-height: $leading-normal;
+                margin-bottom: $space-2;
+
+                .category-name {
+                  font-weight: $font-semibold;
+                  color: $neutral-black;
+                  display: inline;
+                }
+
+                .category-badge {
+                  display: none;
+                }
+
+                .period-info {
+                  display: inline;
+                  margin-left: $space-1;
+
+                  .period-icon {
+                    display: none;
+                  }
+
+                  .period-text {
+                    font-size: $font-xs;
+                    color: $neutral-dark-gray;
+                  }
+                }
+              }
+
+              .multiplier-category-selector {
+                margin-bottom: $space-3;
+
+                .selector-label {
+                  display: block;
+                  font-size: $font-xs;
+                  font-weight: $font-semibold;
+                  color: $neutral-black;
+                  margin-bottom: $space-1;
+                }
+
+                .selected-category-info {
+                  font-size: $font-xs;
+                  color: $neutral-dark-gray;
+                  margin-top: $space-1;
+                }
+              }
+
               .multiplier-requirements,
               .multiplier-details-text {
                 font-size: $font-xs;
@@ -521,6 +578,40 @@
                   font-size: $font-xs;
                   color: $neutral-dark-gray;
                   line-height: $leading-normal;
+                }
+
+                .rotating-category-preview,
+                .selected-category-preview {
+                  display: flex;
+                  align-items: flex-start;
+                  gap: $space-1;
+                  margin-top: $space-1;
+                  font-size: $font-xxs;
+
+                  .category-label {
+                    color: $neutral-medium-gray;
+                    font-weight: $font-medium;
+                    flex-shrink: 0;
+                    line-height: 1.8; // Align with category value badges
+                  }
+
+                  .category-values {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: $space-1;
+                  }
+
+                  .category-value {
+                    font-weight: $font-semibold;
+                    padding: $space-half $space-1-5;
+                    border-radius: $radius-sm;
+                  }
+                }
+
+                .rotating-category-preview .category-value,
+                .selected-category-preview .category-value {
+                  color: $primary-color;
+                  background-color: $primary-lightest;
                 }
               }
             }

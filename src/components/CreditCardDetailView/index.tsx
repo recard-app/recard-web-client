@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './CreditCardDetailView.scss';
-import { CreditCardDetails, CardMultiplier, CreditCard } from '../../types/CreditCardTypes';
+import { CreditCardDetails, EnrichedMultiplier, CreditCard, isRotatingMultiplier, isSelectableMultiplier } from '../../types/CreditCardTypes';
 import { UserComponentTrackingPreferences, ComponentType, COMPONENT_TYPES } from '../../types/CardCreditsTypes';
 import { ICON_RED, ICON_GRAY, ICON_PRIMARY, LOADING_ICON, LOADING_ICON_SIZE } from '../../types';
 import { COLORS } from '../../types/Colors';
@@ -8,7 +8,8 @@ import { CardIcon } from '../../icons';
 import { InfoDisplay, DatePicker } from '../../elements';
 import { Icon } from '../../icons';
 import { UserComponentService } from '../../services/UserServices';
-import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId } from '../../contexts/ComponentsContext';
+import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId, useComponents } from '../../contexts/ComponentsContext';
+import { MultiplierBadge, CurrentCategoryDisplay, CategorySelector } from '../multipliers';
 import {
     Dialog,
     DialogContent,
@@ -61,6 +62,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     const cardCredits = useCreditsByCardId(cardDetails?.id || '');
     const cardPerks = usePerksByCardId(cardDetails?.id || '');
     const cardMultipliers = useMultipliersByCardId(cardDetails?.id || '');
+    const { updateMultiplierSelection } = useComponents();
 
     const [componentPreferences, setComponentPreferences] = useState<UserComponentTrackingPreferences | null>(null);
     const [isLoadingPreferences, setIsLoadingPreferences] = useState(false);
@@ -460,11 +462,14 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             <div className="multipliers-table">
                                 {Array.from(
                                     cardMultipliers.reduce((map, m) => {
-                                        const key = (m.Category && m.Category.trim() !== '') ? m.Category : 'Other';
-                                        if (!map.has(key)) map.set(key, [] as CardMultiplier[]);
+                                        // For rotating/selectable, use the multiplier name as category since they're dynamic
+                                        const key = (isRotatingMultiplier(m) || isSelectableMultiplier(m))
+                                            ? 'Dynamic Categories'
+                                            : (m.Category && m.Category.trim() !== '') ? m.Category : 'Other';
+                                        if (!map.has(key)) map.set(key, [] as EnrichedMultiplier[]);
                                         map.get(key)!.push(m);
                                         return map;
-                                    }, new Map<string, CardMultiplier[]>())
+                                    }, new Map<string, EnrichedMultiplier[]>())
                                 ).map(([category, items]) => {
                                     const mainItems = items.filter(i => !i.SubCategory || i.SubCategory.trim() === '');
                                     const subItems = items.filter(i => i.SubCategory && i.SubCategory.trim() !== '');
@@ -475,7 +480,9 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                 {mainItems.map((m, idx) => {
                                                     const isExpanded = expandedMultipliers.has(m.id);
                                                     const isDisabled = isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER);
-                                                    const hasExpandableContent = m.Requirements || m.Details || showTrackingPreferences;
+                                                    const isRotating = isRotatingMultiplier(m);
+                                                    const isSelectable = isSelectableMultiplier(m);
+                                                    const hasExpandableContent = m.Requirements || m.Details || showTrackingPreferences || isRotating || isSelectable;
 
                                                     return (
                                                         <div key={m.id ?? `main-${idx}`} className={`table-row main-row${isDisabled ? ' disabled' : ''}${isExpanded ? ' expanded' : ''}`}>
@@ -492,9 +499,28 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                                         <span className="disabled-pill">Disabled</span>
                                                                     )}
                                                                     {m.Name}
+                                                                    <MultiplierBadge multiplierType={m.multiplierType} />
                                                                 </div>
                                                                 <div className="cell description">
                                                                     <div className="multiplier-desc">{m.Description}</div>
+                                                                    {isRotating && m.currentSchedules && m.currentSchedules.length > 0 && (
+                                                                        <div className="rotating-category-preview">
+                                                                            <span className="category-label">Current:</span>
+                                                                            <div className="category-values">
+                                                                                {m.currentSchedules.map((schedule, scheduleIdx) => (
+                                                                                    <span key={schedule.id || scheduleIdx} className="category-value">
+                                                                                        {schedule.title}
+                                                                                    </span>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                    {isSelectable && m.userSelectedCategory && (
+                                                                        <div className="selected-category-preview">
+                                                                            <span className="category-label">Your category:</span>
+                                                                            <span className="category-value">{m.userSelectedCategory.displayName}</span>
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                                 {hasExpandableContent && (
                                                                     <div className="cell chevron">
@@ -510,6 +536,27 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                             </div>
                                                             {isExpanded && hasExpandableContent && (
                                                                 <div className="multiplier-expanded-content">
+                                                                    {/* Rotating: Show current schedules */}
+                                                                    {isRotating && m.currentSchedules && m.currentSchedules.length > 0 && m.currentSchedules.map((schedule, scheduleIdx) => (
+                                                                        <CurrentCategoryDisplay key={schedule.id || scheduleIdx} scheduleEntry={schedule} />
+                                                                    ))}
+                                                                    {isRotating && (!m.currentSchedules || m.currentSchedules.length === 0) && (
+                                                                        <div className="multiplier-no-schedule">
+                                                                            No category scheduled for current period
+                                                                        </div>
+                                                                    )}
+                                                                    {/* Selectable: Show category selector */}
+                                                                    {isSelectable && m.allowedCategories && m.allowedCategories.length > 0 && (
+                                                                        <div className="multiplier-category-selector">
+                                                                            <span className="selector-label">Your Category:</span>
+                                                                            <CategorySelector
+                                                                                allowedCategories={m.allowedCategories}
+                                                                                selectedCategoryId={m.userSelectedCategory?.id || m.allowedCategories[0]?.id || ''}
+                                                                                onSelect={(categoryId) => updateMultiplierSelection(m.id, categoryId)}
+                                                                                disabled={!showTrackingPreferences}
+                                                                            />
+                                                                        </div>
+                                                                    )}
                                                                     {m.Requirements && (
                                                                         <div className="multiplier-requirements">
                                                                             <span className="label">Requirements:</span> {m.Requirements}
@@ -548,7 +595,9 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                 {subItems.map((m, idx) => {
                                                     const isExpanded = expandedMultipliers.has(m.id);
                                                     const isDisabled = isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER);
-                                                    const hasExpandableContent = m.Requirements || m.Details || showTrackingPreferences;
+                                                    const isRotating = isRotatingMultiplier(m);
+                                                    const isSelectable = isSelectableMultiplier(m);
+                                                    const hasExpandableContent = m.Requirements || m.Details || showTrackingPreferences || isRotating || isSelectable;
 
                                                     return (
                                                         <div key={m.id ?? `sub-${idx}-${m.SubCategory}`} className={`table-row sub-row${isDisabled ? ' disabled' : ''}${isExpanded ? ' expanded' : ''}`}>
@@ -565,9 +614,28 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                                         <span className="disabled-pill">Disabled</span>
                                                                     )}
                                                                     {m.Name}
+                                                                    <MultiplierBadge multiplierType={m.multiplierType} />
                                                                 </div>
                                                                 <div className="cell description">
                                                                     <div className="multiplier-desc">{m.Description}</div>
+                                                                    {isRotating && m.currentSchedules && m.currentSchedules.length > 0 && (
+                                                                        <div className="rotating-category-preview">
+                                                                            <span className="category-label">Current:</span>
+                                                                            <div className="category-values">
+                                                                                {m.currentSchedules.map((schedule, scheduleIdx) => (
+                                                                                    <span key={schedule.id || scheduleIdx} className="category-value">
+                                                                                        {schedule.title}
+                                                                                    </span>
+                                                                                ))}
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                    {isSelectable && m.userSelectedCategory && (
+                                                                        <div className="selected-category-preview">
+                                                                            <span className="category-label">Your category:</span>
+                                                                            <span className="category-value">{m.userSelectedCategory.displayName}</span>
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                                 {hasExpandableContent && (
                                                                     <div className="cell chevron">
@@ -583,6 +651,27 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                             </div>
                                                             {isExpanded && hasExpandableContent && (
                                                                 <div className="multiplier-expanded-content">
+                                                                    {/* Rotating: Show current schedules */}
+                                                                    {isRotating && m.currentSchedules && m.currentSchedules.length > 0 && m.currentSchedules.map((schedule, scheduleIdx) => (
+                                                                        <CurrentCategoryDisplay key={schedule.id || scheduleIdx} scheduleEntry={schedule} />
+                                                                    ))}
+                                                                    {isRotating && (!m.currentSchedules || m.currentSchedules.length === 0) && (
+                                                                        <div className="multiplier-no-schedule">
+                                                                            No category scheduled for current period
+                                                                        </div>
+                                                                    )}
+                                                                    {/* Selectable: Show category selector */}
+                                                                    {isSelectable && m.allowedCategories && m.allowedCategories.length > 0 && (
+                                                                        <div className="multiplier-category-selector">
+                                                                            <span className="selector-label">Your Category:</span>
+                                                                            <CategorySelector
+                                                                                allowedCategories={m.allowedCategories}
+                                                                                selectedCategoryId={m.userSelectedCategory?.id || m.allowedCategories[0]?.id || ''}
+                                                                                onSelect={(categoryId) => updateMultiplierSelection(m.id, categoryId)}
+                                                                                disabled={!showTrackingPreferences}
+                                                                            />
+                                                                        </div>
+                                                                    )}
                                                                     {m.Requirements && (
                                                                         <div className="multiplier-requirements">
                                                                             <span className="label">Requirements:</span> {m.Requirements}
