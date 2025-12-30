@@ -79,13 +79,26 @@ export interface CalendarUserCredits {
 
 /**
  * Represents the credit history for a user for a given credit
+ *
+ * Anniversary-Based Credits:
+ * When isAnniversaryBased is true, the credit period is based on the user's card
+ * open date rather than calendar year boundaries. Anniversary credits are always annual
+ * (one year duration). The anniversaryDate and anniversaryYear fields specify when
+ * this credit cycle started. Period dates are calculated dynamically from openDate
+ * and anniversaryYear rather than stored.
  */
 export interface UserCredit {
     CardId: string;
     CreditId: string;
     History: SingleCreditHistory[];
     AssociatedPeriod: CreditPeriodType;
-    ActiveMonths?: number[]; // Array of month numbers (1-12) where this credit is active
+    ActiveMonths?: number[]; // Array of month numbers (1-12) where this credit is active (calendar only)
+
+    // Anniversary-based credit fields
+    isAnniversaryBased?: boolean;      // true = anniversary-based, copied from CardCredit
+    anniversaryDate?: string;          // "MM-DD" format from card openDate (e.g., "03-15")
+    anniversaryYear?: number;          // Which anniversary year this tracks (e.g., 2024)
+    Title?: string;                    // Generated title with year (e.g., "Priority Pass (2024)")
 }
 
 /**
@@ -98,6 +111,9 @@ export interface UserCreditWithExpiration extends UserCredit {
 
 /**
  * Represents the credit history for a user for a given credit for a given period
+ *
+ * For anniversary credits, there is always exactly one History entry with PeriodNumber=1.
+ * Period dates are calculated dynamically from the card's openDate and anniversaryYear.
  */
 export interface SingleCreditHistory {
     PeriodNumber: number;
@@ -320,6 +336,10 @@ export interface PrioritizedCredit {
     CardId: string;
     CreditId: string;
     AssociatedPeriod: CreditPeriodType;
+    // Anniversary credit fields for dynamic date calculation
+    isAnniversaryBased?: boolean;
+    anniversaryDate?: string;   // MM/DD format
+    anniversaryYear?: number;
 }
 
 export interface GetPrioritizedCreditsListParams {

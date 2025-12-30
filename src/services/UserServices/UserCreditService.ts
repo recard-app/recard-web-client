@@ -157,7 +157,7 @@ export const UserCreditService = {
     },
 
     /**
-     * Updates a single credit history entry (usage/value) for the current year
+     * Updates a single credit history entry (usage/value)
      * Returns the updated CreditHistory
      */
     async updateCreditHistoryEntry(params: {
@@ -166,6 +166,8 @@ export const UserCreditService = {
         periodNumber: number;
         creditUsage?: CreditUsageType;
         valueUsed?: number;
+        year?: number;           // Target year (defaults to current year on server)
+        anniversaryYear?: number; // For anniversary credits, specifies which anniversary year to update
     }): Promise<CreditHistory> {
         const headers = await getAuthHeaders();
         const response = await axios.put<CreditHistory>(

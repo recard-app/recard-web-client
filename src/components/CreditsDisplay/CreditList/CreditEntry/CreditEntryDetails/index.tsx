@@ -132,6 +132,16 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
         </div>
       )}
 
+      {/* Anniversary-based credit note */}
+      {(cardCredit?.isAnniversaryBased || userCredit.isAnniversaryBased) && (
+        <div className="credit-detail-item">
+          <span className="credit-detail-label">Note</span>
+          <div className="credit-detail-value">
+            This credit renews annually on your card's anniversary date rather than the calendar year.
+          </div>
+        </div>
+      )}
+
       {/* Time Period and Category side-by-side */}
       {(cardCredit?.TimePeriod || cardCredit?.Category || cardCredit?.SubCategory) && (
         <div className="credit-details-section">

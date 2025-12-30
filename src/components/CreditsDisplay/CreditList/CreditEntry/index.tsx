@@ -96,8 +96,66 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     'annually': 'Annually'
   };
 
+  // Check if this is an anniversary-based credit
+  const isAnniversaryBased = userCredit.isAnniversaryBased ?? false;
+  const anniversaryYear = userCredit.anniversaryYear;
+  const anniversaryDate = userCredit.anniversaryDate; // MM-DD format
+
+  /**
+   * Calculate anniversary credit period end date dynamically
+   * Period runs from anniversary date to day before next anniversary
+   */
+  const calculateAnniversaryEndDate = (): Date | null => {
+    if (!anniversaryDate || !anniversaryYear) return null;
+
+    try {
+      // Parse MM-DD or MM/DD format
+      const [month, day] = anniversaryDate.includes('-')
+        ? anniversaryDate.split('-').map(Number)
+        : anniversaryDate.split('/').map(Number);
+
+      if (isNaN(month) || isNaN(day)) return null;
+
+      // Period ends the day before the next anniversary
+      const nextAnniversaryYear = anniversaryYear + 1;
+      const endDate = new Date(nextAnniversaryYear, month - 1, day);
+      endDate.setDate(endDate.getDate() - 1);
+
+      return endDate;
+    } catch {
+      return null;
+    }
+  };
+
+  // Get the display text for the credit period (anniversary-aware)
+  const getPeriodDisplayText = (): string => {
+    if (isAnniversaryBased) {
+      // For anniversary credits, calculate expiration date dynamically
+      const endDate = calculateAnniversaryEndDate();
+      if (endDate) {
+        const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+        return `Expires ${endDate.toLocaleDateString('en-US', options)}`;
+      }
+    }
+    return PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod;
+  };
+
+  // Get the credit title (use generated Title for anniversary credits if available)
+  const getCreditTitle = (): string => {
+    if (userCredit.Title) {
+      return userCredit.Title;
+    }
+    return cardCredit?.Title ?? userCredit.CreditId;
+  };
+
   // Compute the current period number based on AssociatedPeriod and now
   const currentPeriodNumber = useMemo(() => {
+    // For anniversary credits, there is always exactly 1 period with PeriodNumber=1
+    if (userCredit.isAnniversaryBased) {
+      return 1;
+    }
+
+    // Calendar-based calculation (existing logic for non-anniversary credits)
     const periodKey = (Object.keys(CREDIT_PERIODS) as Array<keyof typeof CREDIT_PERIODS>).find(
       (k) => CREDIT_PERIODS[k] === userCredit.AssociatedPeriod
     ) as keyof typeof CREDIT_INTERVALS | undefined;
@@ -109,7 +167,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     const monthZeroBased = now.getMonth();
     const segmentLength = 12 / intervals;
     return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
-  }, [now, userCredit.AssociatedPeriod]);
+  }, [now, userCredit.AssociatedPeriod, userCredit.isAnniversaryBased]);
 
   // Shared selected period state for modal editing
   const [selectedPeriodNumber, setSelectedPeriodNumber] = useState<number>(currentPeriodNumber);
@@ -349,12 +407,15 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       }
 
       // Call the API to persist the update
+      // Include year and anniversaryYear for anniversary-based credits
       await UserCreditService.updateCreditHistoryEntry({
         cardId: update.cardId,
         creditId: update.creditId,
         periodNumber: update.periodNumber,
         creditUsage: update.creditUsage,
-        valueUsed: update.valueUsed
+        valueUsed: update.valueUsed,
+        year: now.getFullYear(),
+        anniversaryYear: userCredit.isAnniversaryBased ? userCredit.anniversaryYear : undefined
       });
 
       // Call legacy handler if provided (for backward compatibility)
@@ -451,7 +512,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               style={{ color: USAGE_COLOR_BY_STATE[cardUsage] }}
             />
             <div className="credit-name">
-              {cardCredit?.Title ?? userCredit.CreditId}
+              {getCreditTitle()}
             </div>
           </div>
           {isExpiring && (
@@ -475,7 +536,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         {/* Left side: Credit info */}
         <div className="credit-info">
           <div className="credit-name">
-            {cardCredit?.Title ?? userCredit.CreditId}
+            {getCreditTitle()}
           </div>
           {card && SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
             <>
@@ -493,7 +554,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 <div className="period-expiring-text">
                   {displayPeriod && (
                     <span className="period-text">
-                      {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
+                      {getPeriodDisplayText()}
                     </span>
                   )}
                   {isExpiring && (
@@ -518,7 +579,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 />
                 {displayPeriod && (
                   <span className="period-text-inline">
-                    {PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod}
+                    {getPeriodDisplayText()}
                   </span>
                 )}
               </div>

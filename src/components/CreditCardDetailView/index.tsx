@@ -780,6 +780,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                         <span className="label">Details:</span> {credit.Details}
                                                     </div>
                                                 )}
+                                                {credit.isAnniversaryBased && (
+                                                    <div className="component-anniversary-note">
+                                                        <span className="label">Note:</span> This credit renews annually on your card's anniversary date rather than the calendar year.
+                                                    </div>
+                                                )}
                                                 {showTrackingPreferences && (
                                                     <div className="tracking-toggle">
                                                         <label className="toggle-switch">

@@ -57,6 +57,11 @@ export interface CardPerk {
  *
  * The sentinel value "9999-12-31" represents an ongoing/present credit with no end date.
  * This value is used by the server for better database indexing and queries.
+ *
+ * Anniversary-Based Credits:
+ * - isAnniversaryBased: When true, credit periods are based on user's card open date
+ *   rather than calendar year. Anniversary credits are always annual (one year from card
+ *   open date to the next anniversary). TimePeriod is ignored for anniversary credits.
  */
 export interface CardCredit {
     id: string;
@@ -72,6 +77,9 @@ export interface CardCredit {
     EffectiveFrom: string;   // ISO date: "2025-01-01"
     EffectiveTo: string;      // ISO date: "2025-12-31" or "9999-12-31" for ongoing
     LastUpdated: string;
+
+    // Anniversary-based credit fields
+    isAnniversaryBased?: boolean;  // true = anniversary-based, false/undefined = calendar
 }
 
 

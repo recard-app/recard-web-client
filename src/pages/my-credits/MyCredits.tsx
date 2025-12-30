@@ -86,7 +86,11 @@ const MyCredits: React.FC<MyCreditsProps> = ({
       History: credit.History || [],
       ActiveMonths: undefined, // Not needed for prioritized view
       isExpiring: credit.isExpiring, // Include expiration flag
-      daysUntilExpiration: credit.daysUntilExpiration // Include days until expiration
+      daysUntilExpiration: credit.daysUntilExpiration, // Include days until expiration
+      // Anniversary credit fields for proper expiration calculation
+      isAnniversaryBased: credit.isAnniversaryBased,
+      anniversaryDate: credit.anniversaryDate,
+      anniversaryYear: credit.anniversaryYear
     } as UserCredit)),
     Year: new Date().getFullYear()
   } : null;
