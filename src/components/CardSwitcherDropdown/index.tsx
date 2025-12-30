@@ -71,7 +71,9 @@ const CardSwitcherDropdown: React.FC<CardSwitcherDropdownProps> = ({
               <Icon name="card" variant="outline" size={24} color={ICON_GRAY} />
             </div>
             <div className="trigger-card-info">
-              <div className="trigger-card-name placeholder">No cards added</div>
+              <div className="trigger-card-name placeholder">
+                {hasCards ? 'Select a card to view' : 'No cards added'}
+              </div>
             </div>
           </>
         )}
