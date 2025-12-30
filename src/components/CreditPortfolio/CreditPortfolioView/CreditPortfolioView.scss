@@ -14,6 +14,12 @@
     margin-bottom: $space-4;
     gap: $space-3;
 
+    // Ensure year dropdown doesn't stretch
+    .year-dropdown {
+      flex: 0 0 auto;
+      width: auto;
+    }
+
     .expand-collapse-button {
       padding: $space-2 $space-3;
       background-color: transparent;
@@ -42,22 +48,6 @@
   .portfolio-content {
     flex: 1;
     overflow-y: auto;
-    position: relative;
-
-    .portfolio-refreshing {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      padding: $space-2;
-      background-color: rgba($primary-light, 0.9);
-      text-align: center;
-      font-family: $font-manrope;
-      font-size: $font-xs;
-      color: $primary-dark;
-      z-index: 10;
-      border-radius: $radius-sm;
-    }
   }
 
   // Card accordions container

@@ -311,27 +311,33 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
       </div>
 
       <div className="portfolio-content">
-        {isLoading && (
-          <div className="portfolio-refreshing">
-            <span>Refreshing...</span>
+        {isLoading ? (
+          <div className="portfolio-loading">
+            <InfoDisplay
+              type="loading"
+              message="Loading..."
+              showTitle={false}
+              transparent={true}
+              centered={true}
+            />
+          </div>
+        ) : (
+          <div className="card-accordions">
+            {cardsWithCredits.map(card => (
+              <CreditCardAccordion
+                key={card.id}
+                card={card}
+                credits={creditsByCard.get(card.id) || []}
+                creditMetadata={creditMetadataMap}
+                year={selectedYear}
+                isExpanded={expandedCardIds.has(card.id)}
+                onToggle={() => toggleCard(card.id)}
+                onPeriodClick={handlePeriodClick}
+                isUpdating={(creditId, periodNumber) => isUpdatingPeriod(card.id, creditId, periodNumber)}
+              />
+            ))}
           </div>
         )}
-
-        <div className="card-accordions">
-          {cardsWithCredits.map(card => (
-            <CreditCardAccordion
-              key={card.id}
-              card={card}
-              credits={creditsByCard.get(card.id) || []}
-              creditMetadata={creditMetadataMap}
-              year={selectedYear}
-              isExpanded={expandedCardIds.has(card.id)}
-              onToggle={() => toggleCard(card.id)}
-              onPeriodClick={handlePeriodClick}
-              isUpdating={(creditId, periodNumber) => isUpdatingPeriod(card.id, creditId, periodNumber)}
-            />
-          ))}
-        </div>
       </div>
 
       {/* Credit Edit Modal */}
