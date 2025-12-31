@@ -425,6 +425,7 @@ button.help-section__header {
   ul, ol {
     margin: 0 0 $space-3;
     padding-left: $space-6;
+    list-style-position: outside;
 
     @media (max-width: $mobile-breakpoint) {
       padding-left: $space-4;
@@ -432,9 +433,18 @@ button.help-section__header {
     }
   }
 
+  ul {
+    list-style-type: disc;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
   li {
     font-size: $font-sm;
     margin-bottom: $space-1;
+    display: list-item;
   }
 
   strong {
