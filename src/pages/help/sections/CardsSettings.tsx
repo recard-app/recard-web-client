@@ -37,7 +37,7 @@ const CardsSettings: React.FC = () => {
         <li>Card is in a drawer and you're not actively using it</li>
         <li>You're considering whether to cancel and want to see life without it</li>
         <li>Taking a break from a card (e.g., sock drawer method)</li>
-        <li>You've hit a category cap and want to avoid suggestions</li>
+        <li>You lost your card or are waiting for a replacement</li>
       </ul>
       <p><strong>How to freeze:</strong></p>
       <ol>
@@ -50,6 +50,34 @@ const CardsSettings: React.FC = () => {
         <li>Go to My Cards</li>
         <li>Click on the frozen card</li>
         <li>Click "Unfreeze Card"</li>
+      </ol>
+
+      <h3>Disabling Components</h3>
+      <p>
+        Each card has components like multipliers, credits, and perks. You can disable individual
+        components without affecting the rest of the card. When a component is disabled, it won't
+        appear in AI recommendations or credit tracking, but the card itself remains active.
+      </p>
+      <p><strong>When to use:</strong></p>
+      <ul>
+        <li>You've hit a category cap and want to stop getting suggestions for that multiplier</li>
+        <li>A credit doesn't apply to your spending habits</li>
+        <li>You don't use a particular perk and want to reduce clutter</li>
+        <li>A multiplier has restrictions that don't work for you (e.g., specific merchants only)</li>
+      </ul>
+      <p><strong>How it works:</strong></p>
+      <ul>
+        <li>Disabled components are hidden from recommendations and dashboards</li>
+        <li>The card's other components continue working normally</li>
+        <li>You can re-enable a component at any time</li>
+        <li>Disabling a credit will remove it from your tracking totals</li>
+      </ul>
+      <p><strong>How to disable:</strong></p>
+      <ol>
+        <li>Go to My Cards</li>
+        <li>Click on the card</li>
+        <li>Find the component you want to disable</li>
+        <li>Click the hide/disable toggle</li>
       </ol>
 
       <h3>Anniversary Dates</h3>
