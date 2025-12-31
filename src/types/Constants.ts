@@ -157,11 +157,12 @@ export const LOADING_ICON_SIZE = 12;
 export const PAGE_NAMES = {
     HOME: 'Home',
     TRANSACTION_HISTORY: TERMINOLOGY.historyTitle,
-    MY_CARDS: 'My Cards', 
+    MY_CARDS: 'My Cards',
     MY_CREDITS: 'My Credits',
     NEW_TRANSACTION_CHAT: TERMINOLOGY.newChatButton,
     PREFERENCES: 'Preferences',
-    MY_ACCOUNT: 'My Account',
+    MY_ACCOUNT: 'Account & Settings',
+    HELP_CENTER: 'Help Center',
     SIGN_OUT: 'Sign Out'
 } as const;
 export type PageNameType = typeof PAGE_NAMES[keyof typeof PAGE_NAMES];
@@ -228,6 +229,11 @@ export const PAGE_ICONS = {
     NEW_CHAT_PLUS: {
         NORMAL: (props: any = {}) => createIconVariant('plus-circle', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         HOVERED: (props: any = {}) => createIconVariant('plus-circle', 'solid', ICON_PRIMARY_MEDIUM, props.size)
+    },
+    HELP_CENTER: {
+        ACTIVE: (props: any = {}) => createIconVariant('question-mark-circle', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('question-mark-circle', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('question-mark-circle', 'mini', ICON_PRIMARY, props.size)
     }
 } as const;
 
@@ -241,6 +247,10 @@ export const DROPDOWN_ICONS = {
     PREFERENCES: {
         NORMAL: (props: any = {}) => createIconVariant('preferences', 'mini', DROPDOWN_NORMAL_ICON_COLOR, props.size),
         RED: (props: any = {}) => createIconVariant('preferences', 'mini', DROPDOWN_RED_ICON_COLOR, props.size)
+    },
+    HELP_CENTER: {
+        NORMAL: (props: any = {}) => createIconVariant('question-mark-circle', 'mini', DROPDOWN_NORMAL_ICON_COLOR, props.size),
+        RED: (props: any = {}) => createIconVariant('question-mark-circle', 'mini', DROPDOWN_RED_ICON_COLOR, props.size)
     },
     MY_ACCOUNT: {
         NORMAL: (props: any = {}) => createIconVariant('account', 'mini', DROPDOWN_NORMAL_ICON_COLOR, props.size),

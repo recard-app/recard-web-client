@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { TEMP_ICON, SHOW_HEADER_ICONS, SIDEBAR_TOGGLE_ICON_COLOR } from '../../types';
-import { IconRenderer, Icon } from '@/icons';
+import { TEMP_ICON, SHOW_HEADER_ICONS } from '../../types';
+import { IconRenderer } from '@/icons';
 import './PageHeader.scss';
 
 interface PageHeaderProps {
@@ -10,8 +10,6 @@ interface PageHeaderProps {
   subtitle?: string;
   actions?: React.ReactNode;
   withActions?: boolean;
-  onHelpClick?: () => void;
-  showHelpButton?: boolean;
   titleLink?: string;
 }
 
@@ -21,11 +19,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   subtitle,
   actions,
   withActions = false,
-  onHelpClick,
-  showHelpButton = false,
   titleLink
 }) => {
-  const headerClasses = `page-header ${withActions || showHelpButton ? 'page-header-with-actions' : ''}`;
+  const headerClasses = `page-header ${withActions ? 'page-header-with-actions' : ''}`;
 
   const titleContent = (
     <>
@@ -55,19 +51,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         </h1>
         {subtitle && <p>{subtitle}</p>}
       </div>
-      {(actions || showHelpButton) && (
+      {actions && (
         <div className="header-actions">
           {actions}
-          {showHelpButton && onHelpClick && (
-            <button 
-              className="help-icon-button icon-gray-hover"
-              onClick={onHelpClick}
-              aria-label="Open help"
-              title="Help"
-            >
-              <Icon name="help" variant="outline" color={SIDEBAR_TOGGLE_ICON_COLOR} size={20} />
-            </button>
-          )}
         </div>
       )}
     </div>

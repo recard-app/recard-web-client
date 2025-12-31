@@ -443,14 +443,19 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" side="right" sideOffset={20} className="sidebar-profile-dropdown">
+                  <Link to={PAGES.ACCOUNT.PATH}>
+                    <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
+                      {PAGE_NAMES.MY_ACCOUNT}
+                    </DropdownMenuItem>
+                  </Link>
                   <Link to={PAGES.PREFERENCES.PATH}>
                     <DropdownMenuItem icon={DROPDOWN_ICONS.PREFERENCES.NORMAL}>
                       {PAGE_NAMES.PREFERENCES}
                     </DropdownMenuItem>
                   </Link>
-                  <Link to={PAGES.ACCOUNT.PATH}>
-                    <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
-                      {PAGE_NAMES.MY_ACCOUNT}
+                  <Link to={PAGES.HELP_CENTER.PATH}>
+                    <DropdownMenuItem icon={DROPDOWN_ICONS.HELP_CENTER.NORMAL}>
+                      {PAGE_NAMES.HELP_CENTER}
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICONS.SIGN_OUT.RED}>
@@ -488,6 +493,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                       <Link to={PAGES.ACCOUNT.PATH}>
                         <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
                           {PAGE_NAMES.MY_ACCOUNT}
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link to={PAGES.HELP_CENTER.PATH}>
+                        <DropdownMenuItem icon={DROPDOWN_ICONS.HELP_CENTER.NORMAL}>
+                          {PAGE_NAMES.HELP_CENTER}
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICONS.SIGN_OUT.RED}>

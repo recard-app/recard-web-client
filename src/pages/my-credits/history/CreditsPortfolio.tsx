@@ -1,17 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PageHeader from '../../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, PAGES } from '../../../types';
 import { CreditCardDetails } from '../../../types/CreditCardTypes';
 import { CreditPortfolioView } from '../../../components/CreditPortfolio';
 import { useFullHeight } from '../../../hooks/useFullHeight';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogBody,
-} from '../../../components/ui/dialog/dialog';
-import CreditsPortfolioHelpModal from './CreditsPortfolioHelpModal';
 import './CreditsPortfolio.scss';
 
 interface CreditsPortfolioProps {
@@ -34,7 +26,6 @@ const CreditsPortfolio: React.FC<CreditsPortfolioProps> = ({
   onClearAllUpdatingCredits
 }) => {
   useFullHeight(true);
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   return (
     <div className="standard-page-layout">
@@ -42,8 +33,6 @@ const CreditsPortfolio: React.FC<CreditsPortfolioProps> = ({
         title={PAGE_NAMES.MY_CREDITS}
         icon={PAGE_ICONS.MY_CREDITS.MINI}
         subtitle="All Credits"
-        showHelpButton={true}
-        onHelpClick={() => setIsHelpOpen(true)}
         titleLink={PAGES.MY_CREDITS.PATH}
       />
 
@@ -58,17 +47,6 @@ const CreditsPortfolio: React.FC<CreditsPortfolioProps> = ({
           onClearAllUpdatingCredits={onClearAllUpdatingCredits}
         />
       </div>
-
-      <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Credit History Help</DialogTitle>
-          </DialogHeader>
-          <DialogBody>
-            <CreditsPortfolioHelpModal />
-          </DialogBody>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

@@ -75,10 +75,10 @@
   }
 
   .mobile-header__actions {
+    flex: 1;
     display: flex;
     align-items: center;
     gap: $space-2;
-    min-width: $icon-large; // to keep center alignment stable
     justify-content: flex-end;
 
     .mobile-header__new-chat-button {
@@ -129,10 +129,10 @@
   }
 
   .mobile-header__left {
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    min-width: $icon-large; // width to balance the right side for center title
     gap: $space-2;
     height: 100%;
     
@@ -144,7 +144,7 @@
   }
 
   .mobile-header__center {
-    flex: 1;
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -332,8 +332,7 @@
     text-decoration: none;
     color: inherit;
     img { width: $icon-medium; height: $icon-medium; }
-    .brand-name { 
-      font-weight: $font-medium; 
+    .brand-name {
       font-family: $font-cal-sans;
       color: $neutral-black;
       font-size: $font-h4;

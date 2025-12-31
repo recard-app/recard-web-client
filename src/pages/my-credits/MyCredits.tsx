@@ -12,14 +12,6 @@ import { InfoDisplay } from '../../elements/InfoDisplay/InfoDisplay';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import CreditSummary from '../../components/CreditSummary';
 import { useFullHeight } from '../../hooks/useFullHeight';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogBody,
-} from '../../components/ui/dialog/dialog';
-import MyCreditsHelpModal from './MyCreditsHelpModal';
 import './shared-credits-layout.scss';
 import './MyCredits.scss';
 
@@ -51,9 +43,6 @@ const MyCredits: React.FC<MyCreditsProps> = ({
   // Use the full height hook for this page
   useFullHeight(true);
   const navigate = useNavigate();
-
-  // Help modal state
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -123,8 +112,6 @@ const MyCredits: React.FC<MyCreditsProps> = ({
       <PageHeader
         title={PAGE_NAMES.MY_CREDITS}
         icon={PAGE_ICONS.MY_CREDITS.MINI}
-        showHelpButton={true}
-        onHelpClick={() => setIsHelpOpen(true)}
       />
       <div className="standard-page-content--no-padding">
         <div className="credits-history-panel">
@@ -200,17 +187,6 @@ const MyCredits: React.FC<MyCreditsProps> = ({
           </div>
         </div>
       </div>
-
-      <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>My Credits Help</DialogTitle>
-          </DialogHeader>
-          <DialogBody>
-            <MyCreditsHelpModal />
-          </DialogBody>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

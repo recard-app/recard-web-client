@@ -29,16 +29,30 @@ import ForgotPassword from './pages/authentication/ForgotPassword';
 import Welcome from './pages/authentication/Welcome';
 import History from './pages/history/History';
 import MyCards from './pages/my-cards/MyCards';
-import HistoryHelpModal from './pages/history/HistoryHelpModal';
-import MyCardsHelpModal from './pages/my-cards/MyCardsHelpModal';
-import PreferencesHelpModal from './pages/preferences/PreferencesHelpModal';
-import MyCreditsHelpModal from './pages/my-credits/MyCreditsHelpModal';
 import MyCredits from './pages/my-credits/MyCredits';
 import CreditsHistory from './pages/my-credits/history-legacy/CreditsHistory';
-import CreditsHistoryHelpModal from './pages/my-credits/history-legacy/CreditsHistoryHelpModal';
 import CreditsPortfolio from './pages/my-credits/history/CreditsPortfolio';
 import DesignSystem from './pages/design-system/DesignSystem';
 import FullComponents from './pages/design-system/components/FullComponents';
+import { Help } from './pages/help';
+import {
+  GettingStarted,
+  AskAI,
+  AskAIPrompts,
+  AskAITips,
+  Cards,
+  CardsSettings,
+  CardsDetails,
+  Credits,
+  CreditsDashboard,
+  CreditsUpdating,
+  CreditsHistory as CreditsHistoryHelp,
+  ReferenceColors,
+  ReferenceFrequencies,
+  Glossary,
+  FAQ,
+  Troubleshooting
+} from './pages/help/sections';
 // Components
 
 import AppSidebar from './components/AppSidebar';
@@ -57,7 +71,6 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 import { ComponentsProvider, useComponents } from './contexts/ComponentsContext';
 import CreditCardDetailView from './components/CreditCardDetailView';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
-import PromptHelpModal from './components/PromptWindow/PromptHelpModal';
 import CreditDetailedSummary from './components/CreditSummary/CreditDetailedSummary';
 import {
   Drawer,
@@ -208,7 +221,6 @@ function AppContent({}: AppContentProps) {
 
   const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
   const [isCardDetailsOpen, setIsCardDetailsOpen] = useState(false);
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isDetailedSummaryOpen, setIsDetailedSummaryOpen] = useState(false);
   const [cardSelectorSaveStatus, setCardSelectorSaveStatus] = useState<string>('');
   const [cardSelectorSaveSuccess, setCardSelectorSaveSuccess] = useState<boolean>(false);
@@ -246,13 +258,7 @@ function AppContent({}: AppContentProps) {
     }
   }, [location.pathname, currentChatId, navigate]);
 
-  // Close Help dialog on route change for better UX
-  useEffect(() => {
-    if (isHelpOpen) {
-      setIsHelpOpen(false);
-    }
-  }, [location.pathname]);
-
+  
   // Ref to prevent duplicate initial loads
   const isLoadingRef = useRef(false);
 
@@ -718,40 +724,7 @@ function AppContent({}: AppContentProps) {
     setIsSidePanelOpen(prev => !prev);
   };
 
-  const shouldShowMobileHelp = (): boolean => {
-    const path = location.pathname;
-    if (PageUtils.isPage(path, 'HOME')) return true;
-    if (path === PAGES.HISTORY.PATH) return true;
-    if (path === PAGES.MY_CARDS.PATH) return true;
-    if (path === PAGES.PREFERENCES.PATH) return true;
-    if (path === PAGES.MY_CREDITS.PATH) return true;
-    if (path === PAGES.MY_CREDITS_HISTORY.PATH) return true;
-    return false;
-  };
-
-  const renderGlobalHelpContent = (): React.ReactNode => {
-    const path = location.pathname;
-    if (PageUtils.isPage(path, 'HOME')) {
-      return <PromptHelpModal />;
-    }
-    if (path === PAGES.HISTORY.PATH) {
-      return <HistoryHelpModal />;
-    }
-    if (path === PAGES.MY_CARDS.PATH) {
-      return <MyCardsHelpModal />;
-    }
-    if (path === PAGES.PREFERENCES.PATH) {
-      return <PreferencesHelpModal />;
-    }
-    if (path === PAGES.MY_CREDITS.PATH) {
-      return <MyCreditsHelpModal />;
-    }
-    if (path === PAGES.MY_CREDITS_HISTORY.PATH) {
-      return <CreditsHistoryHelpModal />;
-    }
-    return null;
-  };
-
+  
   const renderMainContent = () => {
     const hasSelectedCards = Array.isArray(creditCards)
       ? creditCards.some((c: any) => c && c.selected === true)
@@ -792,13 +765,11 @@ function AppContent({}: AppContentProps) {
 
     return (
       <div className="home-wrapper">
-        <PageHeader 
+        <PageHeader
           title={PAGE_NAMES.HOME}
           icon={PAGE_ICONS.HOME.MINI}
           actions={headerActions}
           withActions={true}
-          showHelpButton={true}
-          onHelpClick={() => setIsHelpOpen(true)}
         />
         <div className="app-content">
           <div className="prompt-window-container">
@@ -816,8 +787,6 @@ function AppContent({}: AppContentProps) {
             />
           </div>
         </div>
-
-        {/* Home help handled by global help dialog below */}
       </div>
     );
   };
@@ -868,8 +837,6 @@ function AppContent({}: AppContentProps) {
             return user && !isAuthRoute && !isDesignSystemPage ? (
               <MobileHeader
                 title={mobileHeaderTitle}
-                showHelpButton={shouldShowMobileHelp()}
-                onHelpClick={() => setIsHelpOpen(true)}
                 onLogout={handleLogout}
                 chatHistory={chatHistory}
                 currentChatId={currentChatId}
@@ -896,18 +863,7 @@ function AppContent({}: AppContentProps) {
             ) : null;
           })()}
 
-          {/* Global contextual Help Dialog for mobile and desktop */}
-          <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Help</DialogTitle>
-              </DialogHeader>
-              <DialogBody>
-                {renderGlobalHelpContent()}
-              </DialogBody>
-            </DialogContent>
-          </Dialog>
-          
+                    
           {(() => {
             if (isMobileViewport) {
               return (
@@ -1100,12 +1056,14 @@ function AppContent({}: AppContentProps) {
           (() => {
             const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH]);
             const isAuthRoute = authPaths.has(location.pathname);
+            const isHelpPage = location.pathname.startsWith(PAGES.HELP_CENTER.PATH);
             return (
-              <UniversalContentWrapper 
+              <UniversalContentWrapper
                 isSidePanelOpen={user ? isSidePanelOpen : false}
                 fullHeight={isAuthRoute ? true : needsFullHeight}
                 className={isAuthRoute ? 'center-content' : ''}
                 disableSidebarMargin={isAuthRoute}
+                whiteBackground={isHelpPage}
               >
                 <Routes>
                   <Route path={PAGES.HOME.PATH} element={
@@ -1222,12 +1180,34 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.DELETE_HISTORY.PATH} element={
                     <ProtectedRoute>
-                      <DeleteHistory 
+                      <DeleteHistory
                         setChatHistory={setChatHistory}
                         setHistoryRefreshTrigger={setHistoryRefreshTrigger}
                       />
                     </ProtectedRoute>
                   } />
+                  <Route path={PAGES.HELP_CENTER.PATH} element={
+                    <ProtectedRoute>
+                      <Help />
+                    </ProtectedRoute>
+                  }>
+                    <Route index element={<GettingStarted />} />
+                    <Route path="ask-ai" element={<AskAI />} />
+                    <Route path="ask-ai/prompts" element={<AskAIPrompts />} />
+                    <Route path="ask-ai/tips" element={<AskAITips />} />
+                    <Route path="cards" element={<Cards />} />
+                    <Route path="cards/settings" element={<CardsSettings />} />
+                    <Route path="cards/details" element={<CardsDetails />} />
+                    <Route path="credits" element={<Credits />} />
+                    <Route path="credits/dashboard" element={<CreditsDashboard />} />
+                    <Route path="credits/updating" element={<CreditsUpdating />} />
+                    <Route path="credits/history" element={<CreditsHistoryHelp />} />
+                    <Route path="reference/colors" element={<ReferenceColors />} />
+                    <Route path="reference/frequencies" element={<ReferenceFrequencies />} />
+                    <Route path="glossary" element={<Glossary />} />
+                    <Route path="faq" element={<FAQ />} />
+                    <Route path="troubleshooting" element={<Troubleshooting />} />
+                  </Route>
                 </Routes>
               </UniversalContentWrapper>
             );

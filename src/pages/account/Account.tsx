@@ -82,7 +82,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                   </div>
                 )}
                 <div className="profile-card__info">
-                  <h2 className="profile-card__name">{user.displayName || 'My Account'}</h2>
+                  <h2 className="profile-card__name">{user.displayName || 'Account'}</h2>
                   <p className="profile-card__email">{user.email}</p>
                   <div className="profile-card__badges">
                     <span className={`badge ${user.emailVerified ? 'badge--success' : 'badge--warning'}`}>
@@ -97,22 +97,22 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
 
               {/* Account Settings */}
               <SettingsCard title="Account">
-                {SHOW_SUBSCRIPTION_MENTIONS && (
-                  <SettingsRow
-                    label="Subscription Plan"
-                    value={getPlanBadge()}
-                  />
-                )}
                 {!user.emailVerified ? (
                   <SettingsRow
-                    label="Email Verification"
-                    value={getVerificationStatus()}
+                    label="Email"
+                    value={<>{user.email} {getVerificationStatus()}</>}
                     onClick={handleVerificationEmailClick}
                   />
                 ) : (
                   <SettingsRow
-                    label="Email Verification"
-                    value={getVerificationStatus()}
+                    label="Email"
+                    value={<>{user.email} {getVerificationStatus()}</>}
+                  />
+                )}
+                {SHOW_SUBSCRIPTION_MENTIONS && (
+                  <SettingsRow
+                    label="Subscription Plan"
+                    value={getPlanBadge()}
                   />
                 )}
                 <SettingsRow
@@ -128,6 +128,10 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
 
               {/* Help */}
               <SettingsCard title="Help">
+                <SettingsRow
+                  label="Help Center"
+                  to={PAGES.HELP_CENTER.PATH}
+                />
                 <SettingsRow
                   label="Revisit Onboarding"
                   to={PAGES.WELCOME.PATH}

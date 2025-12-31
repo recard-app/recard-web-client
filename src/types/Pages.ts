@@ -59,6 +59,10 @@ export const PAGES = {
     PATH: '/delete-history',
     TITLE: 'Delete History',
   },
+  HELP_CENTER: {
+    PATH: '/help',
+    TITLE: 'Help Center',
+  },
 } as const;
 
 // Helper type for page keys
@@ -159,4 +163,5 @@ export const {
   MY_CREDITS_HISTORY,
   MY_CREDITS_HISTORY_LEGACY,
   DELETE_HISTORY,
+  HELP_CENTER,
 } = PAGES;

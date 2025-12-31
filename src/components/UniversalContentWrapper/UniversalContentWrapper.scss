@@ -5,6 +5,11 @@
   flex: 1;
   min-height: 0;
   transition: margin-left $side-panel-speed ease-in-out;
+
+  // White background variant for pages that need it
+  &.white-background {
+    background-color: $neutral-white;
+  }
   
   // Default behavior: apply sidebar margins
   &:not(.no-sidebar-margin) {

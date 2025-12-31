@@ -11,7 +11,6 @@ import {
   DialogTitle,
   DialogBody,
 } from '../../../components/ui/dialog/dialog';
-import CreditsHistoryHelpModal from './CreditsHistoryHelpModal';
 import { UserCreditService } from '../../../services/UserServices';
 import { UserService } from '../../../services/UserServices';
 import CreditsDisplay from '../../../components/CreditsDisplay';
@@ -53,7 +52,6 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
   // Get credits data from ComponentsContext
   const allCredits = useCredits();
 
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMonth, setIsLoadingMonth] = useState(false);
   const [localCalendar, setLocalCalendar] = useState<CalendarUserCredits | null>(null);
@@ -552,8 +550,6 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
         title={PAGE_NAMES.MY_CREDITS}
         icon={PAGE_ICONS.MY_CREDITS.MINI}
         subtitle={"Full History"}
-        showHelpButton={true}
-        onHelpClick={() => setIsHelpOpen(true)}
         titleLink={PAGES.MY_CREDITS.PATH}
       />
       {/* Card Filter Selector: drawer on mobile, dialog on desktop */}
@@ -1030,16 +1026,6 @@ const CreditsHistory: React.FC<CreditsHistoryProps> = ({ userCardDetails, reload
         </div>
       </FooterControls>
 
-      <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Credits History Help</DialogTitle>
-          </DialogHeader>
-          <DialogBody>
-            <CreditsHistoryHelpModal />
-          </DialogBody>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

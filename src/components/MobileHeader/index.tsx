@@ -25,9 +25,6 @@ interface MobileHeaderProps {
   title: string;
   rightContent?: React.ReactNode;
   onLogout?: () => void;
-  // Right-side help button for pages with help
-  showHelpButton?: boolean;
-  onHelpClick?: () => void;
   // Sidebar-like data/handlers
   chatHistory?: Conversation[];
   currentChatId?: string | null;
@@ -56,8 +53,6 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   // title is intentionally unused; we don't render dynamic titles in mobile header
   title: _unusedTitle,
   rightContent,
-  showHelpButton = false,
-  onHelpClick,
   onLogout,
   chatHistory = [],
   currentChatId = null,
@@ -155,6 +150,10 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       case PAGES.DELETE_HISTORY.PATH:
         return 'Delete History';
       default:
+        // Handle help center paths (including nested routes like /help/getting-started)
+        if (currentPath.startsWith(PAGES.HELP_CENTER.PATH)) {
+          return PAGE_NAMES.HELP_CENTER;
+        }
         // Use PageUtils as fallback
         const pageTitle = PageUtils.getTitleByPath(currentPath);
         if (pageTitle) {
@@ -185,6 +184,10 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       case PAGES.DELETE_HISTORY.PATH:
         return <Icon name="delete" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       default:
+        // Handle help center paths (including nested routes like /help/getting-started)
+        if (currentPath.startsWith(PAGES.HELP_CENTER.PATH)) {
+          return <Icon name="question-mark-circle" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+        }
         return null;
     }
   };
@@ -278,18 +281,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 )}
               </>
             ) : null}
-            {showHelpButton && onHelpClick ? (
-              <button 
-                className="button no-outline small icon-gray-hover mobile-header__help-button"
-                onClick={onHelpClick}
-                aria-label="Open help"
-                title="Help"
-              >
-                <Icon name="help" variant="outline" size={22} color={SIDEBAR_TOGGLE_ICON_COLOR} />
-              </button>
-            ) : (
-              rightContent || <span aria-hidden className="header-spacer" />
-            )}
+            {rightContent || <span aria-hidden className="header-spacer" />}
           </div>
           <Drawer.Portal>
             <Drawer.Overlay className="mobile-drawer-overlay" />
@@ -467,6 +459,13 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" side="top" sideOffset={8} className="mobile-drawer-dropdown">
                           <Drawer.Close asChild>
+                            <Link to={PAGES.ACCOUNT.PATH}>
+                              <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
+                                {PAGE_NAMES.MY_ACCOUNT}
+                              </DropdownMenuItem>
+                            </Link>
+                          </Drawer.Close>
+                          <Drawer.Close asChild>
                             <Link to={PAGES.PREFERENCES.PATH}>
                               <DropdownMenuItem icon={DROPDOWN_ICONS.PREFERENCES.NORMAL}>
                                 {PAGE_NAMES.PREFERENCES}
@@ -474,9 +473,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                             </Link>
                           </Drawer.Close>
                           <Drawer.Close asChild>
-                            <Link to={PAGES.ACCOUNT.PATH}>
-                              <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
-                                {PAGE_NAMES.MY_ACCOUNT}
+                            <Link to={PAGES.HELP_CENTER.PATH}>
+                              <DropdownMenuItem icon={DROPDOWN_ICONS.HELP_CENTER.NORMAL}>
+                                {PAGE_NAMES.HELP_CENTER}
                               </DropdownMenuItem>
                             </Link>
                           </Drawer.Close>

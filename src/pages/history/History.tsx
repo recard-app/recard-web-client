@@ -1,16 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import FullHistoryPanel from '../../components/HistoryPanel/FullHistoryPanel';
 import { Conversation, CreditCard, FREE_PLAN_HISTORY_DAYS, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, SubscriptionPlan } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogBody,
-} from '../../components/ui/dialog/dialog';
-import HistoryHelpModal from './HistoryHelpModal';
 import './History.scss';
 
 interface HistoryProps {
@@ -27,9 +19,9 @@ interface HistoryProps {
   onFiltersDrawerOpenChange?: (open: boolean) => void;
 }
 
-function History({ 
-  existingHistoryList, 
-  currentChatId, 
+function History({
+  existingHistoryList,
+  currentChatId,
   returnCurrentChatId,
   onHistoryUpdate,
   subscriptionPlan,
@@ -42,9 +34,6 @@ function History({
   // Use the full height hook for this page
   useFullHeight(true);
 
-  // Help modal state
-  const [isHelpOpen, setIsHelpOpen] = useState(false);
-
   const getHistorySubtitle = (): string | undefined => {
     if (subscriptionPlan === 'free') {
       return `Last ${FREE_PLAN_HISTORY_DAYS} Days`;
@@ -54,15 +43,13 @@ function History({
 
   return (
     <div className="standard-page-layout">
-      <PageHeader 
-        title={PAGE_NAMES.TRANSACTION_HISTORY} 
+      <PageHeader
+        title={PAGE_NAMES.TRANSACTION_HISTORY}
         icon={PAGE_ICONS.TRANSACTION_HISTORY.MINI}
         subtitle={getHistorySubtitle()}
-        showHelpButton={true}
-        onHelpClick={() => setIsHelpOpen(true)}
       />
       <div className="standard-page-content--no-padding">
-        <FullHistoryPanel 
+        <FullHistoryPanel
           currentChatId={currentChatId}
           returnCurrentChatId={returnCurrentChatId}
           onHistoryUpdate={onHistoryUpdate}
@@ -74,17 +61,6 @@ function History({
           onFiltersDrawerOpenChange={onFiltersDrawerOpenChange}
         />
       </div>
-
-      <Dialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{PAGE_NAMES.TRANSACTION_HISTORY} Help</DialogTitle>
-          </DialogHeader>
-          <DialogBody>
-            <HistoryHelpModal />
-          </DialogBody>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
