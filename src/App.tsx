@@ -22,6 +22,7 @@ import './components/PromptWindow/PromptWindow.scss';
 // Pages
 import Account from './pages/account/Account';
 import DeleteHistory from './pages/delete-history/DeleteHistory';
+import DeleteAccount from './pages/delete-account/DeleteAccount';
 import Preferences from './pages/preferences/Preferences';
 import SignIn from './pages/authentication/SignIn';
 import SignUp from './pages/authentication/SignUp';
@@ -1177,6 +1178,11 @@ function AppContent({}: AppContentProps) {
                         setChatHistory={setChatHistory}
                         setHistoryRefreshTrigger={setHistoryRefreshTrigger}
                       />
+                    </ProtectedRoute>
+                  } />
+                  <Route path={PAGES.DELETE_ACCOUNT.PATH} element={
+                    <ProtectedRoute>
+                      <DeleteAccount />
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.HELP_CENTER.PATH} element={

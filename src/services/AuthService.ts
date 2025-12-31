@@ -58,5 +58,18 @@ export const AuthService = {
             const data = await response.data;
             throw new Error(data.error || 'Registration failed');
         }
+    },
+
+    /**
+     * Deletes the user's account and all associated data
+     * @param reason Optional reason for account deletion (for analytics)
+     * @returns Promise<void>
+     */
+    async deleteAccount(reason?: string): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.delete(`${apiurl}/users/account`, {
+            headers,
+            data: { reason }
+        });
     }
 };

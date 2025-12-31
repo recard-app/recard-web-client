@@ -59,6 +59,10 @@ export const PAGES = {
     PATH: '/delete-history',
     TITLE: 'Delete History',
   },
+  DELETE_ACCOUNT: {
+    PATH: '/delete-account',
+    TITLE: 'Delete Account',
+  },
   HELP_CENTER: {
     PATH: '/help',
     TITLE: 'Help Center',
@@ -163,5 +167,6 @@ export const {
   MY_CREDITS_HISTORY,
   MY_CREDITS_HISTORY_LEGACY,
   DELETE_HISTORY,
+  DELETE_ACCOUNT,
   HELP_CENTER,
 } = PAGES;
