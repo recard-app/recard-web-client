@@ -1,10 +1,10 @@
 import React from 'react';
+import { toast } from 'sonner';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_RED, SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW } from '../../../types';
 import { Icon, createIconVariant, CardIcon } from '../../../icons';
 import { formatDate, deleteChatEntry } from './utils';
-import { InfoDisplay } from '../../../elements';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,13 +70,11 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
   // Dialog state management
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isRenameModalOpen, setIsRenameModalOpen] = useState(false);
-  
+
   // State for the new chat description
   const [newChatDescription, setNewChatDescription] = useState(chatEntry.chatDescription);
   // State for tracking loading state during rename
   const [isRenaming, setIsRenaming] = useState(false);
-  // State for error message
-  const [renameError, setRenameError] = useState<string | null>(null);
 
   /**
    * Handles clicking on the history entry
@@ -104,7 +102,6 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
   const handleRenameClick = (e: React.MouseEvent): void => {
     e.stopPropagation(); // Prevent event bubbling
     setNewChatDescription(chatEntry.chatDescription);
-    setRenameError(null); // Clear any previous errors
     setIsRenameModalOpen(true);
   };
 
@@ -113,28 +110,25 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
    */
   const handleRenameSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
-    
+
     // Validate input
     if (!newChatDescription.trim()) {
       return;
     }
-    
-    // Clear any previous errors
-    setRenameError(null);
-    
+
     // Set loading state
     setIsRenaming(true);
-    
+
     try {
       // 1. Update the chat description via API
       await UserHistoryService.updateChatDescription(
         chatEntry.chatId,
         newChatDescription
       );
-      
+
       // 2. First, close the modal - This is the key change
       setIsRenameModalOpen(false);
-      
+
       // 3. Then refresh history if available (don't wait for it)
       if (refreshHistory) {
         refreshHistory().catch(error => {
@@ -143,9 +137,10 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
         });
       }
     } catch (error) {
-      // Handle API error
+      // Handle API error - close modal and show toast
       console.error('Failed to rename chat:', error);
-      setRenameError('Failed to rename chat. Please try again.');
+      setIsRenameModalOpen(false);
+      toast.error('Failed to rename chat. Please try again.');
     } finally {
       // Reset loading state
       setIsRenaming(false);
@@ -164,15 +159,12 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
         navigate,
         currentPath: location.pathname
       });
-      
+
       setIsDeleteModalOpen(false);
     } catch (error) {
       console.error('Error deleting chat:', error);
-      // Using InfoDisplay in an alert is not typical - typically this would be added to the modal.
-      // For demonstration purposes, replacing the alert, but a better approach would be to add an
-      // error state and render the InfoDisplay within the modal.
-      setRenameError('Failed to delete chat. Please try again.');
-      // Not showing an alert anymore: alert('Failed to delete chat. Please try again.');
+      setIsDeleteModalOpen(false);
+      toast.error('Failed to delete chat. Please try again.');
     }
   };
 
@@ -285,12 +277,6 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
               <div className="character-count">
                 {newChatDescription.length}/{CHAT_DESCRIPTION_MAX_LENGTH}
               </div>
-              {renameError && (
-                <InfoDisplay
-                  type="error"
-                  message={renameError}
-                />
-              )}
             </form>
           </DialogBody>
           <DialogFooter>

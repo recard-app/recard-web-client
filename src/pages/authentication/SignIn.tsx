@@ -1,9 +1,10 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import { AuthService } from '../../services';
 import { AuthResponse, PAGES, APP_NAME, APP_LOGO } from '../../types';
-import { InfoDisplay, ButtonSpinner } from '../../elements';
+import { ButtonSpinner } from '../../elements';
 import { getAuthErrorMessage } from './utils';
 import './Auth.scss';
 
@@ -22,7 +23,6 @@ const SignIn: React.FC = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
 
@@ -32,7 +32,6 @@ const SignIn: React.FC = () => {
      */
     const handleEmailSignIn = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setError('');
         setIsLoading(true);
 
         try {
@@ -41,7 +40,7 @@ const SignIn: React.FC = () => {
             console.log('Authentication successful');
             navigate(PAGES.HOME.PATH);
         } catch (error: any) {
-            setError(getAuthErrorMessage(error));
+            toast.error(getAuthErrorMessage(error));
             console.error('Authentication failed:', error);
         } finally {
             setIsLoading(false);
@@ -54,7 +53,6 @@ const SignIn: React.FC = () => {
      */
     const handleGoogleSignIn = async (): Promise<void> => {
         setIsGoogleLoading(true);
-        setError('');
 
         try {
             const { isNewUser }: AuthResponse = await login();
@@ -66,7 +64,7 @@ const SignIn: React.FC = () => {
                 navigate(PAGES.HOME.PATH);
             }
         } catch (error: any) {
-            setError(getAuthErrorMessage(error));
+            toast.error(getAuthErrorMessage(error));
             console.error('Authentication failed:', error);
         } finally {
             setIsGoogleLoading(false);
@@ -137,13 +135,6 @@ const SignIn: React.FC = () => {
                 <p className="auth-redirect">
                     Need an account? <Link to={PAGES.SIGN_UP.PATH}>Create one</Link>
                 </p>
-
-                {error && (
-                    <InfoDisplay
-                        type="error"
-                        message={error}
-                    />
-                )}
             </div>
         </div>
     );

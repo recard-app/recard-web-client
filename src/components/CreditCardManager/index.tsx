@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { toast } from 'sonner';
 import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
 import { UserCreditCard } from '../../types/UserTypes';
@@ -6,7 +7,6 @@ import { MOBILE_BREAKPOINT } from '../../types';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService, UserCreditService } from '../../services';
 import CreditCardDetailView from '../CreditCardDetailView';
-import CreditCardPreviewList from '../CreditCardPreviewList';
 import { InfoDisplay, SearchField } from '../../elements';
 import {
   Dialog,
@@ -86,11 +86,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     const [isSettingPreferred, setIsSettingPreferred] = useState(false);
     // Ref to restore focus to the parent drawer when nested drawer closes
     const parentDrawerHeaderRef = useRef<HTMLDivElement | null>(null);
-    
-    // Error message state
-    const [errorMessage, setErrorMessage] = useState<string>('');
-    const [showError, setShowError] = useState<boolean>(false);
-    
+
     // Memoized function to notify parent of card updates
     const notifyCardUpdate = useCallback((cards: CreditCard[]) => {
         onCardsUpdate?.(cards);
@@ -141,8 +137,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                 }
             } catch (error) {
                 console.error('Error loading cards:', error);
-                setErrorMessage('Unable to load your credit cards. Please try again later.');
-                setShowError(true);
+                toast.error('Unable to load your credit cards. Please try again later.');
             } finally {
                 setIsLoading(false);
             }
@@ -198,8 +193,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             }
         } catch (error) {
             console.error('Error loading card details:', error);
-            setErrorMessage('Unable to load card details. Please try again.');
-            setShowError(true);
+            toast.error('Unable to load card details. Please try again.');
             // Only reset details if we were explicitly loading this card
             if (selectedCard && selectedCard.id === cardId) {
                 setCardDetails(null);
@@ -211,9 +205,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
 
     // Handle card selection from the sidebar
     const handleCardSelect = async (card: CreditCard) => {
-        // Clear any previous errors
-        setShowError(false);
-        
         // Update the selected card state immediately for a responsive UI
         setSelectedCard(card);
         
@@ -233,8 +224,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     // Handle setting a card as the preferred/default card
     const handleSetPreferred = async (card: CreditCard) => {
         try {
-            // Clear any previous errors
-            setShowError(false);
             setIsSettingPreferred(true);
             
             // Toggle the preferred status
@@ -301,17 +290,13 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             setIsSettingPreferred(false);
         } catch (error) {
             console.error('Error setting preferred card:', error);
-            setErrorMessage('Unable to set this card as preferred. Please try again.');
-            setShowError(true);
+            toast.error('Unable to set this card as preferred. Please try again.');
             setIsSettingPreferred(false);
         }
     };
 
     // Handle removing a card from the user's selected cards
     const handleRemoveCard = async (card: CreditCard) => {
-        // Clear any previous errors
-        setShowError(false);
-
         // Set the card to delete and open the confirmation modal
         setCardToDelete(card);
         setShowDeleteConfirm(true);
@@ -334,16 +319,13 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             });
         } catch (error) {
             console.error('Error updating card open date:', error);
-            setErrorMessage('Unable to update the card anniversary date. Please try again.');
-            setShowError(true);
+            toast.error('Unable to update the card anniversary date. Please try again.');
         }
     };
 
     // Handle toggling a card's frozen state
     const handleFreezeToggle = async (cardId: string, currentFrozenState: boolean) => {
         try {
-            // Clear any previous errors
-            setShowError(false);
 
             const newFrozenState = !currentFrozenState;
 
@@ -388,8 +370,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             }
         } catch (error) {
             console.error('Error toggling card freeze state:', error);
-            setErrorMessage('Unable to update card freeze state. Please try again.');
-            setShowError(true);
+            toast.error('Unable to update card freeze state. Please try again.');
         }
     };
 
@@ -451,8 +432,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             setCardBeingRemoved(null);
         } catch (error) {
             console.error('Error removing card:', error);
-            setErrorMessage('Unable to remove this card. Please try again.');
-            setShowError(true);
+            toast.error('Unable to remove this card. Please try again.');
 
             // Clear loading state on error
             setIsRemovingCard(false);
@@ -599,14 +579,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             {/* Desktop header with card switcher dropdown */}
             {!isMobileViewport && (
                 <HeaderControls className="card-switcher-header">
-                    {showError && (
-                        <div className="error-container">
-                            <InfoDisplay
-                                type="error"
-                                message={errorMessage}
-                            />
-                        </div>
-                    )}
                     <CardSwitcherDropdown
                         cards={selectedCards}
                         selectedCard={selectedCard}

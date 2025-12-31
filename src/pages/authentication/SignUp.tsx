@@ -1,6 +1,7 @@
 import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import { AuthService } from '../../services';
 import { AuthResponse, PAGES, APP_NAME, APP_LOGO } from '../../types';
 import { InfoDisplay, ButtonSpinner } from '../../elements';
@@ -91,7 +92,7 @@ const SignUp: React.FC = () => {
             console.log('Registration successful');
             navigate(PAGES.WELCOME.PATH);
         } catch (error: any) {
-            setError(getAuthErrorMessage(error));
+            toast.error(getAuthErrorMessage(error));
             console.error('Registration failed:', error);
         } finally {
             setIsLoading(false);
@@ -104,7 +105,6 @@ const SignUp: React.FC = () => {
      */
     const handleGoogleSignIn = async (): Promise<void> => {
         setIsGoogleLoading(true);
-        setError('');
 
         try {
             const { isNewUser } = await login() as AuthResponse;
@@ -119,7 +119,7 @@ const SignUp: React.FC = () => {
                 navigate(PAGES.HOME.PATH);
             }
         } catch (error: any) {
-            setError(getAuthErrorMessage(error));
+            toast.error(getAuthErrorMessage(error));
             console.error('Authentication failed:', error);
         } finally {
             setIsGoogleLoading(false);

@@ -32,8 +32,6 @@ interface AccountProps {
 const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
   const { user, sendVerificationEmail, sendPasswordResetEmail, updateDisplayName, logout } = useAuth();
   const navigate = useNavigate();
-  const [message, setMessage] = useState<string>('');
-  const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   // Name change modal state
@@ -49,8 +47,11 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
 
   const handleVerificationEmailClick = async (): Promise<void> => {
     const result = await handleVerificationEmailUtil(sendVerificationEmail);
-    setMessageType(result.messageType);
-    setMessage(result.message);
+    if (result.messageType === 'success') {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
   };
 
   const handleSignOut = async (): Promise<void> => {
@@ -199,11 +200,6 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                   to={PAGES.PREFERENCES.PATH}
                 />
               </SettingsCard>
-
-              {/* Verification Message */}
-              {message && (
-                <InfoDisplay type={messageType || 'info'} message={message} />
-              )}
 
               {/* Help */}
               <SettingsCard title="Help">

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import PageHeader from '../../components/PageHeader';
 import ContentContainer from '../../components/ContentContainer';
-import { InfoDisplay } from '../../elements';
 import { PAGE_ICONS } from '../../types';
-import { DeleteStatusType, handleDeleteAllChats as handleDeleteAllChatsUtil } from '../account/utils';
+import { handleDeleteAllChats as handleDeleteAllChatsUtil } from '../account/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,13 +26,16 @@ interface DeleteHistoryProps {
 const DeleteHistory: React.FC<DeleteHistoryProps> = ({ setChatHistory, setHistoryRefreshTrigger }) => {
   useFullHeight(true);
 
-  const [deleteStatus, setDeleteStatus] = useState<DeleteStatusType>({ type: 'confirm', message: '' });
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleDeleteAllChatsClick = async (): Promise<void> => {
     const result = await handleDeleteAllChatsUtil(setChatHistory, setHistoryRefreshTrigger);
-    setDeleteStatus(result);
     setIsDeleteDialogOpen(false);
+    if (result.type === 'success') {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
   };
 
   const renderAlertDialogContent = () => (
@@ -65,13 +68,6 @@ const DeleteHistory: React.FC<DeleteHistoryProps> = ({ setChatHistory, setHistor
             <button onClick={() => setIsDeleteDialogOpen(true)} className="button destructive">
               Delete All Chat History
             </button>
-
-            {deleteStatus.type === 'success' && (
-              <InfoDisplay type="success" message={deleteStatus.message} />
-            )}
-            {deleteStatus.type === 'error' && (
-              <InfoDisplay type="error" message={deleteStatus.message} />
-            )}
           </section>
         </ContentContainer>
       </div>

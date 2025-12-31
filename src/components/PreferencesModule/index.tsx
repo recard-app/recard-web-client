@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
 import { CHAT_HISTORY_OPTIONS } from './utils';
@@ -30,8 +31,6 @@ function PreferencesModule({
     const [instructions, setInstructions] = useState<string>(customInstructions || '');
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [message, setMessage] = useState<string>('');
-    const [messageType, setMessageType] = useState<'error' | 'success' | 'info' | 'warning'>('info');
 
     useEffect(() => {
         const loadAllPreferences = async () => {
@@ -51,8 +50,7 @@ function PreferencesModule({
                 }
             } catch (error) {
                 console.error('Error loading preferences:', error);
-                setMessage('Error loading preferences');
-                setMessageType('error');
+                toast.error('Error loading preferences');
             } finally {
                 setIsLoading(false);
             }
@@ -66,17 +64,14 @@ function PreferencesModule({
      */
     const handleSave = async (): Promise<void> => {
         setIsSaving(true);
-        setMessage('');
 
         try {
             await UserPreferencesService.savePreferences(instructions, chatHistoryPreference);
-            setMessage('All preferences saved successfully!');
-            setMessageType('success');
+            toast.success('All preferences saved successfully!');
             onInstructionsUpdate(instructions);
         } catch (error) {
             console.error('Error saving preferences:', error);
-            setMessage('Error saving preferences');
-            setMessageType('error');
+            toast.error('Error saving preferences. Please try again.');
         } finally {
             setIsSaving(false);
         }
@@ -123,7 +118,7 @@ function PreferencesModule({
                     </select>
                 </div>
 
-                <button 
+                <button
                     onClick={handleSave}
                     disabled={isSaving || isLoading}
                     className={`save-button ${isSaving ? 'loading icon with-text' : ''}`}
@@ -131,13 +126,6 @@ function PreferencesModule({
                     {isSaving && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                     {isSaving ? 'Saving...' : 'Save Preferences'}
                 </button>
-
-                {message && (
-                    <InfoDisplay
-                        type={messageType}
-                        message={message}
-                    />
-                )}
             </div>
         </div>
     );
