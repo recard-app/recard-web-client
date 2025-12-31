@@ -28,6 +28,7 @@ import SignIn from './pages/authentication/SignIn';
 import SignUp from './pages/authentication/SignUp';
 import ForgotPassword from './pages/authentication/ForgotPassword';
 import Welcome from './pages/authentication/Welcome';
+import AuthAction from './pages/authentication/AuthAction';
 import History from './pages/history/History';
 import MyCards from './pages/my-cards/MyCards';
 import MyCredits from './pages/my-credits/MyCredits';
@@ -1093,6 +1094,7 @@ function AppContent({}: AppContentProps) {
                       <ForgotPassword />
                     </RedirectIfAuthenticated>
                   } />
+                  <Route path={PAGES.AUTH_ACTION.PATH} element={<AuthAction />} />
                   <Route path={PAGES.SIGN_UP.PATH} element={
                     <RedirectIfAuthenticated>
                       <SignUp />

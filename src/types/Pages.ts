@@ -25,7 +25,11 @@ export const PAGES = {
     PATH: '/welcome',
     TITLE: 'Welcome',
   },
-  
+  AUTH_ACTION: {
+    PATH: '/auth/action',
+    TITLE: 'Account Action',
+  },
+
   // Main application pages
   PREFERENCES: {
     PATH: '/preferences',
@@ -159,6 +163,7 @@ export const {
   SIGN_UP,
   FORGOT_PASSWORD,
   WELCOME,
+  AUTH_ACTION,
   PREFERENCES,
   ACCOUNT,
   HISTORY,
