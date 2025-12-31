@@ -13,9 +13,10 @@
   align-items: center;
   gap: $space-4;
   background: $neutral-white;
-  border: $border-half solid $neutral-light-gray;
+  border: $border-full solid $neutral-gray;
   border-radius: $radius-lg;
   padding: $space-4;
+  box-shadow: $shadow-sm;
 
   &__avatar {
     width: 80px;
@@ -138,10 +139,11 @@
   justify-content: center;
   width: 100%;
   padding: $space-3 $space-4;
-  border: $border-full solid $neutral-gray;
+  border: $border-full solid $neutral-medium-gray;
   border-radius: $radius-lg;
   background: $neutral-white;
   color: $neutral-dark-gray;
+  box-shadow: $shadow-sm;
   font-size: $font-base;
   font-weight: $font-medium;
   cursor: pointer;
