@@ -142,6 +142,29 @@
   }
 }
 
+// Email change form in modal
+.email-change-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+  }
+
+  .form-label {
+    @include form-label;
+  }
+
+  .default-input.disabled {
+    background-color: $neutral-lightest-gray;
+    color: $neutral-medium-gray;
+    cursor: not-allowed;
+  }
+}
+
 // Sign Out Button
 .sign-out-button {
   display: flex;

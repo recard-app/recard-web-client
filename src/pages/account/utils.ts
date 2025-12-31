@@ -106,3 +106,51 @@ export const validateDisplayName = (name: string): { valid: boolean; error?: str
 export const hasPasswordProvider = (providerData: { providerId: string }[]): boolean => {
   return providerData.some(provider => provider.providerId === 'password');
 };
+
+// Email validation regex pattern
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Validates an email address format
+ * @param email - The email to validate
+ * @returns Object containing validation result and optional error message
+ */
+export const validateEmail = (email: string): { valid: boolean; error?: string } => {
+  const trimmed = email.trim();
+
+  if (trimmed.length === 0) {
+    return { valid: false, error: 'Email cannot be empty' };
+  }
+
+  if (!EMAIL_REGEX.test(trimmed)) {
+    return { valid: false, error: 'Please enter a valid email address' };
+  }
+
+  return { valid: true };
+};
+
+/**
+ * Maps Firebase email update error codes to user-friendly messages
+ * @param error - Firebase error object
+ * @returns User-friendly error message
+ */
+export const getEmailChangeErrorMessage = (error: any): string => {
+  const code = error?.code || '';
+  switch (code) {
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return 'Incorrect password. Please try again.';
+    case 'auth/email-already-in-use':
+      return 'This email is already in use by another account.';
+    case 'auth/invalid-email':
+      return 'Please enter a valid email address.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Please try again later.';
+    case 'auth/requires-recent-login':
+      return 'Please sign out and sign back in, then try again.';
+    case 'auth/operation-not-allowed':
+      return 'Email change is not allowed. Please contact support.';
+    default:
+      return error?.message || 'An error occurred. Please try again.';
+  }
+};

@@ -11,7 +11,10 @@ import {
   updateProfile,
   sendEmailVerification,
   getAdditionalUserInfo,
-  sendPasswordResetEmail as firebaseSendPasswordResetEmail
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  verifyBeforeUpdateEmail
 } from 'firebase/auth';
 import { PLACEHOLDER_PROFILE_IMAGE, APP_NAME, PAGE_ICONS, LOADING_ICON } from '../types';
 import { logError } from '../utils/logger';
@@ -25,6 +28,7 @@ interface AuthContextType {
   sendVerificationEmail: () => Promise<boolean>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
   updateDisplayName: (newName: string) => Promise<void>;
+  updateEmail: (newEmail: string, currentPassword: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -214,6 +218,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * Updates the user's email address after re-authentication
+   * Sends verification email to new address; email only changes after verification
+   * @param newEmail - The new email address
+   * @param currentPassword - User's current password for re-authentication
+   */
+  const updateEmail = async (newEmail: string, currentPassword: string): Promise<void> => {
+    if (!auth.currentUser) {
+      throw new Error('No user is currently signed in');
+    }
+
+    if (!auth.currentUser.email) {
+      throw new Error('Current user has no email address');
+    }
+
+    try {
+      // Create credential for re-authentication
+      const credential = EmailAuthProvider.credential(
+        auth.currentUser.email,
+        currentPassword
+      );
+
+      // Re-authenticate the user
+      await reauthenticateWithCredential(auth.currentUser, credential);
+
+      // Send verification to new email
+      const actionCodeSettings = {
+        url: import.meta.env.VITE_EMAIL_VERIFICATION_REDIRECT_URL || window.location.origin,
+        handleCodeInApp: true,
+      };
+
+      await verifyBeforeUpdateEmail(auth.currentUser, newEmail, actionCodeSettings);
+    } catch (error) {
+      logError('Error updating email:', error);
+      throw error;
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -247,6 +289,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     sendVerificationEmail,
     sendPasswordResetEmail,
     updateDisplayName,
+    updateEmail,
     loading
   };
 

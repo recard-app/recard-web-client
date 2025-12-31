@@ -7,6 +7,8 @@ import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
 import {
   handleVerificationEmail as handleVerificationEmailUtil,
   validateDisplayName,
+  validateEmail,
+  getEmailChangeErrorMessage,
   hasPasswordProvider,
 } from './utils';
 import PageHeader from '../../components/PageHeader';
@@ -30,7 +32,7 @@ interface AccountProps {
 }
 
 const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
-  const { user, sendVerificationEmail, sendPasswordResetEmail, updateDisplayName, logout } = useAuth();
+  const { user, sendVerificationEmail, sendPasswordResetEmail, updateDisplayName, updateEmail, logout } = useAuth();
   const navigate = useNavigate();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -42,6 +44,13 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
 
   // Password reset state
   const [isResettingPassword, setIsResettingPassword] = useState(false);
+
+  // Email change modal state
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [newEmail, setNewEmail] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   useFullHeight(true);
 
@@ -106,6 +115,45 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
     }
   };
 
+  const handleOpenEmailModal = (): void => {
+    setNewEmail('');
+    setCurrentPassword('');
+    setEmailError(null);
+    setIsEmailModalOpen(true);
+  };
+
+  const handleEmailSubmit = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+
+    // Validate new email format
+    const validation = validateEmail(newEmail);
+    if (!validation.valid) {
+      setEmailError(validation.error || 'Invalid email');
+      return;
+    }
+
+    // Check if new email is same as current
+    if (newEmail.trim().toLowerCase() === user?.email?.toLowerCase()) {
+      setEmailError('New email must be different from current email');
+      return;
+    }
+
+    setIsUpdatingEmail(true);
+    setEmailError(null);
+
+    try {
+      await updateEmail(newEmail.trim(), currentPassword);
+      setIsEmailModalOpen(false);
+      toast.success(`Verification email sent to ${newEmail}. Click the link to complete the change.`);
+    } catch (error: any) {
+      setEmailError(getEmailChangeErrorMessage(error));
+      // Clear password on error for security (especially for wrong password)
+      setCurrentPassword('');
+    } finally {
+      setIsUpdatingEmail(false);
+    }
+  };
+
   const getVerificationStatus = () => {
     if (user?.emailVerified) {
       return <span className="status-badge status-badge--success">Verified</span>;
@@ -155,6 +203,11 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
 
               {/* Account Settings */}
               <SettingsCard title="Account">
+                <SettingsRow
+                  label="Name"
+                  value={user.displayName || 'Not set'}
+                  onClick={handleOpenNameModal}
+                />
                 {!user.emailVerified ? (
                   <SettingsRow
                     label="Email"
@@ -167,11 +220,18 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                     value={<>{user.email} {getVerificationStatus()}</>}
                   />
                 )}
-                <SettingsRow
-                  label="Name"
-                  value={user.displayName || 'Not set'}
-                  onClick={handleOpenNameModal}
-                />
+                {hasPasswordProvider(user.providerData) ? (
+                  <SettingsRow
+                    label="Change Email"
+                    onClick={handleOpenEmailModal}
+                  />
+                ) : (
+                  <SettingsRow
+                    label="Change Email"
+                    value={<span className="disabled-hint">Not available for Google sign-in</span>}
+                    disabled
+                  />
+                )}
                 {hasPasswordProvider(user.providerData) ? (
                   <SettingsRow
                     label="Reset Password"
@@ -272,6 +332,75 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                         className="button outline"
                         onClick={() => setIsNameModalOpen(false)}
                         disabled={isUpdatingName}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              {/* Change Email Modal */}
+              <Dialog open={isEmailModalOpen} onOpenChange={setIsEmailModalOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Change Email</DialogTitle>
+                  </DialogHeader>
+                  <DialogBody>
+                    <form onSubmit={handleEmailSubmit} className="email-change-form">
+                      <div className="form-field">
+                        <label className="form-label">Current Email</label>
+                        <input
+                          type="email"
+                          value={user?.email || ''}
+                          disabled
+                          className="default-input disabled"
+                        />
+                      </div>
+                      <div className="form-field">
+                        <label className="form-label">New Email</label>
+                        <input
+                          type="email"
+                          value={newEmail}
+                          onChange={(e) => setNewEmail(e.target.value)}
+                          placeholder="Enter new email address"
+                          className="default-input"
+                          required
+                          autoFocus
+                          disabled={isUpdatingEmail}
+                        />
+                      </div>
+                      <div className="form-field">
+                        <label className="form-label">Current Password</label>
+                        <input
+                          type="password"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          placeholder="Enter your current password"
+                          className="default-input"
+                          required
+                          disabled={isUpdatingEmail}
+                        />
+                      </div>
+                      {emailError && <InfoDisplay type="error" message={emailError} />}
+                    </form>
+                  </DialogBody>
+                  <DialogFooter>
+                    <div className="button-group">
+                      <button
+                        type="submit"
+                        className={`button ${isUpdatingEmail ? 'loading icon with-text' : ''}`}
+                        onClick={handleEmailSubmit}
+                        disabled={isUpdatingEmail || !newEmail.trim() || !currentPassword}
+                      >
+                        {isUpdatingEmail && <LOADING_ICON size={LOADING_ICON_SIZE} />}
+                        {isUpdatingEmail ? 'Sending...' : 'Send Verification'}
+                      </button>
+                      <button
+                        type="button"
+                        className="button outline"
+                        onClick={() => setIsEmailModalOpen(false)}
+                        disabled={isUpdatingEmail}
                       >
                         Cancel
                       </button>
