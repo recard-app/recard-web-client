@@ -1,4 +1,4 @@
-@import '../../styling/variables.scss';
+@use '../../styling/variables' as *;
 
 .multiplier-badge {
   display: inline-block;
