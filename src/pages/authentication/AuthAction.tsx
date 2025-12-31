@@ -12,7 +12,8 @@ import './Auth.scss';
 import './AuthAction.scss';
 
 // Valid action modes - array for runtime validation
-const VALID_MODES = ['resetPassword', 'verifyEmail', 'recoverEmail'] as const;
+// verifyAndChangeEmail is used by verifyBeforeUpdateEmail() for email changes
+const VALID_MODES = ['resetPassword', 'verifyEmail', 'recoverEmail', 'verifyAndChangeEmail'] as const;
 type ActionMode = typeof VALID_MODES[number];
 
 // UI view states
@@ -60,12 +61,14 @@ const getSuccessMessage = (mode: ActionMode): string => {
             return 'Your email has been verified successfully.';
         case 'recoverEmail':
             return 'Your email has been recovered successfully.';
+        case 'verifyAndChangeEmail':
+            return 'Your email has been changed successfully.';
     }
 };
 
 /**
  * AuthAction component handles Firebase email action links
- * for password reset, email verification, and email recovery.
+ * for password reset, email verification, email recovery, and email change.
  */
 const AuthAction: React.FC = () => {
     const [searchParams] = useSearchParams();
@@ -158,6 +161,24 @@ const AuthAction: React.FC = () => {
                         }
                     }
                     break;
+
+                case 'verifyAndChangeEmail':
+                    if (isMounted) {
+                        setViewState('verifyingEmail');
+                    }
+                    try {
+                        await applyActionCode(auth, code);
+                        if (isMounted) {
+                            setSuccessMessage(getSuccessMessage('verifyAndChangeEmail'));
+                            setViewState('success');
+                        }
+                    } catch (error) {
+                        if (isMounted) {
+                            setErrorMessage(getActionErrorMessage(error));
+                            setViewState('error');
+                        }
+                    }
+                    break;
             }
         };
 
@@ -216,6 +237,8 @@ const AuthAction: React.FC = () => {
                 return 'Verifying your email';
             case 'recoverEmail':
                 return 'Recovering your email';
+            case 'verifyAndChangeEmail':
+                return 'Changing your email';
             default:
                 return 'Account Action';
         }

@@ -796,10 +796,16 @@ function AppContent({}: AppContentProps) {
           <Helmet>
             <title>{getPageTitle()}</title>
           </Helmet>
-          
-          
-          {/* Universal Sidebar - shown on all pages when user is authenticated (except design system) */}
-          {user && !isDesignSystemPage && (
+
+          {/* Check if current route is an auth page (no sidebar/nav should show) */}
+          {(() => {
+            const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH, PAGES.AUTH_ACTION.PATH]);
+            const isAuthRoute = authPaths.has(location.pathname);
+
+            return (
+              <>
+                {/* Universal Sidebar - shown on all pages when user is authenticated (except auth pages and design system) */}
+                {user && !isDesignSystemPage && !isAuthRoute && (
             <AppSidebar
               isOpen={isSidePanelOpen}
               onToggle={toggleSidePanel}
@@ -826,39 +832,38 @@ function AppContent({}: AppContentProps) {
               onRemoveUpdatingCreditId={removeUpdatingCreditId}
               isCreditUpdating={isCreditUpdating}
             />
-          )}
-          {(() => {
-            const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH]);
-            const isAuthRoute = authPaths.has(location.pathname);
-            const mobileHeaderTitle = PageUtils.getTitleByPath(location.pathname) || APP_NAME;
-            // Render mobile header for authenticated, non-auth routes (except design system). CSS shows it only under ${MOBILE_BREAKPOINT}px.
-            return user && !isAuthRoute && !isDesignSystemPage ? (
-              <MobileHeader
-                title={mobileHeaderTitle}
-                onLogout={handleLogout}
-                chatHistory={chatHistory}
-                currentChatId={currentChatId}
-                onCurrentChatIdChange={getCurrentChatId}
-                onHistoryUpdate={handleHistoryUpdate}
-                subscriptionPlan={subscriptionPlan}
-                creditCards={creditCards}
-                isLoadingCreditCards={isLoadingCreditCards}
-                isLoadingHistory={isLoadingHistory}
-                onCardSelect={handleCardSelect}
-                quickHistorySize={quick_history_size}
-                user={user}
-                onNewChat={handleClearChat}
-                onOpenCardSelector={() => setIsCardSelectorOpen(true)}
-                monthlyStats={monthlyStats}
-                isLoadingMonthlyStats={isLoadingMonthlyStats}
-                isUpdatingMonthlyStats={isUpdatingMonthlyStats}
-                prioritizedCredits={prioritizedCredits}
-                onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
-                onAddUpdatingCreditId={addUpdatingCreditId}
-                onRemoveUpdatingCreditId={removeUpdatingCreditId}
-                isCreditUpdating={isCreditUpdating}
-              />
-            ) : null;
+                )}
+
+                {/* Mobile Header - shown on mobile for authenticated, non-auth routes (except design system) */}
+                {user && !isAuthRoute && !isDesignSystemPage && (
+                  <MobileHeader
+                    title={PageUtils.getTitleByPath(location.pathname) || APP_NAME}
+                    onLogout={handleLogout}
+                    chatHistory={chatHistory}
+                    currentChatId={currentChatId}
+                    onCurrentChatIdChange={getCurrentChatId}
+                    onHistoryUpdate={handleHistoryUpdate}
+                    subscriptionPlan={subscriptionPlan}
+                    creditCards={creditCards}
+                    isLoadingCreditCards={isLoadingCreditCards}
+                    isLoadingHistory={isLoadingHistory}
+                    onCardSelect={handleCardSelect}
+                    quickHistorySize={quick_history_size}
+                    user={user}
+                    onNewChat={handleClearChat}
+                    onOpenCardSelector={() => setIsCardSelectorOpen(true)}
+                    monthlyStats={monthlyStats}
+                    isLoadingMonthlyStats={isLoadingMonthlyStats}
+                    isUpdatingMonthlyStats={isUpdatingMonthlyStats}
+                    prioritizedCredits={prioritizedCredits}
+                    onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
+                    onAddUpdatingCreditId={addUpdatingCreditId}
+                    onRemoveUpdatingCreditId={removeUpdatingCreditId}
+                    isCreditUpdating={isCreditUpdating}
+                  />
+                )}
+              </>
+            );
           })()}
 
                     
@@ -1052,7 +1057,7 @@ function AppContent({}: AppContentProps) {
             </Routes>
           ) : (
           (() => {
-            const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH]);
+            const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH, PAGES.AUTH_ACTION.PATH]);
             const isAuthRoute = authPaths.has(location.pathname);
             const isHelpPage = location.pathname.startsWith(PAGES.HELP_CENTER.PATH);
             return (
