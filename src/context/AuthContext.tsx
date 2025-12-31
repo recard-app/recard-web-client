@@ -221,7 +221,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#FFFFFF',
+          background: `
+            radial-gradient(ellipse at 20% 20%, rgba(217, 237, 223, 0.5) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 80%, rgba(34, 204, 157, 0.3) 0%, transparent 50%),
+            radial-gradient(ellipse at 60% 10%, rgba(217, 237, 223, 0.25) 0%, transparent 40%),
+            #FFFFFF
+          `,
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
