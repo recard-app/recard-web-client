@@ -10,7 +10,7 @@ export const getAuthErrorMessage = (error: any): string => {
     case 'auth/invalid-credential':
       return 'Invalid email or password';
     case 'auth/email-already-in-use':
-      return 'An account with this email already exists';
+      return 'Unable to create account with this email. Try signing in or use a different email.';
     case 'auth/weak-password':
       return 'Password is too weak. Please use at least 6 characters';
     case 'auth/invalid-email':

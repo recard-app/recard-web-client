@@ -14,6 +14,7 @@ import {
   sendPasswordResetEmail as firebaseSendPasswordResetEmail
 } from 'firebase/auth';
 import { PLACEHOLDER_PROFILE_IMAGE, APP_NAME, PAGE_ICONS, LOADING_ICON } from '../types';
+import { logError } from '../utils/logger';
 
 interface AuthContextType {
   user: FirebaseUser | null;
@@ -81,7 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = await user.getIdToken();
       return { user, token, isNewUser };
     } catch (error) {
-      console.error('Authentication failed:', error);
+      logError('Authentication failed:', error);
       throw error;
     }
   };
@@ -95,7 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await signOut(auth);
       setUser(null);
     } catch (error) {
-      console.error('Logout failed:', error);
+      logError('Logout failed:', error);
     }
   };
 
@@ -123,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = await result.user.getIdToken();
       return { user: result.user, token };
     } catch (error) {
-      console.error('Registration failed:', error);
+      logError('Registration failed:', error);
       throw error;
     }
   };
@@ -140,7 +141,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = await result.user.getIdToken();
       return { user: result.user, token };
     } catch (error) {
-      console.error('Email login failed:', error);
+      logError('Email login failed:', error);
       throw error;
     }
   };
@@ -189,7 +190,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         url: import.meta.env.VITE_PASSWORD_RESET_REDIRECT_URL || window.location.origin
       });
     } catch (error) {
-      console.error('Error sending password reset email:', error);
+      logError('Error sending password reset email:', error);
       throw error;
     }
   };
@@ -208,7 +209,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await auth.currentUser.reload();
       setUser({ ...auth.currentUser });
     } catch (error) {
-      console.error('Error updating display name:', error);
+      logError('Error updating display name:', error);
       throw error;
     }
   };

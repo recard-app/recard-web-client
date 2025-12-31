@@ -6,6 +6,7 @@ import { AuthService } from '../../services';
 import { AuthResponse, PAGES, APP_NAME, APP_LOGO } from '../../types';
 import { InfoDisplay, ButtonSpinner } from '../../elements';
 import { getAuthErrorMessage } from './utils';
+import { logError } from '../../utils/logger';
 import './Auth.scss';
 
 // Google icon SVG component
@@ -93,7 +94,7 @@ const SignUp: React.FC = () => {
             navigate(PAGES.WELCOME.PATH);
         } catch (error: any) {
             toast.error(getAuthErrorMessage(error));
-            console.error('Registration failed:', error);
+            logError('Registration failed:', error);
         } finally {
             setIsLoading(false);
         }
@@ -120,7 +121,7 @@ const SignUp: React.FC = () => {
             }
         } catch (error: any) {
             toast.error(getAuthErrorMessage(error));
-            console.error('Authentication failed:', error);
+            logError('Authentication failed:', error);
         } finally {
             setIsGoogleLoading(false);
         }

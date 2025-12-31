@@ -4,7 +4,6 @@ import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { PAGES, APP_NAME, APP_LOGO } from '../../types';
 import { ButtonSpinner } from '../../elements';
-import { getAuthErrorMessage } from './utils';
 import './Auth.scss';
 
 const ForgotPassword: React.FC = () => {
@@ -18,12 +17,31 @@ const ForgotPassword: React.FC = () => {
 
         try {
             await sendPasswordResetEmail(email);
-            toast.success('Password reset email sent! Please check your inbox.');
         } catch (error: any) {
-            toast.error(getAuthErrorMessage(error));
-        } finally {
-            setIsLoading(false);
+            // Only suppress auth/user-not-found to prevent enumeration
+            // All other errors should be shown to the user
+            if (error?.code === 'auth/user-not-found') {
+                // Log in dev only for debugging
+                if (import.meta.env.DEV) {
+                    console.log('Password reset: email not found (hidden from user)');
+                }
+                // Fall through to show success message
+            } else {
+                // Show actual errors (rate limiting, invalid email, network, etc.)
+                const errorMessages: Record<string, string> = {
+                    'auth/too-many-requests': 'Too many attempts. Please try again later.',
+                    'auth/invalid-email': 'Please enter a valid email address.',
+                    'auth/user-disabled': 'This account has been disabled.',
+                };
+                const message = errorMessages[error?.code] || 'An error occurred. Please try again.';
+                toast.error(message);
+                setIsLoading(false);
+                return;
+            }
         }
+        // Show success message (for valid emails and suppressed user-not-found)
+        toast.success('If an account exists with this email, you will receive a password reset link.');
+        setIsLoading(false);
     };
 
     return (
