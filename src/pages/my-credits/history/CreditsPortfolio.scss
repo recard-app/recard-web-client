@@ -6,10 +6,10 @@
 .standard-page-content--no-padding {
   .credit-portfolio-view {
     height: 100%;
-    padding: $space-4;
+    padding: $space-2;
 
     @media (min-width: $mobile-breakpoint) {
-      padding: $space-6;
+      padding: $space-5;
     }
   }
 }
