@@ -1,0 +1,154 @@
+@use '../../styling/globals' as *;
+@use 'sass:color';
+
+// Settings Card Container
+.settings-card {
+  background: $neutral-white;
+  border: $border-half solid $neutral-light-gray;
+  border-radius: $radius-lg;
+  overflow: hidden;
+
+  &--danger {
+    .settings-card__title {
+      color: $error;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: $space-3 $space-4;
+    border-bottom: $border-half solid $neutral-light-gray;
+    background: $neutral-lightest-gray;
+
+    &--clickable {
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        background: color.adjust($neutral-lightest-gray, $lightness: -2%);
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary-color;
+        outline-offset: -2px;
+      }
+    }
+  }
+
+  &__title {
+    @include label;
+    font-weight: $font-semibold;
+    color: $neutral-dark-gray;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__chevron {
+    transition: transform 0.2s ease;
+    transform: rotate(-90deg);
+
+    &--expanded {
+      transform: rotate(0deg);
+    }
+  }
+
+  &__content {
+    display: grid;
+    transition: grid-template-rows 0.2s ease;
+    grid-template-rows: 1fr;
+
+    &--collapsed {
+      grid-template-rows: 0fr;
+    }
+  }
+
+  &__content-inner {
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
+// Settings Row
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-3 $space-4;
+  text-decoration: none;
+  background: $neutral-white;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:not(:last-child) {
+    border-bottom: $border-half solid $neutral-light-gray;
+  }
+
+  &:hover:not(.settings-row--disabled) {
+    background: $neutral-lightest-gray;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: -2px;
+  }
+
+  &--danger {
+    .settings-row__label {
+      color: $error;
+    }
+
+    &:hover:not(.settings-row--disabled) {
+      background: rgba($error, 0.05);
+    }
+  }
+
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $space-half;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    @include body-regular;
+    color: $neutral-black;
+  }
+
+  &__value {
+    @include label;
+    color: $neutral-dark-gray;
+  }
+
+  &__chevron {
+    flex-shrink: 0;
+    margin-left: $space-2;
+    opacity: 0.5;
+  }
+}
+
+// Mobile adjustments
+@media (max-width: $mobile-breakpoint) {
+  .settings-card {
+    border-radius: $radius-base;
+
+    &__header {
+      padding: $space-2 $space-3;
+    }
+  }
+
+  .settings-row {
+    padding: $space-3;
+  }
+}

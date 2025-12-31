@@ -1,5 +1,5 @@
 import { CreditCard } from '../../types/CreditCardTypes';
-import { CardService, UserCreditCardService } from '../../services';
+import { CardService, UserCreditCardService, UserCreditService } from '../../services';
 
 /**
  * Sorts credit cards by priority:
@@ -99,7 +99,14 @@ export const saveUserCardSelections = async (cards: CreditCard[]): Promise<{
     try {
         const cardsToSubmit = formatCardsForSubmission(cards);
         await UserCreditCardService.updateUserCards(cardsToSubmit);
-        
+
+        // Sync credit history after card selection changes
+        try {
+            await UserCreditService.syncCurrentYearCreditsDebounced();
+        } catch (syncError) {
+            console.warn('Failed to sync credit history after card selection:', syncError);
+        }
+
         const updatedCards = await CardService.fetchCreditCards(true);
         return {
             success: true,

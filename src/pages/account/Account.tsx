@@ -1,37 +1,30 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-// Dialog imports no longer needed here
 import { SubscriptionPlan, PAGE_NAMES, PAGE_ICONS } from '../../types';
 import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
-import { 
+import {
   handleVerificationEmail as handleVerificationEmailUtil,
 } from './utils';
 import PageHeader from '../../components/PageHeader';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
 import { InfoDisplay } from '../../elements';
-import './Account.scss';
+import { SettingsCard, SettingsRow } from '../../components/SettingsCard';
 import ContentContainer from '../../components/ContentContainer';
 import { PAGES } from '../../types/Pages';
-import { Link } from 'react-router-dom';
+import './Account.scss';
 
-/**
- * Props for the Account component
- * @interface AccountProps
- * @property {React.Dispatch<React.SetStateAction<ChatHistory>>} setChatHistory - Function to update the chat history state
- * @property {React.Dispatch<React.SetStateAction<number>>} setHistoryRefreshTrigger - Function to trigger a refresh of the chat history
- * @property {SubscriptionPlan} subscriptionPlan - The user's current subscription plan ('free' or 'premium')
- */
 interface AccountProps {
   subscriptionPlan: SubscriptionPlan;
 }
 
 const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
-  const { user, sendVerificationEmail } = useAuth();
+  const { user, sendVerificationEmail, logout } = useAuth();
+  const navigate = useNavigate();
   const [message, setMessage] = useState<string>('');
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
-  // Delete moved to dedicated page
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
-  // Use the scroll height hook for this page
   useScrollHeight(true);
 
   const handleVerificationEmailClick = async (): Promise<void> => {
@@ -40,81 +33,128 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
     setMessage(result.message);
   };
 
-  // Delete all chat moved to dedicated page
+  const handleSignOut = async (): Promise<void> => {
+    try {
+      setIsSigningOut(true);
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Failed to sign out:', error);
+      setIsSigningOut(false);
+    }
+  };
 
-  // formatDateTime removed; meta block not displayed
+  const getVerificationStatus = () => {
+    if (user?.emailVerified) {
+      return <span className="status-badge status-badge--success">Verified</span>;
+    }
+    return <span className="status-badge status-badge--warning">Not Verified</span>;
+  };
+
+  const getPlanBadge = () => {
+    return (
+      <span className={`status-badge status-badge--${subscriptionPlan === 'premium' ? 'premium' : 'default'}`}>
+        {subscriptionPlan}
+      </span>
+    );
+  };
 
   return (
     <div className="full-page-layout">
       <PageHeader title={PAGE_NAMES.MY_ACCOUNT} icon={PAGE_ICONS.MY_ACCOUNT.MINI} />
       <div className="full-page-content">
-        <ContentContainer size="lg">
-        {user ? (
-          <div className="account-wrapper">
-            <div className="account-header">
-              {user.photoURL && (
-                <img
-                  src={user.photoURL}
-                  alt="Profile"
-                  crossOrigin="anonymous"
-                  referrerPolicy="no-referrer"
-                  className="avatar"
-                />
-              )}
-              <div className="identity">
-                <h2 className="name">{user.displayName || 'My Account'}</h2>
-                <p className="email">{user.email}</p>
-                <div className="badges">
-                  <span className={`badge ${user.emailVerified ? 'badge--success' : 'badge--warning'}`}>
-                    {user.emailVerified ? 'Email Verified' : 'Email Not Verified'}
-                  </span>
+        <ContentContainer size="sm">
+          {user ? (
+            <div className="account-wrapper">
+              {/* Profile Card */}
+              <div className="profile-card">
+                {user.photoURL ? (
+                  <img
+                    src={user.photoURL}
+                    alt="Profile"
+                    crossOrigin="anonymous"
+                    referrerPolicy="no-referrer"
+                    className="profile-card__avatar"
+                  />
+                ) : (
+                  <div className="profile-card__avatar profile-card__avatar--placeholder">
+                    {user.displayName?.charAt(0) || user.email?.charAt(0) || '?'}
+                  </div>
+                )}
+                <div className="profile-card__info">
+                  <h2 className="profile-card__name">{user.displayName || 'My Account'}</h2>
+                  <p className="profile-card__email">{user.email}</p>
+                  <div className="profile-card__badges">
+                    <span className={`badge ${user.emailVerified ? 'badge--success' : 'badge--warning'}`}>
+                      {user.emailVerified ? 'Email Verified' : 'Email Not Verified'}
+                    </span>
+                    {SHOW_SUBSCRIPTION_MENTIONS && (
+                      <span className="badge badge--sub">{subscriptionPlan}</span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Meta removed per request */}
+              {/* Account Settings */}
+              <SettingsCard title="Account">
+                {SHOW_SUBSCRIPTION_MENTIONS && (
+                  <SettingsRow
+                    label="Subscription Plan"
+                    value={getPlanBadge()}
+                  />
+                )}
+                {!user.emailVerified ? (
+                  <SettingsRow
+                    label="Email Verification"
+                    value={getVerificationStatus()}
+                    onClick={handleVerificationEmailClick}
+                  />
+                ) : (
+                  <SettingsRow
+                    label="Email Verification"
+                    value={getVerificationStatus()}
+                  />
+                )}
+                <SettingsRow
+                  label="Preferences"
+                  to={PAGES.PREFERENCES.PATH}
+                />
+              </SettingsCard>
 
-            <div className="account-sections">
-              {SHOW_SUBSCRIPTION_MENTIONS && (
-                <section className="section plan-section">
-                  <h3 className="section-title">Your Plan</h3>
-                  <div className="plan-row">
-                    <span className="plan-tag">{subscriptionPlan}</span>
-                    <p className="plan-copy">You are currently on the {subscriptionPlan} plan.</p>
-                  </div>
-                </section>
+              {/* Verification Message */}
+              {message && (
+                <InfoDisplay type={messageType || 'info'} message={message} />
               )}
-              {!user.emailVerified && (
-                <section className="section callout callout--warning">
-                  <h3 className="section-title">Verify your email</h3>
-                  <p>
-                    To unlock full capabilities and improve your account security, please verify your email address.
-                  </p>
-                  <div className="actions">
-                    <button className="verify-button" onClick={handleVerificationEmailClick}>
-                      Send Verification Email
-                    </button>
-                  </div>
-                  {message && (
-                    <InfoDisplay type={messageType || 'info'} message={message} />
-                  )}
-                </section>
-              )}
 
-              <section className="section">
-                <p className="danger-link-copy">Need to delete your chat history?</p>
-                <Link className="link" to={PAGES.DELETE_HISTORY.PATH}>Delete your chat history</Link>
-              </section>
+              {/* Help */}
+              <SettingsCard title="Help">
+                <SettingsRow
+                  label="Revisit Onboarding"
+                  to={PAGES.WELCOME.PATH}
+                />
+              </SettingsCard>
 
-              <section className="section">
-                <p className="danger-link-copy">Want to revisit onboarding?</p>
-                <Link className="link" to={PAGES.WELCOME.PATH}>Revisit onboarding</Link>
-              </section>
+              {/* Danger Zone - Collapsible */}
+              <SettingsCard title="Danger Zone" collapsible defaultCollapsed variant="danger">
+                <SettingsRow
+                  label="Delete Chat History"
+                  to={PAGES.DELETE_HISTORY.PATH}
+                  variant="danger"
+                />
+              </SettingsCard>
+
+              {/* Sign Out Button */}
+              <button
+                className="sign-out-button"
+                onClick={handleSignOut}
+                disabled={isSigningOut}
+              >
+                {isSigningOut ? 'Signing out...' : 'Sign Out'}
+              </button>
             </div>
-          </div>
-        ) : (
-          <p>Please sign in to view your account details.</p>
-        )}
+          ) : (
+            <p>Please sign in to view your account details.</p>
+          )}
         </ContentContainer>
       </div>
     </div>
