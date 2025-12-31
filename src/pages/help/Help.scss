@@ -317,7 +317,7 @@ button.help-section__header {
   font-family: $font-cal-sans;
   font-size: $font-base;
   color: $neutral-black;
-  margin: 0;
+  margin: 0 !important;
 
   @media (max-width: $mobile-breakpoint) {
     font-size: $font-sm;
