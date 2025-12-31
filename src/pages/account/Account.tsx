@@ -113,12 +113,8 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
     return <span className="status-badge status-badge--warning">Not Verified</span>;
   };
 
-  const getPlanBadge = () => {
-    return (
-      <span className={`status-badge status-badge--${subscriptionPlan === 'premium' ? 'premium' : 'default'}`}>
-        {subscriptionPlan}
-      </span>
-    );
+  const getPlanText = () => {
+    return subscriptionPlan.charAt(0).toUpperCase() + subscriptionPlan.slice(1);
   };
 
   return (
@@ -192,7 +188,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                 {SHOW_SUBSCRIPTION_MENTIONS && (
                   <SettingsRow
                     label="Subscription Plan"
-                    value={getPlanBadge()}
+                    value={getPlanText()}
                   />
                 )}
                 <SettingsRow
@@ -218,6 +214,11 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                 <SettingsRow
                   label="Delete Chat History"
                   to={PAGES.DELETE_HISTORY.PATH}
+                  variant="danger"
+                />
+                <SettingsRow
+                  label="Delete Account"
+                  to={PAGES.DELETE_ACCOUNT.PATH}
                   variant="danger"
                 />
               </SettingsCard>

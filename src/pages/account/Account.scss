@@ -120,16 +120,6 @@
     background: $warning-badge-background;
     color: $warning-badge-text;
   }
-
-  &--default {
-    background: $neutral-lightest-gray;
-    color: $neutral-dark-gray;
-  }
-
-  &--premium {
-    background: linear-gradient(135deg, $primary-color 0%, $primary-medium 100%);
-    color: $neutral-white;
-  }
 }
 
 // Disabled hint text for settings rows
