@@ -35,6 +35,15 @@
     padding: $space-6 $space-4;
   }
 
+  // Auth pages gradient background with primary color blobs
+  &.auth-background {
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba($primary-light, 0.5) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba($primary-color, 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 10%, rgba($primary-light, 0.25) 0%, transparent 40%),
+      $neutral-white;
+  }
+
   // Full height variant for pages like prompt window that need viewport height
   &.full-height {
     height: 100%;

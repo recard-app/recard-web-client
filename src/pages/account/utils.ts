@@ -56,15 +56,53 @@ export const handleDeleteAllChats = async (
     await UserHistoryService.deleteAllHistory();
     setChatHistory([]);
     setHistoryRefreshTrigger(prev => prev + 1);
-    return { 
-      type: 'success', 
-      message: 'All chat history has been deleted successfully.' 
+    return {
+      type: 'success',
+      message: 'All chat history has been deleted successfully.'
     };
   } catch (error) {
     console.error('Error deleting chat history:', error);
-    return { 
-      type: 'error', 
-      message: 'Failed to delete chat history. Please try again.' 
+    return {
+      type: 'error',
+      message: 'Failed to delete chat history. Please try again.'
     };
   }
+};
+
+// Display name validation constants
+const NAME_MAX_LENGTH = 50;
+const NAME_MIN_LENGTH = 1;
+// Unicode-aware regex: allows letters from any language, spaces, hyphens, and apostrophes
+const NAME_REGEX = /^[\p{L}\s\-']+$/u;
+
+/**
+ * Validates a display name for length and character requirements
+ * @param name - The name to validate
+ * @returns Object containing validation result and optional error message
+ */
+export const validateDisplayName = (name: string): { valid: boolean; error?: string } => {
+  const trimmed = name.trim();
+
+  if (trimmed.length < NAME_MIN_LENGTH) {
+    return { valid: false, error: 'Name cannot be empty' };
+  }
+
+  if (trimmed.length > NAME_MAX_LENGTH) {
+    return { valid: false, error: `Name cannot exceed ${NAME_MAX_LENGTH} characters` };
+  }
+
+  if (!NAME_REGEX.test(trimmed)) {
+    return { valid: false, error: 'Name can only contain letters (any language), spaces, hyphens, and apostrophes' };
+  }
+
+  return { valid: true };
+};
+
+/**
+ * Check if user has password provider (email/password sign-in)
+ * @param providerData - Array of provider data from Firebase user
+ * @returns True if user has password provider
+ */
+export const hasPasswordProvider = (providerData: { providerId: string }[]): boolean => {
+  return providerData.some(provider => provider.providerId === 'password');
 };

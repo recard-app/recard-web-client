@@ -111,6 +111,7 @@ import {
 import { UserComponentTrackingPreferences, PrioritizedCredit } from './types/CardCreditsTypes';
 import { FullHeightContext } from './hooks/useFullHeight';
 import { ScrollHeightContext } from './hooks/useScrollHeight';
+import { Toaster } from 'sonner';
 
 const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 
@@ -789,6 +790,7 @@ function AppContent({}: AppContentProps) {
     <FullHeightContext.Provider value={{ setFullHeight: setNeedsFullHeight }}>
       <ScrollHeightContext.Provider value={{ setScrollHeight: setNeedsScrollHeight }}>
         <div className="app">
+          <Toaster position="top-right" richColors />
           <Helmet>
             <title>{getPageTitle()}</title>
           </Helmet>
@@ -1055,7 +1057,7 @@ function AppContent({}: AppContentProps) {
               <UniversalContentWrapper
                 isSidePanelOpen={user ? isSidePanelOpen : false}
                 fullHeight={isAuthRoute ? true : needsFullHeight}
-                className={isAuthRoute ? 'center-content' : ''}
+                className={isAuthRoute ? 'center-content auth-background' : ''}
                 disableSidebarMargin={isAuthRoute}
                 whiteBackground={isHelpPage}
               >

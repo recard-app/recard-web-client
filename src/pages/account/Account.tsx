@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { useAuth } from '../../context/AuthContext';
-import { SubscriptionPlan, PAGE_NAMES, PAGE_ICONS } from '../../types';
+import { SubscriptionPlan, PAGE_NAMES, PAGE_ICONS, LOADING_ICON, LOADING_ICON_SIZE } from '../../types';
 import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
 import {
   handleVerificationEmail as handleVerificationEmailUtil,
+  validateDisplayName,
+  hasPasswordProvider,
 } from './utils';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
@@ -12,6 +15,14 @@ import { InfoDisplay } from '../../elements';
 import { SettingsCard, SettingsRow } from '../../components/SettingsCard';
 import ContentContainer from '../../components/ContentContainer';
 import { PAGES } from '../../types/Pages';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+  DialogFooter,
+} from '../../components/ui/dialog/dialog';
 import './Account.scss';
 
 interface AccountProps {
@@ -19,11 +30,20 @@ interface AccountProps {
 }
 
 const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
-  const { user, sendVerificationEmail, logout } = useAuth();
+  const { user, sendVerificationEmail, sendPasswordResetEmail, updateDisplayName, logout } = useAuth();
   const navigate = useNavigate();
   const [message, setMessage] = useState<string>('');
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
   const [isSigningOut, setIsSigningOut] = useState(false);
+
+  // Name change modal state
+  const [isNameModalOpen, setIsNameModalOpen] = useState(false);
+  const [newDisplayName, setNewDisplayName] = useState(user?.displayName || '');
+  const [isUpdatingName, setIsUpdatingName] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  // Password reset state
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   useFullHeight(true);
 
@@ -41,6 +61,47 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
     } catch (error) {
       console.error('Failed to sign out:', error);
       setIsSigningOut(false);
+    }
+  };
+
+  const handleNameSubmit = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+    const validation = validateDisplayName(newDisplayName);
+    if (!validation.valid) {
+      setNameError(validation.error || 'Invalid name');
+      return;
+    }
+
+    setIsUpdatingName(true);
+    setNameError(null);
+    try {
+      await updateDisplayName(newDisplayName.trim());
+      setIsNameModalOpen(false);
+      toast.success('Name updated successfully');
+    } catch (error) {
+      setNameError('Failed to update name. Please try again.');
+    } finally {
+      setIsUpdatingName(false);
+    }
+  };
+
+  const handleOpenNameModal = (): void => {
+    setNewDisplayName(user?.displayName || '');
+    setNameError(null);
+    setIsNameModalOpen(true);
+  };
+
+  const handleResetPassword = async (): Promise<void> => {
+    if (!user?.email || isResettingPassword) return;
+
+    setIsResettingPassword(true);
+    try {
+      await sendPasswordResetEmail(user.email);
+      toast.success('Password reset email sent. Check your inbox.');
+    } catch (error) {
+      toast.error('Failed to send reset email. Please try again.');
+    } finally {
+      setIsResettingPassword(false);
     }
   };
 
@@ -109,6 +170,24 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                     value={<>{user.email} {getVerificationStatus()}</>}
                   />
                 )}
+                <SettingsRow
+                  label="Name"
+                  value={user.displayName || 'Not set'}
+                  onClick={handleOpenNameModal}
+                />
+                {hasPasswordProvider(user.providerData) ? (
+                  <SettingsRow
+                    label="Reset Password"
+                    onClick={handleResetPassword}
+                    loading={isResettingPassword}
+                  />
+                ) : (
+                  <SettingsRow
+                    label="Reset Password"
+                    value={<span className="disabled-hint">Not available for Google sign-in</span>}
+                    disabled
+                  />
+                )}
                 {SHOW_SUBSCRIPTION_MENTIONS && (
                   <SettingsRow
                     label="Subscription Plan"
@@ -155,6 +234,54 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
               >
                 {isSigningOut ? 'Signing out...' : 'Sign Out'}
               </button>
+
+              {/* Change Name Modal */}
+              <Dialog open={isNameModalOpen} onOpenChange={setIsNameModalOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Change Name</DialogTitle>
+                  </DialogHeader>
+                  <DialogBody>
+                    <form onSubmit={handleNameSubmit} className="name-change-form">
+                      <input
+                        type="text"
+                        value={newDisplayName}
+                        onChange={(e) => setNewDisplayName(e.target.value)}
+                        placeholder="Enter your name"
+                        className="default-input"
+                        maxLength={50}
+                        required
+                        autoFocus
+                      />
+                      <div className="character-count">
+                        {newDisplayName.length}/50
+                      </div>
+                      {nameError && <InfoDisplay type="error" message={nameError} />}
+                    </form>
+                  </DialogBody>
+                  <DialogFooter>
+                    <div className="button-group">
+                      <button
+                        type="submit"
+                        className={`button ${isUpdatingName ? 'loading icon with-text' : ''}`}
+                        onClick={handleNameSubmit}
+                        disabled={isUpdatingName}
+                      >
+                        {isUpdatingName && <LOADING_ICON size={LOADING_ICON_SIZE} />}
+                        {isUpdatingName ? 'Saving...' : 'Save'}
+                      </button>
+                      <button
+                        type="button"
+                        className="button outline"
+                        onClick={() => setIsNameModalOpen(false)}
+                        disabled={isUpdatingName}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           ) : (
             <p>Please sign in to view your account details.</p>

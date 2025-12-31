@@ -1,20 +1,19 @@
 @use '../../styling/globals' as *;
 
-// Note: Centering is handled by UniversalContentWrapper's `.center-content` variant
-
-// Card wrapper for all auth screens
+// Auth page wrapper
 .auth-page {
   width: 100%;
   max-width: 480px;
 }
 
+// Card wrapper for all auth screens - enhanced elevation
 .auth-card {
   width: 100%;
   max-width: 480px;
   background-color: $neutral-white;
   border: $border-full solid $neutral-gray;
   border-radius: $radius-2xl;
-  box-shadow: $shadow-lg;
+  box-shadow: $shadow-xl;
   padding: $space-8;
 }
 
@@ -60,6 +59,20 @@
 .form-row {
   display: flex;
   flex-direction: column;
+
+  // Enhanced input transitions
+  input {
+    transition: border-color $transition-base, box-shadow $transition-base;
+
+    &:hover:not(:focus) {
+      border-color: $neutral-medium-gray;
+    }
+
+    &:focus {
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.15);
+    }
+  }
 }
 
 .form-actions {
@@ -69,8 +82,51 @@
   margin-top: $space-1;
 }
 
+// Submit button with enhanced states and loading support
 .submit-button {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  transition: background-color 150ms ease, transform 100ms ease, opacity 150ms ease;
+
+  &:hover:not(:disabled) {
+    background-color: $primary-medium;
+  }
+
+  &:active:not(:disabled) {
+    background-color: $primary-dark;
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+// Button spinner for loading states
+.button-spinner {
+  width: 18px;
+  height: 18px;
+  animation: spin 1s linear infinite;
+
+  circle {
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-dasharray: 42;
+    stroke-dashoffset: 12;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .auth-divider {
@@ -90,17 +146,43 @@
   }
 }
 
+// Social button with Google icon support
 .social-button {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  transition: background-color 150ms ease, border-color 150ms ease;
+
+  .google-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: $neutral-medium-gray;
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 }
 
 .auth-redirect {
   text-align: center;
   margin-top: $space-6;
+
+  a {
+    transition: color 150ms ease;
+  }
 }
 
 .aux-link {
   @include link-subtle;
+  transition: color 150ms ease;
 }
 
 // Compact copy in forgot password
@@ -110,6 +192,7 @@
   margin-bottom: $space-4;
 }
 
+// Mobile responsive adjustments
 @media (max-width: $breakpoint-sm) {
   .auth-card {
     padding: $space-6;
@@ -120,5 +203,3 @@
     @include heading-4;
   }
 }
-
-

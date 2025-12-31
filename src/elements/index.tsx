@@ -3,3 +3,4 @@ export { default as Dropdown, DropdownItem } from './Dropdown/Dropdown';
 export { default as InfoDisplay } from './InfoDisplay/InfoDisplay';
 export { default as SearchField } from './SearchField/SearchField';
 export { default as DatePicker } from './DatePicker/DatePicker';
+export { default as ButtonSpinner } from './ButtonSpinner/ButtonSpinner';

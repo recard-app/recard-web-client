@@ -10,6 +10,7 @@ interface SettingsRowProps {
   onClick?: () => void;
   variant?: 'default' | 'danger';
   disabled?: boolean;
+  loading?: boolean;
 }
 
 const SettingsRow: React.FC<SettingsRowProps> = ({
@@ -18,27 +19,34 @@ const SettingsRow: React.FC<SettingsRowProps> = ({
   to,
   onClick,
   variant = 'default',
-  disabled = false
+  disabled = false,
+  loading = false
 }) => {
+  const isDisabled = disabled || loading;
+
   const content = (
     <>
       <div className="settings-row__content">
         <span className="settings-row__label">{label}</span>
-        {value && <span className="settings-row__value">{value}</span>}
+        {(value || loading) && (
+          <span className="settings-row__value">
+            {loading ? 'Loading...' : value}
+          </span>
+        )}
       </div>
       <Icon
         name="chevron-right"
         variant="mini"
         size={16}
         color={ICON_GRAY}
-        className="settings-row__chevron"
+        className={`settings-row__chevron ${loading ? 'settings-row__chevron--loading' : ''}`}
       />
     </>
   );
 
-  const className = `settings-row settings-row--${variant} ${disabled ? 'settings-row--disabled' : ''}`;
+  const className = `settings-row settings-row--${variant} ${isDisabled ? 'settings-row--disabled' : ''} ${loading ? 'settings-row--loading' : ''}`;
 
-  if (to && !disabled) {
+  if (to && !isDisabled) {
     return (
       <Link to={to} className={className}>
         {content}
@@ -46,7 +54,7 @@ const SettingsRow: React.FC<SettingsRowProps> = ({
     );
   }
 
-  if (onClick && !disabled) {
+  if (onClick && !isDisabled) {
     return (
       <button type="button" className={className} onClick={onClick}>
         {content}

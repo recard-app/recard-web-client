@@ -1,17 +1,16 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { auth } from '../config/firebase';
-import { 
+import {
   User as FirebaseUser,
-  GoogleAuthProvider, 
-  signInWithPopup, 
+  GoogleAuthProvider,
+  signInWithPopup,
   onAuthStateChanged,
   signOut,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   updateProfile,
   sendEmailVerification,
-  //getAuth,
-  //UserCredential
+  getAdditionalUserInfo,
   sendPasswordResetEmail as firebaseSendPasswordResetEmail
 } from 'firebase/auth';
 import { PLACEHOLDER_PROFILE_IMAGE, APP_NAME, PAGE_ICONS, LOADING_ICON } from '../types';
@@ -24,6 +23,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   sendVerificationEmail: () => Promise<boolean>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
+  updateDisplayName: (newName: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -76,7 +76,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      const isNewUser = (result as any)._tokenResponse.isNewUser;
+      const additionalInfo = getAdditionalUserInfo(result);
+      const isNewUser = additionalInfo?.isNewUser ?? false;
       const token = await user.getIdToken();
       return { user, token, isNewUser };
     } catch (error) {
@@ -193,6 +194,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  /**
+   * Updates the display name of the currently signed-in user
+   * @param newName - The new display name to set
+   */
+  const updateDisplayName = async (newName: string): Promise<void> => {
+    if (!auth.currentUser) {
+      throw new Error('No user is currently signed in');
+    }
+
+    try {
+      await updateProfile(auth.currentUser, { displayName: newName });
+      await auth.currentUser.reload();
+      setUser({ ...auth.currentUser });
+    } catch (error) {
+      console.error('Error updating display name:', error);
+      throw error;
+    }
+  };
+
   if (loading) {
     return (
       <div
@@ -220,6 +240,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     sendVerificationEmail,
     sendPasswordResetEmail,
+    updateDisplayName,
     loading
   };
 

@@ -132,6 +132,26 @@
   }
 }
 
+// Disabled hint text for settings rows
+.disabled-hint {
+  font-size: $font-xs;
+  color: $neutral-medium-gray;
+  font-style: italic;
+}
+
+// Name change form in modal
+.name-change-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  .character-count {
+    font-size: $font-xs;
+    color: $neutral-medium-gray;
+    text-align: right;
+  }
+}
+
 // Sign Out Button
 .sign-out-button {
   display: flex;
