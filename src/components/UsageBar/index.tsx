@@ -111,7 +111,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
         )}
       </div>
 
-      {showLabels && validSegments.length > 0 && (
+      {showLabels && (
         <div className={`usage-bar-labels ${labelsVertical ? 'usage-bar-labels--vertical' : ''}`}>
           {validSegments.map((segment, index) => (
             <div key={`${segment.label}-label-${index}`} className="usage-bar-label">
@@ -124,7 +124,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
               </span>
             </div>
           ))}
-          {remainingPercentage > 0 && (
+          {(remainingPercentage > 0 || validSegments.length === 0) && (
             <div className="usage-bar-label">
               <span className="usage-bar-label-dot usage-bar-label-dot--remaining" />
               <span className="usage-bar-label-text">

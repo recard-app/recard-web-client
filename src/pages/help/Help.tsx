@@ -6,9 +6,11 @@ import ContentContainer from '../../components/ContentContainer';
 import { HelpSidebar } from './components';
 import { Icon } from '../../icons';
 import { ICON_GRAY } from '../../types';
+import { useFullHeight } from '../../hooks/useFullHeight';
 import './Help.scss';
 
 const Help: React.FC = () => {
+  useFullHeight(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Close mobile sidebar when a nav item is clicked

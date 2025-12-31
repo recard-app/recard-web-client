@@ -1,123 +1,151 @@
 @use '../../../styling/variables' as *;
+@use '../../../styling/globals' as *;
 
-.credit-portfolio-view {
+// Panel container - takes full height for edge-aligned scrolling
+.credit-portfolio-panel {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: $space-5;
+}
 
-  // Portfolio header
-  .portfolio-header {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin-bottom: $space-4;
-    gap: $space-3;
+// Mobile-only sticky header with year dropdown
+.portfolio-header-controls {
+  // HeaderControls provides sticky, border, shadow
+  // Just adjust alignment
+  justify-content: flex-end;
+}
 
-    // Ensure year dropdown doesn't stretch
-    .year-dropdown {
-      flex: 0 0 auto;
-      width: auto;
+// Desktop-only inline header
+.portfolio-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: $space-3 $space-5;
+  gap: $space-3;
+  flex-shrink: 0;
+
+  // Ensure year dropdown doesn't stretch
+  .year-dropdown {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
+  .expand-collapse-button {
+    padding: $space-2 $space-3;
+    background-color: transparent;
+    border: $border-full solid $neutral-light-gray;
+    border-radius: $radius-md;
+    font-family: $font-manrope;
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    color: $neutral-dark-gray;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background-color: $neutral-lightest-gray;
+      border-color: $neutral-gray;
     }
 
-    .expand-collapse-button {
-      padding: $space-2 $space-3;
-      background-color: transparent;
-      border: $border-full solid $neutral-light-gray;
-      border-radius: $radius-md;
-      font-family: $font-manrope;
-      font-size: $font-sm;
-      font-weight: $font-medium;
-      color: $neutral-dark-gray;
-      cursor: pointer;
-      transition: all 0.15s ease;
-
-      &:hover {
-        background-color: $neutral-lightest-gray;
-        border-color: $neutral-gray;
-      }
-
-      &:focus-visible {
-        outline: 2px solid $primary-medium;
-        outline-offset: 2px;
-      }
-    }
-  }
-
-  // Portfolio content area
-  .portfolio-content {
-    flex: 1;
-    overflow-y: auto;
-  }
-
-  // Card accordions container
-  .card-accordions {
-    display: flex;
-    flex-direction: column;
-    gap: $space-4;
-  }
-
-  // Loading state
-  .portfolio-loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    min-height: 200px;
-  }
-
-  // Error state
-  .portfolio-error {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    min-height: 200px;
-    gap: $space-4;
-
-    .retry-button {
-      padding: $space-2 $space-4;
-      background-color: $primary-medium;
-      border: none;
-      border-radius: $radius-md;
-      font-family: $font-manrope;
-      font-size: $font-sm;
-      font-weight: $font-medium;
-      color: $neutral-white;
-      cursor: pointer;
-      transition: background-color 0.15s ease;
-
-      &:hover {
-        background-color: $primary-dark;
-      }
-
-      &:focus-visible {
-        outline: 2px solid $primary-medium;
-        outline-offset: 2px;
-      }
+    &:focus-visible {
+      outline: 2px solid $primary-medium;
+      outline-offset: 2px;
     }
   }
 
-  // Empty state
-  .portfolio-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    min-height: 200px;
-  }
-
-  // Responsive
   @media (max-width: $mobile-breakpoint) {
     padding: $space-2;
+  }
+}
 
-    .portfolio-header {
-      justify-content: flex-end;
+// Scrollable content area - KEY for edge-aligned scroll
+.portfolio-content {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0; // Critical for flex scroll containment
+  padding: 0 $space-5 $space-5;
+  @include universal-scrollbar;
 
-      .expand-collapse-button {
-        display: none;
-      }
+  @media (max-width: $mobile-breakpoint) {
+    padding: 0 $space-2 $space-2;
+  }
+}
+
+// Card accordions container
+.card-accordions {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  @media (max-width: $mobile-breakpoint) {
+    gap: $space-3;
+  }
+}
+
+// Loading state
+.portfolio-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 200px;
+}
+
+// Error state
+.portfolio-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 200px;
+  gap: $space-4;
+
+  .retry-button {
+    padding: $space-2 $space-4;
+    background-color: $primary-medium;
+    border: none;
+    border-radius: $radius-md;
+    font-family: $font-manrope;
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    color: $neutral-white;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: $primary-dark;
     }
+
+    &:focus-visible {
+      outline: 2px solid $primary-medium;
+      outline-offset: 2px;
+    }
+  }
+}
+
+// Empty state
+.portfolio-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 200px;
+}
+
+// Responsive visibility utilities
+.mobile-only {
+  display: none !important;
+
+  @media (max-width: $mobile-breakpoint) {
+    display: flex !important;
+  }
+}
+
+.desktop-only {
+  display: flex;
+
+  @media (max-width: $mobile-breakpoint) {
+    display: none !important;
   }
 }

@@ -6,6 +6,7 @@ import { CardCredit } from '@/types/CreditCardTypes';
 import { useCredits } from '@/contexts/ComponentsContext';
 import { InfoDisplay } from '@/elements';
 import { buildYearOptions } from '@/pages/my-credits/utils';
+import HeaderControls from '@/components/PageControls/HeaderControls';
 import YearDropdown from '../YearDropdown';
 import CreditCardAccordion from '../CreditCardAccordion';
 import CreditEditModal from '../CreditEditModal';
@@ -223,15 +224,17 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   // Loading state
   if (isLoading && !creditData) {
     return (
-      <div className="credit-portfolio-view">
-        <div className="portfolio-loading">
-          <InfoDisplay
-            type="loading"
-            message="Loading credit history..."
-            showTitle={false}
-            transparent={true}
-            centered={true}
-          />
+      <div className="credit-portfolio-panel">
+        <div className="portfolio-content">
+          <div className="portfolio-loading">
+            <InfoDisplay
+              type="loading"
+              message="Loading credit history..."
+              showTitle={false}
+              transparent={true}
+              centered={true}
+            />
+          </div>
         </div>
       </div>
     );
@@ -240,18 +243,20 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   // Error state
   if (error) {
     return (
-      <div className="credit-portfolio-view">
-        <div className="portfolio-error">
-          <InfoDisplay
-            type="error"
-            message={error}
-            showTitle={false}
-            transparent={true}
-            centered={true}
-          />
-          <button className="retry-button" onClick={fetchCredits}>
-            Try Again
-          </button>
+      <div className="credit-portfolio-panel">
+        <div className="portfolio-content">
+          <div className="portfolio-error">
+            <InfoDisplay
+              type="error"
+              message={error}
+              showTitle={false}
+              transparent={true}
+              centered={true}
+            />
+            <button className="retry-button" onClick={fetchCredits}>
+              Try Again
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -268,8 +273,19 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
       : 'No credit cards with credits found. Add credit cards with credits to start tracking.';
 
     return (
-      <div className="credit-portfolio-view">
-        <div className="portfolio-header">
+      <div className="credit-portfolio-panel">
+        {/* Mobile-only: Sticky header with year dropdown */}
+        <HeaderControls className="portfolio-header-controls mobile-only">
+          <YearDropdown
+            selectedYear={selectedYear}
+            onYearChange={handleYearChange}
+            availableYears={availableYears}
+            loading={isLoading}
+          />
+        </HeaderControls>
+
+        {/* Desktop-only: Inline header */}
+        <div className="portfolio-header desktop-only">
           <YearDropdown
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
@@ -277,14 +293,17 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
             loading={isLoading}
           />
         </div>
-        <div className="portfolio-empty">
-          <InfoDisplay
-            type="info"
-            message={emptyMessage}
-            showTitle={false}
-            transparent={true}
-            centered={true}
-          />
+
+        <div className="portfolio-content">
+          <div className="portfolio-empty">
+            <InfoDisplay
+              type="info"
+              message={emptyMessage}
+              showTitle={false}
+              transparent={true}
+              centered={true}
+            />
+          </div>
         </div>
       </div>
     );
@@ -293,8 +312,19 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   const allExpanded = expandedCardIds.size === cardsWithCredits.length;
 
   return (
-    <div className="credit-portfolio-view">
-      <div className="portfolio-header">
+    <div className="credit-portfolio-panel">
+      {/* Mobile-only: Sticky header with year dropdown */}
+      <HeaderControls className="portfolio-header-controls mobile-only">
+        <YearDropdown
+          selectedYear={selectedYear}
+          onYearChange={handleYearChange}
+          availableYears={availableYears}
+          loading={isLoading}
+        />
+      </HeaderControls>
+
+      {/* Desktop-only: Inline header with expand/collapse + dropdown */}
+      <div className="portfolio-header desktop-only">
         <button
           className="expand-collapse-button"
           onClick={allExpanded ? collapseAll : expandAll}
@@ -310,6 +340,7 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
         />
       </div>
 
+      {/* Scrollable content area */}
       <div className="portfolio-content">
         {isLoading ? (
           <div className="portfolio-loading">

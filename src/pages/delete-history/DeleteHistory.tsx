@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useScrollHeight } from '../../hooks/useScrollHeight';
+import { useFullHeight } from '../../hooks/useFullHeight';
 import PageHeader from '../../components/PageHeader';
 import ContentContainer from '../../components/ContentContainer';
 import { InfoDisplay } from '../../elements';
@@ -24,7 +24,7 @@ interface DeleteHistoryProps {
 }
 
 const DeleteHistory: React.FC<DeleteHistoryProps> = ({ setChatHistory, setHistoryRefreshTrigger }) => {
-  useScrollHeight(true);
+  useFullHeight(true);
 
   const [deleteStatus, setDeleteStatus] = useState<DeleteStatusType>({ type: 'confirm', message: '' });
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);

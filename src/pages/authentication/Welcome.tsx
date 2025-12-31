@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { PAGES, PAGE_ICONS, PAGE_NAMES } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import ContentContainer from '../../components/ContentContainer';
-import { useScrollHeight } from '../../hooks/useScrollHeight';
+import { useFullHeight } from '../../hooks/useFullHeight';
 import { Icon } from '../../icons';
 import './Welcome.scss';
 
@@ -16,8 +16,8 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  // Match page scroll behavior used across pages
-  useScrollHeight(true);
+  // Use the full height hook to prevent double scroll
+  useFullHeight(true);
 
   const greeting = user?.displayName
     ? `Hi ${user.displayName}!`

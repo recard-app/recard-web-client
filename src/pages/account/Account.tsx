@@ -7,7 +7,7 @@ import {
   handleVerificationEmail as handleVerificationEmailUtil,
 } from './utils';
 import PageHeader from '../../components/PageHeader';
-import { useScrollHeight } from '../../hooks/useScrollHeight';
+import { useFullHeight } from '../../hooks/useFullHeight';
 import { InfoDisplay } from '../../elements';
 import { SettingsCard, SettingsRow } from '../../components/SettingsCard';
 import ContentContainer from '../../components/ContentContainer';
@@ -25,7 +25,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  useScrollHeight(true);
+  useFullHeight(true);
 
   const handleVerificationEmailClick = async (): Promise<void> => {
     const result = await handleVerificationEmailUtil(sendVerificationEmail);

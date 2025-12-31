@@ -2,7 +2,7 @@ import React from 'react';
 import PreferencesModule from '../../components/PreferencesModule';
 import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPreference } from '../../types/UserTypes';
 import PageHeader from '../../components/PageHeader';
-import { useScrollHeight } from '../../hooks/useScrollHeight';
+import { useFullHeight } from '../../hooks/useFullHeight';
 import { PAGE_NAMES, PAGE_ICONS } from '../../types';
 import ContentContainer from '../../components/ContentContainer';
 
@@ -23,8 +23,8 @@ const Preferences: React.FC<PreferencesProps> = ({
     showCompletedOnlyPreference,
     setShowCompletedOnlyPreference
 }) => {
-    // Use the scroll height hook for this page
-    useScrollHeight(true);
+    // Use the full height hook to prevent double scroll
+    useFullHeight(true);
 
     return (
         <div className="full-page-layout">

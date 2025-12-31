@@ -8,7 +8,6 @@
   grid-template-areas:
     "sidebar content";
   gap: $space-6;
-  min-height: 60vh;
 
   &__mobile-toggle {
     display: none !important;
@@ -370,9 +369,21 @@ button.help-section__header {
     color: $neutral-black;
     margin: 0 0 $space-4;
 
+    // Gradient accent bar with border
+    background: linear-gradient(
+      to right,
+      $primary-lightest 0%,
+      $primary-light 20%,
+      transparent 70%
+    );
+    padding: $space-4 $space-5;
+    border: 1px solid $primary-light;
+    border-radius: $radius-lg;
+
     @media (max-width: $mobile-breakpoint) {
       font-size: $font-h6;
       margin: 0 0 $space-3;
+      padding: $space-3 $space-4;
     }
   }
 
@@ -403,6 +414,7 @@ button.help-section__header {
   }
 
   p {
+    font-size: $font-sm;
     margin: 0 0 $space-3;
 
     @media (max-width: $mobile-breakpoint) {
@@ -421,6 +433,7 @@ button.help-section__header {
   }
 
   li {
+    font-size: $font-sm;
     margin-bottom: $space-1;
   }
 

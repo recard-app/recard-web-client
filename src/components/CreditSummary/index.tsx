@@ -116,7 +116,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
       <UsageBar
         segments={[
           {
-            label: 'Used Value',
+            label: 'Used',
             value: effectiveMonthlyStats.MonthlyCredits.usedValue,
             color: PRIMARY_COLOR,
           },
@@ -124,9 +124,10 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
         maxValue={effectiveMonthlyStats.MonthlyCredits.possibleValue}
         height={8}
         borderRadius={4}
-        showLabels={false}
+        showLabels={true}
         animate={true}
         className="credit-summary-usage-bar"
+        valuePrefix="$"
       />
 
       {/* Supporting row: "[icon] you have used X/X credits worth up to $XXX this month" */}

@@ -12,6 +12,12 @@
       padding: $space-5;
     }
   }
+
+  // Remove left/right padding from period-tracker on this page
+  .period-tracker {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 // Help modal content styling
