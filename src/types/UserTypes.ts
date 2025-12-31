@@ -24,12 +24,10 @@ export interface UserCreditCard {
 export interface UserPreferences {
     chatHistory?: ChatHistoryPreference;
     instructions?: InstructionsPreference;
-    showCompletedOnly?: ShowCompletedOnlyPreference;
 }
 
 export type ChatHistoryPreference = ChatHistoryPreferenceType;
 export type InstructionsPreference = string;
-export type ShowCompletedOnlyPreference = boolean;
 
 export type SubscriptionPlan = SubscriptionPlanType;
 
@@ -42,7 +40,6 @@ export interface User {
     id: string;
     preferencesInstructions?: string;
     preferencesChatHistory?: ChatHistoryPreference;
-    preferencesShowCompletedOnly?: ShowCompletedOnlyPreference;
     subscriptionPlan: SubscriptionPlan;
     userComponentTrackingPreferences: UserComponentTrackingPreferences;
     userWalletHistory: UserWalletHistory;
@@ -65,7 +62,6 @@ export interface HistoryParams {
     month?: string;
     year?: string;
     lastUpdate?: string;
-    forceShowAll?: string;
 }
 
 // Response types
@@ -73,7 +69,6 @@ export interface HistoryParams {
 export type ProfileResponse = {
     preferencesInstructions: string;
     preferencesChatHistory: string;
-    preferencesShowCompletedOnly: boolean;
     subscriptionPlan: SubscriptionPlan;
     role: RoleType;
 }
@@ -89,7 +84,6 @@ export interface PreferencesResponse {
     data?: string;
     chatHistory?: ChatHistoryPreference;
     instructions?: InstructionsPreference;
-    showCompletedOnly?: ShowCompletedOnlyPreference;
     error?: string;
 }
 
@@ -99,13 +93,11 @@ export interface BatchedPreferencesResponse {
     error?: string;
     instructions: InstructionsPreference;
     chatHistory: ChatHistoryPreference;
-    showCompletedOnly: ShowCompletedOnlyPreference;
 }
 
 export interface BatchedPreferencesRequest {
     instructions?: InstructionsPreference;
     chatHistory?: ChatHistoryPreference;
-    showCompletedOnly?: ShowCompletedOnlyPreference;
 }
 
 export interface SubscriptionPlanResponse {

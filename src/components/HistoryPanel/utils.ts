@@ -33,8 +33,7 @@ export const fetchPagedHistory = async (
       currentPage: number,
       pageSize: number,
       selectedMonth: string,
-      selectedYear: number,
-      showCompletedOnly: boolean
+      selectedYear: number
     }
   ): Promise<{
     chatHistory: LightweightConversation[],

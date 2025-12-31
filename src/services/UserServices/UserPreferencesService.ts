@@ -4,8 +4,7 @@ import {
     BatchedPreferencesResponse,
     BatchedPreferencesRequest,
     InstructionsPreference,
-    ChatHistoryPreference,
-    ShowCompletedOnlyPreference
+    ChatHistoryPreference
 } from '../../types';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
@@ -67,32 +66,18 @@ export const UserPreferencesService = {
     },
 
     /**
-     * Updates show completed only preference
-     * @param showCompletedOnly Whether to show only completed transactions
-     * @returns Promise<BatchedPreferencesResponse>
-     */
-    async updateShowCompletedOnlyPreference(
-        showCompletedOnly: ShowCompletedOnlyPreference
-    ): Promise<BatchedPreferencesResponse> {
-        return this.updatePreferences({ showCompletedOnly });
-    },
-
-    /**
      * Saves all preferences in a single API call
      * @param instructions User's custom instructions
      * @param chatHistory User's chat history preference
-     * @param showCompletedOnly User's show completed only preference
      * @returns Promise<BatchedPreferencesResponse>
      */
     async savePreferences(
         instructions: InstructionsPreference,
-        chatHistory: ChatHistoryPreference,
-        showCompletedOnly: ShowCompletedOnlyPreference
+        chatHistory: ChatHistoryPreference
     ): Promise<BatchedPreferencesResponse> {
         return this.updatePreferences({
             instructions,
-            chatHistory,
-            showCompletedOnly
+            chatHistory
         });
     },
 

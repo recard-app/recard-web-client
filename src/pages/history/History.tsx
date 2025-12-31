@@ -1,6 +1,6 @@
 import React from 'react';
 import FullHistoryPanel from '../../components/HistoryPanel/FullHistoryPanel';
-import { Conversation, CreditCard, FREE_PLAN_HISTORY_DAYS, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, SubscriptionPlan } from '../../types';
+import { Conversation, CreditCard, FREE_PLAN_HISTORY_DAYS, PAGE_NAMES, PAGE_ICONS, SubscriptionPlan } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import './History.scss';
@@ -13,7 +13,6 @@ interface HistoryProps {
   subscriptionPlan: SubscriptionPlan;
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
-  showCompletedOnlyPreference: ShowCompletedOnlyPreference;
   // Mobile filters drawer control (optional)
   filtersDrawerOpen?: boolean;
   onFiltersDrawerOpenChange?: (open: boolean) => void;
@@ -27,7 +26,6 @@ function History({
   subscriptionPlan,
   creditCards,
   historyRefreshTrigger,
-  showCompletedOnlyPreference,
   filtersDrawerOpen,
   onFiltersDrawerOpenChange
 }: HistoryProps): React.ReactElement {
@@ -56,7 +54,6 @@ function History({
           subscriptionPlan={subscriptionPlan}
           creditCards={creditCards}
           historyRefreshTrigger={historyRefreshTrigger}
-          showCompletedOnlyPreference={showCompletedOnlyPreference}
           filtersDrawerOpen={filtersDrawerOpen}
           onFiltersDrawerOpenChange={onFiltersDrawerOpenChange}
         />

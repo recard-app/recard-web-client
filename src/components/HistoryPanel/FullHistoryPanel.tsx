@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
-import { ToggleSwitch, InfoDisplay } from '../../elements';
+import { InfoDisplay } from '../../elements';
 import Icon from '../../icons';
 import {
   Drawer,
@@ -16,7 +16,6 @@ import {
   PaginationData,
   CreditCard,
   SubscriptionPlan,
-  ShowCompletedOnlyPreference,
   SHOW_SUBSCRIPTION_MENTIONS,
   TERMINOLOGY,
   HISTORY_PAGE_SIZE,
@@ -59,20 +58,18 @@ export interface FullHistoryPanelProps {
   subscriptionPlan: SubscriptionPlan;
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
-  showCompletedOnlyPreference: ShowCompletedOnlyPreference;
   // Mobile filters drawer control (optional; if not provided, component manages its own state)
   filtersDrawerOpen?: boolean;
   onFiltersDrawerOpenChange?: (open: boolean) => void;
 }
 
-function FullHistoryPanel({ 
+function FullHistoryPanel({
   currentChatId,
   returnCurrentChatId,
   onHistoryUpdate,
   subscriptionPlan = SUBSCRIPTION_PLAN.FREE,
   creditCards,
   historyRefreshTrigger,
-  showCompletedOnlyPreference,
   filtersDrawerOpen,
   onFiltersDrawerOpenChange
 }: FullHistoryPanelProps) {
@@ -94,9 +91,6 @@ function FullHistoryPanel({
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   // Date of the first entry in history
   const [firstEntryDate, setFirstEntryDate] = useState<Date | null>(null);
-  // Local override for "Only show completed" filter.
-  // null means use the user preference value provided via props.
-  const [showCompletedOnlyFilter, setShowCompletedOnlyFilter] = useState<boolean | null>(null);
   // Mobile filters drawer state (uncontrolled fallback)
   const [isFiltersDrawerOpenInternal, setIsFiltersDrawerOpenInternal] = useState<boolean>(false);
   const isFiltersDrawerOpen = typeof filtersDrawerOpen === 'boolean' ? filtersDrawerOpen : isFiltersDrawerOpenInternal;
@@ -111,11 +105,6 @@ function FullHistoryPanel({
 
   // Removed session storage persistence in favor of App-scoped state
 
-  // Compute effective value from local override or user preference
-  const effectiveShowCompletedOnly: boolean = (showCompletedOnlyFilter !== null)
-    ? showCompletedOnlyFilter
-    : showCompletedOnlyPreference;
-
   // Fetch data function - not memoized to avoid dependency issues
   const fetchData = async () => {
     if (!user) return;
@@ -127,8 +116,7 @@ function FullHistoryPanel({
         currentPage,
         pageSize: PAGE_SIZE_LIMIT,
         selectedMonth,
-        selectedYear,
-        showCompletedOnly: effectiveShowCompletedOnly
+        selectedYear
       });
 
       if (result.chatHistory) {
@@ -163,7 +151,7 @@ function FullHistoryPanel({
     }
 
     fetchData();
-  }, [user, currentPage, selectedMonth, selectedYear, effectiveShowCompletedOnly, historyRefreshTrigger]);
+  }, [user, currentPage, selectedMonth, selectedYear, historyRefreshTrigger]);
 
   // No propagation
 
@@ -179,13 +167,11 @@ function FullHistoryPanel({
    * Resets all filters to default state
    * - Month cleared
    * - Year set to current year
-   * - Completed toggle set to user preference default
    */
   const handleResetFilters = () => {
     const currentYear = new Date().getFullYear();
     setSelectedMonth('');
     setSelectedYear(currentYear);
-    setShowCompletedOnlyFilter(null);
     setCurrentPage(1);
   };
 
@@ -209,15 +195,6 @@ function FullHistoryPanel({
       console.error('Failed to refresh history:', error);
       return false; // Return failure
     }
-  };
-
-  /**
-   * Handles the toggle of completed transactions filter
-   * @param newValue The new toggle state
-   */
-  const handleCompletedToggle = async (newValue: boolean) => {
-    // Locally override the preference for this page until filters are reset
-    setShowCompletedOnlyFilter(newValue);
   };
 
   /**
@@ -409,28 +386,12 @@ function FullHistoryPanel({
     );
   };
 
-  /**
-   * Renders the completed transactions toggle
-   * @returns JSX for completed transactions toggle
-   */
-  const renderCompletedToggle = () => {
-    return (
-      <ToggleSwitch
-        id="completedToggle"
-        label={`Only show completed ${TERMINOLOGY.nounPlural}`}
-        checked={effectiveShowCompletedOnly}
-        onChange={handleCompletedToggle}
-      />
-    );
-  };
-
   return (
     <div className="history-panel full-history">
-      {/* Sticky header with filters and toggle */}
+      {/* Sticky header with filters */}
       <HeaderControls className="history-panel-header">
         <div className="header-controls desktop-only">
           {renderDateFilter()}
-          {renderCompletedToggle()}
         </div>
         <div className="header-actions">
           <button
@@ -539,7 +500,6 @@ function FullHistoryPanel({
           </div>
           <div className="dialog-body">
             {renderDateFilter()}
-            {renderCompletedToggle()}
           </div>
           <div className="dialog-footer">
             <div className="button-group">

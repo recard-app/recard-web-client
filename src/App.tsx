@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
-import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ShowCompletedOnlyPreference, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard } from './types';
+import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard } from './types';
 import { Icon } from './icons';
 // Services
 import {
@@ -205,8 +205,6 @@ function AppContent({}: AppContentProps) {
   const [preferencesInstructions, setPreferencesInstructions] = useState<InstructionsPreference>('');
   // State for managing chat history preference (keep/clear)
   const [chatHistoryPreference, setChatHistoryPreference] = useState<ChatHistoryPreference>(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
-  // State for managing show completed only preference
-  const [showCompletedOnlyPreference, setShowCompletedOnlyPreference] = useState<ShowCompletedOnlyPreference>(false);
   // State for tracking user's subscription plan
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
   // State for managing side panel visibility with localStorage persistence
@@ -274,7 +272,6 @@ function AppContent({}: AppContentProps) {
         setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE);
         setPreferencesInstructions('');
         setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
-        setShowCompletedOnlyPreference(false);
         setMonthlyStats(null);
         setPrioritizedCredits([]);
         setIsLoadingCreditCards(false);
@@ -318,8 +315,7 @@ function AppContent({}: AppContentProps) {
             return {
               success: false,
               instructions: '',
-              chatHistory: 'keep_history' as ChatHistoryPreference,
-              showCompletedOnly: false
+              chatHistory: 'keep_history' as ChatHistoryPreference
             };
           })
         ]);
@@ -327,7 +323,6 @@ function AppContent({}: AppContentProps) {
         setComponentPreferences(componentPrefs);
         setPreferencesInstructions(allPreferences.instructions || '');
         setChatHistoryPreference(allPreferences.chatHistory);
-        setShowCompletedOnlyPreference(allPreferences.showCompletedOnly);
 
         // Batch 3: Card details and chat history with priority loading
         const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
@@ -502,7 +497,7 @@ function AppContent({}: AppContentProps) {
     };
 
     refreshHistory();
-  }, [historyRefreshTrigger, chatHistoryPreference, showCompletedOnlyPreference]);
+  }, [historyRefreshTrigger, chatHistoryPreference]);
 
   // Effect to handle monthly stats refresh triggers (for updates from other components)
   useEffect(() => {
@@ -595,8 +590,7 @@ function AppContent({}: AppContentProps) {
     setClearChatCallback(0);
     setPreferencesInstructions('');
     setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
-    setShowCompletedOnlyPreference(false);
-    
+
     // Perform logout and navigation
     await logout();
     navigate(PAGES.SIGN_IN.PATH);
@@ -1078,13 +1072,11 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.PREFERENCES.PATH} element={
                     <ProtectedRoute>
-                      <Preferences 
+                      <Preferences
                         preferencesInstructions={preferencesInstructions}
                         setPreferencesInstructions={setPreferencesInstructions}
                         chatHistoryPreference={chatHistoryPreference}
                         setChatHistoryPreference={(preference: ChatHistoryPreference) => setChatHistoryPreference(preference)}
-                        showCompletedOnlyPreference={showCompletedOnlyPreference}
-                        setShowCompletedOnlyPreference={(preference: ShowCompletedOnlyPreference) => setShowCompletedOnlyPreference(preference)}
                       />
                     </ProtectedRoute>
                   } />
@@ -1157,7 +1149,7 @@ function AppContent({}: AppContentProps) {
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.HISTORY.PATH} element={
-                    <History 
+                    <History
                       existingHistoryList={chatHistory}
                       currentChatId={currentChatId}
                       returnCurrentChatId={getCurrentChatId}
@@ -1165,7 +1157,6 @@ function AppContent({}: AppContentProps) {
                       subscriptionPlan={subscriptionPlan}
                       creditCards={creditCards}
                       historyRefreshTrigger={historyRefreshTrigger}
-                      showCompletedOnlyPreference={showCompletedOnlyPreference}
                     />
                   } />
                   <Route path={PAGES.MY_CARDS.PATH} element={

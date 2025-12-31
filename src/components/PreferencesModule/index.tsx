@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChatHistoryPreference, InstructionsPreference, ShowCompletedOnlyPreference } from '../../types/UserTypes';
+import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
 import { CHAT_HISTORY_OPTIONS } from './utils';
 import { LOADING_ICON, LOADING_ICON_SIZE } from '../../types/Constants';
@@ -8,28 +8,24 @@ import { InfoDisplay } from '../../elements';
 
 /**
  * Props interface for PreferencesModule component.
- * 
+ *
  * @param customInstructions - Initial instructions passed to the component.
  * @param onInstructionsUpdate - Callback to update instructions.
  * @param chatHistoryPreference - Current chat history preference.
  * @param setChatHistoryPreference - Function to set chat history preference.
  */
 interface PreferencesModuleProps {
-    customInstructions: InstructionsPreference; 
-    onInstructionsUpdate: (instructions: InstructionsPreference) => void; 
-    chatHistoryPreference: ChatHistoryPreference; 
-    setChatHistoryPreference: (preference: ChatHistoryPreference) => void; 
-    showCompletedOnlyPreference: ShowCompletedOnlyPreference;
-    setShowCompletedOnlyPreference: (preference: ShowCompletedOnlyPreference) => void;
+    customInstructions: InstructionsPreference;
+    onInstructionsUpdate: (instructions: InstructionsPreference) => void;
+    chatHistoryPreference: ChatHistoryPreference;
+    setChatHistoryPreference: (preference: ChatHistoryPreference) => void;
 }
 
-function PreferencesModule({ 
-    customInstructions, 
+function PreferencesModule({
+    customInstructions,
     onInstructionsUpdate,
     chatHistoryPreference,
-    setChatHistoryPreference,
-    showCompletedOnlyPreference,
-    setShowCompletedOnlyPreference
+    setChatHistoryPreference
 }: PreferencesModuleProps) {
     const [instructions, setInstructions] = useState<string>(customInstructions || '');
     const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -53,11 +49,6 @@ function PreferencesModule({
                 if (response.chatHistory) {
                     setChatHistoryPreference(response.chatHistory);
                 }
-
-                // Update show completed only preference
-                if (response.showCompletedOnly !== undefined) {
-                    setShowCompletedOnlyPreference(response.showCompletedOnly);
-                }
             } catch (error) {
                 console.error('Error loading preferences:', error);
                 setMessage('Error loading preferences');
@@ -78,7 +69,7 @@ function PreferencesModule({
         setMessage('');
 
         try {
-            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference, showCompletedOnlyPreference);
+            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference);
             setMessage('All preferences saved successfully!');
             setMessageType('success');
             onInstructionsUpdate(instructions);
@@ -129,21 +120,6 @@ function PreferencesModule({
                                 {option.label}
                             </option>
                         ))}
-                    </select>
-                </div>
-
-                <div className="show-completed-preference">
-                    <label htmlFor="showCompletedSelect">Transaction Display Preference:</label>
-                    <select
-                        id="showCompletedSelect"
-                        value={showCompletedOnlyPreference.toString()}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
-                            setShowCompletedOnlyPreference(e.target.value === 'true')}
-                        className={`show-completed-select default-select ${isLoading ? 'loading' : ''}`}
-                        disabled={isLoading}
-                    >
-                        <option value="false">Show all transactions</option>
-                        <option value="true">Only show completed transactions</option>
                     </select>
                 </div>
 
