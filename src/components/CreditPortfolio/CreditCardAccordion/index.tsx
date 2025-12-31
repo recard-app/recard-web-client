@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Icon } from '@/icons';
 import { CardIcon } from '@/icons';
 import { COLORS } from '@/types/Colors';
+import { ICON_BLUE, ICON_PRIMARY } from '@/types';
 import CreditSection from '../CreditSection';
 import { CreditCardAccordionProps, CardCreditSummary } from '../types';
 import './CreditCardAccordion.scss';
@@ -119,7 +120,27 @@ const CreditCardAccordion: React.FC<CreditCardAccordionProps> = ({
             className="card-icon"
           />
           <div className="card-info">
-            <span className="card-name">{card.CardName}</span>
+            <span className="card-name">
+              {card.isFrozen && (
+                <Icon
+                  name="snowflake"
+                  variant="mini"
+                  size={16}
+                  color={ICON_BLUE}
+                  className="frozen-icon"
+                />
+              )}
+              {card.isDefaultCard && (
+                <Icon
+                  name="star"
+                  variant="mini"
+                  size={16}
+                  color={ICON_PRIMARY}
+                  className="preferred-star-icon"
+                />
+              )}
+              {card.CardName}
+            </span>
             <span className="card-meta">
               {summary.creditCount} credit{summary.creditCount !== 1 ? 's' : ''}
             </span>

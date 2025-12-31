@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { UserCreditService } from '@/services/UserServices/UserCreditService';
 import { UserService } from '@/services/UserServices/UserService';
 import { CalendarUserCredits, UserCredit } from '@/types/CardCreditsTypes';
-import { CardCredit } from '@/types/CreditCardTypes';
+import { CardCredit, CreditCardDetails } from '@/types/CreditCardTypes';
 import { useCredits } from '@/contexts/ComponentsContext';
 import { InfoDisplay } from '@/elements';
 import { buildYearOptions } from '@/pages/my-credits/utils';
@@ -12,6 +12,18 @@ import CreditCardAccordion from '../CreditCardAccordion';
 import CreditEditModal from '../CreditEditModal';
 import { CreditPortfolioViewProps, SelectedCreditState } from '../types';
 import './CreditPortfolioView.scss';
+
+// Sort cards: preferred first, then alphabetically
+const sortCreditCards = (cards: CreditCardDetails[]): CreditCardDetails[] => {
+  return [...cards].sort((a, b) => {
+    // Sort default card first
+    if (a.isDefaultCard !== b.isDefaultCard) {
+      return a.isDefaultCard ? -1 : 1;
+    }
+    // Then sort alphabetically by name
+    return a.CardName.localeCompare(b.CardName);
+  });
+};
 
 const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   userCardDetails,
@@ -82,9 +94,10 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     return map;
   }, [creditData]);
 
-  // Cards that have credits
+  // Cards that have credits (sorted: preferred first, then alphabetically)
   const cardsWithCredits = useMemo(() => {
-    return userCardDetails.filter(card => creditsByCard.has(card.id));
+    const filtered = userCardDetails.filter(card => creditsByCard.has(card.id));
+    return sortCreditCards(filtered);
   }, [userCardDetails, creditsByCard]);
 
   // Fetch credit data for selected year
