@@ -11,7 +11,8 @@ export const CHAT_DESCRIPTION_MAX_LENGTH = 40;
 export const CHAT_SOURCE = {
     USER: 'user',
     ASSISTANT: 'assistant',
-    DEVELOPER: 'developer'
+    DEVELOPER: 'developer',
+    ERROR: 'error'
 } as const;
 export type ChatSourceType = typeof CHAT_SOURCE[keyof typeof CHAT_SOURCE];
 

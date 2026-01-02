@@ -69,13 +69,6 @@
         }
     }
 
-    .error-container {
-        width: 100%;
-        max-width: $prompt-window-max-width;
-        margin: 0 auto; // Center the error container
-        box-sizing: border-box;
-        padding: 0 $space-1; // Add consistent padding
-    }
 }
 
 .prompt-combined-container {

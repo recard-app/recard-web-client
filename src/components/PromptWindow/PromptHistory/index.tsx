@@ -4,7 +4,7 @@ import { ChatMessage, MessageContentBlock } from '../../../types/ChatTypes';
 import { CreditCard } from '../../../types/CreditCardTypes';
 import { InfoDisplay } from '../../../elements';
 import './PromptHistory.scss';
-import { PLACEHOLDER_ASSISTANT_IMAGE, TERMINOLOGY } from '../../../types';
+import { PLACEHOLDER_ASSISTANT_IMAGE, TERMINOLOGY, CHAT_SOURCE } from '../../../types';
 import ContentBlock from '../ContentBlocks/ContentBlock';
 
 /**
@@ -126,15 +126,29 @@ function PromptHistory({ chatHistory, contentBlocks = [], creditCards, onCardSel
       ) : (
         <>
           {chatEntries.map((chatEntry) => {
+            // Handle error entries with InfoDisplay
+            if (chatEntry.chatSource === CHAT_SOURCE.ERROR) {
+              return (
+                <div key={chatEntry.id} className="entry entry-error">
+                  <InfoDisplay
+                    type="error"
+                    message={chatEntry.chatMessage}
+                    transparent={true}
+                    showTitle={false}
+                  />
+                </div>
+              );
+            }
+
             // Find content blocks associated with this message
             const associatedBlocks = contentBlocks
               .filter(block => block.messageId === chatEntry.id)
               .sort((a, b) => (a.order || 0) - (b.order || 0));
 
             return (
-              <div key={chatEntry.id} className={`${(chatEntry.chatSource === 'user') ? 'entry entry-user' : 'entry entry-assistant'}`}>
+              <div key={chatEntry.id} className={`${(chatEntry.chatSource === CHAT_SOURCE.USER) ? 'entry entry-user' : 'entry entry-assistant'}`}>
                 <div className="entry-content">
-                  {chatEntry.chatSource === 'assistant' && (
+                  {chatEntry.chatSource === CHAT_SOURCE.ASSISTANT && (
                     <img src={PLACEHOLDER_ASSISTANT_IMAGE} alt="AI Assistant" className="assistant-avatar" />
                   )}
                   <div className="message-text">

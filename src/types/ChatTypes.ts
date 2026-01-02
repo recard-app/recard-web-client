@@ -12,6 +12,7 @@ export interface ChatMessage {
     id: string;
     chatSource: ChatSourceType;
     chatMessage: string;
+    isError?: boolean;  // Flag to identify error messages (not saved to database)
 }
 
 export interface Conversation {

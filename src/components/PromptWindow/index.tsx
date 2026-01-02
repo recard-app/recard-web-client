@@ -16,13 +16,12 @@ import {
 import axios from 'axios';
 
 // Import types
-import { CreditCard, PAGES, TERMINOLOGY } from '../../types';
+import { CreditCard, PAGES, TERMINOLOGY, CHAT_SOURCE } from '../../types';
 import { ChatMessage, Conversation, MessageContentBlock } from '../../types';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types';
 import { aiClient, userClient, MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER } from '../../types';
 import { UserHistoryService } from '../../services';
-import { InfoDisplay } from '../../elements';
 
 /**
  * Props for the PromptWindow component.
@@ -97,14 +96,6 @@ function PromptWindow({
     const [triggerCall, setTriggerCall] = useState<number>(0);
     // Indicates whether a new chat creation request is in progress
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
-    // Stores error messages to display to the user
-    const [errorMessage, setErrorMessage] = useState<string>('');
-    // Controls whether to show the error message
-    const [showError, setShowError] = useState<boolean>(false);
-    // Indicates if the error is a rate limiting error
-    const [isRateLimitError, setIsRateLimitError] = useState<boolean>(false);
-    // Indicates if the error is a daily rate limiting error
-    const [isDailyRateLimitError, setIsDailyRateLimitError] = useState<boolean>(false);
 
     // Declare that this component needs full height behavior
     useFullHeight(true);
@@ -116,11 +107,6 @@ function PromptWindow({
      * @param {string} returnPromptStr - The prompt text received from the input field
      */
     const getPrompt = (returnPromptStr: string) => {
-        // Clear any previous errors
-        setShowError(false);
-        setIsRateLimitError(false);
-        setIsDailyRateLimitError(false);
-        
         if (isNewChat && isNewChatPending) {
             console.log('New chat creation in progress, please wait...');
             return;
@@ -147,6 +133,22 @@ function PromptWindow({
             const updatedHistory = [...prevChatHistory, newEntry];
             return limitChatHistory(updatedHistory);
         });
+    };
+
+    /**
+     * Adds an error message to the chat history.
+     * Error messages are displayed inline but never saved to the database.
+     *
+     * @param {string} message - The error message to display
+     */
+    const addErrorToChat = (message: string) => {
+        const errorEntry: ChatMessage = {
+            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            chatSource: CHAT_SOURCE.ERROR,
+            chatMessage: message,
+            isError: true,
+        };
+        setChatHistory(prev => [...prev, errorEntry]);
     };
 
     /**
@@ -258,8 +260,7 @@ function PromptWindow({
                     setExistingChatStates(response.conversation, urlChatId, response.contentBlocks || []);
                 } catch (error) {
                     console.error('Error loading chat:', error);
-                    setErrorMessage('Error loading chat history');
-                    setShowError(true);
+                    addErrorToChat('Error loading chat history');
                 }
             };
             loadHistory();
@@ -397,11 +398,6 @@ function PromptWindow({
                 returnCurrentChatId,
                 setIsNewChat
             );
-
-            // Clear any errors on success
-            setShowError(false);
-            setIsRateLimitError(false);
-            setIsDailyRateLimitError(false);
         } catch (error) {
             if (axios.isCancel(error)) {
                 console.log('Request cancelled');
@@ -419,20 +415,13 @@ function PromptWindow({
                 const errorCode = error.response?.data?.error?.code;
 
                 if (errorCode === 'DAILY_RATE_LIMIT_EXCEEDED') {
-                    setErrorMessage('You\'ve run out of messages for the day. Your limit will reset in 24 hours.');
-                    setIsDailyRateLimitError(true);
-                    setIsRateLimitError(false);
+                    addErrorToChat('You\'ve run out of messages for the day. Your limit will reset in 24 hours.');
                 } else {
-                    setErrorMessage('You\'re sending messages too quickly. Please wait before trying again.');
-                    setIsRateLimitError(true);
-                    setIsDailyRateLimitError(false);
+                    addErrorToChat('You\'re sending messages too quickly. Please wait before trying again.');
                 }
             } else {
-                setErrorMessage('Error processing request, please try again.');
-                setIsRateLimitError(false);
-                setIsDailyRateLimitError(false);
+                addErrorToChat('Error processing request, please try again.');
             }
-            setShowError(true);
         } finally {
             resetLoading();
             abortControllerRef.current = null;
@@ -548,17 +537,6 @@ function PromptWindow({
                 />
             </div>
 
-            {showError && (
-                <div className="error-container">
-                    <InfoDisplay
-                        type={isDailyRateLimitError || isRateLimitError ? "warning" : "error"}
-                        message={errorMessage}
-                        transparent={true}
-                        showTitle={!isDailyRateLimitError}
-                    />
-                </div>
-            )}
-            
             <div className="prompt-combined-container">
                 <div className="prompt-input-container">
                     <PromptField
