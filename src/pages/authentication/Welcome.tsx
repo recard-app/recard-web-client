@@ -72,12 +72,24 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
 
                   <div className="step-card">
                     <h4>3. Ask about any purchase</h4>
-                    <p>Describe what you’re buying; we’ll recommend the best card instantly.</p>
+                    <p>Describe what you're buying; we'll recommend the best card instantly.</p>
+                    <div className="card-actions">
+                      <Link className="button icon with-text mini ghost" to={PAGES.HOME.PATH}>
+                        <Icon name="chat-bubble" variant="mini" size={16} />
+                        <span>Start a chat</span>
+                      </Link>
+                    </div>
                   </div>
 
                   <div className="step-card">
-                    <h4>4. Track your history</h4>
-                    <p>Review past chats and decisions to learn and optimize over time.</p>
+                    <h4>4. Stay on top of your credits</h4>
+                    <p>Keep track of your card credits all in one place.</p>
+                    <div className="card-actions">
+                      <Link className="button icon with-text mini ghost" to={PAGES.MY_CREDITS.PATH}>
+                        <Icon name="banknotes" variant="mini" size={16} />
+                        <span>View my credits</span>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -93,6 +105,19 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
                   <Link className="button icon with-text mini ghost" to={PAGES.PREFERENCES.PATH}>
                     <Icon name="preferences" variant="mini" size={16} />
                     <span>Adjust preferences</span>
+                  </Link>
+                </div>
+              </section>
+
+              <section className="section help-section">
+                <h3 className="section-title">Need help?</h3>
+                <p className="help-description">
+                  Find answers to common questions and learn how to get the most out of your account.
+                </p>
+                <div className="help-actions">
+                  <Link className="button icon with-text mini ghost" to={PAGES.HELP_CENTER.PATH}>
+                    <Icon name="question-mark-circle" variant="mini" size={16} />
+                    <span>Visit Help Center</span>
                   </Link>
                 </div>
               </section>

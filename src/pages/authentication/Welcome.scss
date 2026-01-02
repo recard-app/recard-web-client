@@ -93,6 +93,22 @@
     }
   }
 
+  .help-section {
+    background: $neutral-lightest-gray;
+    border: $border-half solid $neutral-gray;
+    border-radius: $radius-base;
+    padding: $space-3;
+
+    .help-description {
+      margin: 0;
+      color: $neutral-dark-gray;
+    }
+
+    .help-actions {
+      margin-top: $space-2;
+    }
+  }
+
   .subtle {
     color: $neutral-dark-gray;
   }
