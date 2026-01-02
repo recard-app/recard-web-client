@@ -1,8 +1,10 @@
+import { CreditCardDetails, CardCredit } from './CreditCardTypes';
+
 /**
  * ------------------------------------------------------------------------------------------------
- * 
+ *
  * SHARED API AND CLIENT TYPES
- * 
+ *
  * ------------------------------------------------------------------------------------------------
  */
 
@@ -226,8 +228,9 @@ export interface GetCreditDetailsParams {
 }
 
 export interface GetCreditDetailsResponse {
-    credit: any;
-    cardDetails: any;
+    credit: UserCredit;
+    cardDetails: CreditCardDetails | null;
+    creditDetails: CardCredit | null;
     yearContext: {
         totalCredits: number;
         yearData: CalendarUserCredits;
@@ -295,15 +298,16 @@ export interface GetCardCreditsParams {
     cardIds?: string; // Optional comma-separated string of card IDs
 }
 
-export type GetCardCreditsResponse = CardCredit[];
+export type GetCardCreditsResponse = CardCreditData[];
 
 
 /**
- * Card Credit interface for the /cards endpoint
+ * Card Credit Data interface for the /cards endpoint
+ * Contains a card ID and its associated credit definitions
  */
-export interface CardCredit {
+export interface CardCreditData {
     CardId: string;
-    Credits: any[]; // Credit definitions from the card
+    Credits: CardCredit[];
 }
 
 /**

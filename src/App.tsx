@@ -406,7 +406,16 @@ function AppContent({}: AppContentProps) {
 
         setLastUpdateTimestamp(new Date().toISOString());
 
-        // Batch 4: Monthly credits data (low priority, after core app is loaded)
+        // Batch 4: Sync current year credits to ensure they exist (handles new year rollover)
+        // This is critical for ensuring credits are created when a new year starts
+        try {
+          await UserCreditService.syncCurrentYearCredits();
+        } catch (error) {
+          console.error('Error syncing current year credits:', error);
+          // Continue even if sync fails - user can manually trigger from credits page
+        }
+
+        // Batch 5: Monthly credits data (low priority, after core app is loaded)
         try {
           const monthlyStatsData = await UserCreditService.fetchMonthlySummary({
             showRedeemed: true,
