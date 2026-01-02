@@ -240,6 +240,11 @@ export const PAGE_ICONS = {
         ACTIVE: (props: any = {}) => createIconVariant('question-mark-circle', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('question-mark-circle', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('question-mark-circle', 'mini', ICON_PRIMARY, props.size)
+    },
+    WELCOME: {
+        ACTIVE: (props: any = {}) => createIconVariant('hand-raised', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('hand-raised', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('hand-raised', 'mini', ICON_PRIMARY, props.size)
     }
 } as const;
 

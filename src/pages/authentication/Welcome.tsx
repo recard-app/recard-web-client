@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { PAGES, PAGE_ICONS, PAGE_NAMES } from '../../types';
+import { PAGES, PAGE_NAMES, PAGE_ICONS } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import ContentContainer from '../../components/ContentContainer';
 import { useFullHeight } from '../../hooks/useFullHeight';
@@ -25,7 +25,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
 
   return (
     <div className="full-page-layout">
-      <PageHeader title="Welcome" icon={PAGE_ICONS.HOME.MINI} />
+      <PageHeader title="Welcome" icon={PAGE_ICONS.WELCOME.MINI} />
       <div className="full-page-content">
         <ContentContainer size="md">
           <div className="welcome-wrapper">

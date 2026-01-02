@@ -149,6 +149,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         return PAGE_NAMES.MY_CREDITS;
       case PAGES.DELETE_HISTORY.PATH:
         return 'Delete History';
+      case PAGES.WELCOME.PATH:
+        return 'Welcome';
       default:
         // Handle help center paths (including nested routes like /help/getting-started)
         if (currentPath.startsWith(PAGES.HELP_CENTER.PATH)) {
@@ -183,6 +185,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         return <Icon name="banknotes" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       case PAGES.DELETE_HISTORY.PATH:
         return <Icon name="delete" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+      case PAGES.WELCOME.PATH:
+        return <Icon name="hand-raised" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       default:
         // Handle help center paths (including nested routes like /help/getting-started)
         if (currentPath.startsWith(PAGES.HELP_CENTER.PATH)) {
