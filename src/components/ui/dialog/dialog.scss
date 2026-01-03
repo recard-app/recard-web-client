@@ -32,6 +32,12 @@
     max-width: var(--full-screen-max-width, 1000px); // fallback 1000px
     max-height: calc((var(--app-vh, 1vh) * 100) - ($space-8 * 2));
   }
+
+  &.full-height {
+    // Fixed height but preserves default width behavior
+    height: calc((var(--app-vh, 1vh) * 100) - ($space-8 * 2));
+    max-height: calc((var(--app-vh, 1vh) * 100) - ($space-8 * 2));
+  }
 }
 
 // Mobile-only template for dialog content (fill in as needed)
@@ -43,6 +49,10 @@
    //.dialog-content.full-width { }
    .dialog-content.full-screen {
       width: calc(100vw - ($space-4 * 2));
+      height: calc((var(--app-vh, 1vh) * 100) - ($space-4 * 2));
+      max-height: calc((var(--app-vh, 1vh) * 100) - ($space-4 * 2));
+    }
+   .dialog-content.full-height {
       height: calc((var(--app-vh, 1vh) * 100) - ($space-4 * 2));
       max-height: calc((var(--app-vh, 1vh) * 100) - ($space-4 * 2));
     }

@@ -175,17 +175,6 @@
       background: $neutral-white;
       padding: $space-2 0;
 
-      // Subtle border when scrolled under
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: $neutral-light-gray;
-      }
-
       @media (max-width: $mobile-breakpoint) {
         padding-top: $space-1-5;
         padding-bottom: $space-1-5;

@@ -697,7 +697,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                                         </DrawerTrigger>
                                         <DrawerPortal>
                                             <DrawerOverlay />
-                                            <DrawerContent fitContent maxHeight="80vh">
+                                            <DrawerContent>
                                                 <DrawerTitle className="sr-only">Add Card</DrawerTitle>
                                                 <div className="dialog-header drawer-sticky-header">
                                                     <h2>Add Card</h2>

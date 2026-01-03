@@ -51,12 +51,13 @@ interface DialogContentProps extends React.ComponentProps<typeof DialogPrimitive
   width?: string;
   fullWidth?: boolean;
   fullScreen?: boolean;
+  fullHeight?: boolean;
 }
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, children, showCloseButton = true, width, fullWidth = false, fullScreen = false, ...props }, ref) => {
+>(({ className, children, showCloseButton = true, width, fullWidth = false, fullScreen = false, fullHeight = false, ...props }, ref) => {
   const inlineStyles: React.CSSProperties = !!width && !fullWidth && !fullScreen ? { width } : {};
 
   return (
@@ -73,6 +74,7 @@ const DialogContent = React.forwardRef<
           "dialog-content data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
           fullWidth && "full-width",
           fullScreen && "full-screen",
+          fullHeight && "full-height",
           className
         )}
         style={inlineStyles}

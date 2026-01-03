@@ -23,6 +23,8 @@ interface CreditCardSelectorProps {
   externalSearchTerm?: string;
   onExternalSearchTermChange?: (value: string) => void;
   hideInternalSearch?: boolean;
+  hideInternalChips?: boolean;
+  onSelectionChange?: (selectedCards: CreditCard[]) => void;
   // Props for testing/design system
   forcedUser?: any;
   disableAuthCheck?: boolean;
@@ -38,7 +40,7 @@ export interface CreditCardSelectorRef {
  * Component for selecting and managing credit cards
  * Allows users to view, select, search, and set default cards
  */
-const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorProps>(({ returnCreditCards, existingCreditCards, showSaveButton = true, onSaveComplete, isSaving = false, externalSearchTerm, onExternalSearchTermChange, hideInternalSearch = false, forcedUser, disableAuthCheck = false, disableApiFetch = false, disableApiSave = false }, ref) => {
+const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorProps>(({ returnCreditCards, existingCreditCards, showSaveButton = true, onSaveComplete, isSaving = false, externalSearchTerm, onExternalSearchTermChange, hideInternalSearch = false, hideInternalChips = false, onSelectionChange, forcedUser, disableAuthCheck = false, disableApiFetch = false, disableApiSave = false }, ref) => {
     // State for managing the list of all credit cards, initialized with existing cards
     const [creditCards, setCreditCards] = useState<CreditCard[]>(sortCards(existingCreditCards || []));
     // State for managing the search input value
@@ -136,6 +138,13 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
             return a.CardName.localeCompare(b.CardName);
         });
 
+    // Notify parent of selection changes (for external chips rendering)
+    useEffect(() => {
+        if (onSelectionChange) {
+            onSelectionChange(selectedCards);
+        }
+    }, [creditCards, onSelectionChange]);
+
     /**
      * Handles navigation to auth pages when user is not logged in
      */
@@ -177,8 +186,8 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                 </div>
             )}
             
-            {/* Selection Chips - sticky at top of scroll area */}
-            {selectedCards.length > 0 && (
+            {/* Selection Chips - sticky at top of scroll area (hidden when rendered externally) */}
+            {!hideInternalChips && selectedCards.length > 0 && (
                 <div className="selection-chips-container">
                     <div className="selection-chips">
                         {selectedCards.map(card => (

@@ -79,3 +79,62 @@
 .mobile-credit-details-drawer .drawer-content-scroll:empty {
   opacity: 0.5;
 }
+
+// Selection chips in drawer header (mobile card selector)
+.mobile-card-selector-drawer .drawer-sticky-header {
+  .selection-chips-container {
+    width: 100%;
+    align-self: stretch; // Override align-items: center from parent
+    padding: $space-1-5 0 0 0;
+  }
+
+  .selection-chips {
+    display: flex;
+    gap: $space-2;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+
+    // Hide scrollbar but keep functionality
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .selection-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    padding: $space-1 $space-1-5 $space-1 $space-1;
+    background: $neutral-light-gray;
+    border: $border-full solid $neutral-gray;
+    border-radius: $radius-full;
+    font-family: $font-inter;
+    font-size: $font-xs;
+    font-weight: $font-medium;
+    color: $neutral-dark-gray;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    // All icons in chip (star icon and card icon) should not shrink
+    > svg {
+      flex-shrink: 0;
+    }
+
+    // Card name text
+    &__name {
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    // Preferred card chip variant
+    &--preferred {
+      background: $primary-lightest;
+      border-color: $primary-light;
+      color: $primary-medium;
+    }
+  }
+}

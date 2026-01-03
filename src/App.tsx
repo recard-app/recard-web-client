@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard } from './types';
-import { Icon } from './icons';
+import { Icon, CardIcon } from './icons';
 // Services
 import {
   CardService,
@@ -226,8 +226,10 @@ function AppContent({}: AppContentProps) {
   const [cardsVersion, setCardsVersion] = useState<number>(0);
   const [isSavingCards, setIsSavingCards] = useState(false);
   const [cardSelectorSearchTerm, setCardSelectorSearchTerm] = useState<string>('');
+  const [selectedCardsForChips, setSelectedCardsForChips] = useState<CreditCard[]>([]);
   const resetCardSelectorUI = () => {
     setCardSelectorSearchTerm('');
+    setSelectedCardsForChips([]);
   };
   const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -880,7 +882,7 @@ function AppContent({}: AppContentProps) {
                   }
                   setIsCardSelectorOpen(open);
                 }} direction="bottom">
-                  <DrawerContent className="mobile-card-selector-drawer" fixedHeight="70vh">
+                  <DrawerContent className="mobile-card-selector-drawer">
                     <DrawerTitle className="sr-only">Select Your Credit Cards</DrawerTitle>
                     <div className="dialog-header drawer-sticky-header">
                       <h2>Select Your Credit Cards</h2>
@@ -893,6 +895,29 @@ function AppContent({}: AppContentProps) {
                           disabled={isSavingCards}
                         />
                       </div>
+                      {selectedCardsForChips.length > 0 && (
+                        <div className="selection-chips-container">
+                          <div className="selection-chips">
+                            {selectedCardsForChips.map(card => (
+                              <span
+                                key={`chip-${card.id}`}
+                                className={`selection-chip ${card.isDefaultCard ? 'selection-chip--preferred' : ''}`}
+                              >
+                                {card.isDefaultCard && (
+                                  <Icon name="star" variant="micro" size={10} />
+                                )}
+                                <CardIcon
+                                  title={card.CardName}
+                                  size={16}
+                                  primary={card.CardPrimaryColor}
+                                  secondary={card.CardSecondaryColor}
+                                />
+                                <span className="selection-chip__name">{card.CardName}</span>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div className="dialog-body" style={{ overflowY: 'auto', minHeight: 0 }}>
                       <CreditCardSelector
@@ -905,6 +930,8 @@ function AppContent({}: AppContentProps) {
                         hideInternalSearch={true}
                         externalSearchTerm={cardSelectorSearchTerm}
                         onExternalSearchTermChange={setCardSelectorSearchTerm}
+                        hideInternalChips={true}
+                        onSelectionChange={setSelectedCardsForChips}
                       />
                     </div>
                     <div className="dialog-footer">
@@ -940,7 +967,7 @@ function AppContent({}: AppContentProps) {
                 }
                 setIsCardSelectorOpen(open);
               }}>
-                <DialogContent>
+                <DialogContent fullHeight>
                   <DialogHeader>
                     <DialogTitle>Select Your Credit Cards</DialogTitle>
                   </DialogHeader>
