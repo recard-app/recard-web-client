@@ -18,15 +18,30 @@
   margin-top: $space-3;
 }
 
-// Remove blue focus/outline from drawer content and all focusable elements inside
+// Remove blue focus/outline from drawer content itself
 [data-slot="drawer-content"],
 [data-slot="drawer-content"]:focus,
-[data-slot="drawer-content"]:focus-visible,
-[data-slot="drawer-content"] *:focus,
-[data-slot="drawer-content"] *:focus-visible {
+[data-slot="drawer-content"]:focus-visible {
   outline: none !important;
   box-shadow: none !important;
   border: none !important;
+}
+
+// Remove focus outline from interactive elements, but preserve form field styling
+[data-slot="drawer-content"] *:focus,
+[data-slot="drawer-content"] *:focus-visible {
+  outline: none !important;
+}
+
+// Preserve border and box-shadow for form inputs on focus
+[data-slot="drawer-content"] input:focus,
+[data-slot="drawer-content"] input:focus-visible,
+[data-slot="drawer-content"] textarea:focus,
+[data-slot="drawer-content"] textarea:focus-visible,
+[data-slot="drawer-content"] select:focus,
+[data-slot="drawer-content"] select:focus-visible {
+  border: $border-full solid $neutral-medium-gray !important;
+  box-shadow: $shadow-base !important;
 }
 
 // Remove any browser default focus styles from the drawer overlay as well

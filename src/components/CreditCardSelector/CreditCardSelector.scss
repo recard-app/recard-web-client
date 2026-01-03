@@ -32,11 +32,17 @@
       opacity: 0.6;
       cursor: not-allowed;
       pointer-events: none;
-      
+
       &:hover {
         border-color: $neutral-light-gray;
         box-shadow: none;
       }
+    }
+
+    // Selected card styling
+    &--selected {
+      background-color: $primary-lightest;
+      border-color: $primary-light;
     }
 
         .card-select {
@@ -128,18 +134,23 @@
         margin-left: $space-3;
         white-space: nowrap;
         flex-shrink: 0;
-        
+
         // Make button smaller
         padding: $space-1 $space-2;
         font-size: $font-xs;
         line-height: 1;
+
+        @media (max-width: $mobile-breakpoint) {
+          padding: $space-2 $space-3;
+          font-size: $font-sm;
+        }
       }
     }
   
     // Search container styles - matching SingleCardSelector
     .search-container {
       margin-bottom: 15px;
-      
+
       .search-input {
         width: 100%;
         // Provide extra left padding to avoid overlap with the search icon
@@ -147,7 +158,7 @@
         border: 1px solid $border-light-gray;
         border-radius: 4px;
         font-size: 0.9em;
-        
+
         &:disabled {
           background-color: $background-lighter-gray;
           color: $text-medium-gray;
@@ -155,7 +166,86 @@
         }
       }
     }
-    
+
+    // Selection chips container - sticky at top of scroll area
+    .selection-chips-container {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: $neutral-white;
+      padding: $space-2 0;
+
+      // Subtle border when scrolled under
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: $neutral-light-gray;
+      }
+
+      @media (max-width: $mobile-breakpoint) {
+        padding-top: $space-1-5;
+        padding-bottom: $space-1-5;
+      }
+    }
+
+    // Selection chips - horizontal scrollable row of selected cards
+    .selection-chips {
+      display: flex;
+      gap: $space-2;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+
+      // Hide scrollbar but keep functionality
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    // Individual selection chip
+    .selection-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
+      padding: $space-1 $space-1-5 $space-1 $space-1;
+      background: $neutral-light-gray;
+      border: $border-full solid $neutral-gray;
+      border-radius: $radius-full;
+      font-family: $font-inter;
+      font-size: $font-xs;
+      font-weight: $font-medium;
+      color: $neutral-dark-gray;
+      white-space: nowrap;
+      flex-shrink: 0;
+
+      // All icons in chip (star icon and card icon) should not shrink
+      > svg {
+        flex-shrink: 0;
+      }
+
+      // Card name text
+      &__name {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        @media (max-width: $mobile-breakpoint) {
+          max-width: 100px;
+        }
+      }
+
+      // Preferred card chip variant
+      &--preferred {
+        background: $primary-lightest;
+        border-color: $primary-light;
+        color: $primary-medium;
+      }
+    }
+
     // Section styles
     .cards-container {
       .card-section {

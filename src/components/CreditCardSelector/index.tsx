@@ -6,6 +6,7 @@ import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections, sortCards } from './utils';
 import { APP_NAME, PAGES } from '../../types';
 import { CardIcon } from '../../icons';
+import Icon from '@/icons';
 import { InfoDisplay, SearchField } from '../../elements';
 
 /**
@@ -118,21 +119,22 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
     // Use the filterCards utility function
     const effectiveSearchTerm = typeof externalSearchTerm === 'string' ? externalSearchTerm : searchTerm;
     const filteredCards = filterCards(creditCards, effectiveSearchTerm);
-    
-    // Split cards into "Your Cards" and "Other Cards"
-    const userCards = filteredCards.filter(card => card.selected);
-    const otherCards = filteredCards.filter(card => !card.selected);
 
-    // Sort user cards to ensure default card is at the top
-    const sortedUserCards = [...userCards].sort((a, b) => {
-        if (a.isDefaultCard !== b.isDefaultCard) {
-            return a.isDefaultCard ? -1 : 1;
-        }
-        return a.CardName.localeCompare(b.CardName);
-    });
+    // Flat alphabetically sorted list - cards never change position
+    const sortedCards = [...filteredCards].sort((a, b) =>
+        a.CardName.localeCompare(b.CardName)
+    );
 
-    // Determine section header for non-selected cards
-    const otherCardsHeader = userCards.length > 0 ? "Other Cards" : "All Cards";
+    // Selected cards for chips (preferred first, then alphabetical)
+    // Note: chips show ALL selected cards, unaffected by search filter
+    const selectedCards = creditCards
+        .filter(card => card.selected)
+        .sort((a, b) => {
+            if (a.isDefaultCard !== b.isDefaultCard) {
+                return a.isDefaultCard ? -1 : 1;
+            }
+            return a.CardName.localeCompare(b.CardName);
+        });
 
     /**
      * Handles navigation to auth pages when user is not logged in
@@ -175,6 +177,31 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                 </div>
             )}
             
+            {/* Selection Chips - sticky at top of scroll area */}
+            {selectedCards.length > 0 && (
+                <div className="selection-chips-container">
+                    <div className="selection-chips">
+                        {selectedCards.map(card => (
+                            <span
+                                key={`chip-${card.id}`}
+                                className={`selection-chip ${card.isDefaultCard ? 'selection-chip--preferred' : ''}`}
+                            >
+                                {card.isDefaultCard && (
+                                    <Icon name="star" variant="micro" size={10} />
+                                )}
+                                <CardIcon
+                                    title={card.CardName}
+                                    size={16}
+                                    primary={card.CardPrimaryColor}
+                                    secondary={card.CardSecondaryColor}
+                                />
+                                <span className="selection-chip__name">{card.CardName}</span>
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {isInitialLoad ? (
                 <div className="loading">
                     <InfoDisplay
@@ -187,96 +214,50 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                 </div>
             ) : (
                 <div className="cards-container">
-                    {userCards.length > 0 && (
-                        <div className="card-section">
-                            <h4 className="section-header">My Cards</h4>
-                            <div className="section-cards">
-                                {sortedUserCards.map((card) => (
-                                    <div key={card.id} className={`card ${isSaving ? 'disabled' : ''}`}>
-                                        <label className='card-select' htmlFor={card.id}>
-                                            <input 
-                                                type="checkbox" 
-                                                id={card.id}
-                                                name={card.CardName} 
-                                                value={card.CardName} 
-                                                checked={card.selected || false} 
-                                                onChange={() => handleCheckboxChange(card.id)}
-                                                disabled={isSaving}
-                                            />
-                                            <CardIcon 
-                                                title={`${card.CardName} card`} 
-                                                size={32} 
-                                                primary={card.CardPrimaryColor}
-                                                secondary={card.CardSecondaryColor}
-                                            />
-                                            <div className='card-desc'>
-                                                <p className='card-name'>
-                                                    {card.CardName}
-                                                    {card.isDefaultCard && <span className="default-tag">Preferred Card</span>}
-                                                </p>
-                                                <p className='card-type'>{card.CardIssuer}</p>
-                                            </div>
-                                        </label>
-                                        {card.selected && !card.isDefaultCard && (
-                                            <button 
-                                                className="set-default-button"
-                                                onClick={() => handleSetDefault(card.id)}
-                                                disabled={isSaving}
-                                            >
-                                                Set as Preferred Card
-                                            </button>
-                                        )}
+                    {/* Flat Card List */}
+                    <div className="cards-list">
+                        {sortedCards.map((card) => (
+                            <div
+                                key={card.id}
+                                className={`card ${card.selected ? 'card--selected' : ''} ${isSaving ? 'disabled' : ''}`}
+                            >
+                                <label className='card-select' htmlFor={card.id}>
+                                    <input
+                                        type="checkbox"
+                                        id={card.id}
+                                        name={card.CardName}
+                                        value={card.CardName}
+                                        checked={card.selected || false}
+                                        onChange={() => handleCheckboxChange(card.id)}
+                                        disabled={isSaving}
+                                    />
+                                    <CardIcon
+                                        title={`${card.CardName} card`}
+                                        size={32}
+                                        primary={card.CardPrimaryColor}
+                                        secondary={card.CardSecondaryColor}
+                                    />
+                                    <div className='card-desc'>
+                                        <p className='card-name'>
+                                            {card.CardName}
+                                            {card.isDefaultCard && <span className="default-tag">Preferred Card</span>}
+                                        </p>
+                                        <p className='card-type'>{card.CardIssuer}</p>
                                     </div>
-                                ))}
+                                </label>
+                                {card.selected && !card.isDefaultCard && (
+                                    <button
+                                        className="set-default-button"
+                                        onClick={() => handleSetDefault(card.id)}
+                                        disabled={isSaving}
+                                    >
+                                        Set as Preferred Card
+                                    </button>
+                                )}
                             </div>
-                        </div>
-                    )}
-                    
-                    {otherCards.length > 0 && (
-                        <div className="card-section">
-                            <h4 className="section-header">{otherCardsHeader}</h4>
-                            <div className="section-cards">
-                                {otherCards.map((card) => (
-                                    <div key={card.id} className={`card ${isSaving ? 'disabled' : ''}`}>
-                                        <label className='card-select' htmlFor={card.id}>
-                                            <input 
-                                                type="checkbox" 
-                                                id={card.id}
-                                                name={card.CardName} 
-                                                value={card.CardName} 
-                                                checked={card.selected || false} 
-                                                onChange={() => handleCheckboxChange(card.id)}
-                                                disabled={isSaving}
-                                            />
-                                            <CardIcon 
-                                                title={`${card.CardName} card`} 
-                                                size={32} 
-                                                primary={card.CardPrimaryColor}
-                                                secondary={card.CardSecondaryColor}
-                                            />
-                                            <div className='card-desc'>
-                                                <p className='card-name'>
-                                                    {card.CardName}
-                                                    {card.isDefaultCard && <span className="default-tag">Preferred Card</span>}
-                                                </p>
-                                                <p className='card-type'>{card.CardIssuer}</p>
-                                            </div>
-                                        </label>
-                                        {card.selected && !card.isDefaultCard && (
-                                            <button 
-                                                className="set-default-button"
-                                                onClick={() => handleSetDefault(card.id)}
-                                                disabled={isSaving}
-                                            >
-                                                Set as Preferred Card
-                                            </button>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                    
+                        ))}
+                    </div>
+
                     {filteredCards.length === 0 && (
                         <div className="no-results">
                             <InfoDisplay
@@ -289,7 +270,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                             />
                         </div>
                     )}
-                    
+
                     {showSaveButton && (
                         <div className="save-section">
                             <button onClick={handleSave} className="save-button">

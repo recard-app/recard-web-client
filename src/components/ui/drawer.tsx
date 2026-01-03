@@ -53,8 +53,8 @@ DrawerOverlay.displayName = "DrawerOverlay";
 
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
-  React.ComponentProps<typeof DrawerPrimitive.Content> & { fitContent?: boolean; maxHeight?: string }
->(({ className, children, fitContent, maxHeight = "80vh", ...props }, ref) => {
+  React.ComponentProps<typeof DrawerPrimitive.Content> & { fitContent?: boolean; maxHeight?: string; fixedHeight?: string }
+>(({ className, children, fitContent, maxHeight = "80vh", fixedHeight, ...props }, ref) => {
   return (
     <DrawerPortal data-slot="drawer-portal">
       <DrawerOverlay />
@@ -71,12 +71,14 @@ const DrawerContent = React.forwardRef<
           "sm:data-[vaul-drawer-direction=bottom]:max-w-[900px] sm:data-[vaul-drawer-direction=bottom]:inset-x-auto sm:data-[vaul-drawer-direction=bottom]:left-1/2 sm:data-[vaul-drawer-direction=bottom]:translate-x-[-50%]",
           "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:sm:max-w-sm",
           "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:sm:max-w-sm",
-          // Optional: allow content-sized drawers with custom max height
-          fitContent && `data-[vaul-drawer-direction=bottom]:h-auto data-[vaul-drawer-direction=top]:h-auto`,
+          // Optional: allow content-sized drawers with custom max height (ignored if fixedHeight is set)
+          !fixedHeight && fitContent && `data-[vaul-drawer-direction=bottom]:h-auto data-[vaul-drawer-direction=top]:h-auto`,
           className
         )}
         style={{
-          ...(fitContent && { maxHeight }),
+          // fixedHeight takes precedence - sets exact height for bottom/top drawers
+          ...(fixedHeight && { height: fixedHeight }),
+          ...(!fixedHeight && fitContent && { maxHeight }),
           ...props.style
         }}
         {...props}

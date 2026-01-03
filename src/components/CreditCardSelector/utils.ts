@@ -2,21 +2,11 @@ import { CreditCard } from '../../types/CreditCardTypes';
 import { CardService, UserCreditCardService, UserCreditService } from '../../services';
 
 /**
- * Sorts credit cards by priority:
- * 1. Default card first
- * 2. Selected cards next
- * 3. Alphabetically by name
+ * Sorts credit cards alphabetically by name.
+ * Cards never change position based on selection state to prevent layout shifts.
  */
 export const sortCards = (cards: CreditCard[]): CreditCard[] => {
-    return [...cards].sort((a, b) => {
-        if (a.isDefaultCard !== b.isDefaultCard) {
-            return a.isDefaultCard ? -1 : 1;
-        }
-        if (a.selected !== b.selected) {
-            return a.selected ? -1 : 1;
-        }
-        return a.CardName.localeCompare(b.CardName);
-    });
+    return [...cards].sort((a, b) => a.CardName.localeCompare(b.CardName));
 };
 
 /**
