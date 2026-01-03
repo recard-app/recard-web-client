@@ -189,6 +189,7 @@ function AppContent({}: AppContentProps) {
   const clearAllUpdatingCredits = () => {
     setUpdatingCreditIds(new Set());
   };
+
   // State for storing prioritized credits list
   const [prioritizedCredits, setPrioritizedCredits] = useState<PrioritizedCredit[]>([]);
   const [isLoadingPrioritizedCredits, setIsLoadingPrioritizedCredits] = useState<boolean>(true);
@@ -514,10 +515,9 @@ function AppContent({}: AppContentProps) {
     const refreshMonthlyStats = async () => {
       if (!user || monthlyStatsRefreshTrigger === 0) return;
 
-      // If we already have data, this is an update, not initial load
-      if (monthlyStats) {
-        setIsUpdatingMonthlyStats(true);
-      } else {
+      // If we already have data, this is an update - don't show loading indicators
+      // Just let the data refresh silently in the background
+      if (!monthlyStats) {
         setIsLoadingMonthlyStats(true);
         setIsLoadingPrioritizedCredits(true);
       }

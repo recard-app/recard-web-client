@@ -101,7 +101,7 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   }, [userCardDetails, creditsByCard]);
 
   // Fetch credit data for selected year
-  const fetchCredits = useCallback(async () => {
+  const fetchCredits = useCallback(async (showLoading: boolean = true) => {
     // Cancel any in-flight request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -111,7 +111,10 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     abortControllerRef.current = new AbortController();
     const { signal } = abortControllerRef.current;
 
-    setIsLoading(true);
+    // Only show loading spinner when requested (not during background refreshes)
+    if (showLoading) {
+      setIsLoading(true);
+    }
     setError(null);
 
     try {
@@ -204,8 +207,8 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
 
   // Handle update complete - refresh data
   const handleUpdateComplete = useCallback(async () => {
-    // Refresh credit data
-    await fetchCredits();
+    // Refresh credit data silently (no loading spinner)
+    await fetchCredits(false);
 
     // Notify parent to refresh monthly stats
     if (onRefreshMonthlyStats) {
