@@ -156,6 +156,12 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
 
   // Sidebar variant
   if (variant === 'sidebar') {
+    // Hide the element entirely if there's nothing to show
+    const hasContentToShow = SHOW_USAGE_BAR_IN_SIDEBAR_MENU || showExpiringRow;
+    if (!hasContentToShow) {
+      return null;
+    }
+
     return (
       <div className={`credit-summary-hero credit-summary-sidebar ${isUpdating ? 'updating' : ''}`}>
         {SHOW_USAGE_BAR_IN_SIDEBAR_MENU && heroContent}
