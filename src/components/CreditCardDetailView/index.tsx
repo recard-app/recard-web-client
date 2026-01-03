@@ -379,7 +379,6 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 <div className="stat-item">
                     <span className="stat-value">
                         {cardDetails.RewardsCurrency || 'N/A'}
-                        {cardDetails.PointsPerDollar !== null && ` (${cardDetails.PointsPerDollar}x)`}
                     </span>
                     <span className="stat-label">Rewards</span>
                 </div>
