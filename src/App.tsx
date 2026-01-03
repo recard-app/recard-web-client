@@ -113,7 +113,7 @@ import {
 import { UserComponentTrackingPreferences, PrioritizedCredit } from './types/CardCreditsTypes';
 import { FullHeightContext } from './hooks/useFullHeight';
 import { ScrollHeightContext } from './hooks/useScrollHeight';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 
 const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 
@@ -223,15 +223,11 @@ function AppContent({}: AppContentProps) {
   const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
   const [isCardDetailsOpen, setIsCardDetailsOpen] = useState(false);
   const [isDetailedSummaryOpen, setIsDetailedSummaryOpen] = useState(false);
-  const [cardSelectorSaveStatus, setCardSelectorSaveStatus] = useState<string>('');
-  const [cardSelectorSaveSuccess, setCardSelectorSaveSuccess] = useState<boolean>(false);
   const [cardsVersion, setCardsVersion] = useState<number>(0);
   const [isSavingCards, setIsSavingCards] = useState(false);
   const [cardSelectorSearchTerm, setCardSelectorSearchTerm] = useState<string>('');
   const resetCardSelectorUI = () => {
     setCardSelectorSearchTerm('');
-    setCardSelectorSaveStatus('');
-    setCardSelectorSaveSuccess(false);
   };
   const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
@@ -678,8 +674,6 @@ function AppContent({}: AppContentProps) {
     if (!creditCardSelectorRef.current) return;
 
     setIsSavingCards(true);
-    setCardSelectorSaveStatus('');
-    setCardSelectorSaveSuccess(false);
 
     try {
       await creditCardSelectorRef.current.handleSave();
@@ -692,9 +686,8 @@ function AppContent({}: AppContentProps) {
 
   // Function to handle save completion from CreditCardSelector
   const handleCardSelectorSaveComplete = (success: boolean, message: string) => {
-    setCardSelectorSaveStatus(message);
-    setCardSelectorSaveSuccess(success);
     if (success) {
+      toast.success(message);
       // Refresh global cards and bump version to trigger dependents
       (async () => {
         try {
@@ -707,6 +700,8 @@ function AppContent({}: AppContentProps) {
           console.error('Error refreshing cards after save:', err);
         }
       })();
+    } else {
+      toast.error(message);
     }
   };
 
@@ -913,12 +908,6 @@ function AppContent({}: AppContentProps) {
                       />
                     </div>
                     <div className="dialog-footer">
-                      {cardSelectorSaveStatus && (
-                        <InfoDisplay
-                          type={cardSelectorSaveSuccess ? 'success' : 'error'}
-                          message={cardSelectorSaveStatus}
-                        />
-                      )}
                       <div className="button-group">
                         <button
                           className={`button ${isSavingCards ? 'loading icon with-text' : ''}`}
@@ -966,12 +955,6 @@ function AppContent({}: AppContentProps) {
                     />
                   </DialogBody>
                   <DialogFooter>
-                    {cardSelectorSaveStatus && (
-                      <InfoDisplay
-                        type={cardSelectorSaveSuccess ? 'success' : 'error'}
-                        message={cardSelectorSaveStatus}
-                      />
-                    )}
                     <div className="button-group">
                       <button
                         className={`button ${isSavingCards ? 'loading icon with-text' : ''}`}
