@@ -135,7 +135,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
             ) : (
               <>
                 <CreditsDisplay
-                  key={`credits-display-${showRedeemed}`}
+                  key={`credits-display-${showRedeemed}-${stableFilteredCredits.length}`}
                   calendar={calendarUserCredits}
                   isLoading={false}
                   userCards={userCards}
