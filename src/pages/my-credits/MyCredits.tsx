@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES, PAGES, CalendarUserCredits, UserCredit } from '../../types';
+import { PAGE_ICONS, PAGE_NAMES, PAGES, CalendarUserCredits, UserCredit, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS } from '../../types';
 import { UserCreditCardService } from '../../services';
 import CreditsDisplay from '../../components/CreditsDisplay';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
@@ -51,12 +51,44 @@ const MyCredits: React.FC<MyCreditsProps> = ({
   const [stableFilteredCredits, setStableFilteredCredits] = useState<PrioritizedCredit[]>([]);
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
 
+  // Helper to get current period number for a credit
+  const getCurrentPeriodNumber = (credit: PrioritizedCredit): number => {
+    // For anniversary credits, there's only 1 period
+    if (credit.isAnniversaryBased) {
+      return 1;
+    }
+
+    // Calendar-based calculation
+    const now = new Date();
+    const periodKey = (Object.keys(CREDIT_PERIODS) as Array<keyof typeof CREDIT_PERIODS>).find(
+      (k) => CREDIT_PERIODS[k] === credit.period
+    ) as keyof typeof CREDIT_INTERVALS | undefined;
+
+    if (!periodKey) return 1;
+
+    const intervals = CREDIT_INTERVALS[periodKey] ?? 1;
+    if (intervals <= 1) return 1;
+    const monthZeroBased = now.getMonth();
+    const segmentLength = 12 / intervals;
+    return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
+  };
+
+  // Helper to get current period CreditUsage from History
+  const getCurrentPeriodCreditUsage = (credit: PrioritizedCredit) => {
+    const currentPeriodNumber = getCurrentPeriodNumber(credit);
+    const currentHistory = credit.History?.find(h => h.PeriodNumber === currentPeriodNumber);
+    return currentHistory?.CreditUsage;
+  };
+
   // Update stable credits only when prioritizedCredits or showRedeemed changes
   // This prevents flickering during the filtering/sorting process
   useEffect(() => {
     const newFilteredCredits = showRedeemed
       ? prioritizedCredits
-      : prioritizedCredits.filter(credit => credit.usageStatus !== 'redeemed');
+      : prioritizedCredits.filter(credit => {
+          const creditUsage = getCurrentPeriodCreditUsage(credit);
+          return creditUsage !== CREDIT_USAGE.USED;
+        });
 
     setStableFilteredCredits(newFilteredCredits);
 

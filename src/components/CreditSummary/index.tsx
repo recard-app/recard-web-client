@@ -1,5 +1,5 @@
 import React from 'react';
-import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, ALWAYS_SHOW_EXPIRING_CREDITS, SHOW_USAGE_BAR_IN_SIDEBAR_MENU } from '../../types';
+import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, ALWAYS_SHOW_EXPIRING_CREDITS, SHOW_USAGE_BAR_IN_SIDEBAR_MENU, CREDIT_USAGE_DISPLAY_NAMES } from '../../types';
 import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR, WARNING } from '../../types/Colors';
 import { InfoDisplay } from '../../elements';
 import Icon from '@/icons';
@@ -116,7 +116,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
       <UsageBar
         segments={[
           {
-            label: 'Used',
+            label: CREDIT_USAGE_DISPLAY_NAMES.USED,
             value: effectiveMonthlyStats.MonthlyCredits.usedValue,
             color: PRIMARY_COLOR,
           },

@@ -64,6 +64,16 @@ export const CREDIT_USAGE_DISPLAY_NAMES = {
 export type CreditUsageDisplayNameType = typeof CREDIT_USAGE_DISPLAY_NAMES[keyof typeof CREDIT_USAGE_DISPLAY_NAMES];
 
 /**
+ * Helper constants for filtering logic
+ */
+// Statuses that count as "redeemed" for filtering
+export const REDEEMED_STATUSES = [CREDIT_USAGE.USED] as const;
+// Statuses that count as "not tracked" for filtering
+export const NOT_TRACKED_STATUSES = [CREDIT_USAGE.INACTIVE, CREDIT_USAGE.DISABLED] as const;
+// Non-clickable statuses (future periods)
+export const NON_INTERACTIVE_STATUSES = [CREDIT_USAGE.DISABLED] as const;
+
+/**
  * Represents the credit history for a user
  */
 export interface CreditHistory {
@@ -326,12 +336,11 @@ export interface PrioritizedCredit {
     expirationDate: string;
     period: CreditPeriodType;
     isExpiring: boolean;
-    usageStatus: 'unused' | 'partially_used' | 'redeemed' | 'not_tracked';
     priority: {
         expiration: number;
         unusedAmount: number;
         period: number;
-        usageStatus: number;
+        creditUsage: number; // Priority based on CreditUsage from History
         alphabetical: string;
     };
     // Required for frontend interactive features

@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useRef } from 'react';
 import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, MONTH_LABEL_ABBREVIATIONS } from '../../../../../../types';
-import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../../../types/CardCreditsTypes';
+import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES, CREDIT_USAGE_DISPLAY_NAMES } from '../../../../../../types/CardCreditsTypes';
 import { COLORS } from '../../../../../../types/Colors';
 import { isPeriodFuture } from '../../utils';
 import Icon from '@/icons';
@@ -190,16 +190,16 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({ userCredit, cur
 
     switch (usage) {
       case CREDIT_USAGE.USED:
-        return 'Used';
+        return CREDIT_USAGE_DISPLAY_NAMES.USED;
       case CREDIT_USAGE.PARTIALLY_USED:
-        return 'Partial';
+        return CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED;
       case CREDIT_USAGE.NOT_USED:
-        return 'Not Used';
+        return CREDIT_USAGE_DISPLAY_NAMES.NOT_USED;
       case CREDIT_USAGE.DISABLED:
-        return 'Disabled';
+        return CREDIT_USAGE_DISPLAY_NAMES.DISABLED;
       case CREDIT_USAGE.INACTIVE:
       default:
-        return 'Untracked';
+        return CREDIT_USAGE_DISPLAY_NAMES.INACTIVE;
     }
   };
 

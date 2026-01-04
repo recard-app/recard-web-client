@@ -1,5 +1,5 @@
 import React from 'react';
-import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, CREDIT_USAGE_DISPLAY_COLORS } from '../../../types';
+import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_DISPLAY_NAMES } from '../../../types';
 import COLORS from '../../../types/Colors';
 import { InfoDisplay } from '../../../elements';
 import Icon from '@/icons';
@@ -135,17 +135,17 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
             <UsageBar
               segments={[
                 {
-                  label: 'Used',
+                  label: CREDIT_USAGE_DISPLAY_NAMES.USED,
                   value: monthlyStats.MonthlyCredits.usedCount,
                   color: CREDIT_USAGE_DISPLAY_COLORS.USED,
                 },
                 {
-                  label: 'Partially Used',
+                  label: CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED,
                   value: monthlyStats.MonthlyCredits.partiallyUsedCount,
                   color: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
                 },
                 {
-                  label: 'Unused',
+                  label: CREDIT_USAGE_DISPLAY_NAMES.NOT_USED,
                   value: monthlyStats.MonthlyCredits.unusedCount,
                   color: COLORS.NEUTRAL_GRAY,
                 },
@@ -191,17 +191,17 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
             <UsageBar
               segments={[
                 {
-                  label: 'Used',
+                  label: CREDIT_USAGE_DISPLAY_NAMES.USED,
                   value: monthlyStats.CurrentCredits.usedCount,
                   color: CREDIT_USAGE_DISPLAY_COLORS.USED,
                 },
                 {
-                  label: 'Partially Used',
+                  label: CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED,
                   value: monthlyStats.CurrentCredits.partiallyUsedCount,
                   color: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
                 },
                 {
-                  label: 'Unused',
+                  label: CREDIT_USAGE_DISPLAY_NAMES.NOT_USED,
                   value: monthlyStats.CurrentCredits.unusedCount,
                   color: COLORS.NEUTRAL_GRAY,
                 },
@@ -247,17 +247,17 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
             <UsageBar
               segments={[
                 {
-                  label: 'Used',
+                  label: CREDIT_USAGE_DISPLAY_NAMES.USED,
                   value: monthlyStats.AllCredits.usedCount,
                   color: CREDIT_USAGE_DISPLAY_COLORS.USED,
                 },
                 {
-                  label: 'Partially Used',
+                  label: CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED,
                   value: monthlyStats.AllCredits.partiallyUsedCount,
                   color: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
                 },
                 {
-                  label: 'Unused',
+                  label: CREDIT_USAGE_DISPLAY_NAMES.NOT_USED,
                   value: monthlyStats.AllCredits.unusedCount,
                   color: COLORS.NEUTRAL_GRAY,
                 },

@@ -29,6 +29,14 @@ const USAGE_COLOR_BY_STATE: Record<CreditUsageType, string> = {
   [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
 };
 
+// Explicit order for dropdown options (excludes DISABLED)
+const DROPDOWN_OPTION_ORDER: Array<keyof typeof CREDIT_USAGE> = [
+  'USED',
+  'PARTIALLY_USED',
+  'NOT_USED',
+  'INACTIVE'
+];
+
 const UsageDropdown: React.FC<UsageDropdownProps> = ({
   usage,
   usageColor,
@@ -47,10 +55,9 @@ const UsageDropdown: React.FC<UsageDropdownProps> = ({
         sideOffset={4}
         alignOffset={0}
       >
-        {Object.entries(CREDIT_USAGE_DISPLAY_NAMES)
-          .filter(([key]) => key !== 'DISABLED') // Exclude DISABLED from dropdown options
-          .map(([key, label]) => {
-            const usageKey = CREDIT_USAGE[key as keyof typeof CREDIT_USAGE];
+        {DROPDOWN_OPTION_ORDER.map((key) => {
+            const usageKey = CREDIT_USAGE[key];
+            const label = CREDIT_USAGE_DISPLAY_NAMES[key];
             const isSelected = usage === usageKey;
 
             return (

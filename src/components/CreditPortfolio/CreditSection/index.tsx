@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { CREDIT_PERIODS } from '@/types/CardCreditsTypes';
+import { CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_NAMES } from '@/types/CardCreditsTypes';
 import { COLORS } from '@/types/Colors';
 import UsageBar from '@/components/UsageBar';
 import PeriodTracker from '../PeriodGrids/PeriodTracker';
@@ -100,7 +100,7 @@ const CreditSection: React.FC<CreditSectionProps> = ({
         <div className="credit-usage-bar">
           <UsageBar
             segments={[
-              { label: 'Used', value: usageStats.totalUsed, color: COLORS.PRIMARY_MEDIUM }
+              { label: CREDIT_USAGE_DISPLAY_NAMES.USED, value: usageStats.totalUsed, color: COLORS.PRIMARY_MEDIUM }
             ]}
             maxValue={usageStats.totalPossible}
             showLabels={true}
