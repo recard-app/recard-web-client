@@ -116,7 +116,7 @@ export const mockCardCredits: CardCredit[] = [
     Category: 'Dining',
     SubCategory: 'Restaurant',
     Description: 'Monthly dining credit at select restaurants',
-    Value: '10',
+    Value: 10,
     TimePeriod: 'monthly',
     Requirements: 'Use at participating restaurants',
     EffectiveFrom: '2024-01-01',
@@ -130,7 +130,7 @@ export const mockCardCredits: CardCredit[] = [
     Category: 'Transportation',
     SubCategory: 'Rideshare',
     Description: 'Monthly Uber credit for rides or Uber Eats',
-    Value: '10',
+    Value: 10,
     TimePeriod: 'monthly',
     Requirements: 'Add card to Uber app',
     EffectiveFrom: '2024-01-01',
@@ -144,7 +144,7 @@ export const mockCardCredits: CardCredit[] = [
     Category: 'Dining',
     SubCategory: 'Delivery',
     Description: 'Annual DoorDash credit',
-    Value: '60',
+    Value: 60,
     TimePeriod: 'annually',
     Requirements: 'Link card to DoorDash account',
     EffectiveFrom: '2024-01-01',
@@ -158,7 +158,7 @@ export const mockCardCredits: CardCredit[] = [
     Category: 'Travel',
     SubCategory: 'General',
     Description: 'Annual travel credit',
-    Value: '300',
+    Value: 300,
     TimePeriod: 'annually',
     Requirements: 'Automatically applied to travel purchases',
     EffectiveFrom: '2024-01-01',
@@ -172,7 +172,7 @@ export const mockCardCredits: CardCredit[] = [
     Category: 'Travel',
     SubCategory: 'Hotels',
     Description: 'Annual hotel credit',
-    Value: '100',
+    Value: 100,
     TimePeriod: 'annually',
     Requirements: 'Book through Citi portal',
     EffectiveFrom: '2024-01-01',
@@ -449,6 +449,6 @@ export const getCardCreditById = (creditId: string): CardCredit | null => {
  */
 export const getCreditMaxValue = (creditId: string): number => {
   const credit = getCardCreditById(creditId);
-  return credit ? parseFloat(credit.Value) : 0;
+  return credit?.Value || 0;
 };
 

@@ -20,9 +20,8 @@ const calculateCardSummary = (
     const cardCredit = creditMetadata.get(credit.CreditId);
     if (!cardCredit) continue;
 
-    // Parse credit value
-    const valueStr = cardCredit.Value || '0';
-    const creditValue = parseFloat(valueStr.replace(/[^0-9.]/g, '')) || 0;
+    // Get credit value (already a number)
+    const creditValue = cardCredit.Value || 0;
 
     // Calculate monthly equivalent
     // Handle anniversary credits first (treat as annual equivalent)

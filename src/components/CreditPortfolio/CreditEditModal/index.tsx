@@ -60,11 +60,9 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
   // Recalculate `now` when modal opens to ensure period calculations are fresh
   const now = useMemo(() => new Date(), [isOpen]);
 
-  // Parse credit max value
+  // Get credit max value (already a number)
   const creditMaxValue = useMemo(() => {
-    if (!cardCredit?.Value) return 0;
-    const cleaned = cardCredit.Value.replace(/[^0-9.]/g, '');
-    return parseFloat(cleaned) || 0;
+    return cardCredit?.Value || 0;
   }, [cardCredit]);
 
   // Compute the current period number based on AssociatedPeriod and now
