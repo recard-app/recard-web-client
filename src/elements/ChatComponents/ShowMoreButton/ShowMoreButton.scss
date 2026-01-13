@@ -14,9 +14,7 @@
   .button {
     padding: $space-1 $space-2;
 
-    // Mobile: ensure 44px touch target
     @media (max-width: $mobile-breakpoint) {
-      min-height: 44px;
       padding: $space-2 $space-3;
     }
   }
