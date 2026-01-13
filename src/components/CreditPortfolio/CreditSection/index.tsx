@@ -7,10 +7,9 @@ import { buildPeriodInfo } from '../PeriodGrids/utils';
 import { CreditSectionProps } from '../types';
 import './CreditSection.scss';
 
-// Parse credit value from string like "$10" or "10"
-const parseCreditValue = (value: string): number => {
-  const cleaned = value.replace(/[^0-9.]/g, '');
-  return parseFloat(cleaned) || 0;
+// Get credit value (already a number)
+const getCreditValue = (value: number): number => {
+  return value || 0;
 };
 
 // Get period display name
@@ -40,7 +39,7 @@ const CreditSection: React.FC<CreditSectionProps> = ({
   onPeriodClick,
   isUpdating
 }) => {
-  const creditValue = parseCreditValue(cardCredit.Value);
+  const creditValue = getCreditValue(cardCredit.Value);
 
   // Calculate total used and possible values
   const usageStats = useMemo(() => {
