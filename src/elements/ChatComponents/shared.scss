@@ -7,8 +7,6 @@
 .chat-component-item {
   display: flex;
   flex-direction: column;
-  gap: $space-half;
-  padding: $space-2;
   background-color: $neutral-white;
   border: $border-full solid $neutral-light-gray;
   border-radius: $radius-md;
@@ -17,25 +15,38 @@
   box-sizing: border-box;
 
   // Hover state (only for clickable items)
-  &.clickable {
-    cursor: pointer;
-
-    &:hover {
-      background-color: $neutral-lightest-gray;
-      border-color: $neutral-gray;
-    }
+  &.clickable:hover {
+    background-color: $neutral-lightest-gray;
+    border-color: $neutral-gray;
   }
-
-  // Focus state for accessibility
-  &:focus-visible {
-    outline: 2px solid $primary-color;
-    outline-offset: 2px;
-  }
-
 
   // Mobile adjustments - full width, no max
   @media (max-width: $mobile-breakpoint) {
     width: 100%;
+  }
+}
+
+// =============================================================================
+// CLICKABLE CONTENT AREA - Inner wrapper for click handling
+// =============================================================================
+
+.clickable-content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-half;
+  padding: $space-2;
+  cursor: pointer;
+
+  // Focus state for accessibility (on the clickable area, not container)
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: -2px;
+    border-radius: $radius-md $radius-md 0 0;
+  }
+
+  // When there's no action row, round all corners
+  &:only-child:focus-visible {
+    border-radius: $radius-md;
   }
 }
 
@@ -97,12 +108,8 @@
 }
 
 // Action row with full-width divider and background
-// Used inside .chat-component-item which has padding: $space-2
+// Container no longer has padding, so no negative margins needed
 .action-row {
-  margin-top: $space-1;
-  margin-left: -$space-2;
-  margin-right: -$space-2;
-  margin-bottom: -$space-2;
   padding: $space-1 $space-2;
   border-top: $border-half solid $neutral-light-gray;
   background-color: $neutral-lightest-gray;

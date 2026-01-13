@@ -74,34 +74,36 @@ const ChatMultiplierComponent: React.FC<ChatMultiplierComponentProps> = ({
     : category;
 
   return (
-    <div
-      className={className}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label={`${multiplier.Name} multiplier from ${card.CardName}${action ? `. Action: ${actionText}` : ''}`}
-    >
-      <div className="multiplier-header-row">
-        <span className="multiplier-badge">
-          {formatMultiplierBadge(multiplier.Multiplier)}
-        </span>
-        <CardIcon
-          title={`${card.CardName} card`}
-          size={16}
-          primary={card.CardPrimaryColor}
-          secondary={card.CardSecondaryColor}
-          className="multiplier-card-icon"
-        />
-        <span className="multiplier-title">{multiplier.Name}</span>
-      </div>
+    <div className={className}>
+      <div
+        className="clickable-content"
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-label={`${multiplier.Name} multiplier from ${card.CardName}${action ? `. Action: ${actionText}` : ''}`}
+      >
+        <div className="multiplier-header-row">
+          <span className="multiplier-badge">
+            {formatMultiplierBadge(multiplier.Multiplier)}
+          </span>
+          <CardIcon
+            title={`${card.CardName} card`}
+            size={16}
+            primary={card.CardPrimaryColor}
+            secondary={card.CardSecondaryColor}
+            className="multiplier-card-icon"
+          />
+          <span className="multiplier-title">{multiplier.Name}</span>
+        </div>
 
-      <div className="multiplier-details">
-        {multiplier.Description ? (
-          <span className="multiplier-description">{multiplier.Description}</span>
-        ) : (
-          <span className="multiplier-category">{categoryDisplay}</span>
-        )}
+        <div className="multiplier-details">
+          {multiplier.Description ? (
+            <span className="multiplier-description">{multiplier.Description}</span>
+          ) : (
+            <span className="multiplier-category">{categoryDisplay}</span>
+          )}
+        </div>
       </div>
 
       {action && (

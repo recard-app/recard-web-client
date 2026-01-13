@@ -57,30 +57,32 @@ const ChatPerkComponent: React.FC<ChatPerkComponentProps> = ({
   const actionText = action ? PERK_ACTION_DISPLAY_LABELS[action.actionType] : '';
 
   return (
-    <div
-      className={className}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label={`${perk.Title} perk from ${card.CardName}${action ? `. Action: ${actionText}` : ''}`}
-    >
-      <div className="perk-header-row">
-        <CardIcon
-          title={`${card.CardName} card`}
-          size={16}
-          primary={card.CardPrimaryColor}
-          secondary={card.CardSecondaryColor}
-          className="perk-card-icon"
-        />
-        <span className="perk-title">{perk.Title}</span>
-      </div>
-
-      {perk.Description && (
-        <div className="perk-description">
-          {perk.Description}
+    <div className={className}>
+      <div
+        className="clickable-content"
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-label={`${perk.Title} perk from ${card.CardName}${action ? `. Action: ${actionText}` : ''}`}
+      >
+        <div className="perk-header-row">
+          <CardIcon
+            title={`${card.CardName} card`}
+            size={16}
+            primary={card.CardPrimaryColor}
+            secondary={card.CardSecondaryColor}
+            className="perk-card-icon"
+          />
+          <span className="perk-title">{perk.Title}</span>
         </div>
-      )}
+
+        {perk.Description && (
+          <div className="perk-description">
+            {perk.Description}
+          </div>
+        )}
+      </div>
 
       {action && (
         <div className="action-row">

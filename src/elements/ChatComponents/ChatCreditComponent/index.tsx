@@ -101,35 +101,37 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
   ].filter(Boolean).join(' ');
 
   return (
-    <div
-      className={className}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label={`${cardCredit.Title} credit${action ? `. Action: Updated from $${action.fromValue} to $${action.toValue}` : ''}`}
-    >
-      <div className="credit-row">
-        {/* Left side: Credit info */}
-        <div className="credit-info">
-          <div className="credit-name-row">
-            <CardIcon
-              title={`${card.CardName} card`}
-              size={16}
-              primary={card.CardPrimaryColor}
-              secondary={card.CardSecondaryColor}
-            />
-            <span className="credit-name">{cardCredit.Title}</span>
+    <div className={className}>
+      <div
+        className="clickable-content"
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-label={`${cardCredit.Title} credit${action ? `. Action: Updated from $${action.fromValue} to $${action.toValue}` : ''}`}
+      >
+        <div className="credit-row">
+          {/* Left side: Credit info */}
+          <div className="credit-info">
+            <div className="credit-name-row">
+              <CardIcon
+                title={`${card.CardName} card`}
+                size={16}
+                primary={card.CardPrimaryColor}
+                secondary={card.CardSecondaryColor}
+              />
+              <span className="credit-name">{cardCredit.Title}</span>
+            </div>
+            <span className="period-text">{periodText}</span>
           </div>
-          <span className="period-text">{periodText}</span>
-        </div>
 
-        {/* Right side: Usage display */}
-        <div className="credit-usage" style={{ color: usageInfo.color }}>
-          <div className="usage-amount">${currentValueUsed} / ${creditMaxValue}</div>
-          <div className="usage-status">
-            <Icon name={usageInfo.iconName} size={12} color={usageInfo.color} />
-            <span>{usageInfo.status}</span>
+          {/* Right side: Usage display */}
+          <div className="credit-usage" style={{ color: usageInfo.color }}>
+            <div className="usage-amount">${currentValueUsed} / ${creditMaxValue}</div>
+            <div className="usage-status">
+              <Icon name={usageInfo.iconName} size={12} color={usageInfo.color} />
+              <span>{usageInfo.status}</span>
+            </div>
           </div>
         </div>
       </div>

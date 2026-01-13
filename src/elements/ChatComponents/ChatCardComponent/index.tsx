@@ -51,45 +51,47 @@ const ChatCardComponent: React.FC<ChatCardComponentProps> = ({
   ].filter(Boolean).join(' ');
 
   return (
-    <div
-      className={className}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
-      aria-label={`${card.CardName} card${action ? `. Action: ${action.actionType}` : ''}`}
-    >
-      <div className="card-content-row">
-        <CardIcon
-          title={`${card.CardName} card`}
-          size={32}
-          primary={card.CardPrimaryColor}
-          secondary={card.CardSecondaryColor}
-          className="card-icon"
-        />
-        <div className="card-info">
-          <div className="card-name">
-            {card.isFrozen && (
-              <Icon
-                name="snowflake"
-                variant="mini"
-                size={16}
-                color={ICON_BLUE}
-                className="frozen-icon"
-              />
-            )}
-            {card.isDefaultCard && (
-              <Icon
-                name="star"
-                variant="mini"
-                size={16}
-                color={ICON_PRIMARY}
-                className="preferred-star-icon"
-              />
-            )}
-            {card.CardName}
+    <div className={className}>
+      <div
+        className="clickable-content"
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-label={`${card.CardName} card${action ? `. Action: ${action.actionType}` : ''}`}
+      >
+        <div className="card-content-row">
+          <CardIcon
+            title={`${card.CardName} card`}
+            size={32}
+            primary={card.CardPrimaryColor}
+            secondary={card.CardSecondaryColor}
+            className="card-icon"
+          />
+          <div className="card-info">
+            <div className="card-name">
+              {card.isFrozen && (
+                <Icon
+                  name="snowflake"
+                  variant="mini"
+                  size={16}
+                  color={ICON_BLUE}
+                  className="frozen-icon"
+                />
+              )}
+              {card.isDefaultCard && (
+                <Icon
+                  name="star"
+                  variant="mini"
+                  size={16}
+                  color={ICON_PRIMARY}
+                  className="preferred-star-icon"
+                />
+              )}
+              {card.CardName}
+            </div>
+            <div className="card-network">{card.CardNetwork}</div>
           </div>
-          <div className="card-network">{card.CardNetwork}</div>
         </div>
       </div>
       {action && (

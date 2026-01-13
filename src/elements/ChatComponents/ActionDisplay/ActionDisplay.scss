@@ -35,6 +35,20 @@
     align-items: center;
     gap: $space-half;
     flex-shrink: 0;
+    position: relative;
+
+    // Larger touch area on mobile
+    @media (max-width: $mobile-breakpoint) {
+      &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 36px;
+      }
+    }
 
     // Loading state - immediately show gray disabled state, no transition
     &.loading {
