@@ -20,7 +20,7 @@
   &.clickable {
     cursor: pointer;
 
-    &:hover:not(.undo-pending) {
+    &:hover {
       background-color: $neutral-lightest-gray;
       border-color: $neutral-gray;
     }
@@ -32,10 +32,6 @@
     outline-offset: 2px;
   }
 
-  // Updating state (undo API call in progress)
-  &.undo-pending {
-    @include updating-state;
-  }
 
   // Mobile adjustments - full width, no max
   @media (max-width: $mobile-breakpoint) {
