@@ -8,7 +8,7 @@ import { CreditCardDetails } from '../../types/CreditCardTypes';
 import { PrioritizedCredit } from '../../types';
 import { MonthlyStatsResponse } from '../../types/CardCreditsTypes';
 import Icon from '../../icons';
-import { InfoDisplay } from '../../elements/InfoDisplay/InfoDisplay';
+import { InfoDisplay, ErrorWithRetry } from '../../elements';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import CreditSummary from '../../components/CreditSummary';
 import { useFullHeight } from '../../hooks/useFullHeight';
@@ -46,6 +46,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
 
   const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [showRedeemed, setShowRedeemed] = useState(false);
   const [stableFilteredCredits, setStableFilteredCredits] = useState<PrioritizedCredit[]>([]);
@@ -122,19 +123,23 @@ const MyCredits: React.FC<MyCreditsProps> = ({
     setShowRedeemed(newShowRedeemed);
   };
 
+  // Load user card details
+  const loadUserCards = async () => {
+    try {
+      setIsLoading(true);
+      setLoadError(null);
+      const userCardsResponse = await UserCreditCardService.fetchUserCardsDetailedInfo();
+      setUserCards(userCardsResponse);
+    } catch (error) {
+      console.warn('Failed to load user cards:', error);
+      setLoadError('Failed to load credit cards. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Load user card details only (prioritized credits come from App level)
   useEffect(() => {
-    const loadUserCards = async () => {
-      try {
-        const userCardsResponse = await UserCreditCardService.fetchUserCardsDetailedInfo();
-        setUserCards(userCardsResponse);
-      } catch (error) {
-        console.warn('Failed to load user cards:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     loadUserCards();
   }, []);
 
@@ -156,7 +161,13 @@ const MyCredits: React.FC<MyCreditsProps> = ({
             />
           </HeaderControls>
           <div className="credits-history-content">
-            {(isLoading || isLoadingPrioritizedCredits) && !hasInitiallyLoaded ? (
+            {loadError ? (
+              <ErrorWithRetry
+                message={loadError}
+                onRetry={loadUserCards}
+                fillContainer
+              />
+            ) : (isLoading || isLoadingPrioritizedCredits) && !hasInitiallyLoaded ? (
               <InfoDisplay
                 type="loading"
                 message="Loading credits..."

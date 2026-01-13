@@ -5,7 +5,7 @@ import { UserPreferencesService } from '../../services';
 import { CHAT_HISTORY_OPTIONS } from './utils';
 import { LOADING_ICON, LOADING_ICON_SIZE } from '../../types/Constants';
 import './PreferencesModule.scss';
-import { InfoDisplay } from '../../elements';
+import { InfoDisplay, ErrorWithRetry } from '../../elements';
 
 /**
  * Props interface for PreferencesModule component.
@@ -31,31 +31,33 @@ function PreferencesModule({
     const [instructions, setInstructions] = useState<string>(customInstructions || '');
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
+
+    const loadAllPreferences = async () => {
+        setIsLoading(true);
+        setLoadError(null);
+        try {
+            const response = await UserPreferencesService.loadAllPreferences();
+
+            // Update custom instructions
+            if (response.instructions !== undefined) {
+                setInstructions(response.instructions);
+                onInstructionsUpdate(response.instructions);
+            }
+
+            // Update chat history preference
+            if (response.chatHistory) {
+                setChatHistoryPreference(response.chatHistory);
+            }
+        } catch (error) {
+            console.error('Error loading preferences:', error);
+            setLoadError('Failed to load preferences. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const loadAllPreferences = async () => {
-            setIsLoading(true);
-            try {
-                const response = await UserPreferencesService.loadAllPreferences();
-
-                // Update custom instructions
-                if (response.instructions !== undefined) {
-                    setInstructions(response.instructions);
-                    onInstructionsUpdate(response.instructions);
-                }
-
-                // Update chat history preference
-                if (response.chatHistory) {
-                    setChatHistoryPreference(response.chatHistory);
-                }
-            } catch (error) {
-                console.error('Error loading preferences:', error);
-                toast.error('Error loading preferences');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         loadAllPreferences();
     }, []);
 
@@ -80,7 +82,13 @@ function PreferencesModule({
     return (
         <div className="preferences-module">
             <h2>Special Instructions</h2>
-            {isLoading && (
+            {loadError ? (
+                <ErrorWithRetry
+                    message={loadError}
+                    onRetry={loadAllPreferences}
+                    fillContainer
+                />
+            ) : isLoading ? (
                 <div className="loading-overlay">
                     <InfoDisplay
                         type="loading"
@@ -89,8 +97,8 @@ function PreferencesModule({
                         transparent={true}
                     />
                 </div>
-            )}
-            <div className="preferences-content">
+            ) : null}
+            <div className="preferences-content" style={{ display: loadError ? 'none' : 'block' }}>
                 <textarea
                     value={instructions}
                     onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}

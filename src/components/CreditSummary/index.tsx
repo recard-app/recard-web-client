@@ -1,7 +1,7 @@
 import React from 'react';
 import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, ALWAYS_SHOW_EXPIRING_CREDITS, SHOW_USAGE_BAR_IN_SIDEBAR_MENU, CREDIT_USAGE_DISPLAY_NAMES } from '../../types';
 import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR, WARNING } from '../../types/Colors';
-import { InfoDisplay } from '../../elements';
+import { InfoDisplay, ErrorWithRetry } from '../../elements';
 import Icon from '@/icons';
 import UsageBar from '../UsageBar';
 import './CreditSummary.scss';
@@ -47,6 +47,7 @@ interface CreditSummaryProps {
   loading: boolean;
   isUpdating?: boolean;
   error?: string | null;
+  onRetry?: () => void;
   onDetailedSummaryClick?: () => void;
 }
 
@@ -56,6 +57,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   loading,
   isUpdating = false,
   error = null,
+  onRetry,
   onDetailedSummaryClick
 }) => {
   // Use mock data if debug flag is enabled
@@ -74,10 +76,19 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   }
 
   if (error) {
+    const errorMessage = variant === 'sidebar' ? "Error loading stats" : `Error: ${error}`;
+    if (onRetry) {
+      return (
+        <ErrorWithRetry
+          message={errorMessage}
+          onRetry={onRetry}
+        />
+      );
+    }
     return (
       <InfoDisplay
         type="error"
-        message={variant === 'sidebar' ? "Error loading stats" : `Error: ${error}`}
+        message={errorMessage}
         showTitle={false}
         transparent={true}
       />

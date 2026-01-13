@@ -22,6 +22,7 @@ import { ChatHistoryPreference, InstructionsPreference } from '../../types';
 import { aiClient, userClient, MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER } from '../../types';
 import { UserHistoryService } from '../../services';
+import { ErrorWithRetry } from '../../elements';
 
 /**
  * Props for the PromptWindow component.
@@ -96,6 +97,8 @@ function PromptWindow({
     const [triggerCall, setTriggerCall] = useState<number>(0);
     // Indicates whether a new chat creation request is in progress
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
+    // Error state for when loading an existing chat fails
+    const [chatLoadError, setChatLoadError] = useState<string | null>(null);
 
     // Declare that this component needs full height behavior
     useFullHeight(true);
@@ -255,12 +258,13 @@ function PromptWindow({
                 // This should rarely happen with priority loading enabled
                 console.warn('Chat not found in pre-loaded history, fetching individually:', urlChatId);
                 try {
+                    setChatLoadError(null);
                     const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
                     console.log('Loaded chat with content blocks:', response.contentBlocks);
                     setExistingChatStates(response.conversation, urlChatId, response.contentBlocks || []);
                 } catch (error) {
                     console.error('Error loading chat:', error);
-                    addErrorToChat('Error loading chat history');
+                    setChatLoadError('Failed to load chat. Please try again.');
                 }
             };
             loadHistory();
@@ -438,6 +442,22 @@ function PromptWindow({
     };
 
     /**
+     * Retries loading chat when initial load fails.
+     */
+    const retryLoadChat = async () => {
+        if (!urlChatId || !user) return;
+
+        setChatLoadError(null);
+        try {
+            const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
+            setExistingChatStates(response.conversation, urlChatId, response.contentBlocks || []);
+        } catch (error) {
+            console.error('Error loading chat:', error);
+            setChatLoadError('Failed to load chat. Please try again.');
+        }
+    };
+
+    /**
      * Cancels ongoing API requests and resets loading states.
      */
     const handleCancel = () => {
@@ -525,16 +545,23 @@ function PromptWindow({
     return (
         <div className='prompt-window'>
             <div ref={promptHistoryRef} className="prompt-history-container">
-
-                <PromptHistory
-                    chatHistory={chatHistory}
-                    contentBlocks={contentBlocks}
-                    creditCards={creditCards}
-                    onCardSelect={handleCardSelection}
-                    isNewChat={isNewChat}
-                    isLoading={isLoading}
-                    isLoadingSolutions={isLoadingSolutions}
-                />
+                {chatLoadError ? (
+                    <ErrorWithRetry
+                        message={chatLoadError}
+                        onRetry={retryLoadChat}
+                        fillContainer
+                    />
+                ) : (
+                    <PromptHistory
+                        chatHistory={chatHistory}
+                        contentBlocks={contentBlocks}
+                        creditCards={creditCards}
+                        onCardSelect={handleCardSelection}
+                        isNewChat={isNewChat}
+                        isLoading={isLoading}
+                        isLoadingSolutions={isLoadingSolutions}
+                    />
+                )}
             </div>
 
             <div className="prompt-combined-container">

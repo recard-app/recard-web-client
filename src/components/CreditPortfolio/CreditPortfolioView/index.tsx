@@ -4,7 +4,7 @@ import { UserService } from '@/services/UserServices/UserService';
 import { CalendarUserCredits, UserCredit } from '@/types/CardCreditsTypes';
 import { CardCredit, CreditCardDetails } from '@/types/CreditCardTypes';
 import { useCredits } from '@/contexts/ComponentsContext';
-import { InfoDisplay } from '@/elements';
+import { InfoDisplay, ErrorWithRetry } from '@/elements';
 import { buildYearOptions } from '@/pages/my-credits/utils';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import YearDropdown from '../YearDropdown';
@@ -261,18 +261,7 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     return (
       <div className="credit-portfolio-panel">
         <div className="portfolio-content">
-          <div className="portfolio-error">
-            <InfoDisplay
-              type="error"
-              message={error}
-              showTitle={false}
-              transparent={true}
-              centered={true}
-            />
-            <button className="retry-button" onClick={fetchCredits}>
-              Try Again
-            </button>
-          </div>
+          <ErrorWithRetry message={error} onRetry={fetchCredits} fillContainer />
         </div>
       </div>
     );

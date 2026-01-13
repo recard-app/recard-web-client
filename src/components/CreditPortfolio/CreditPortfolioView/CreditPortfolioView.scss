@@ -94,39 +94,6 @@
   min-height: 200px;
 }
 
-// Error state
-.portfolio-error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  min-height: 200px;
-  gap: $space-4;
-
-  .retry-button {
-    padding: $space-2 $space-4;
-    background-color: $primary-medium;
-    border: none;
-    border-radius: $radius-md;
-    font-family: $font-manrope;
-    font-size: $font-sm;
-    font-weight: $font-medium;
-    color: $neutral-white;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-
-    &:hover {
-      background-color: $primary-dark;
-    }
-
-    &:focus-visible {
-      outline: 2px solid $primary-medium;
-      outline-offset: 2px;
-    }
-  }
-}
-
 // Empty state
 .portfolio-empty {
   display: flex;

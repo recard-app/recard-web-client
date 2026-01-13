@@ -6,23 +6,20 @@
 
   h2 { margin-bottom: $space-4; }
 
+  // Loading overlay outside content
+  .loading-overlay {
+    position: relative;
+    background: rgba($neutral-white, 0.9);
+    padding: $space-4;
+    border-radius: $radius-lg;
+    margin-bottom: $space-4;
+    box-shadow: $shadow-sm;
+  }
+
   .preferences-content {
     position: relative;
     display: grid;
     gap: $space-5;
-
-    .loading-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      background: rgba($neutral-white, 0.9);
-      padding: $space-4;
-      border-radius: $radius-lg;
-      margin-bottom: $space-4;
-      box-shadow: $shadow-sm;
-    }
 
     .preferences-textarea.loading,
     .chat-history-select.loading,

@@ -3,7 +3,7 @@ import './CreditCardSelector.scss';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, sortCards } from './utils';
 import { CardIcon } from '../../icons';
-import { InfoDisplay, SearchField } from '../../elements';
+import { InfoDisplay, SearchField, ErrorWithRetry } from '../../elements';
 
 /**
  * Props interface for the SingleCardSelector component
@@ -54,23 +54,22 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
    * Fetch cards and organize them in the background
    * Shows existing cards immediately while fetching updated data
    */
-  useEffect(() => {
-    const loadCards = async () => {
-      try {
-        const fetchedCards = await fetchUserCards(cards);
-        const nextCards = onlyShowUserCards ? fetchedCards.filter(c => c.selected) : fetchedCards;
-        setCards(nextCards);
-        setIsInitialLoad(false);
-        // Clear any previous errors on successful load
-        setShowError(false);
-      } catch (error) {
-        console.error('Error loading cards:', error);
-        setErrorMessage('Unable to load credit cards. Please try again later.');
-        setShowError(true);
-        setIsInitialLoad(false);
-      }
-    };
+  const loadCards = async () => {
+    try {
+      setShowError(false);
+      const fetchedCards = await fetchUserCards(cards);
+      const nextCards = onlyShowUserCards ? fetchedCards.filter(c => c.selected) : fetchedCards;
+      setCards(nextCards);
+      setIsInitialLoad(false);
+    } catch (error) {
+      console.error('Error loading cards:', error);
+      setErrorMessage('Unable to load credit cards. Please try again.');
+      setShowError(true);
+      setIsInitialLoad(false);
+    }
+  };
 
+  useEffect(() => {
     loadCards();
   }, [creditCards, selectedCardId, onlyShowUserCards]);
 
@@ -134,12 +133,10 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
     <div className={`credit-card-selector single-card-selector ${disabled ? 'disabled' : ''}`}>
       
       {showError && (
-        <div className="error-container">
-          <InfoDisplay
-            type="error"
-            message={errorMessage}
-          />
-        </div>
+        <ErrorWithRetry
+          message={errorMessage}
+          onRetry={loadCards}
+        />
       )}
 
       {!hideInternalSearch && !onlyShowUserCards && (

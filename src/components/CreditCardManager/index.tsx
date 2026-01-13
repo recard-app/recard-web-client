@@ -7,7 +7,7 @@ import { MOBILE_BREAKPOINT } from '../../types';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService, UserCreditService } from '../../services';
 import CreditCardDetailView from '../CreditCardDetailView';
-import { InfoDisplay, SearchField } from '../../elements';
+import { InfoDisplay, SearchField, ErrorWithRetry } from '../../elements';
 import {
   Dialog,
   DialogContent,
@@ -54,6 +54,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     const [selectedCard, setSelectedCard] = useState<CreditCard | null>(null);
     const [cardDetails, setCardDetails] = useState<CreditCardDetails | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
     const [detailedCards, setDetailedCards] = useState<CreditCardDetails[]>([]);
     const [cardToDelete, setCardToDelete] = useState<CreditCard | null>(null);
     const [userCardsMetadata, setUserCardsMetadata] = useState<Map<string, UserCreditCard>>(new Map());
@@ -92,57 +93,59 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
         onCardsUpdate?.(cards);
     }, [onCardsUpdate]);
     
+    // Load user's credit cards
+    const loadUserCards = async () => {
+        try {
+            setIsLoading(true);
+            setLoadError(null);
+
+            // Load basic cards, detailed cards, and user cards metadata in parallel
+            const [cards, detailedCardsData, userCardsData] = await Promise.all([
+                CardService.fetchCreditCards(true),
+                UserCreditCardService.fetchUserCardsDetailedInfo(),
+                UserCreditCardService.fetchUserCards()
+            ]);
+
+            setUserCards(cards);
+            setDetailedCards(detailedCardsData);
+
+            // Build a map of user card metadata keyed by cardReferenceId
+            const metadataMap = new Map<string, UserCreditCard>();
+            userCardsData.forEach(uc => {
+                metadataMap.set(uc.cardReferenceId, uc);
+            });
+            setUserCardsMetadata(metadataMap);
+
+            // Notify parent component of card updates
+            notifyCardUpdate(cards);
+
+            // Select the default card if available, otherwise the first card
+            const defaultCard = cards.find(card => card.isDefaultCard && card.selected);
+            if (defaultCard) {
+                // Find the details directly from the loaded data
+                const details = detailedCardsData.find(card => card.id === defaultCard.id);
+                setSelectedCard(defaultCard);
+                setCardDetails(details || null);
+            } else if (cards.length > 0 && cards.some(card => card.selected)) {
+                // Get the first selected card
+                const firstSelectedCard = cards.find(card => card.selected);
+                if (firstSelectedCard) {
+                    // Find the details directly from the loaded data
+                    const details = detailedCardsData.find(card => card.id === firstSelectedCard.id);
+                    setSelectedCard(firstSelectedCard);
+                    setCardDetails(details || null);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading cards:', error);
+            setLoadError('Unable to load your credit cards. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Load user's credit cards on component mount
     useEffect(() => {
-        const loadUserCards = async () => {
-            try {
-                setIsLoading(true);
-
-                // Load basic cards, detailed cards, and user cards metadata in parallel
-                const [cards, detailedCardsData, userCardsData] = await Promise.all([
-                    CardService.fetchCreditCards(true),
-                    UserCreditCardService.fetchUserCardsDetailedInfo(),
-                    UserCreditCardService.fetchUserCards()
-                ]);
-
-                setUserCards(cards);
-                setDetailedCards(detailedCardsData);
-
-                // Build a map of user card metadata keyed by cardReferenceId
-                const metadataMap = new Map<string, UserCreditCard>();
-                userCardsData.forEach(uc => {
-                    metadataMap.set(uc.cardReferenceId, uc);
-                });
-                setUserCardsMetadata(metadataMap);
-
-                // Notify parent component of card updates
-                notifyCardUpdate(cards);
-                
-                // Select the default card if available, otherwise the first card
-                const defaultCard = cards.find(card => card.isDefaultCard && card.selected);
-                if (defaultCard) {
-                    // Find the details directly from the loaded data
-                    const details = detailedCardsData.find(card => card.id === defaultCard.id);
-                    setSelectedCard(defaultCard);
-                    setCardDetails(details || null);
-                } else if (cards.length > 0 && cards.some(card => card.selected)) {
-                    // Get the first selected card
-                    const firstSelectedCard = cards.find(card => card.selected);
-                    if (firstSelectedCard) {
-                        // Find the details directly from the loaded data
-                        const details = detailedCardsData.find(card => card.id === firstSelectedCard.id);
-                        setSelectedCard(firstSelectedCard);
-                        setCardDetails(details || null);
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading cards:', error);
-                toast.error('Unable to load your credit cards. Please try again later.');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         loadUserCards();
     }, [reloadTrigger]);
 
@@ -594,24 +597,32 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
 
             {/* Main content area for card details */}
             <div className="card-details-panel">
-                <CreditCardDetailView
-                    cardDetails={cardDetails}
-                    isLoading={isLoading}
-                    isAddingCard={isAddingCard}
-                    cardBeingAdded={selectedCardForAdding}
-                    isRemovingCard={isRemovingCard}
-                    cardBeingRemoved={cardBeingRemoved}
-                    noCards={selectedCards.length === 0}
-                    onSetPreferred={selectedCard ? () => handleSetPreferred(selectedCard) : undefined}
-                    isSettingPreferred={isSettingPreferred}
-                    onRemoveCard={selectedCard ? () => handleRemoveCard(selectedCard) : undefined}
-                    showTrackingPreferences={true}
-                    onPreferencesUpdate={onPreferencesUpdate}
-                    openDate={selectedCard ? userCardsMetadata.get(selectedCard.id)?.openDate ?? null : null}
-                    onOpenDateChange={selectedCard ? (date) => handleOpenDateChange(selectedCard.id, date) : undefined}
-                    isFrozen={selectedCard ? userCardsMetadata.get(selectedCard.id)?.isFrozen ?? false : false}
-                    onFreezeToggle={selectedCard ? () => handleFreezeToggle(selectedCard.id, userCardsMetadata.get(selectedCard.id)?.isFrozen ?? false) : undefined}
-                />
+                {loadError ? (
+                    <ErrorWithRetry
+                        message={loadError}
+                        onRetry={loadUserCards}
+                        fillContainer
+                    />
+                ) : (
+                    <CreditCardDetailView
+                        cardDetails={cardDetails}
+                        isLoading={isLoading}
+                        isAddingCard={isAddingCard}
+                        cardBeingAdded={selectedCardForAdding}
+                        isRemovingCard={isRemovingCard}
+                        cardBeingRemoved={cardBeingRemoved}
+                        noCards={selectedCards.length === 0}
+                        onSetPreferred={selectedCard ? () => handleSetPreferred(selectedCard) : undefined}
+                        isSettingPreferred={isSettingPreferred}
+                        onRemoveCard={selectedCard ? () => handleRemoveCard(selectedCard) : undefined}
+                        showTrackingPreferences={true}
+                        onPreferencesUpdate={onPreferencesUpdate}
+                        openDate={selectedCard ? userCardsMetadata.get(selectedCard.id)?.openDate ?? null : null}
+                        onOpenDateChange={selectedCard ? (date) => handleOpenDateChange(selectedCard.id, date) : undefined}
+                        isFrozen={selectedCard ? userCardsMetadata.get(selectedCard.id)?.isFrozen ?? false : false}
+                        onFreezeToggle={selectedCard ? () => handleFreezeToggle(selectedCard.id, userCardsMetadata.get(selectedCard.id)?.isFrozen ?? false) : undefined}
+                    />
+                )}
             </div>
 
             {/* Mobile-only sticky footer controls */}

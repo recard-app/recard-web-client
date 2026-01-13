@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
-import { InfoDisplay } from '../../elements';
+import { InfoDisplay, ErrorWithRetry } from '../../elements';
 import Icon from '../../icons';
 import {
   Drawer,
@@ -83,6 +83,8 @@ function FullHistoryPanel({
   const [paginationData, setPaginationData] = useState<PaginationData | null>(null);
   // Loading state for API requests
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  // Error state for fetch failures
+  const [fetchError, setFetchError] = useState<string | null>(null);
   // List of paginated conversations
   const [paginatedList, setPaginatedList] = useState<LightweightConversation[]>([]);
   // Selected month for filtering
@@ -110,6 +112,7 @@ function FullHistoryPanel({
     if (!user) return;
 
     setIsLoading(true);
+    setFetchError(null);
     try {
       // Fetch history data
       const result = await fetchPagedHistory({
@@ -130,6 +133,9 @@ function FullHistoryPanel({
         setFirstEntryDate(date);
         isInitialMountRef.current = false;
       }
+    } catch (err) {
+      console.error('Failed to fetch history:', err);
+      setFetchError('Failed to load conversations. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -414,7 +420,13 @@ function FullHistoryPanel({
 
       {/* Scrollable content area */}
       <div className="history-panel-content">
-        {isLoading && paginatedList.length === 0 ? (
+        {fetchError ? (
+          <ErrorWithRetry
+            message={fetchError}
+            onRetry={fetchData}
+            fillContainer
+          />
+        ) : isLoading && paginatedList.length === 0 ? (
           <div className="loading-history">
             <InfoDisplay
               type="loading"

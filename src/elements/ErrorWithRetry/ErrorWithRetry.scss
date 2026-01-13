@@ -1,0 +1,16 @@
+@use '../../styling/variables' as *;
+
+.error-with-retry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-4;
+
+  // Variant: fills container and centers content (for full-page/section errors)
+  &--fill {
+    justify-content: center;
+    flex: 1;
+    min-height: 200px;
+    height: 100%;
+  }
+}
