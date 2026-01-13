@@ -10,7 +10,7 @@ import './ChatPerkComponent.scss';
 
 interface ChatPerkComponentProps {
   item: PerkComponentItem;
-  onPerkClick: (cardId: string) => void;
+  onPerkClick: (cardId: string, perkId: string) => void;
   onUndoAction?: (action: PerkAction) => void;
   canUndo: boolean;
   isUndoPending?: boolean;
@@ -30,13 +30,13 @@ const ChatPerkComponent: React.FC<ChatPerkComponentProps> = ({
   const { perk, card, action } = item;
 
   const handleClick = () => {
-    onPerkClick(card.id);
+    onPerkClick(card.id, perk.id);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      onPerkClick(card.id);
+      onPerkClick(card.id, perk.id);
     }
   };
 

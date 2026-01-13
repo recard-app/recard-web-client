@@ -33,9 +33,9 @@ interface ChatComponentBlockProps {
   /** Handler for credit clicks - opens credit edit modal */
   onCreditClick: (cardId: string, creditId: string) => void;
   /** Handler for perk clicks - opens card detail modal to perks tab */
-  onPerkClick: (cardId: string) => void;
+  onPerkClick: (cardId: string, perkId: string) => void;
   /** Handler for multiplier clicks - opens card detail modal to multipliers tab */
-  onMultiplierClick: (cardId: string) => void;
+  onMultiplierClick: (cardId: string, multiplierId: string) => void;
   /** Handler for undo actions */
   onUndoAction?: (action: ChatComponentAction) => void;
   /** Map of action IDs that are currently being undone */

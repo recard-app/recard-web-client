@@ -43,12 +43,12 @@ const ChatComponentsSection: React.FC = () => {
     console.log('Credit clicked:', cardId, creditId);
   };
 
-  const handlePerkClick = (cardId: string) => {
-    console.log('Perk clicked, open card modal to perks tab:', cardId);
+  const handlePerkClick = (cardId: string, perkId: string) => {
+    console.log('Perk clicked, open card modal to perks tab:', cardId, perkId);
   };
 
-  const handleMultiplierClick = (cardId: string) => {
-    console.log('Multiplier clicked, open card modal to multipliers tab:', cardId);
+  const handleMultiplierClick = (cardId: string, multiplierId: string) => {
+    console.log('Multiplier clicked, open card modal to multipliers tab:', cardId, multiplierId);
   };
 
   const handleUndoAction = (action: ChatComponentAction) => {

@@ -11,7 +11,7 @@ import './ChatMultiplierComponent.scss';
 
 interface ChatMultiplierComponentProps {
   item: MultiplierComponentItem;
-  onMultiplierClick: (cardId: string) => void;
+  onMultiplierClick: (cardId: string, multiplierId: string) => void;
   onUndoAction?: (action: MultiplierAction) => void;
   canUndo: boolean;
   isUndoPending?: boolean;
@@ -41,13 +41,13 @@ const ChatMultiplierComponent: React.FC<ChatMultiplierComponentProps> = ({
   const { multiplier, card, action } = item;
 
   const handleClick = () => {
-    onMultiplierClick(card.id);
+    onMultiplierClick(card.id, multiplier.id);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      onMultiplierClick(card.id);
+      onMultiplierClick(card.id, multiplier.id);
     }
   };
 
