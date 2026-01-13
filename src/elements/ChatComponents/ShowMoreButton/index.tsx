@@ -27,7 +27,7 @@ const ShowMoreButton: React.FC<ShowMoreButtonProps> = ({
     <div className="show-more-button">
       <button
         type="button"
-        className="button ghost icon with-text"
+        className="button ghost mini icon with-text full-width"
         onClick={onToggle}
         aria-expanded={isExpanded}
         aria-label={isExpanded ? 'Show fewer items' : `Show ${hiddenCount} more items`}
@@ -35,7 +35,7 @@ const ShowMoreButton: React.FC<ShowMoreButtonProps> = ({
         <Icon
           name={isExpanded ? 'chevron-up' : 'plus-simple'}
           variant="micro"
-          size={14}
+          size={12}
         />
         {buttonText}
       </button>

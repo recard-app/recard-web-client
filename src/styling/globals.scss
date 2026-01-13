@@ -191,7 +191,11 @@ button, .button {
   &.large {
     @include button-large;
   }
-  
+
+  &.full-width {
+    @include button-full-width;
+  }
+
   &.icon {
     @include button-icon-only;
 
@@ -204,7 +208,7 @@ button, .button {
       @include button-icon-only($icon-micro, $space-1, $space-1);
 
       &.with-text {
-        @include button-icon-with-text($icon-micro, $space-1, $space-2);
+        @include button-icon-with-text($icon-micro, $space-1, $space-2, $font-xs, $space-1);
       }
     }
 
@@ -212,7 +216,7 @@ button, .button {
       @include button-icon-only($icon-mini, $space-2, $space-2);
 
       &.with-text {
-        @include button-icon-with-text($icon-mini, $space-2, $space-2);
+        @include button-icon-with-text($icon-mini, $space-2, $space-2, $font-sm, $space-1-5);
       }
     }
 
@@ -220,7 +224,7 @@ button, .button {
       @include button-icon-only($icon-small, $space-4, $space-4);
 
       &.with-text {
-        @include button-icon-with-text($icon-small, $space-4, $space-8);
+        @include button-icon-with-text($icon-small, $space-4, $space-8, $font-base, $space-2);
       }
     }
 

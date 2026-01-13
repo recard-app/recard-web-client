@@ -92,12 +92,15 @@ const ActionDisplay: React.FC<ActionDisplayProps> = ({
       {showButton && (
         <button
           type="button"
-          className={`undo-button button ghost mini ${isUndoPending ? 'loading' : ''}`}
+          className={`undo-button button ghost mini icon with-text ${isUndoPending ? 'loading' : ''}`}
           onClick={onUndo}
           disabled={buttonDisabled}
           aria-label={isUndone ? 'Action has been undone' : 'Undo this action'}
         >
           {isUndoPending && <LOADING_ICON size={LOADING_ICON_SIZE} />}
+          {!isUndoPending && !isUndone && (
+            <Icon name="arrow-uturn-left" variant="mini" size={12} />
+          )}
           {buttonText}
         </button>
       )}

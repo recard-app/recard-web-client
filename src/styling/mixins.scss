@@ -299,6 +299,10 @@
   border-radius: $radius-lg;
 }
 
+@mixin button-full-width {
+  width: 100%;
+}
+
 // === FORM ELEMENTS ===
 
 @mixin input-field {
@@ -472,12 +476,13 @@
   }
 }
 
-@mixin button-icon-with-text($img-size: $icon-mini, $padding-v: $space-2, $padding-h: $space-4) {
+@mixin button-icon-with-text($img-size: $icon-mini, $padding-v: $space-2, $padding-h: $space-4, $font-size: $font-sm, $gap: $space-2) {
   @include button-base;
   @include button-icon-base;
   padding: $padding-v $padding-h;
-  gap: $space-2;
-  
+  font-size: $font-size;
+  gap: $gap;
+
   img, svg {
     width: $img-size;
     height: $img-size;

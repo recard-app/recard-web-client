@@ -4,9 +4,14 @@
   display: flex;
   justify-content: center;
   padding: $space-1 0;
+  width: 400px;
+
+  // Mobile: full width
+  @media (max-width: $mobile-breakpoint) {
+    width: 100%;
+  }
 
   .button {
-    font-size: $font-xs;
     padding: $space-1 $space-2;
 
     // Mobile: ensure 44px touch target
