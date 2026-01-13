@@ -102,21 +102,26 @@
 }
 
 // Status badges for settings rows
-.status-badge {
+// Scoped to account-wrapper to override ChatComponents/shared.scss which sets fixed 16x16 size
+.account-wrapper .status-badge {
   display: inline-flex;
   align-items: center;
+  width: auto;
+  height: auto;
   padding: $space-half $space-2;
   border-radius: $radius-full;
   font-size: $font-xs;
   font-weight: $font-medium;
   text-transform: capitalize;
+  white-space: nowrap;
+  flex-shrink: 0;
 
-  &--success {
+  &.status-badge--success {
     background: $primary-light;
     color: $primary-medium;
   }
 
-  &--warning {
+  &.status-badge--warning {
     background: $warning-badge-background;
     color: $warning-badge-text;
   }

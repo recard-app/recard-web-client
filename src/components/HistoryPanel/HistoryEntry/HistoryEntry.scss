@@ -1,5 +1,6 @@
 @use '../../../styling/variables' as *;
 @use '../../../styling/globals' as *;
+@use '../../../styling/mixins' as *;
 
 .history-entry {
     // Base styles - common to all variants
@@ -110,36 +111,20 @@
         .actions-dropdown { }
     }
 
-    // FULL-PAGE VARIANT - More detailed styling
+    // FULL-PAGE VARIANT - More detailed styling with interactive card pattern
     &.full-page-variant {
-      border: $border-half solid $neutral-light-gray;
+      @include interactive-card;
+
+      // Override mobile border color to be more subtle
       @media (max-width: $mobile-breakpoint) {
         border-color: $neutral-lightest-gray;
-        //border-color: transparent;
+
         .entry-info {
           .entry-title {
             font-weight: $font-medium;
           }
         }
       }
-      
-        &:hover { }
-
-        &.has-selected-card { }
-
-        &.current { }
-
-        .entry-content {
-            .entry-info {
-                .entry-title { }
-
-                .timestamp { }
-            }
-
-            .selected-card-display { }
-        }
-
-        .actions-dropdown { }
     }
 }
 

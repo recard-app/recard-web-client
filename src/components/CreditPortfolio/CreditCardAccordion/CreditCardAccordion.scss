@@ -1,41 +1,47 @@
 @use '../../../styling/variables' as *;
+@use '../../../styling/mixins' as *;
 
 .credit-card-accordion {
-  background-color: $neutral-white;
-  border: $border-full solid $neutral-light-gray;
-  border-radius: $radius-lg;
+  @include interactive-card;
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
-
-  &:hover {
-    box-shadow: $shadow-sm;
-  }
 
   &.expanded {
-    box-shadow: $shadow-md;
+    border-color: $neutral-gray;
   }
 
-  // Accordion header - clickable
+  // Accordion header - clickable button
+  // Must reset global button styles since this is a <button> element
   .accordion-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     padding: $space-4;
-    background: none;
+    background: transparent;
+    background-color: transparent;
     border: none;
+    border-radius: 0;
     cursor: pointer;
     text-align: left;
-    transition: background-color 0.15s ease;
     position: relative;
+    color: inherit;
+    font-weight: inherit;
 
-    &:hover {
-      background-color: $neutral-lightest-gray;
+    // Override global button hover/active states
+    &:hover,
+    &:active,
+    &:hover:not(:disabled),
+    &:active:not(:disabled) {
+      background: transparent;
+      background-color: transparent;
+      transform: none;
     }
 
+    // Focus state for keyboard navigation
     &:focus-visible {
-      outline: 2px solid $primary-medium;
+      outline: 2px solid $primary-color;
       outline-offset: -2px;
+      box-shadow: none;
     }
   }
 

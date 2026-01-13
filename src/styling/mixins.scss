@@ -602,3 +602,25 @@
     opacity: 0.75;
   }
 }
+
+// === INTERACTIVE CARD STYLING ===
+
+// Standard interactive card styling for clickable list items
+// Used by: credit-entry-row, chat-component-item, history-entry (full-page), credit-card-accordion
+@mixin interactive-card {
+  background-color: $neutral-white;
+  border: $border-half solid $neutral-light-gray;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background-color: $neutral-lightest-gray;
+    border-color: $neutral-gray;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}

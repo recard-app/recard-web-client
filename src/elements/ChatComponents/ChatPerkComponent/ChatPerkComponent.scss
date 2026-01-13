@@ -38,9 +38,5 @@
     overflow: hidden;
   }
 
-  .action-row {
-    margin-top: $space-1;
-    padding-top: $space-1;
-    border-top: $border-half solid $neutral-light-gray;
-  }
+  // .action-row styles are in shared.scss
 }

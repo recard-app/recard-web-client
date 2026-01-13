@@ -1,4 +1,5 @@
 import React from 'react';
+import { Icon } from '../../../icons';
 import './ShowMoreButton.scss';
 
 interface ShowMoreButtonProps {
@@ -26,10 +27,16 @@ const ShowMoreButton: React.FC<ShowMoreButtonProps> = ({
     <div className="show-more-button">
       <button
         type="button"
+        className="button ghost icon with-text"
         onClick={onToggle}
         aria-expanded={isExpanded}
         aria-label={isExpanded ? 'Show fewer items' : `Show ${hiddenCount} more items`}
       >
+        <Icon
+          name={isExpanded ? 'chevron-up' : 'plus-simple'}
+          variant="micro"
+          size={14}
+        />
         {buttonText}
       </button>
     </div>

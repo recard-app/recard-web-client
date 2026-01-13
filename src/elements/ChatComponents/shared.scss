@@ -96,6 +96,25 @@
   margin-top: $space-1;
 }
 
+// Action row with full-width divider and background
+// Used inside .chat-component-item which has padding: $space-2
+.action-row {
+  margin-top: $space-1;
+  margin-left: -$space-2;
+  margin-right: -$space-2;
+  margin-bottom: -$space-2;
+  padding: $space-1 $space-2;
+  border-top: $border-half solid $neutral-light-gray;
+  background-color: $neutral-lightest-gray;
+  border-radius: 0 0 $radius-md $radius-md;
+  transition: border-color $transition-fast;
+}
+
+// Match action row border to component border on hover
+.chat-component-item.clickable:hover .action-row {
+  border-top-color: $neutral-gray;
+}
+
 // =============================================================================
 // CARD BUBBLE (used in credits to show parent card)
 // =============================================================================

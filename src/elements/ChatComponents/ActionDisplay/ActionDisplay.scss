@@ -36,9 +36,26 @@
     gap: $space-half;
     flex-shrink: 0;
 
-    // Loading state spinner
-    &.loading svg {
-      animation: spin 1s linear infinite;
+    // Loading state - immediately show gray disabled state, no transition
+    &.loading {
+      background-color: transparent;
+      color: $neutral-dark-gray;
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+      transition: none;
+
+      // Override any active/hover states
+      &:active,
+      &:hover {
+        background-color: transparent;
+        transform: none;
+      }
+
+      svg {
+        animation: spin 1s linear infinite;
+        color: $neutral-dark-gray;
+      }
     }
 
     &:disabled {

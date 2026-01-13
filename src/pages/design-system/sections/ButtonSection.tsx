@@ -134,7 +134,7 @@ const ButtonSection: React.FC = () => {
             <span className="ds-component-name">Large icon</span>
             <span className="ds-component-class">class="button icon large"</span>
             <button className="button icon large">
-              <Icon name="plus-circle" variant="small" size={20} />
+              <Icon name="plus-circle" variant="mini" size={20} />
             </button>
           </div>
           <div className="ds-component-item">
