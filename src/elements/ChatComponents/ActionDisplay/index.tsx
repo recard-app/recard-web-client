@@ -92,7 +92,7 @@ const ActionDisplay: React.FC<ActionDisplayProps> = ({
       {showButton && (
         <button
           type="button"
-          className={`undo-button button ghost ${isUndoPending ? 'loading' : ''}`}
+          className={`undo-button button ghost mini ${isUndoPending ? 'loading' : ''}`}
           onClick={onUndo}
           disabled={buttonDisabled}
           aria-label={isUndone ? 'Action has been undone' : 'Undo this action'}

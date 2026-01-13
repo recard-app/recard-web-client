@@ -9,7 +9,7 @@ These components appear below chat messages to show entities that were reference
 - Visual representation of cards, credits, perks, and multipliers
 - Action indicators showing what changed (e.g., "Set from $0 to $50")
 - Undo functionality for reversing actions before the next message is sent
-- Click-to-open behavior for cards and credits
+- Click-to-open behavior for cards, credits, perks, and multipliers
 
 ## Components
 
@@ -24,6 +24,8 @@ import { ChatComponentBlock } from '@/elements/ChatComponents';
   block={block}
   onCardClick={(cardId) => openCardModal(cardId)}
   onCreditClick={(cardId, creditId) => openCreditModal(cardId, creditId)}
+  onPerkClick={(cardId) => openCardModal(cardId, 'perks')}
+  onMultiplierClick={(cardId) => openCardModal(cardId, 'multipliers')}
   onUndoAction={(action) => handleUndo(action)}
   canUndo={true}
   undoPendingActionId={null}
@@ -36,6 +38,8 @@ import { ChatComponentBlock } from '@/elements/ChatComponents';
 | `block` | `ChatComponentBlock` | Block containing items to render |
 | `onCardClick` | `(cardId: string) => void` | Handler when a card is clicked |
 | `onCreditClick` | `(cardId: string, creditId: string) => void` | Handler when a credit is clicked |
+| `onPerkClick` | `(cardId: string) => void` | Handler when a perk is clicked (opens card modal to perks tab) |
+| `onMultiplierClick` | `(cardId: string) => void` | Handler when a multiplier is clicked (opens card modal to multipliers tab) |
 | `onUndoAction` | `(action: ChatComponentAction) => void` | Handler when undo is clicked |
 | `canUndo` | `boolean` | Whether undo buttons are available |
 | `undoPendingActionId` | `string \| null` | ID of action currently being undone |
@@ -68,22 +72,24 @@ Displays a credit with usage information. Based on the `CreditEntry` component f
 
 ### ChatPerkComponent
 
-Displays a card perk. Display-only (no click action).
+Displays a card perk. Click opens the card detail modal directly to the perks tab.
 
 **Features:**
 - Card icon (12px height) next to perk title
 - Description (2-line truncation)
+- Click opens card modal to perks tab
 
 **Actions:** track, untrack
 
 ### ChatMultiplierComponent
 
-Displays a reward multiplier. Display-only (no click action).
+Displays a reward multiplier. Click opens the card detail modal directly to the multipliers tab.
 
 **Features:**
 - Multiplier badge (e.g., "2x", "3x", or "Bonus")
 - Card icon (12px height) next to title
 - Description or category display
+- Click opens card modal to multipliers tab
 
 **Actions:** track, untrack
 
@@ -195,9 +201,10 @@ Base styles are in `shared.scss`:
 ## Behaviors
 
 ### Click Handling
-- **Cards:** Opens `CreditCardDetailView` modal
+- **Cards:** Opens `CreditCardDetailView` modal (default tab)
 - **Credits:** Opens credit edit modal (Drawer on mobile, Dialog on desktop)
-- **Perks/Multipliers:** No click action (display only)
+- **Perks:** Opens `CreditCardDetailView` modal to perks tab
+- **Multipliers:** Opens `CreditCardDetailView` modal to multipliers tab
 
 ### Undo Flow
 1. User clicks "Undo" button

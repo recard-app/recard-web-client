@@ -43,6 +43,14 @@ const ChatComponentsSection: React.FC = () => {
     console.log('Credit clicked:', cardId, creditId);
   };
 
+  const handlePerkClick = (cardId: string) => {
+    console.log('Perk clicked, open card modal to perks tab:', cardId);
+  };
+
+  const handleMultiplierClick = (cardId: string) => {
+    console.log('Multiplier clicked, open card modal to multipliers tab:', cardId);
+  };
+
   const handleUndoAction = (action: ChatComponentAction) => {
     console.log('Undo action:', action);
     // Simulate pending state
@@ -211,13 +219,14 @@ const ChatComponentsSection: React.FC = () => {
       <div className="ds-subsection">
         <h3>ChatPerkComponent</h3>
         <p className="ds-description">
-          Perks with track/untrack actions (display only, no click)
+          Perks with track/untrack actions (clickable - opens card modal to perks tab)
         </p>
         <div className="ds-component-list">
           {mockPerkComponentItems.map((item) => (
             <ChatPerkComponent
               key={item.id}
               item={item}
+              onPerkClick={handlePerkClick}
               onUndoAction={handleUndoAction}
               canUndo={true}
               isUndoPending={pendingUndoActions.has(item.action?.id || '')}
@@ -230,13 +239,14 @@ const ChatComponentsSection: React.FC = () => {
       <div className="ds-subsection">
         <h3>ChatMultiplierComponent</h3>
         <p className="ds-description">
-          Multipliers with badge and category (display only, no click)
+          Multipliers with badge and category (clickable - opens card modal to multipliers tab)
         </p>
         <div className="ds-component-list">
           {mockMultiplierComponentItems.map((item) => (
             <ChatMultiplierComponent
               key={item.id}
               item={item}
+              onMultiplierClick={handleMultiplierClick}
               onUndoAction={handleUndoAction}
               canUndo={true}
               isUndoPending={pendingUndoActions.has(item.action?.id || '')}
@@ -257,6 +267,8 @@ const ChatComponentsSection: React.FC = () => {
             canUndo={true}
             onCardClick={handleCardClick}
             onCreditClick={handleCreditClick}
+            onPerkClick={handlePerkClick}
+            onMultiplierClick={handleMultiplierClick}
             onUndoAction={handleUndoAction}
             pendingUndoActions={pendingUndoActions}
           />
@@ -275,6 +287,8 @@ const ChatComponentsSection: React.FC = () => {
             canUndo={true}
             onCardClick={handleCardClick}
             onCreditClick={handleCreditClick}
+            onPerkClick={handlePerkClick}
+            onMultiplierClick={handleMultiplierClick}
             onUndoAction={handleUndoAction}
             pendingUndoActions={pendingUndoActions}
           />

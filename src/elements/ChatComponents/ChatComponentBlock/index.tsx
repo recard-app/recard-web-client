@@ -32,6 +32,10 @@ interface ChatComponentBlockProps {
   onCardClick: (cardId: string) => void;
   /** Handler for credit clicks - opens credit edit modal */
   onCreditClick: (cardId: string, creditId: string) => void;
+  /** Handler for perk clicks - opens card detail modal to perks tab */
+  onPerkClick: (cardId: string) => void;
+  /** Handler for multiplier clicks - opens card detail modal to multipliers tab */
+  onMultiplierClick: (cardId: string) => void;
   /** Handler for undo actions */
   onUndoAction?: (action: ChatComponentAction) => void;
   /** Map of action IDs that are currently being undone */
@@ -47,6 +51,8 @@ const ChatComponentBlock: React.FC<ChatComponentBlockProps> = ({
   canUndo,
   onCardClick,
   onCreditClick,
+  onPerkClick,
+  onMultiplierClick,
   onUndoAction,
   pendingUndoActions = new Set(),
 }) => {
@@ -130,6 +136,7 @@ const ChatComponentBlock: React.FC<ChatComponentBlockProps> = ({
         <ChatPerkComponent
           key={item.id}
           item={item}
+          onPerkClick={onPerkClick}
           onUndoAction={handlePerkUndo}
           canUndo={canUndo}
           isUndoPending={isPending}
@@ -142,6 +149,7 @@ const ChatComponentBlock: React.FC<ChatComponentBlockProps> = ({
         <ChatMultiplierComponent
           key={item.id}
           item={item}
+          onMultiplierClick={onMultiplierClick}
           onUndoAction={handleMultiplierUndo}
           canUndo={canUndo}
           isUndoPending={isPending}

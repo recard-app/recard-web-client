@@ -11,6 +11,7 @@ import './ChatMultiplierComponent.scss';
 
 interface ChatMultiplierComponentProps {
   item: MultiplierComponentItem;
+  onMultiplierClick: (cardId: string) => void;
   onUndoAction?: (action: MultiplierAction) => void;
   canUndo: boolean;
   isUndoPending?: boolean;
@@ -28,15 +29,27 @@ function formatMultiplierBadge(multiplier: number | null): string {
 
 /**
  * Displays a single multiplier in the chat with optional action.
- * Display-only component (no click action).
+ * Clickable - opens card detail modal to multipliers tab.
  */
 const ChatMultiplierComponent: React.FC<ChatMultiplierComponentProps> = ({
   item,
+  onMultiplierClick,
   onUndoAction,
   canUndo,
   isUndoPending = false,
 }) => {
   const { multiplier, card, action } = item;
+
+  const handleClick = () => {
+    onMultiplierClick(card.id);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onMultiplierClick(card.id);
+    }
+  };
 
   const handleUndo = () => {
     if (onUndoAction && action) {
@@ -47,6 +60,7 @@ const ChatMultiplierComponent: React.FC<ChatMultiplierComponentProps> = ({
   const className = [
     'chat-multiplier-component',
     'chat-component-item',
+    'clickable',
     isUndoPending ? 'undo-pending' : '',
   ].filter(Boolean).join(' ');
 
@@ -62,6 +76,10 @@ const ChatMultiplierComponent: React.FC<ChatMultiplierComponentProps> = ({
   return (
     <div
       className={className}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
       aria-label={`${multiplier.Name} multiplier from ${card.CardName}${action ? `. Action: ${actionText}` : ''}`}
     >
       <div className="multiplier-header-row">

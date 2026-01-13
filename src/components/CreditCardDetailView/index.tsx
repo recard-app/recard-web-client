@@ -19,7 +19,7 @@ import {
     DialogBody,
 } from '../ui/dialog/dialog';
 
-type TabType = 'multipliers' | 'credits' | 'perks';
+export type TabType = 'multipliers' | 'credits' | 'perks';
 
 interface CreditCardDetailViewProps {
     cardDetails: CreditCardDetails | null;
@@ -38,6 +38,7 @@ interface CreditCardDetailViewProps {
     onOpenDateChange?: (date: string | null) => void; // Called when open date changes
     isFrozen?: boolean; // Whether the card is frozen (excluded from LLM context)
     onFreezeToggle?: () => void; // Called when freeze state is toggled
+    initialTab?: TabType; // Initial tab to display when opening the view
 }
 
 const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
@@ -56,7 +57,8 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     openDate,
     onOpenDateChange,
     isFrozen = false,
-    onFreezeToggle
+    onFreezeToggle,
+    initialTab = 'multipliers'
 }) => {
     // Get component data from ComponentsContext using the card ID
     const cardCredits = useCreditsByCardId(cardDetails?.id || '');
@@ -68,7 +70,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     const [isLoadingPreferences, setIsLoadingPreferences] = useState(false);
 
     // Tab state for switching between multipliers, credits, and perks
-    const [activeTab, setActiveTab] = useState<TabType>('multipliers');
+    const [activeTab, setActiveTab] = useState<TabType>(initialTab);
+
+    // Update tab when initialTab prop changes (e.g., opening from different contexts)
+    useEffect(() => {
+        setActiveTab(initialTab);
+    }, [initialTab]);
 
     // Expandable state for multipliers, credits and perks
     const [expandedMultipliers, setExpandedMultipliers] = useState<Set<string>>(new Set());
