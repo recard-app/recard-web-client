@@ -254,6 +254,54 @@ export const iconRegistry: IconDefinition = {
       ]
     }
   },
+  'arrow-undo': {
+    outline: {
+      viewBox: VIEWBOX.DEFAULT,
+      strokeWidth: 1.5,
+      noFill: true,
+      paths: [
+        <path
+          key="1"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+        />
+      ]
+    },
+    solid: {
+      viewBox: VIEWBOX.DEFAULT,
+      paths: [
+        <path
+          key="1"
+          fillRule="evenodd"
+          d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z"
+          clipRule="evenodd"
+        />
+      ]
+    },
+    mini: {
+      viewBox: VIEWBOX.MINI,
+      paths: [
+        <path
+          key="1"
+          fillRule="evenodd"
+          d="M7.793 2.232a.75.75 0 0 1-.025 1.06L3.622 7.25h10.003a5.375 5.375 0 0 1 0 10.75H10.75a.75.75 0 0 1 0-1.5h2.875a3.875 3.875 0 0 0 0-7.75H3.622l4.146 3.957a.75.75 0 0 1-1.036 1.085l-5.5-5.25a.75.75 0 0 1 0-1.085l5.5-5.25a.75.75 0 0 1 1.06.025Z"
+          clipRule="evenodd"
+        />
+      ]
+    },
+    micro: {
+      viewBox: VIEWBOX.MICRO,
+      paths: [
+        <path
+          key="1"
+          fillRule="evenodd"
+          d="M12.5 9.75A2.75 2.75 0 0 0 9.75 7H4.56l2.22 2.22a.75.75 0 1 1-1.06 1.06l-3.5-3.5a.75.75 0 0 1 0-1.06l3.5-3.5a.75.75 0 0 1 1.06 1.06L4.56 5.5h5.19a4.25 4.25 0 0 1 0 8.5h-1a.75.75 0 0 1 0-1.5h1a2.75 2.75 0 0 0 2.75-2.75Z"
+          clipRule="evenodd"
+        />
+      ]
+    }
+  },
   'stop': {
     solid: {
       viewBox: VIEWBOX.DEFAULT,
@@ -1454,6 +1502,78 @@ export const iconRegistry: IconDefinition = {
       viewBox: VIEWBOX.MICRO,
       paths: [
         <path key="1" fillRule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm3.844-8.791a.75.75 0 0 0-1.188-.918l-3.7 4.79-1.649-1.833a.75.75 0 1 0-1.114 1.004l2.25 2.5a.75.75 0 0 0 1.15-.043l4.25-5.5Z" clipRule="evenodd" />
+      ]
+    }
+  }
+  ,
+  'check-simple': {
+    outline: {
+      viewBox: VIEWBOX.DEFAULT,
+      strokeWidth: 1.5,
+      noFill: true,
+      paths: [
+        <path key="1" strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+      ]
+    },
+    solid: {
+      viewBox: VIEWBOX.DEFAULT,
+      paths: [
+        <path
+          key="1"
+          fillRule="evenodd"
+          d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z"
+          clipRule="evenodd"
+        />
+      ]
+    },
+    mini: {
+      viewBox: VIEWBOX.MINI,
+      paths: [
+        <path
+          key="1"
+          fillRule="evenodd"
+          d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"
+          clipRule="evenodd"
+        />
+      ]
+    },
+    micro: {
+      viewBox: VIEWBOX.MICRO,
+      paths: [
+        <path
+          key="1"
+          fillRule="evenodd"
+          d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"
+          clipRule="evenodd"
+        />
+      ]
+    }
+  }
+  ,
+  'arrow-uturn-left': {
+    solid: {
+      viewBox: VIEWBOX.DEFAULT,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H15a6.75 6.75 0 0 1 0 13.5h-3a.75.75 0 0 1 0-1.5h3a5.25 5.25 0 1 0 0-10.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
+      ]
+    },
+    outline: {
+      viewBox: VIEWBOX.DEFAULT,
+      strokeWidth: 1.5,
+      paths: [
+        <path key="1" strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+      ]
+    },
+    mini: {
+      viewBox: VIEWBOX.MINI,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M7.793 2.232a.75.75 0 0 1-.025 1.06L3.622 7.25h10.628a5.25 5.25 0 0 1 0 10.5H10a.75.75 0 0 1 0-1.5h4.25a3.75 3.75 0 0 0 0-7.5H3.622l4.146 3.957a.75.75 0 0 1-1.036 1.085l-5.5-5.25a.75.75 0 0 1 0-1.085l5.5-5.25a.75.75 0 0 1 1.06.025Z" clipRule="evenodd" />
+      ]
+    },
+    micro: {
+      viewBox: VIEWBOX.MICRO,
+      paths: [
+        <path key="1" fillRule="evenodd" d="M7.78 3.47a.75.75 0 0 1 0 1.06L5.56 6.75h5.69a4.75 4.75 0 0 1 0 9.5h-1.5a.75.75 0 0 1 0-1.5h1.5a3.25 3.25 0 0 0 0-6.5H5.56l2.22 2.22a.75.75 0 1 1-1.06 1.06l-3.5-3.5a.75.75 0 0 1 0-1.06l3.5-3.5a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
       ]
     }
   }

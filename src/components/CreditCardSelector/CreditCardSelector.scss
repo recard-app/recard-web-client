@@ -1,6 +1,5 @@
 @use '../../styling/variables' as *;
 @use '../../styling/mixins' as *;
-@use '../PromptWindow/PromptSolution/PromptSolution.scss' as prompt-solution;
 @use '../ui/dialog/dialog' as dialog;
 
 .credit-card-selector {

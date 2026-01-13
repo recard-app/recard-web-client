@@ -82,14 +82,14 @@ const ButtonSection: React.FC = () => {
             <span className="ds-component-name">Icon only</span>
             <span className="ds-component-class">class="button icon"</span>
             <button className="button icon">
-              <Icon name="plus" variant="mini" size={16} />
+              <Icon name="plus-circle" variant="mini" size={16} />
             </button>
           </div>
           <div className="ds-component-item">
             <span className="ds-component-name">Icon with text</span>
             <span className="ds-component-class">class="button icon with-text"</span>
             <button className="button icon with-text">
-              <Icon name="plus" variant="mini" size={16} />
+              <Icon name="plus-circle" variant="mini" size={16} />
               Add Item
             </button>
           </div>
@@ -97,7 +97,7 @@ const ButtonSection: React.FC = () => {
             <span className="ds-component-name">Ghost icon with text</span>
             <span className="ds-component-class">class="button ghost icon with-text"</span>
             <button className="button ghost icon with-text">
-              <Icon name="settings" variant="mini" size={16} />
+              <Icon name="preferences" variant="mini" size={16} />
               Settings
             </button>
           </div>
@@ -105,7 +105,7 @@ const ButtonSection: React.FC = () => {
             <span className="ds-component-name">Destructive icon</span>
             <span className="ds-component-class">class="button destructive icon with-text"</span>
             <button className="button destructive icon with-text">
-              <Icon name="trash" variant="mini" size={16} />
+              <Icon name="delete" variant="mini" size={16} />
               Delete
             </button>
           </div>
@@ -120,28 +120,28 @@ const ButtonSection: React.FC = () => {
             <span className="ds-component-name">Mini icon</span>
             <span className="ds-component-class">class="button icon mini"</span>
             <button className="button icon mini">
-              <Icon name="plus" variant="micro" size={12} />
+              <Icon name="plus-circle" variant="micro" size={12} />
             </button>
           </div>
           <div className="ds-component-item">
             <span className="ds-component-name">Small icon</span>
             <span className="ds-component-class">class="button icon small"</span>
             <button className="button icon small">
-              <Icon name="plus" variant="mini" size={16} />
+              <Icon name="plus-circle" variant="mini" size={16} />
             </button>
           </div>
           <div className="ds-component-item">
             <span className="ds-component-name">Large icon</span>
             <span className="ds-component-class">class="button icon large"</span>
             <button className="button icon large">
-              <Icon name="plus" variant="small" size={20} />
+              <Icon name="plus-circle" variant="small" size={20} />
             </button>
           </div>
           <div className="ds-component-item">
             <span className="ds-component-name">Square icon</span>
             <span className="ds-component-class">class="button icon small square"</span>
             <button className="button icon small square">
-              <Icon name="plus" variant="mini" size={16} />
+              <Icon name="plus-circle" variant="mini" size={16} />
             </button>
           </div>
         </div>
@@ -187,14 +187,14 @@ const ButtonSection: React.FC = () => {
             <span className="ds-component-name">Ghost Destructive Icon</span>
             <span className="ds-component-class">class="button ghost destructive icon"</span>
             <button className="button ghost destructive icon">
-              <Icon name="trash" variant="mini" size={16} />
+              <Icon name="delete" variant="mini" size={16} />
             </button>
           </div>
           <div className="ds-component-item">
             <span className="ds-component-name">Ghost Destructive + Text</span>
             <span className="ds-component-class">class="button ghost destructive icon with-text"</span>
             <button className="button ghost destructive icon with-text">
-              <Icon name="trash" variant="mini" size={16} />
+              <Icon name="delete" variant="mini" size={16} />
               Remove
             </button>
           </div>
@@ -224,7 +224,7 @@ const ButtonSection: React.FC = () => {
             <span className="ds-component-name">Small + Ghost + Icon</span>
             <span className="ds-component-class">class="button small ghost icon with-text"</span>
             <button className="button small ghost icon with-text">
-              <Icon name="settings" variant="mini" size={16} />
+              <Icon name="preferences" variant="mini" size={16} />
               Edit
             </button>
           </div>

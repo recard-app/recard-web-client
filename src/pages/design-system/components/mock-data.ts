@@ -11,12 +11,28 @@ import {
   UserCredit,
   UserCreditWithExpiration,
   MonthlyStatsResponse,
-  ChatSolutionCard,
   CHAT_SOURCE,
   CREDIT_PERIODS,
   CREDIT_USAGE,
 } from '../../../types';
-import type { CardCredit } from '../../../types/CreditCardTypes';
+import type { CardCredit, CardPerk, CardMultiplier, EnrichedMultiplier } from '../../../types/CreditCardTypes';
+import {
+  ChatComponentBlock,
+  CardComponentItem,
+  CreditComponentItem,
+  PerkComponentItem,
+  MultiplierComponentItem,
+  CardAction,
+  CreditAction,
+  PerkAction,
+  MultiplierAction,
+  CHAT_COMPONENT_TYPES,
+  CARD_ACTION_TYPES,
+  CREDIT_ACTION_TYPES,
+  PERK_ACTION_TYPES,
+  MULTIPLIER_ACTION_TYPES,
+} from '../../../types/ChatComponentTypes';
+import { MULTIPLIER_TYPES } from '../../../types/CreditCardTypes';
 
 // ============================================================================
 // MOCK CREDIT CARDS
@@ -179,6 +195,21 @@ export const mockCardCredits: CardCredit[] = [
     EffectiveTo: '9999-12-31',
     LastUpdated: new Date().toISOString(),
   },
+  {
+    id: 'credit-chase-airline',
+    ReferenceCardId: 'card-chase-sapphire',
+    Title: 'Airline Incidental Credit',
+    Category: 'Travel',
+    SubCategory: 'Airline',
+    Description: 'Annual credit for incidental airline fees (baggage, seat selection, etc.)',
+    Value: 200,
+    TimePeriod: 'annually',
+    Requirements: 'Select airline in portal',
+    EffectiveFrom: '2024-01-01',
+    EffectiveTo: '9999-12-31',
+    LastUpdated: new Date().toISOString(),
+    isAnniversaryBased: true,
+  },
 ];
 
 // ============================================================================
@@ -230,6 +261,18 @@ export const mockUserCredits: UserCredit[] = [
       { PeriodNumber: 1, CreditUsage: CREDIT_USAGE.INACTIVE, ValueUsed: 0 },
     ],
   },
+  {
+    CardId: 'card-chase-sapphire',
+    CreditId: 'credit-chase-airline',
+    AssociatedPeriod: CREDIT_PERIODS.Annually,
+    History: [
+      { PeriodNumber: 1, CreditUsage: CREDIT_USAGE.PARTIALLY_USED, ValueUsed: 75 },
+    ],
+    isAnniversaryBased: true,
+    anniversaryDate: '03-15',
+    anniversaryYear: 2024,
+    Title: 'Airline Incidental Credit (2024)',
+  },
 ];
 
 export const mockUserCreditsWithExpiration: UserCreditWithExpiration[] = [
@@ -254,6 +297,11 @@ export const mockUserCreditsWithExpiration: UserCreditWithExpiration[] = [
   {
     ...mockUserCredits[4],
     isExpiring: false,
+  },
+  {
+    ...mockUserCredits[5], // Anniversary-based credit
+    isExpiring: true,
+    daysUntilExpiration: 60,
   },
 ];
 
@@ -378,31 +426,6 @@ export const mockMonthlyStatsEmpty: MonthlyStatsResponse = {
   },
 };
 
-// ============================================================================
-// MOCK CHAT SOLUTIONS
-// ============================================================================
-
-export const mockChatSolutions: ChatSolutionCard[] = [
-  {
-    id: 'card-amex-gold',
-    cardName: 'American Express Gold',
-    rewardCategory: 'Dining',
-    rewardRate: '4X points',
-  },
-  {
-    id: 'card-chase-sapphire',
-    cardName: 'Chase Sapphire Reserve',
-    rewardCategory: 'Dining',
-    rewardRate: '3X points',
-  },
-  {
-    id: 'card-citi-premier',
-    cardName: 'Citi Premier',
-    rewardCategory: 'Dining',
-    rewardRate: '3X points',
-  },
-];
-
 export const mockChatMessages: ChatMessage[] = [
   {
     id: 'chat-sample-user-1',
@@ -450,5 +473,379 @@ export const getCardCreditById = (creditId: string): CardCredit | null => {
 export const getCreditMaxValue = (creditId: string): number => {
   const credit = getCardCreditById(creditId);
   return credit?.Value || 0;
+};
+
+// ============================================================================
+// MOCK CARD PERKS
+// ============================================================================
+
+export const mockCardPerks: CardPerk[] = [
+  {
+    id: 'perk-amex-gold-lounge',
+    ReferenceCardId: 'card-amex-gold',
+    Title: 'Centurion Lounge Access',
+    Category: 'Travel',
+    SubCategory: 'Airport',
+    Description: 'Access to American Express Centurion Lounges worldwide with complimentary food, drinks, and WiFi.',
+    Requirements: 'Present card at lounge entrance',
+    EffectiveFrom: '2024-01-01',
+    EffectiveTo: '9999-12-31',
+    LastUpdated: new Date().toISOString(),
+  },
+  {
+    id: 'perk-chase-priority-boarding',
+    ReferenceCardId: 'card-chase-sapphire',
+    Title: 'Priority Pass Membership',
+    Category: 'Travel',
+    SubCategory: 'Airport',
+    Description: 'Unlimited access to 1,300+ airport lounges worldwide through Priority Pass Select membership.',
+    Requirements: 'Enroll through Chase portal',
+    EffectiveFrom: '2024-01-01',
+    EffectiveTo: '9999-12-31',
+    LastUpdated: new Date().toISOString(),
+  },
+  {
+    id: 'perk-amex-gold-insurance',
+    ReferenceCardId: 'card-amex-gold',
+    Title: 'Purchase Protection',
+    Category: 'Insurance',
+    SubCategory: 'Purchase',
+    Description: 'Coverage for eligible purchases against damage or theft for up to 90 days from purchase date.',
+    Requirements: 'Pay with card',
+    EffectiveFrom: '2024-01-01',
+    EffectiveTo: '9999-12-31',
+    LastUpdated: new Date().toISOString(),
+  },
+];
+
+// ============================================================================
+// MOCK CARD MULTIPLIERS
+// ============================================================================
+
+export const mockCardMultipliers: EnrichedMultiplier[] = [
+  {
+    id: 'mult-amex-gold-dining',
+    ReferenceCardId: 'card-amex-gold',
+    Name: 'Dining Rewards',
+    Category: 'Dining',
+    SubCategory: 'Restaurant',
+    Description: '4X Membership Rewards points at restaurants worldwide',
+    Multiplier: 4,
+    Requirements: 'Purchases at restaurants',
+    EffectiveFrom: '2024-01-01',
+    EffectiveTo: '9999-12-31',
+    LastUpdated: new Date().toISOString(),
+    multiplierType: MULTIPLIER_TYPES.STANDARD,
+  },
+  {
+    id: 'mult-chase-travel',
+    ReferenceCardId: 'card-chase-sapphire',
+    Name: 'Travel Rewards',
+    Category: 'Travel',
+    SubCategory: 'General',
+    Description: '3X points on travel after earning $300 travel credit',
+    Multiplier: 3,
+    Requirements: 'Travel purchases through Chase portal or direct',
+    EffectiveFrom: '2024-01-01',
+    EffectiveTo: '9999-12-31',
+    LastUpdated: new Date().toISOString(),
+    multiplierType: MULTIPLIER_TYPES.STANDARD,
+  },
+  {
+    id: 'mult-discover-rotating',
+    ReferenceCardId: 'card-discover-it',
+    Name: 'Rotating Categories',
+    Category: 'Rotating',
+    SubCategory: 'Q1 2025',
+    Description: '5% cash back on rotating quarterly categories',
+    Multiplier: 5,
+    Requirements: 'Activate quarterly, up to $1,500',
+    EffectiveFrom: '2024-01-01',
+    EffectiveTo: '2024-03-31',
+    LastUpdated: new Date().toISOString(),
+    multiplierType: MULTIPLIER_TYPES.ROTATING,
+    currentSchedules: [
+      {
+        startDate: '2025-01-01',
+        endDate: '2025-03-31',
+        category: 'Grocery',
+        subCategory: 'Supermarkets',
+      },
+    ],
+  },
+];
+
+// ============================================================================
+// MOCK CHAT COMPONENT ITEMS
+// ============================================================================
+
+// Card items with various actions
+export const mockCardComponentItems: CardComponentItem[] = [
+  {
+    id: 'item-card-1',
+    componentType: CHAT_COMPONENT_TYPES.CARD,
+    displayOrder: 1,
+    card: mockCreditCards[0], // Amex Gold
+    action: {
+      id: 'action-card-1',
+      componentType: CHAT_COMPONENT_TYPES.CARD,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: CARD_ACTION_TYPES.ADD,
+      cardId: 'card-amex-gold',
+    },
+  },
+  {
+    id: 'item-card-2',
+    componentType: CHAT_COMPONENT_TYPES.CARD,
+    displayOrder: 2,
+    card: { ...mockCreditCards[1], isDefaultCard: true }, // Chase Sapphire as preferred
+    action: {
+      id: 'action-card-2',
+      componentType: CHAT_COMPONENT_TYPES.CARD,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: CARD_ACTION_TYPES.SET_PREFERRED,
+      cardId: 'card-chase-sapphire',
+    },
+  },
+  {
+    id: 'item-card-3',
+    componentType: CHAT_COMPONENT_TYPES.CARD,
+    displayOrder: 3,
+    card: { ...mockCreditCards[2], isFrozen: true }, // Citi Premier frozen
+    action: {
+      id: 'action-card-3',
+      componentType: CHAT_COMPONENT_TYPES.CARD,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: CARD_ACTION_TYPES.FROZEN,
+      cardId: 'card-citi-premier',
+    },
+  },
+  {
+    id: 'item-card-3b-preferred-frozen',
+    componentType: CHAT_COMPONENT_TYPES.CARD,
+    displayOrder: 3,
+    card: { ...mockCreditCards[3], isDefaultCard: true, isFrozen: true }, // Capital One both preferred and frozen
+  },
+  {
+    id: 'item-card-4-undone',
+    componentType: CHAT_COMPONENT_TYPES.CARD,
+    displayOrder: 4,
+    card: mockCreditCards[3], // Capital One Venture
+    action: {
+      id: 'action-card-4',
+      componentType: CHAT_COMPONENT_TYPES.CARD,
+      timestamp: new Date().toISOString(),
+      isUndone: true, // Undone state
+      actionType: CARD_ACTION_TYPES.REMOVE,
+      cardId: 'card-capital-one-venture',
+    },
+  },
+  {
+    id: 'item-card-5-no-action',
+    componentType: CHAT_COMPONENT_TYPES.CARD,
+    displayOrder: 5,
+    card: mockCreditCards[4], // Discover without action
+  },
+];
+
+// Credit items with various states
+export const mockCreditComponentItems: CreditComponentItem[] = [
+  {
+    id: 'item-credit-1',
+    componentType: CHAT_COMPONENT_TYPES.CREDIT,
+    displayOrder: 1,
+    userCredit: mockUserCredits[0],
+    cardCredit: mockCardCredits[0],
+    card: mockCreditCards[0],
+    creditMaxValue: 10,
+    currentValueUsed: 10,
+    action: {
+      id: 'action-credit-1',
+      componentType: CHAT_COMPONENT_TYPES.CREDIT,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: CREDIT_ACTION_TYPES.UPDATE_USAGE,
+      cardId: 'card-amex-gold',
+      creditId: 'credit-amex-dining',
+      periodNumber: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+      periodType: 'monthly',
+      fromValue: 0,
+      toValue: 10,
+    },
+  },
+  {
+    id: 'item-credit-2',
+    componentType: CHAT_COMPONENT_TYPES.CREDIT,
+    displayOrder: 2,
+    userCredit: mockUserCredits[1],
+    cardCredit: mockCardCredits[1],
+    card: mockCreditCards[0],
+    creditMaxValue: 10,
+    currentValueUsed: 5,
+    action: {
+      id: 'action-credit-2',
+      componentType: CHAT_COMPONENT_TYPES.CREDIT,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: CREDIT_ACTION_TYPES.UPDATE_USAGE,
+      cardId: 'card-amex-gold',
+      creditId: 'credit-amex-uber',
+      periodNumber: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+      periodType: 'monthly',
+      fromValue: 0,
+      toValue: 5,
+    },
+  },
+  {
+    id: 'item-credit-3-no-action',
+    componentType: CHAT_COMPONENT_TYPES.CREDIT,
+    displayOrder: 3,
+    userCredit: mockUserCredits[2],
+    cardCredit: mockCardCredits[2],
+    card: mockCreditCards[1],
+    creditMaxValue: 60,
+    currentValueUsed: 0,
+  },
+  {
+    id: 'item-credit-4-anniversary',
+    componentType: CHAT_COMPONENT_TYPES.CREDIT,
+    displayOrder: 4,
+    userCredit: mockUserCredits[5], // Anniversary-based credit
+    cardCredit: mockCardCredits[5], // Anniversary-based card credit
+    card: mockCreditCards[1], // Chase Sapphire
+    creditMaxValue: 200,
+    currentValueUsed: 75,
+    action: {
+      id: 'action-credit-4',
+      componentType: CHAT_COMPONENT_TYPES.CREDIT,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: CREDIT_ACTION_TYPES.UPDATE_USAGE,
+      cardId: 'card-chase-sapphire',
+      creditId: 'credit-chase-airline',
+      periodNumber: 1,
+      year: 2024,
+      periodType: 'annually',
+      fromValue: 0,
+      toValue: 75,
+      isAnniversaryBased: true,
+      anniversaryDate: '03-15',
+    },
+  },
+];
+
+// Perk items
+export const mockPerkComponentItems: PerkComponentItem[] = [
+  {
+    id: 'item-perk-1',
+    componentType: CHAT_COMPONENT_TYPES.PERK,
+    displayOrder: 1,
+    perk: mockCardPerks[0],
+    card: mockCreditCards[0],
+    action: {
+      id: 'action-perk-1',
+      componentType: CHAT_COMPONENT_TYPES.PERK,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: PERK_ACTION_TYPES.TRACK,
+      cardId: 'card-amex-gold',
+      perkId: 'perk-amex-gold-lounge',
+    },
+  },
+  {
+    id: 'item-perk-2-undone',
+    componentType: CHAT_COMPONENT_TYPES.PERK,
+    displayOrder: 2,
+    perk: mockCardPerks[1],
+    card: mockCreditCards[1],
+    action: {
+      id: 'action-perk-2',
+      componentType: CHAT_COMPONENT_TYPES.PERK,
+      timestamp: new Date().toISOString(),
+      isUndone: true,
+      actionType: PERK_ACTION_TYPES.UNTRACK,
+      cardId: 'card-chase-sapphire',
+      perkId: 'perk-chase-priority-boarding',
+    },
+  },
+  {
+    id: 'item-perk-3-no-action',
+    componentType: CHAT_COMPONENT_TYPES.PERK,
+    displayOrder: 3,
+    perk: mockCardPerks[2],
+    card: mockCreditCards[0],
+  },
+];
+
+// Multiplier items
+export const mockMultiplierComponentItems: MultiplierComponentItem[] = [
+  {
+    id: 'item-mult-1',
+    componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+    displayOrder: 1,
+    multiplier: mockCardMultipliers[0],
+    card: mockCreditCards[0],
+    action: {
+      id: 'action-mult-1',
+      componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: MULTIPLIER_ACTION_TYPES.TRACK,
+      cardId: 'card-amex-gold',
+      multiplierId: 'mult-amex-gold-dining',
+    },
+  },
+  {
+    id: 'item-mult-2-no-action',
+    componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+    displayOrder: 2,
+    multiplier: mockCardMultipliers[1],
+    card: mockCreditCards[1],
+  },
+  {
+    id: 'item-mult-3-rotating',
+    componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+    displayOrder: 3,
+    multiplier: mockCardMultipliers[2],
+    card: mockCreditCards[4],
+    action: {
+      id: 'action-mult-3',
+      componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: MULTIPLIER_ACTION_TYPES.TRACK,
+      cardId: 'card-discover-it',
+      multiplierId: 'mult-discover-rotating',
+    },
+  },
+];
+
+// Mixed component block for testing
+export const mockChatComponentBlock: ChatComponentBlock = {
+  id: 'block-mixed-1',
+  messageId: 'msg-1',
+  timestamp: new Date().toISOString(),
+  items: [
+    mockCardComponentItems[0],
+    mockCreditComponentItems[0],
+    mockPerkComponentItems[0],
+    mockMultiplierComponentItems[0],
+  ],
+};
+
+// Large block to test "Show more" functionality
+export const mockLargeChatComponentBlock: ChatComponentBlock = {
+  id: 'block-large-1',
+  messageId: 'msg-2',
+  timestamp: new Date().toISOString(),
+  items: [
+    ...mockCardComponentItems,
+    ...mockCreditComponentItems.slice(0, 2),
+  ],
 };
 

@@ -1,0 +1,169 @@
+@use '../../styling/globals' as *;
+
+// =============================================================================
+// BASE COMPONENT ITEM - All 4 component types extend this
+// =============================================================================
+
+.chat-component-item {
+  display: flex;
+  flex-direction: column;
+  gap: $space-half;
+  padding: $space-2;
+  background-color: $neutral-white;
+  border: $border-full solid $neutral-light-gray;
+  border-radius: $radius-md;
+  transition: background-color $transition-fast, border-color $transition-fast;
+  width: 400px;
+  box-sizing: border-box;
+
+  // Hover state (only for clickable items)
+  &.clickable {
+    cursor: pointer;
+
+    &:hover:not(.undo-pending) {
+      background-color: $neutral-lightest-gray;
+      border-color: $neutral-gray;
+    }
+  }
+
+  // Focus state for accessibility
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+
+  // Updating state (undo API call in progress)
+  &.undo-pending {
+    @include updating-state;
+  }
+
+  // Mobile adjustments - full width, no max
+  @media (max-width: $mobile-breakpoint) {
+    width: 100%;
+  }
+}
+
+// =============================================================================
+// COMMON HEADER ROW (icon + title + badges)
+// =============================================================================
+
+.chat-component-header {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  min-width: 0; // Allow text truncation in flex container
+
+  .component-icon {
+    flex-shrink: 0;
+  }
+
+  .component-title {
+    font-weight: $font-semibold;
+    font-size: $font-sm;
+    color: $neutral-black;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0; // Allow truncation
+  }
+
+  .component-badges {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+    flex-shrink: 0;
+  }
+}
+
+// =============================================================================
+// COMMON DESCRIPTION ROW (3-line truncation)
+// =============================================================================
+
+.chat-component-description {
+  font-size: $font-xs;
+  color: $neutral-dark-gray;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// =============================================================================
+// COMMON ACTION ROW
+// =============================================================================
+
+.chat-component-action-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: $space-1;
+}
+
+// =============================================================================
+// CARD BUBBLE (used in credits to show parent card)
+// =============================================================================
+
+.chat-component-card-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-xs;
+  color: $neutral-dark-gray;
+  padding: $space-half $space-1-5;
+  background-color: $neutral-lightest-gray;
+  border-radius: $radius-full;
+  max-width: 100%;
+
+  .bubble-card-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+}
+
+// =============================================================================
+// MULTIPLIER BADGE
+// =============================================================================
+
+.multiplier-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-half $space-1;
+  background-color: $primary-lightest;
+  color: $primary-dark;
+  border-radius: $radius-sm;
+  font-size: $font-xs;
+  font-weight: $font-bold;
+  flex-shrink: 0;
+  min-width: 28px;
+}
+
+// =============================================================================
+// STATUS BADGES (preferred, frozen)
+// =============================================================================
+
+.status-badge {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+
+  &.preferred {
+    color: $warning-yellow;
+  }
+
+  &.frozen {
+    color: $primary-medium;
+  }
+}
+
+// =============================================================================
+// SECONDARY TEXT
+// =============================================================================
+
+.chat-component-secondary-text {
+  font-size: $font-xs;
+  color: $neutral-dark-gray;
+}

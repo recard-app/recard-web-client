@@ -1,0 +1,32 @@
+@use '../../../styling/globals' as *;
+
+.show-more-button {
+  display: flex;
+  justify-content: center;
+  padding: $space-1;
+
+  button {
+    font-size: $font-xs;
+    color: $primary-medium;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: $space-2 $space-3;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary-color;
+      outline-offset: 2px;
+      border-radius: $radius-sm;
+    }
+
+    // Mobile: ensure 44px touch target
+    @media (max-width: $mobile-breakpoint) {
+      min-height: 44px;
+      padding: $space-3 $space-4;
+    }
+  }
+}

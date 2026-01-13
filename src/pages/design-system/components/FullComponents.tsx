@@ -9,7 +9,6 @@ import CreditEntry from '../../../components/CreditsDisplay/CreditList/CreditEnt
 import CreditCardSelector from '../../../components/CreditCardSelector';
 import SingleCardSelector from '../../../components/CreditCardSelector/SingleCardSelector';
 import { SelectCard } from '../../../components/ui/select-card/select-card';
-import PromptSolution from '../../../components/PromptWindow/PromptSolution';
 import PromptHistory from '../../../components/PromptWindow/PromptHistory';
 import { CardIcon } from '../../../icons';
 import { CheckIcon } from 'lucide-react';
@@ -21,7 +20,6 @@ import {
   mockConversations,
   mockMonthlyStats,
   mockMonthlyStatsEmpty,
-  mockChatSolutions,
   mockChatMessages,
   getCardDetailsById,
   getCardCreditById,
@@ -95,8 +93,7 @@ const FullComponents: React.FC = () => {
         <a href="#credit-entry">Credit Entry</a>
         <a href="#card-selector">Card Selector</a>
         <a href="#select-card">Select Card</a>
-        <a href="#chat-solutions">Chat Solutions</a>
-        <a href="#multi-card-selector">Multi Card Selector</a>
+                <a href="#multi-card-selector">Multi Card Selector</a>
         <a href="#chat-bubbles">Chat Bubbles</a>
       </nav>
 
@@ -547,146 +544,6 @@ const FullComponents: React.FC = () => {
                   onDeselectCard={() => setSelectedCardId('')}
                   className="expanded"
                 />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ================================================================ */}
-        {/* CHAT SOLUTIONS SECTION */}
-        {/* ================================================================ */}
-        <section id="chat-solutions" className="ds-section">
-          <h2 className="ds-section-title">Chat Solutions (PromptSolution)</h2>
-          <p className="ds-section-description">
-            Card recommendation solutions displayed in chat. Shows recommended cards with selection state.
-          </p>
-
-          {/* Solution Card States */}
-          <div className="ds-variant-group">
-            <h3 className="ds-variant-label">Individual Solution Card States</h3>
-            <span className="ds-component-class">class="solution-card"</span>
-            <div className="ds-solutions-demo">
-              <div className="solutions-container" style={{ padding: 0 }}>
-                <div className="collapsible-content expanded" style={{ border: 'none' }}>
-                  <div className="solution-cards">
-                    {/* Unselected Card (Recommended) */}
-                    <div className="solution-card">
-                      <div className="card-checkbox-container">
-                        <button className="use-card-button" aria-label="Select for purchase">
-                          {/* Empty - unselected */}
-                        </button>
-                      </div>
-                      <div className="card-content-container">
-                        <div className="card-header">
-                          <CardIcon 
-                            title="American Express Gold" 
-                            size={24} 
-                            primary={mockCreditCards[0].CardPrimaryColor}
-                            secondary={mockCreditCards[0].CardSecondaryColor}
-                          />
-                          <h3>
-                            American Express Gold
-                            <span className="recommended-badge">Recommended</span>
-                          </h3>
-                        </div>
-                        <div className="card-content">
-                          <div className="card-details">
-                            <p>Dining: 4X points</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Selected Card */}
-                    <div className="solution-card selected-card">
-                      <div className="card-checkbox-container">
-                        <button className="use-card-button selected" aria-label="Selected for purchase">
-                          <CheckIcon size={16} />
-                        </button>
-                      </div>
-                      <div className="card-content-container">
-                        <div className="card-header">
-                          <CardIcon 
-                            title="Chase Sapphire Reserve" 
-                            size={24} 
-                            primary={mockCreditCards[1].CardPrimaryColor}
-                            secondary={mockCreditCards[1].CardSecondaryColor}
-                          />
-                          <h3>Chase Sapphire Reserve</h3>
-                        </div>
-                        <div className="card-content">
-                          <div className="card-details">
-                            <p>Dining: 3X points</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Regular Unselected Card */}
-                    <div className="solution-card">
-                      <div className="card-checkbox-container">
-                        <button className="use-card-button" aria-label="Select for purchase">
-                          {/* Empty - unselected */}
-                        </button>
-                      </div>
-                      <div className="card-content-container">
-                        <div className="card-header">
-                          <CardIcon 
-                            title="Citi Premier" 
-                            size={24} 
-                            primary={mockCreditCards[2].CardPrimaryColor}
-                            secondary={mockCreditCards[2].CardSecondaryColor}
-                          />
-                          <h3>Citi Premier</h3>
-                        </div>
-                        <div className="card-content">
-                          <div className="card-details">
-                            <p>Dining: 3X points</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Full Component (Interactive) */}
-          <div className="ds-variant-group">
-            <h3 className="ds-variant-label">Full Component (Interactive)</h3>
-            <span className="ds-component-class">{'<PromptSolution />'}</span>
-            <p className="ds-section-description" style={{ marginBottom: '16px', marginTop: '8px' }}>
-              Note: Card selection in this demo won't persist as it requires API calls.
-            </p>
-            <div className="ds-solutions-demo">
-              <PromptSolution
-                promptSolutions={mockChatSolutions}
-                creditCards={mockCreditCards}
-                chatId="demo-chat"
-                selectedCardId={selectedCardId}
-                onHistoryUpdate={handleHistoryUpdate}
-                chatHistory={[]}
-              />
-            </div>
-          </div>
-
-          {/* Select Different Card Button States */}
-          <div className="ds-variant-group">
-            <h3 className="ds-variant-label">Select Different Card (in context)</h3>
-            <span className="ds-component-class">{'<SelectCard className="expanded" />'}</span>
-            <div className="ds-solutions-demo">
-              <div className="solutions-container" style={{ padding: 0 }}>
-                <div className="collapsible-content expanded" style={{ border: 'none', padding: '8px' }}>
-                  <SelectCard
-                    selectedCardId={selectedCardId}
-                    creditCards={mockCreditCards}
-                    onSelectCardClick={() => {}}
-                    onDeselectCard={() => setSelectedCardId('')}
-                    selectLabel="Select a different card:"
-                    className="expanded"
-                  />
-                </div>
               </div>
             </div>
           </div>

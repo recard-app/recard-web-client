@@ -1,0 +1,19 @@
+@use '../../../styling/globals' as *;
+
+.chat-component-block {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  width: 400px;
+
+  .component-list {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  // Mobile adjustments - full width, no max
+  @media (max-width: $mobile-breakpoint) {
+    width: 100%;
+  }
+}

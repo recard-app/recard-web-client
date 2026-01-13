@@ -10,6 +10,7 @@ import FormElements from './sections/FormElements';
 import ToggleBarSection from './sections/ToggleBarSection';
 import DialogSection from './sections/DialogSection';
 import CompositeComponents from './sections/CompositeComponents';
+import ChatComponentsSection from './sections/ChatComponentsSection';
 
 // Import UI components for viewport toggle
 import { ToggleBar, ToggleBarButton } from '@/components/ui/toggle-bar/toggle-bar';
@@ -27,6 +28,7 @@ const DesignSystem: React.FC = () => {
     { id: 'toggle-bar', label: 'Toggle Bar' },
     { id: 'dialogs', label: 'Dialogs & Drawers' },
     { id: 'composites', label: 'Composite Components' },
+    { id: 'chat-components', label: 'Chat Components' },
   ];
 
   return (
@@ -94,6 +96,10 @@ const DesignSystem: React.FC = () => {
 
         <section id="composites" className="ds-section">
           <CompositeComponents />
+        </section>
+
+        <section id="chat-components" className="ds-section">
+          <ChatComponentsSection />
         </section>
       </div>
     </div>

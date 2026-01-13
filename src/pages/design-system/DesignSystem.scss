@@ -434,3 +434,45 @@
   margin-top: $space-2;
 }
 
+// Component list (for chat components section)
+.ds-component-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  max-width: 320px;
+}
+
+// Showcase grid for smaller items
+.ds-showcase-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-4;
+  align-items: flex-start;
+}
+
+.ds-showcase-item {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-3;
+  background: $neutral-lightest-gray;
+  border-radius: $radius-lg;
+  border: 1px solid $neutral-light-gray;
+  min-width: 180px;
+  max-width: 280px;
+}
+
+.ds-showcase-label {
+  font-size: $font-xs;
+  font-weight: $font-semibold;
+  color: $neutral-dark-gray;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ds-description {
+  font-size: $font-sm;
+  color: $neutral-dark-gray;
+  margin: 0 0 $space-3 0;
+}
+

@@ -1,0 +1,46 @@
+@use '../../../styling/globals' as *;
+@use '../shared.scss';
+
+.chat-perk-component {
+  // Uses base .chat-component-item from shared.scss
+  // No .clickable - perks are display-only
+
+  .perk-header-row {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+  }
+
+  .perk-card-icon {
+    width: auto;
+    height: $icon-micro;
+    flex-shrink: 0;
+  }
+
+  .perk-title {
+    font-weight: $font-semibold;
+    font-size: $font-sm;
+    color: $neutral-black;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .perk-description {
+    font-size: $font-xs;
+    color: $neutral-dark-gray;
+    line-height: $leading-normal;
+    // 2-line truncation for compactness
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .action-row {
+    margin-top: $space-1;
+    padding-top: $space-1;
+    border-top: $border-half solid $neutral-light-gray;
+  }
+}

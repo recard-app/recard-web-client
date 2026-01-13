@@ -50,7 +50,7 @@ const CompositeComponents: React.FC = () => {
                 withActions
                 actions={
                   <button className="button small icon with-text">
-                    <Icon name="plus" variant="mini" size={16} />
+                    <Icon name="plus-circle" variant="mini" size={16} />
                     Add Credit
                   </button>
                 }

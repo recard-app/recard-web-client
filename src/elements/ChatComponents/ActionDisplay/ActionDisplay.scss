@@ -1,0 +1,54 @@
+@use '../../../styling/globals' as *;
+
+.action-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-2;
+
+  .action-content {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    color: $neutral-dark-gray;
+
+    .action-icon {
+      flex-shrink: 0;
+      color: inherit;
+    }
+
+    .action-text {
+      font-size: $font-xs;
+    }
+
+    &.undone {
+      .action-text {
+        text-decoration: line-through;
+      }
+    }
+  }
+
+  .undo-button {
+    font-size: $font-xs;
+    padding: $space-half $space-1;
+    display: inline-flex;
+    align-items: center;
+    gap: $space-half;
+    flex-shrink: 0;
+
+    // Loading state spinner
+    &.loading svg {
+      animation: spin 1s linear infinite;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

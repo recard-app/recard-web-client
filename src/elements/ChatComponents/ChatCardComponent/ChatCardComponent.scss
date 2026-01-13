@@ -1,0 +1,54 @@
+@use '../../../styling/globals' as *;
+@use '../shared.scss';
+
+.chat-card-component {
+  // Uses base .chat-component-item and .clickable from shared.scss
+
+  .card-content-row {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-2;
+    width: 100%;
+  }
+
+  .card-icon {
+    flex-shrink: 0;
+    margin-top: $space-1;
+  }
+
+  .card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0; // Allow text truncation
+
+    .card-name {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: $font-semibold;
+      font-size: $font-sm;
+      color: $neutral-black;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+
+      .frozen-icon,
+      .preferred-star-icon {
+        flex-shrink: 0;
+      }
+    }
+
+    .card-network {
+      font-size: $font-xs;
+      color: $neutral-dark-gray;
+    }
+  }
+
+  .action-row {
+    margin-top: $space-1;
+    padding-top: $space-1;
+    border-top: $border-half solid $neutral-light-gray;
+  }
+}
