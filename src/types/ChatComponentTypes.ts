@@ -92,6 +92,10 @@ export interface CardAction extends BaseChatComponentAction {
   cardId: string;
   /** For set_open_date: the new date value (MM/DD/YYYY format) */
   newValue?: string;
+  /** For set_preferred: the previous preferred card ID (null if no card was previously preferred) */
+  previousPreferredCardId?: string | null;
+  /** For set_open_date: the previous open date value (null if no date was previously set) */
+  previousOpenDate?: string | null;
 }
 
 /**
