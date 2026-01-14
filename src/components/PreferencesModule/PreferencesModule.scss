@@ -35,6 +35,27 @@
       color: $neutral-medium-gray;
     }
 
+    .special-instructions-field {
+      display: flex;
+      flex-direction: column;
+
+      .character-counter {
+        font-size: $font-xs;
+        color: $neutral-medium-gray;
+        text-align: right;
+        margin-top: $space-1;
+
+        &.warning {
+          color: $warning-yellow;
+        }
+
+        &.error {
+          color: $error;
+          font-weight: $font-medium;
+        }
+      }
+    }
+
     .chat-history-preference,
     .show-completed-preference {
       display: grid;

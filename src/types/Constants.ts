@@ -7,6 +7,7 @@
  */
 
 export const CHAT_DESCRIPTION_MAX_LENGTH = 40;
+export const SPECIAL_INSTRUCTIONS_MAX_LENGTH = 1000;
 
 export const CHAT_SOURCE = {
     USER: 'user',

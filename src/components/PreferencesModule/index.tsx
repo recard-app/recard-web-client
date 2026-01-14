@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
 import { CHAT_HISTORY_OPTIONS } from './utils';
-import { LOADING_ICON, LOADING_ICON_SIZE } from '../../types/Constants';
+import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH } from '../../types/Constants';
 import './PreferencesModule.scss';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 
@@ -32,6 +32,15 @@ function PreferencesModule({
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [loadError, setLoadError] = useState<string | null>(null);
+
+    const isOverLimit = instructions.length > SPECIAL_INSTRUCTIONS_MAX_LENGTH;
+
+    const getCounterClass = (): string => {
+        const length = instructions.length;
+        if (length > SPECIAL_INSTRUCTIONS_MAX_LENGTH) return 'error';
+        if (length > SPECIAL_INSTRUCTIONS_MAX_LENGTH * 0.9) return 'warning';
+        return '';
+    };
 
     const loadAllPreferences = async () => {
         setIsLoading(true);
@@ -65,6 +74,11 @@ function PreferencesModule({
      * Handles saving user preferences.
      */
     const handleSave = async (): Promise<void> => {
+        if (isOverLimit) {
+            toast.error(`Special instructions must be ${SPECIAL_INSTRUCTIONS_MAX_LENGTH} characters or less.`);
+            return;
+        }
+
         setIsSaving(true);
 
         try {
@@ -99,15 +113,20 @@ function PreferencesModule({
                 </div>
             ) : null}
             <div className="preferences-content" style={{ display: loadError ? 'none' : 'block' }}>
-                <textarea
-                    value={instructions}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
-                    placeholder={isLoading ? "Loading instructions..." : "Enter your special instructions for the ReCard AI assistant..."}
-                    rows={6}
-                    className={`preferences-textarea default-textarea ${isLoading ? 'loading' : ''}`}
-                    disabled={isLoading}
-                />
-                
+                <div className="special-instructions-field">
+                    <textarea
+                        value={instructions}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
+                        placeholder={isLoading ? "Loading instructions..." : "Enter your special instructions for the ReCard AI assistant..."}
+                        rows={6}
+                        className={`preferences-textarea default-textarea ${isLoading ? 'loading' : ''}`}
+                        disabled={isLoading}
+                    />
+                    <div className={`character-counter ${getCounterClass()}`}>
+                        {instructions.length} / {SPECIAL_INSTRUCTIONS_MAX_LENGTH}
+                    </div>
+                </div>
+
                 <div className="chat-history-preference">
                     <label htmlFor="chatHistorySelect">Chat History Preference:</label>
                     <select
