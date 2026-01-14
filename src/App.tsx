@@ -1015,7 +1015,7 @@ function AppContent({}: AppContentProps) {
             if (useDrawerForCardDetails) {
               return (
                 <Drawer open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen} direction="bottom">
-                  <DrawerContent>
+                  <DrawerContent className="card-detail-drawer">
                     <DrawerHeader>
                       <DrawerTitle className="sr-only">
                         {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
@@ -1034,7 +1034,7 @@ function AppContent({}: AppContentProps) {
             }
             return (
               <Dialog open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen}>
-                <DialogContent fullScreen>
+                <DialogContent fullScreen className="card-detail-dialog">
                   <DialogHeader>
                     <DialogTitle className="sr-only">
                       {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
