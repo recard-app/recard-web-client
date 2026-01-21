@@ -83,6 +83,7 @@ const ChatComponentsSection: React.FC = () => {
     cardId: 'demo',
     creditId: 'demo',
     periodNumber: 1,
+    year: new Date().getFullYear(),
     fromValue: 0,
     toValue: 10,
   };

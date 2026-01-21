@@ -1,10 +1,11 @@
 import { ChatSourceType } from './Constants';
+import { ChatComponentBlock } from './ChatComponentTypes';
 
 /**
  * ------------------------------------------------------------------------------------------------
- * 
+ *
  * SHARED API AND CLIENT TYPES
- * 
+ *
  * ------------------------------------------------------------------------------------------------
  */
 
@@ -13,6 +14,8 @@ export interface ChatMessage {
     chatSource: ChatSourceType;
     chatMessage: string;
     isError?: boolean;  // Flag to identify error messages (not saved to database)
+    componentBlock?: ChatComponentBlock;  // Agent response component block (cards, credits, perks, multipliers)
+    timestamp?: string;  // Message timestamp (ISO format)
 }
 
 export interface Conversation {
@@ -21,7 +24,8 @@ export interface Conversation {
     timestamp: string;
     conversation: ChatMessage[];
     cardSelection: ChatSolutionSelectedCardId;
-    contentBlocks?: MessageContentBlock[];
+    contentBlocks?: MessageContentBlock[];  // Legacy: old content block format
+    componentBlocks?: ChatComponentBlock[];  // New: agent component blocks
 }
 
 export interface ChatRequestData {

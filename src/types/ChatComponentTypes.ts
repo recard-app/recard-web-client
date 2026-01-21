@@ -3,10 +3,73 @@
  *
  * Defines all types for the chat thread component system that displays
  * cards, credits, perks, and multipliers inline after chat messages.
+ *
+ * Note: These types use simplified interfaces that match the backend's
+ * hydrated component format, not the full CreditCard/CardCredit/etc types.
  */
 
-import { CreditCard, CardCredit, CardPerk, EnrichedMultiplier } from './CreditCardTypes';
-import { UserCredit, CreditUsageType } from './CardCreditsTypes';
+import { CreditUsageType } from './CardCreditsTypes';
+
+// =============================================================================
+// SIMPLIFIED COMPONENT DATA TYPES (matches backend hydration format)
+// =============================================================================
+
+/**
+ * Simplified card data for chat component display
+ * Contains only the fields returned by backend hydration
+ */
+export interface ChatComponentCard {
+  id: string;
+  CardName: string;
+  CardIssuer?: string;
+  CardNetwork?: string;
+  RewardsCurrency?: string;
+  CardPrimaryColor: string;
+  CardSecondaryColor: string;
+  AnnualFee?: number;
+  isFrozen?: boolean;
+  isDefaultCard?: boolean;
+}
+
+/**
+ * Simplified credit definition for chat component display
+ */
+export interface ChatComponentCredit {
+  id: string;
+  Title: string;
+  Value: number;
+  TimePeriod: string;
+  Description?: string;
+}
+
+/**
+ * Simplified user credit tracking data for chat component display
+ */
+export interface ChatComponentUserCredit {
+  isAnniversaryBased?: boolean;
+  AssociatedPeriod: string;
+}
+
+/**
+ * Simplified perk data for chat component display
+ */
+export interface ChatComponentPerk {
+  id: string;
+  Title: string;
+  Description?: string;
+}
+
+/**
+ * Simplified multiplier data for chat component display
+ */
+export interface ChatComponentMultiplier {
+  id: string;
+  Name: string;
+  Category: string;
+  SubCategory?: string;
+  Multiplier: number | null;
+  Description?: string;
+}
 
 // =============================================================================
 // COMPONENT TYPE DISCRIMINATORS
@@ -178,8 +241,8 @@ interface BaseChatComponentItem {
  */
 export interface CardComponentItem extends BaseChatComponentItem {
   componentType: typeof CHAT_COMPONENT_TYPES.CARD;
-  /** Full card data for display */
-  card: CreditCard;
+  /** Card data for display (simplified format from backend) */
+  card: ChatComponentCard;
   /** Optional action that was performed */
   action?: CardAction;
 }
@@ -189,12 +252,12 @@ export interface CardComponentItem extends BaseChatComponentItem {
  */
 export interface CreditComponentItem extends BaseChatComponentItem {
   componentType: typeof CHAT_COMPONENT_TYPES.CREDIT;
-  /** User's credit tracking data */
-  userCredit: UserCredit;
-  /** Credit definition from card */
-  cardCredit: CardCredit;
-  /** Parent card for display */
-  card: CreditCard;
+  /** User's credit tracking data (simplified format from backend) */
+  userCredit: ChatComponentUserCredit;
+  /** Credit definition from card (simplified format from backend) */
+  cardCredit: ChatComponentCredit;
+  /** Parent card for display (simplified format from backend) */
+  card: ChatComponentCard;
   /** Maximum value of the credit (for $X / $Y display) */
   creditMaxValue: number;
   /** Current value used */
@@ -208,10 +271,10 @@ export interface CreditComponentItem extends BaseChatComponentItem {
  */
 export interface PerkComponentItem extends BaseChatComponentItem {
   componentType: typeof CHAT_COMPONENT_TYPES.PERK;
-  /** Perk data */
-  perk: CardPerk;
-  /** Parent card for display */
-  card: CreditCard;
+  /** Perk data (simplified format from backend) */
+  perk: ChatComponentPerk;
+  /** Parent card for display (simplified format from backend) */
+  card: ChatComponentCard;
   /** Optional action that was performed */
   action?: PerkAction;
 }
@@ -221,10 +284,10 @@ export interface PerkComponentItem extends BaseChatComponentItem {
  */
 export interface MultiplierComponentItem extends BaseChatComponentItem {
   componentType: typeof CHAT_COMPONENT_TYPES.MULTIPLIER;
-  /** Enriched multiplier with category info */
-  multiplier: EnrichedMultiplier;
-  /** Parent card for display */
-  card: CreditCard;
+  /** Multiplier data with category info (simplified format from backend) */
+  multiplier: ChatComponentMultiplier;
+  /** Parent card for display (simplified format from backend) */
+  card: ChatComponentCard;
   /** Optional action that was performed */
   action?: MultiplierAction;
 }

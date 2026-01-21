@@ -26,6 +26,11 @@ import {
   CreditAction,
   PerkAction,
   MultiplierAction,
+  ChatComponentCard,
+  ChatComponentCredit,
+  ChatComponentUserCredit,
+  ChatComponentPerk,
+  ChatComponentMultiplier,
   CHAT_COMPONENT_TYPES,
   CARD_ACTION_TYPES,
   CREDIT_ACTION_TYPES,
@@ -33,6 +38,75 @@ import {
   MULTIPLIER_ACTION_TYPES,
 } from '../../../types/ChatComponentTypes';
 import { MULTIPLIER_TYPES } from '../../../types/CreditCardTypes';
+
+// ============================================================================
+// TYPE CONVERSION HELPERS (for mock data)
+// ============================================================================
+
+/**
+ * Convert full CreditCard to simplified ChatComponentCard
+ */
+function toChatComponentCard(card: CreditCard, overrides?: Partial<ChatComponentCard>): ChatComponentCard {
+  return {
+    id: card.id,
+    CardName: card.CardName,
+    CardIssuer: card.CardIssuer,
+    CardNetwork: card.CardNetwork,
+    CardPrimaryColor: card.CardPrimaryColor || '#333333',
+    CardSecondaryColor: card.CardSecondaryColor || '#666666',
+    isFrozen: card.isFrozen,
+    isDefaultCard: card.isDefaultCard,
+    ...overrides,
+  };
+}
+
+/**
+ * Convert full CardCredit to simplified ChatComponentCredit
+ */
+function toChatComponentCredit(credit: CardCredit): ChatComponentCredit {
+  return {
+    id: credit.id,
+    Title: credit.Title,
+    Value: credit.Value,
+    TimePeriod: credit.TimePeriod,
+    Description: credit.Description,
+  };
+}
+
+/**
+ * Convert full UserCredit to simplified ChatComponentUserCredit
+ */
+function toChatComponentUserCredit(userCredit: UserCredit): ChatComponentUserCredit {
+  return {
+    isAnniversaryBased: userCredit.isAnniversaryBased,
+    AssociatedPeriod: userCredit.AssociatedPeriod,
+  };
+}
+
+/**
+ * Convert full CardPerk to simplified ChatComponentPerk
+ */
+function toChatComponentPerk(perk: CardPerk): ChatComponentPerk {
+  return {
+    id: perk.id,
+    Title: perk.Title,
+    Description: perk.Description,
+  };
+}
+
+/**
+ * Convert full EnrichedMultiplier to simplified ChatComponentMultiplier
+ */
+function toChatComponentMultiplier(multiplier: EnrichedMultiplier): ChatComponentMultiplier {
+  return {
+    id: multiplier.id,
+    Name: multiplier.Name || multiplier.Category,
+    Category: multiplier.Category,
+    SubCategory: multiplier.SubCategory,
+    Multiplier: multiplier.Multiplier,
+    Description: multiplier.Description,
+  };
+}
 
 // ============================================================================
 // MOCK CREDIT CARDS
@@ -585,7 +659,7 @@ export const mockCardComponentItems: CardComponentItem[] = [
     id: 'item-card-1',
     componentType: CHAT_COMPONENT_TYPES.CARD,
     displayOrder: 1,
-    card: mockCreditCards[0], // Amex Gold
+    card: toChatComponentCard(mockCreditCards[0]), // Amex Gold
     action: {
       id: 'action-card-1',
       componentType: CHAT_COMPONENT_TYPES.CARD,
@@ -599,7 +673,7 @@ export const mockCardComponentItems: CardComponentItem[] = [
     id: 'item-card-2',
     componentType: CHAT_COMPONENT_TYPES.CARD,
     displayOrder: 2,
-    card: { ...mockCreditCards[1], isDefaultCard: true }, // Chase Sapphire as preferred
+    card: toChatComponentCard(mockCreditCards[1], { isDefaultCard: true }), // Chase Sapphire as preferred
     action: {
       id: 'action-card-2',
       componentType: CHAT_COMPONENT_TYPES.CARD,
@@ -613,7 +687,7 @@ export const mockCardComponentItems: CardComponentItem[] = [
     id: 'item-card-3',
     componentType: CHAT_COMPONENT_TYPES.CARD,
     displayOrder: 3,
-    card: { ...mockCreditCards[2], isFrozen: true }, // Citi Premier frozen
+    card: toChatComponentCard(mockCreditCards[2], { isFrozen: true }), // Citi Premier frozen
     action: {
       id: 'action-card-3',
       componentType: CHAT_COMPONENT_TYPES.CARD,
@@ -627,13 +701,13 @@ export const mockCardComponentItems: CardComponentItem[] = [
     id: 'item-card-3b-preferred-frozen',
     componentType: CHAT_COMPONENT_TYPES.CARD,
     displayOrder: 3,
-    card: { ...mockCreditCards[3], isDefaultCard: true, isFrozen: true }, // Capital One both preferred and frozen
+    card: toChatComponentCard(mockCreditCards[3], { isDefaultCard: true, isFrozen: true }), // Capital One both preferred and frozen
   },
   {
     id: 'item-card-4-undone',
     componentType: CHAT_COMPONENT_TYPES.CARD,
     displayOrder: 4,
-    card: mockCreditCards[3], // Capital One Venture
+    card: toChatComponentCard(mockCreditCards[3]), // Capital One Venture
     action: {
       id: 'action-card-4',
       componentType: CHAT_COMPONENT_TYPES.CARD,
@@ -647,7 +721,7 @@ export const mockCardComponentItems: CardComponentItem[] = [
     id: 'item-card-5-no-action',
     componentType: CHAT_COMPONENT_TYPES.CARD,
     displayOrder: 5,
-    card: mockCreditCards[4], // Discover without action
+    card: toChatComponentCard(mockCreditCards[4]), // Discover without action
   },
 ];
 
@@ -657,9 +731,9 @@ export const mockCreditComponentItems: CreditComponentItem[] = [
     id: 'item-credit-1',
     componentType: CHAT_COMPONENT_TYPES.CREDIT,
     displayOrder: 1,
-    userCredit: mockUserCredits[0],
-    cardCredit: mockCardCredits[0],
-    card: mockCreditCards[0],
+    userCredit: toChatComponentUserCredit(mockUserCredits[0]),
+    cardCredit: toChatComponentCredit(mockCardCredits[0]),
+    card: toChatComponentCard(mockCreditCards[0]),
     creditMaxValue: 10,
     currentValueUsed: 10,
     action: {
@@ -681,9 +755,9 @@ export const mockCreditComponentItems: CreditComponentItem[] = [
     id: 'item-credit-2',
     componentType: CHAT_COMPONENT_TYPES.CREDIT,
     displayOrder: 2,
-    userCredit: mockUserCredits[1],
-    cardCredit: mockCardCredits[1],
-    card: mockCreditCards[0],
+    userCredit: toChatComponentUserCredit(mockUserCredits[1]),
+    cardCredit: toChatComponentCredit(mockCardCredits[1]),
+    card: toChatComponentCard(mockCreditCards[0]),
     creditMaxValue: 10,
     currentValueUsed: 5,
     action: {
@@ -705,9 +779,9 @@ export const mockCreditComponentItems: CreditComponentItem[] = [
     id: 'item-credit-3-no-action',
     componentType: CHAT_COMPONENT_TYPES.CREDIT,
     displayOrder: 3,
-    userCredit: mockUserCredits[2],
-    cardCredit: mockCardCredits[2],
-    card: mockCreditCards[1],
+    userCredit: toChatComponentUserCredit(mockUserCredits[2]),
+    cardCredit: toChatComponentCredit(mockCardCredits[2]),
+    card: toChatComponentCard(mockCreditCards[1]),
     creditMaxValue: 60,
     currentValueUsed: 0,
   },
@@ -715,9 +789,9 @@ export const mockCreditComponentItems: CreditComponentItem[] = [
     id: 'item-credit-4-anniversary',
     componentType: CHAT_COMPONENT_TYPES.CREDIT,
     displayOrder: 4,
-    userCredit: mockUserCredits[5], // Anniversary-based credit
-    cardCredit: mockCardCredits[5], // Anniversary-based card credit
-    card: mockCreditCards[1], // Chase Sapphire
+    userCredit: toChatComponentUserCredit(mockUserCredits[5]), // Anniversary-based credit
+    cardCredit: toChatComponentCredit(mockCardCredits[5]), // Anniversary-based card credit
+    card: toChatComponentCard(mockCreditCards[1]), // Chase Sapphire
     creditMaxValue: 200,
     currentValueUsed: 75,
     action: {
@@ -745,8 +819,8 @@ export const mockPerkComponentItems: PerkComponentItem[] = [
     id: 'item-perk-1',
     componentType: CHAT_COMPONENT_TYPES.PERK,
     displayOrder: 1,
-    perk: mockCardPerks[0],
-    card: mockCreditCards[0],
+    perk: toChatComponentPerk(mockCardPerks[0]),
+    card: toChatComponentCard(mockCreditCards[0]),
     action: {
       id: 'action-perk-1',
       componentType: CHAT_COMPONENT_TYPES.PERK,
@@ -761,8 +835,8 @@ export const mockPerkComponentItems: PerkComponentItem[] = [
     id: 'item-perk-2-undone',
     componentType: CHAT_COMPONENT_TYPES.PERK,
     displayOrder: 2,
-    perk: mockCardPerks[1],
-    card: mockCreditCards[1],
+    perk: toChatComponentPerk(mockCardPerks[1]),
+    card: toChatComponentCard(mockCreditCards[1]),
     action: {
       id: 'action-perk-2',
       componentType: CHAT_COMPONENT_TYPES.PERK,
@@ -777,8 +851,8 @@ export const mockPerkComponentItems: PerkComponentItem[] = [
     id: 'item-perk-3-no-action',
     componentType: CHAT_COMPONENT_TYPES.PERK,
     displayOrder: 3,
-    perk: mockCardPerks[2],
-    card: mockCreditCards[0],
+    perk: toChatComponentPerk(mockCardPerks[2]),
+    card: toChatComponentCard(mockCreditCards[0]),
   },
 ];
 
@@ -788,8 +862,8 @@ export const mockMultiplierComponentItems: MultiplierComponentItem[] = [
     id: 'item-mult-1',
     componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
     displayOrder: 1,
-    multiplier: mockCardMultipliers[0],
-    card: mockCreditCards[0],
+    multiplier: toChatComponentMultiplier(mockCardMultipliers[0]),
+    card: toChatComponentCard(mockCreditCards[0]),
     action: {
       id: 'action-mult-1',
       componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
@@ -804,15 +878,15 @@ export const mockMultiplierComponentItems: MultiplierComponentItem[] = [
     id: 'item-mult-2-no-action',
     componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
     displayOrder: 2,
-    multiplier: mockCardMultipliers[1],
-    card: mockCreditCards[1],
+    multiplier: toChatComponentMultiplier(mockCardMultipliers[1]),
+    card: toChatComponentCard(mockCreditCards[1]),
   },
   {
     id: 'item-mult-3-rotating',
     componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
     displayOrder: 3,
-    multiplier: mockCardMultipliers[2],
-    card: mockCreditCards[4],
+    multiplier: toChatComponentMultiplier(mockCardMultipliers[2]),
+    card: toChatComponentCard(mockCreditCards[4]),
     action: {
       id: 'action-mult-3',
       componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,

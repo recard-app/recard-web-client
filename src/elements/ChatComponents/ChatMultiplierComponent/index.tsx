@@ -4,7 +4,6 @@ import {
   MultiplierAction,
   MULTIPLIER_ACTION_DISPLAY_LABELS,
 } from '../../../types/ChatComponentTypes';
-import { getEffectiveCategory } from '../../../types/CreditCardTypes';
 import { CardIcon } from '../../../icons';
 import ActionDisplay from '../ActionDisplay';
 import './ChatMultiplierComponent.scss';
@@ -67,11 +66,10 @@ const ChatMultiplierComponent: React.FC<ChatMultiplierComponentProps> = ({
   // Get action display text
   const actionText = action ? MULTIPLIER_ACTION_DISPLAY_LABELS[action.actionType] : '';
 
-  // Get effective category for display
-  const { category, subCategory } = getEffectiveCategory(multiplier);
-  const categoryDisplay = subCategory && subCategory !== category
-    ? `${category} - ${subCategory}`
-    : category;
+  // Get category for display (backend provides effective category already resolved)
+  const categoryDisplay = multiplier.SubCategory && multiplier.SubCategory !== multiplier.Category
+    ? `${multiplier.Category} - ${multiplier.SubCategory}`
+    : multiplier.Category;
 
   return (
     <div className={className}>
