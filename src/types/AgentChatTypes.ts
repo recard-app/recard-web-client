@@ -76,6 +76,7 @@ export type StreamEventType =
 export interface StreamIndicatorEvent {
   type: 'indicator';
   message: string;
+  agentType?: string;
 }
 
 export interface StreamIndicatorEndEvent {
@@ -96,6 +97,7 @@ export interface StreamDoneEvent {
   type: 'done';
   messageId: string;
   timestamp: string;
+  agentType?: string;
 }
 
 export interface StreamErrorEvent {

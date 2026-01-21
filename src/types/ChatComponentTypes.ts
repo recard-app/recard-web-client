@@ -27,8 +27,8 @@ export interface ChatComponentCard {
   CardPrimaryColor: string;
   CardSecondaryColor: string;
   AnnualFee?: number;
-  isFrozen?: boolean;
-  isDefaultCard?: boolean;
+  frozen?: boolean;
+  preferred?: boolean;
 }
 
 /**

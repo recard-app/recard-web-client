@@ -82,6 +82,10 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
   }, []);
 
   const sendMessage = useCallback(async (prompt: string, chatHistory: ChatMessage[]) => {
+    console.log('[useAgentChat] Sending message:', prompt.slice(0, 50) + '...');
+    console.log('[useAgentChat] Chat history length:', chatHistory.length);
+    const startTime = performance.now();
+
     // Cancel any existing request
     abortControllerRef.current?.abort();
     cleanupRef.current?.();
@@ -103,6 +107,8 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       chatHistory: filterMessagesForApi(chatHistory),
       conversationId,
     };
+
+    console.log('[useAgentChat] Filtered history length:', requestData.chatHistory?.length || 0);
 
     // Accumulate streamed text
     let accumulatedText = '';
@@ -145,6 +151,10 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
         },
 
         onDone: (messageId, timestamp) => {
+          const totalTime = performance.now() - startTime;
+          console.log(`[useAgentChat] Done in ${(totalTime / 1000).toFixed(2)}s, messageId: ${messageId}`);
+          console.log(`[useAgentChat] Total text length: ${accumulatedText.length} chars`);
+
           // messageId and timestamp are now required per Phase 2 decision
           receivedMessageId = messageId;
           receivedTimestamp = timestamp;
@@ -170,6 +180,9 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
         },
 
         onError: (message) => {
+          const totalTime = performance.now() - startTime;
+          console.error(`[useAgentChat] Error after ${(totalTime / 1000).toFixed(2)}s:`, message);
+
           setStreamingState(prev => ({
             ...prev,
             isStreaming: false,

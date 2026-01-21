@@ -39,6 +39,13 @@ export class SSEClient {
   async connect(options: SSEClientOptions): Promise<void> {
     const { url, body, headers, onEvent, onOpen, onError, onClose, signal } = options;
 
+    console.log('[SSEClient] Connecting to:', url);
+    const startTime = performance.now();
+
+    // Show initial loading indicator while waiting for server to route the request
+    // Server will send agent-specific indicator after routing
+    onEvent({ type: 'indicator', message: 'Processing...' });
+
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -60,6 +67,51 @@ export class SSEClient {
 
       if (!response.body) {
         throw new Error('Response body is null');
+      }
+
+      const connectTime = performance.now() - startTime;
+      const contentType = response.headers.get('content-type');
+      console.log(`[SSEClient] Connected in ${connectTime.toFixed(0)}ms, Content-Type: ${contentType}`);
+
+      // Check if server returned JSON instead of SSE stream
+      if (contentType?.includes('application/json')) {
+        console.log('[SSEClient] Server returned JSON instead of SSE, parsing as fallback...');
+
+        const jsonData = await response.json();
+
+        // Show agent-specific indicator briefly if agentType is available
+        if (jsonData.agentType) {
+          const agentMessages: Record<string, string> = {
+            spend: 'Finding best card...',
+            card: 'Looking up card details...',
+            credit: 'Checking your credits...',
+            stats: 'Analyzing your stats...',
+            action: 'Processing your request...',
+            chat: 'Thinking...',
+          };
+          onEvent({ type: 'indicator', message: agentMessages[jsonData.agentType] || 'Thinking...' });
+        }
+
+        // Clear the loading indicator
+        onEvent({ type: 'indicator_end' });
+
+        // Emit events based on JSON response structure
+        if (jsonData.textResponse) {
+          onEvent({ type: 'text', content: jsonData.textResponse });
+        }
+        if (jsonData.componentBlock) {
+          console.log('[SSEClient] Component block received:', JSON.stringify(jsonData.componentBlock, null, 2));
+          onEvent({ type: 'components', block: jsonData.componentBlock });
+        } else {
+          console.log('[SSEClient] No componentBlock in response');
+        }
+        onEvent({
+          type: 'done',
+          messageId: jsonData.messageId || `msg-${Date.now()}`,
+          timestamp: jsonData.timestamp || new Date().toISOString()
+        });
+        onClose?.();
+        return;
       }
 
       this.isConnected = true;
@@ -94,6 +146,7 @@ export class SSEClient {
         const { done, value } = await this.reader.read();
 
         if (done) {
+          console.log('[SSEClient] Stream done, remaining buffer:', this.buffer ? `"${this.buffer.slice(0, 200)}"` : '(empty)');
           // Process any remaining buffer
           if (this.buffer.trim()) {
             this.processLine(this.buffer, onEvent);
@@ -102,7 +155,9 @@ export class SSEClient {
         }
 
         // Decode chunk and add to buffer
-        this.buffer += this.decoder.decode(value, { stream: true });
+        const chunk = this.decoder.decode(value, { stream: true });
+        console.log('[SSEClient] Received chunk:', `"${chunk.slice(0, 200)}${chunk.length > 200 ? '...' : ''}"`);
+        this.buffer += chunk;
 
         // Process complete lines
         const lines = this.buffer.split('\n');
@@ -117,6 +172,7 @@ export class SSEClient {
         onError?.(error);
       }
     } finally {
+      console.log('[SSEClient] Stream closed');
       this.isConnected = false;
       onClose?.();
     }
@@ -137,6 +193,7 @@ export class SSEClient {
 
       try {
         const event = JSON.parse(jsonStr) as StreamEvent;
+        console.log(`[SSEClient] Event: ${event.type}`, event.type === 'text' ? `"${(event as any).content?.slice(0, 50)}..."` : '');
         onEvent(event);
       } catch (parseError) {
         console.warn('[SSEClient] Failed to parse SSE event:', jsonStr, parseError);

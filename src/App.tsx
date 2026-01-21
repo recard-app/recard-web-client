@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
-import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard } from './types';
+import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard, UserCredit, CreditCardDetails, CardCredit } from './types';
 import { Icon, CardIcon } from './icons';
 // Services
 import {
@@ -72,6 +72,7 @@ import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 import { ComponentsProvider, useComponents } from './contexts/ComponentsContext';
 import CreditCardDetailView from './components/CreditCardDetailView';
+import CreditEditModal from './components/CreditPortfolio/CreditEditModal';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
 import CreditDetailedSummary from './components/CreditSummary/CreditDetailedSummary';
 import {
@@ -106,9 +107,8 @@ import {
 } from './types';
 
 // Types
-import { 
-  CreditCard, 
-  CreditCardDetails 
+import {
+  CreditCard
 } from './types/CreditCardTypes';
 import { UserComponentTrackingPreferences, PrioritizedCredit } from './types/CardCreditsTypes';
 import { FullHeightContext } from './hooks/useFullHeight';
@@ -224,6 +224,12 @@ function AppContent({}: AppContentProps) {
   const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
   const [isCardDetailsOpen, setIsCardDetailsOpen] = useState(false);
   const [isDetailedSummaryOpen, setIsDetailedSummaryOpen] = useState(false);
+  // State for credit detail modal (opened from chat component clicks)
+  const [selectedCreditForModal, setSelectedCreditForModal] = useState<{
+    userCredit: UserCredit;
+    card: CreditCardDetails;
+    cardCredit: CardCredit | null;
+  } | null>(null);
   const [cardsVersion, setCardsVersion] = useState<number>(0);
   const [isSavingCards, setIsSavingCards] = useState(false);
   const [cardSelectorSearchTerm, setCardSelectorSearchTerm] = useState<string>('');
@@ -671,6 +677,31 @@ function AppContent({}: AppContentProps) {
     }
   };
 
+  // Function to handle card selection by ID (for chat component clicks)
+  const handleCardSelectById = (cardId: string) => {
+    const details = userDetailedCardDetails.find(detail => detail.id === cardId);
+    if (details) {
+      setSelectedCardDetails(details);
+      setIsCardDetailsOpen(true);
+    }
+  };
+
+  // Function to handle credit selection by ID (for chat component clicks)
+  const handleCreditSelect = async (cardId: string, creditId: string) => {
+    try {
+      const currentYear = new Date().getFullYear();
+      const result = await UserCreditService.fetchCreditDetails(cardId, creditId, currentYear);
+
+      setSelectedCreditForModal({
+        userCredit: result.credit,
+        card: result.cardDetails,
+        cardCredit: result.creditDetails || null,
+      });
+    } catch (error) {
+      console.error('Failed to fetch credit details:', error);
+    }
+  };
+
   // Function to handle saving credit card selections
   const handleSaveCardSelections = async () => {
     if (!creditCardSelectorRef.current) return;
@@ -785,6 +816,9 @@ function AppContent({}: AppContentProps) {
               existingHistoryList={chatHistory}
               chatHistoryPreference={chatHistoryPreference}
               isLoadingHistory={isLoadingHistory}
+              onNewChat={handleClearChat}
+              onCardSelect={handleCardSelectById}
+              onCreditClick={handleCreditSelect}
             />
           </div>
         </div>
@@ -1065,6 +1099,19 @@ function AppContent({}: AppContentProps) {
               </DialogBody>
             </DialogContent>
           </Dialog>
+
+          {/* Credit Detail Modal (opened from chat component clicks) */}
+          {selectedCreditForModal && (
+            <CreditEditModal
+              isOpen={!!selectedCreditForModal}
+              onClose={() => setSelectedCreditForModal(null)}
+              userCredit={selectedCreditForModal.userCredit}
+              card={selectedCreditForModal.card}
+              cardCredit={selectedCreditForModal.cardCredit}
+              year={new Date().getFullYear()}
+              onUpdateComplete={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
+            />
+          )}
 
           {/* Design System Route - rendered outside of normal app wrapper */}
           {isDesignSystemPage ? (

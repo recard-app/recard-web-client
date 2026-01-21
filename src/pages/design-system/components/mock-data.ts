@@ -54,8 +54,8 @@ function toChatComponentCard(card: CreditCard, overrides?: Partial<ChatComponent
     CardNetwork: card.CardNetwork,
     CardPrimaryColor: card.CardPrimaryColor || '#333333',
     CardSecondaryColor: card.CardSecondaryColor || '#666666',
-    isFrozen: card.isFrozen,
-    isDefaultCard: card.isDefaultCard,
+    frozen: card.isFrozen,
+    preferred: card.isDefaultCard,
     ...overrides,
   };
 }
@@ -668,7 +668,7 @@ export const mockCardComponentItems: CardComponentItem[] = [
     id: 'item-card-2',
     componentType: CHAT_COMPONENT_TYPES.CARD,
     displayOrder: 2,
-    card: toChatComponentCard(mockCreditCards[1], { isDefaultCard: true }), // Chase Sapphire as preferred
+    card: toChatComponentCard(mockCreditCards[1], { preferred: true }), // Chase Sapphire as preferred
     action: {
       id: 'action-card-2',
       componentType: CHAT_COMPONENT_TYPES.CARD,
@@ -682,7 +682,7 @@ export const mockCardComponentItems: CardComponentItem[] = [
     id: 'item-card-3',
     componentType: CHAT_COMPONENT_TYPES.CARD,
     displayOrder: 3,
-    card: toChatComponentCard(mockCreditCards[2], { isFrozen: true }), // Citi Premier frozen
+    card: toChatComponentCard(mockCreditCards[2], { frozen: true }), // Citi Premier frozen
     action: {
       id: 'action-card-3',
       componentType: CHAT_COMPONENT_TYPES.CARD,
@@ -696,7 +696,7 @@ export const mockCardComponentItems: CardComponentItem[] = [
     id: 'item-card-3b-preferred-frozen',
     componentType: CHAT_COMPONENT_TYPES.CARD,
     displayOrder: 3,
-    card: toChatComponentCard(mockCreditCards[3], { isDefaultCard: true, isFrozen: true }), // Capital One both preferred and frozen
+    card: toChatComponentCard(mockCreditCards[3], { preferred: true, frozen: true }), // Capital One both preferred and frozen
   },
   {
     id: 'item-card-4-undone',

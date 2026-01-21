@@ -76,6 +76,7 @@ export const UserCreditService = {
     }): Promise<{
         credit: any;
         cardDetails: any;
+        creditDetails: any;
         yearContext: {
             totalCredits: number;
             yearData: CalendarUserCredits;

@@ -124,8 +124,9 @@ function PromptHistory({
 
     const { isStreaming, indicatorMessage, streamedText, componentBlock } = streamingState;
 
-    // Only show if streaming or has content
-    if (!isStreaming && !streamedText) return null;
+    // Only show streaming content while actively streaming
+    // Once streaming is done, the message is added to chatHistory, so we don't show it here
+    if (!isStreaming) return null;
 
     return (
       <div className="streaming-content">

@@ -37,6 +37,9 @@ interface PromptWindowProps {
     existingHistoryList: Conversation[];
     chatHistoryPreference: ChatHistoryPreference;
     isLoadingHistory?: boolean;
+    onNewChat: () => void;
+    onCardSelect?: (cardId: string) => void;
+    onCreditClick?: (cardId: string, creditId: string) => void;
 }
 
 /**
@@ -52,6 +55,9 @@ function PromptWindow({
     existingHistoryList,
     chatHistoryPreference,
     isLoadingHistory = false,
+    onNewChat,
+    onCardSelect,
+    onCreditClick,
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
@@ -71,22 +77,39 @@ function PromptWindow({
     // Error state for when loading an existing chat fails
     const [chatLoadError, setChatLoadError] = useState<string | null>(null);
 
+    // Ref to track if we're currently saving to prevent duplicate saves
+    const isSavingRef = useRef<boolean>(false);
+
     // Handler for completed messages - saves to history
     const handleMessageComplete = useCallback((
         message: ChatMessage
     ) => {
+        // Prevent duplicate saves (React strict mode can call this multiple times)
+        if (isSavingRef.current) {
+            console.log('[handleMessageComplete] Already saving, skipping duplicate call');
+            return;
+        }
+        isSavingRef.current = true;
+
         // Add assistant message to history
+        // IMPORTANT: We must NOT call side effects (like handleHistoryStorage) inside setChatHistory
+        // because React may call state updaters multiple times in strict mode
+        let historyForStorage: ChatMessage[] = [];
+
         setChatHistory(prev => {
             const updatedHistory = [...prev, message];
+            historyForStorage = updatedHistory;
+            return limitChatHistory(updatedHistory);
+        });
 
-            // Handle history persistence asynchronously
-            const componentBlocks = extractComponentBlocks(updatedHistory);
-
-            // Create abort controller for storage operation
+        // Handle history persistence OUTSIDE the state updater to avoid double calls
+        // Use setTimeout to ensure state update has been processed
+        setTimeout(() => {
+            const componentBlocks = extractComponentBlocks(historyForStorage);
             const storageAbortController = new AbortController();
 
             handleHistoryStorage(
-                updatedHistory,
+                historyForStorage,
                 componentBlocks,
                 storageAbortController.signal,
                 user,
@@ -101,10 +124,10 @@ function PromptWindow({
                 setIsNewChat
             ).catch(error => {
                 console.error('Error saving chat history:', error);
+            }).finally(() => {
+                isSavingRef.current = false;
             });
-
-            return limitChatHistory(updatedHistory);
-        });
+        }, 0);
     }, [user, chatHistoryPreference, isNewChat, chatId, existingHistoryList, onHistoryUpdate, returnCurrentChatId]);
 
     // Handler for stream errors
@@ -341,6 +364,9 @@ function PromptWindow({
         setIsNewChatPending(false);
         setChatId('');
 
+        // Reset saving flag for the new chat
+        isSavingRef.current = false;
+
         // Navigate to home
         navigate(PAGES.HOME.PATH);
     };
@@ -349,13 +375,15 @@ function PromptWindow({
      * Handlers for component clicks - passed to PromptHistory
      */
     const handleCardClick = (cardId: string) => {
-        // TODO: Implement card detail modal
-        console.log('Card clicked:', cardId);
+        if (onCardSelect) {
+            onCardSelect(cardId);
+        }
     };
 
     const handleCreditClick = (cardId: string, creditId: string) => {
-        // TODO: Implement credit edit modal
-        console.log('Credit clicked:', cardId, creditId);
+        if (onCreditClick) {
+            onCreditClick(cardId, creditId);
+        }
     };
 
     const handlePerkClick = (cardId: string, perkId: string) => {
@@ -412,7 +440,7 @@ function PromptWindow({
                 </div>
                 {chatHistory.length >= MAX_CHAT_MESSAGES && (
                     <div className="below-prompt-field-text">
-                        Remember to <button onClick={handleNewTransaction} className="inline-button">{TERMINOLOGY.inlineNewChatReminder}</button> for best results.
+                        Remember to <button onClick={onNewChat} className="inline-button">{TERMINOLOGY.inlineNewChatReminder}</button> for best results.
                     </div>
                 )}
                 {CHAT_HISTORY_MESSAGES[chatHistoryPreference] && (

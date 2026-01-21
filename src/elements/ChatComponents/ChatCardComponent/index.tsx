@@ -70,7 +70,7 @@ const ChatCardComponent: React.FC<ChatCardComponentProps> = ({
           />
           <div className="card-info">
             <div className="card-name">
-              {card.isFrozen && (
+              {card.frozen && (
                 <Icon
                   name="snowflake"
                   variant="mini"
@@ -79,7 +79,7 @@ const ChatCardComponent: React.FC<ChatCardComponentProps> = ({
                   className="frozen-icon"
                 />
               )}
-              {card.isDefaultCard && (
+              {card.preferred && (
                 <Icon
                   name="star"
                   variant="mini"
