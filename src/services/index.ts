@@ -24,3 +24,4 @@ export * from './ChatService';
 export * from './CardService';
 export * from './ComponentService';
 export * from './UndoService';
+export * from './SSEClient';
