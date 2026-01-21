@@ -6,6 +6,7 @@ import { CREDIT_INTERVALS, CREDIT_PERIODS, CreditUsageType, MOBILE_BREAKPOINT } 
 import { CreditCardDetails, CardCredit } from '@/types/CreditCardTypes';
 import { UserCredit } from '@/types/CardCreditsTypes';
 import { UserCreditService } from '@/services/UserServices/UserCreditService';
+import { InfoDisplay } from '@/elements';
 import CreditEntryDetails from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditEntryDetails';
 import CreditModalControls from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditModalControls';
 import CreditUsageTracker from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditEntryDetails/CreditUsageTracker';
@@ -21,6 +22,7 @@ export interface CreditEditModalProps {
   year: number;
   onUpdateComplete?: () => void;
   isUpdating?: boolean;
+  isLoading?: boolean;
   onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
 }
@@ -53,6 +55,7 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
   year,
   onUpdateComplete,
   isUpdating,
+  isLoading = false,
   onAddUpdatingCreditId,
   onRemoveUpdatingCreditId
 }) => {
@@ -142,8 +145,39 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
     }
   };
 
-  if (!userCredit || !card || !cardCredit) {
-    return null;
+  // Show loading state if modal is open but data is still loading
+  if (isLoading || !userCredit || !card || !cardCredit) {
+    if (!isOpen) return null;
+
+    // Render loading modal
+    const loadingContent = (
+      <InfoDisplay
+        type="loading"
+        message="Loading credit details..."
+        showTitle={false}
+        transparent={true}
+        centered={true}
+      />
+    );
+
+    if (isMobile) {
+      return (
+        <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
+          <DrawerContent fitContent maxHeight="40vh" className="credit-edit-modal-drawer">
+            <DrawerTitle className="sr-only">Loading</DrawerTitle>
+            {loadingContent}
+          </DrawerContent>
+        </Drawer>
+      );
+    }
+
+    return (
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <DialogContent width="600px">
+          {loadingContent}
+        </DialogContent>
+      </Dialog>
+    );
   }
 
   const title = cardCredit.Title ?? userCredit.CreditId;
