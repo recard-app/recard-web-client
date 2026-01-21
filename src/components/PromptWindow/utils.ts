@@ -1,4 +1,4 @@
-import { ChatMessage, ChatRequestData, Conversation } from '../../types/ChatTypes';
+import { ChatMessage, Conversation } from '../../types/ChatTypes';
 import { ChatComponentBlock } from '../../types/ChatComponentTypes';
 import { CHAT_SOURCE, RECOMMENDED_MAX_CHAT_MESSAGES, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, DEFAULT_CHAT_NAME_PLACEHOLDER } from '../../types';
 import { UserHistoryService } from '../../services';
@@ -45,28 +45,6 @@ export const extractComponentBlocks = (messages: ChatMessage[]): ChatComponentBl
         .filter(msg => msg.componentBlock)
         .map(msg => msg.componentBlock!)
         .filter(Boolean);
-};
-
-/**
- * @deprecated Use prepareAgentRequest from AgentChatTypes instead
- * Prepares the data object for API requests.
- * Now simplified to only include essential fields as backend fetches all other data.
- *
- * @param {string} name - User's name or 'Guest'
- * @param {string} promptValue - Current prompt value
- * @param {ChatMessage[]} chatHistory - Current chat history
- * @returns {ChatRequestData} Formatted request data for API calls
- */
-export const prepareRequestData = (
-    name: string,
-    promptValue: string,
-    chatHistory: ChatMessage[]
-): ChatRequestData => {
-    return {
-        name,
-        prompt: promptValue,
-        chatHistory: limitChatHistory(chatHistory)
-    };
 };
 
 /**
@@ -121,7 +99,6 @@ export const handleHistoryStorage = async (
             chatId: response.chatId,
             timestamp: new Date().toISOString(),
             conversation: historyToSave,
-            cardSelection: '',
             chatDescription: response.chatDescription || DEFAULT_CHAT_NAME,
             componentBlocks: componentBlocks
         };
@@ -145,7 +122,6 @@ export const handleHistoryStorage = async (
             chatId: chatId,
             timestamp: new Date().toISOString(),
             conversation: historyToSave,
-            cardSelection: '',
             chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME,
             componentBlocks: componentBlocks
         };

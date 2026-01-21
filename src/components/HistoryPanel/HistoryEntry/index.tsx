@@ -2,8 +2,8 @@ import React from 'react';
 import { toast } from 'sonner';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, CreditCard, PLACEHOLDER_CARD_IMAGE, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_RED, SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW } from '../../../types';
-import { Icon, createIconVariant, CardIcon } from '../../../icons';
+import { Conversation, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_RED } from '../../../types';
+import { Icon, createIconVariant } from '../../../icons';
 import { formatDate, deleteChatEntry } from './utils';
 import {
   DropdownMenu,
@@ -42,7 +42,6 @@ const SHOW_TIMESTAMP_ON_MOBILE = false;
  * @property onDelete - Optional callback when a chat is deleted
  * @property refreshHistory - Optional callback to force history refresh
  * @property returnCurrentChatId - Callback to update the current chat ID
- * @property creditCards - Optional array of available credit cards
  * @property variant - Optional variant for different styling contexts ('sidebar' | 'full-page')
  */
 interface HistoryEntryProps {
@@ -51,7 +50,6 @@ interface HistoryEntryProps {
   onDelete?: (chatId: string) => void;
   refreshHistory?: () => Promise<boolean>;
   returnCurrentChatId: (chatId: string | null) => void;
-  creditCards?: CreditCard[];
   variant?: 'sidebar' | 'full-page';
 }
 
@@ -61,7 +59,7 @@ const HISTORY_DROPDOWN_ICONS = {
   DELETE: (props: any = {}) => createIconVariant('delete', 'mini', ICON_RED, props.size)
 };
 
-function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, returnCurrentChatId, creditCards, variant = 'full-page' }: HistoryEntryProps): React.ReactElement {
+function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, returnCurrentChatId, variant = 'full-page' }: HistoryEntryProps): React.ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   // Tracks whether this entry is the currently selected chat
@@ -168,19 +166,10 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
     }
   };
 
-  // Get the selected card if it exists
-  const selectedCard = chatEntry.cardSelection && chatEntry.cardSelection !== '' 
-    ? creditCards?.find(card => card.id === chatEntry.cardSelection)
-    : null;
-
-  const displayCard = selectedCard 
-    ? { name: selectedCard.CardName, image: selectedCard.CardImage || PLACEHOLDER_CARD_IMAGE }
-    : null;
-
   return (
     <>
       <div
-        className={`history-entry ${!SHOW_TIMESTAMP_ON_MOBILE ? 'hide-timestamp-on-mobile' : ''} ${variant === 'sidebar' ? 'sidebar-variant' : 'full-page-variant'} ${isCurrent ? 'current' : ''} ${SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW && displayCard ? 'has-selected-card' : ''}`}
+        className={`history-entry ${!SHOW_TIMESTAMP_ON_MOBILE ? 'hide-timestamp-on-mobile' : ''} ${variant === 'sidebar' ? 'sidebar-variant' : 'full-page-variant'} ${isCurrent ? 'current' : ''}`}
         id={chatEntry.chatId}
         onClick={handleClick}
         style={{ cursor: 'pointer' }}
@@ -191,18 +180,6 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
             <p className="entry-title">{chatEntry.chatDescription}</p>
             <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
           </div>
-          {SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW && displayCard && (
-            <p className="selected-card-display">
-              <CardIcon
-                title={displayCard.name}
-                size={12}
-                primary={selectedCard?.CardPrimaryColor}
-                secondary={selectedCard?.CardSecondaryColor}
-                className="card-thumbnail"
-              />
-              {displayCard.name}
-            </p>
-          )}
         </div>
         
         <div className="actions-dropdown">

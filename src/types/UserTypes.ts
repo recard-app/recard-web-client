@@ -108,9 +108,9 @@ export interface SubscriptionPlanResponse {
 }
 
 /**
- * Lightweight conversation type for history list (excludes heavy conversation/solutions arrays)
+ * Lightweight conversation type for history list (excludes heavy conversation arrays)
  */
-export type LightweightConversation = Pick<Conversation, 'chatId' | 'chatDescription' | 'timestamp' | 'cardSelection'>;
+export type LightweightConversation = Pick<Conversation, 'chatId' | 'chatDescription' | 'timestamp'>;
 
 /**
  * Interface for paginated history response

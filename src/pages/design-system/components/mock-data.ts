@@ -402,35 +402,30 @@ export const mockConversations: Conversation[] = [
     chatDescription: 'Best card for groceries this month?',
     timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(), // 5 mins ago
     conversation: createMockMessages('Best card for groceries this month?'),
-    cardSelection: 'card-amex-gold',
   },
   {
     chatId: 'chat-2',
     chatDescription: 'Travel booking for vacation flights',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2 hours ago
     conversation: createMockMessages('Travel booking for vacation flights'),
-    cardSelection: 'card-chase-sapphire',
   },
   {
     chatId: 'chat-3',
     chatDescription: 'Which card for Amazon purchase?',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
     conversation: createMockMessages('Which card for Amazon purchase?'),
-    cardSelection: '',
   },
   {
     chatId: 'chat-4',
     chatDescription: 'Restaurant dinner with 5x points',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), // 3 days ago
     conversation: createMockMessages('Restaurant dinner with 5x points'),
-    cardSelection: 'card-amex-gold',
   },
   {
     chatId: 'chat-5',
     chatDescription: 'Gas station fill-up rewards',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(), // 7 days ago
     conversation: createMockMessages('Gas station fill-up rewards'),
-    cardSelection: 'card-citi-premier',
   },
 ];
 

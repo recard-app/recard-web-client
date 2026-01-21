@@ -6,7 +6,6 @@ import {
     HistoryParams,
     PagedHistoryResponse,
     ChatMessage,
-    ChatSolutionSelectedCardId,
 } from '../../types';
 import { ChatComponentBlock } from '../../types/ChatComponentTypes';
 
@@ -120,24 +119,6 @@ export const UserHistoryService = {
                 componentBlocks
             },
             { headers, signal }
-        );
-    },
-
-    /**
-     * Updates the selected card for a specific chat transaction
-     * @param chatId ID of the chat to update
-     * @param cardSelection ID of the selected card
-     * @returns Promise<void>
-     */
-    async updateTransactionCardSelection(
-        chatId: string,
-        cardSelection: ChatSolutionSelectedCardId
-    ): Promise<void> {
-        const headers = await getAuthHeaders();
-        await axios.put(
-            `${apiurl}/users/history/${chatId}/transaction_card_selection`,
-            { cardSelection },
-            { headers }
         );
     },
 
