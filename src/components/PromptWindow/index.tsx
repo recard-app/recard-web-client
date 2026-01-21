@@ -40,6 +40,10 @@ interface PromptWindowProps {
     onNewChat: () => void;
     onCardSelect?: (cardId: string) => void;
     onCreditClick?: (cardId: string, creditId: string) => void;
+    /** Callback to refresh credits/monthly stats after AI updates */
+    onRefreshCredits?: () => void;
+    /** Callback to refresh cards after AI updates */
+    onRefreshCards?: () => void;
 }
 
 /**
@@ -58,6 +62,8 @@ function PromptWindow({
     onNewChat,
     onCardSelect,
     onCreditClick,
+    onRefreshCredits,
+    onRefreshCards,
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
@@ -138,6 +144,21 @@ function PromptWindow({
         setIsNewChatPending(false);
     }, []);
 
+    // Handler for data changes (triggers UI refresh)
+    const handleDataChanged = useCallback((dataChanged: { credits?: boolean; cards?: boolean; preferences?: boolean }) => {
+        console.log('[PromptWindow] Data changed, triggering refresh:', dataChanged);
+
+        if (dataChanged.credits && onRefreshCredits) {
+            onRefreshCredits();
+        }
+
+        if (dataChanged.cards && onRefreshCards) {
+            onRefreshCards();
+        }
+
+        // Note: preferences refresh is handled by the preferences context if needed
+    }, [onRefreshCredits, onRefreshCards]);
+
     // Use the agent chat hook for streaming
     const {
         streamingState,
@@ -149,6 +170,7 @@ function PromptWindow({
         conversationId: chatId || undefined,
         onMessageComplete: handleMessageComplete,
         onError: handleStreamError,
+        onDataChanged: handleDataChanged,
     });
 
     // Declare that this component needs full height behavior

@@ -837,6 +837,8 @@ function AppContent({}: AppContentProps) {
               onNewChat={handleClearChat}
               onCardSelect={handleCardSelectById}
               onCreditClick={handleCreditSelect}
+              onRefreshCredits={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
+              onRefreshCards={() => setCardsVersion(v => v + 1)}
             />
           </div>
         </div>

@@ -6,6 +6,7 @@ import {
   AgentResponseData,
   isQuickResponse,
   StreamEvent,
+  DataChangedFlags,
 } from '../types/AgentChatTypes';
 import { ChatComponentBlock } from '../types/ChatComponentTypes';
 import { RECOMMENDED_MAX_CHAT_MESSAGES } from '../types/Constants';
@@ -51,7 +52,7 @@ export interface StreamingCallbacks {
   onIndicatorEnd: () => void;
   onText: (content: string) => void;
   onComponents: (block: ChatComponentBlock) => void;
-  onDone: (messageId: string, timestamp: string) => void;
+  onDone: (messageId: string, timestamp: string, dataChanged?: DataChangedFlags) => void;
   onError: (message: string) => void;
 }
 
@@ -97,7 +98,7 @@ export function sendAgentMessageStreaming(
               callbacks.onComponents(event.block);
               break;
             case 'done':
-              callbacks.onDone(event.messageId, event.timestamp);
+              callbacks.onDone(event.messageId, event.timestamp, event.dataChanged);
               break;
             case 'error':
               callbacks.onError(event.message);

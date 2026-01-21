@@ -11,6 +11,7 @@ import { ChatComponentBlock } from '../types/ChatComponentTypes';
 import {
   AgentRequestData,
   filterMessagesForApi,
+  DataChangedFlags,
 } from '../types/AgentChatTypes';
 import {
   sendAgentMessageStreaming,
@@ -38,6 +39,7 @@ export interface UseAgentChatOptions {
   conversationId?: string;
   onMessageComplete?: (message: ChatMessage, componentBlock?: ChatComponentBlock) => void;
   onError?: (error: string) => void;
+  onDataChanged?: (dataChanged: DataChangedFlags) => void;
 }
 
 export interface UseAgentChatReturn {
@@ -67,7 +69,7 @@ export const initialStreamingState: StreamingState = {
 // ============================================
 
 export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatReturn {
-  const { userName, conversationId, onMessageComplete, onError } = options;
+  const { userName, conversationId, onMessageComplete, onError, onDataChanged } = options;
 
   const [streamingState, setStreamingState] = useState<StreamingState>(initialStreamingState);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -150,10 +152,13 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
           }));
         },
 
-        onDone: (messageId, timestamp) => {
+        onDone: (messageId, timestamp, dataChanged) => {
           const totalTime = performance.now() - startTime;
           console.log(`[useAgentChat] Done in ${(totalTime / 1000).toFixed(2)}s, messageId: ${messageId}`);
           console.log(`[useAgentChat] Total text length: ${accumulatedText.length} chars`);
+          if (dataChanged) {
+            console.log(`[useAgentChat] Data changed:`, dataChanged);
+          }
 
           // messageId and timestamp are now required per Phase 2 decision
           receivedMessageId = messageId;
@@ -165,6 +170,11 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
             messageId: receivedMessageId,
             timestamp: receivedTimestamp,
           }));
+
+          // Notify about data changes (for UI refresh)
+          if (dataChanged && onDataChanged) {
+            onDataChanged(dataChanged);
+          }
 
           // Create final message and notify
           if (onMessageComplete) {
@@ -193,7 +203,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       },
       abortControllerRef.current.signal
     );
-  }, [userName, conversationId, onMessageComplete, onError]);
+  }, [userName, conversationId, onMessageComplete, onError, onDataChanged]);
 
   const cancelStream = useCallback(() => {
     abortControllerRef.current?.abort();

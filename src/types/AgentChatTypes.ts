@@ -93,11 +93,22 @@ export interface StreamComponentsEvent {
   block: ChatComponentBlock;
 }
 
+/**
+ * Flags indicating which data was modified by the AI
+ * Used to trigger UI refreshes
+ */
+export interface DataChangedFlags {
+  credits?: boolean;
+  cards?: boolean;
+  preferences?: boolean;
+}
+
 export interface StreamDoneEvent {
   type: 'done';
   messageId: string;
   timestamp: string;
   agentType?: string;
+  dataChanged?: DataChangedFlags;
 }
 
 export interface StreamErrorEvent {
