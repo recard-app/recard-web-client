@@ -564,10 +564,7 @@ const FullComponents: React.FC = () => {
             <div className="ds-solutions-demo">
               <PromptHistory
                 chatHistory={mockChatMessages}
-                creditCards={mockCreditCards}
-                onCardSelect={(blockId, cardId) => {
-                  console.log('Card selected from chat bubble', blockId, cardId);
-                }}
+                isNewChat={false}
               />
             </div>
           </div>

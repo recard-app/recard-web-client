@@ -7,8 +7,8 @@ import {
     PagedHistoryResponse,
     ChatMessage,
     ChatSolutionSelectedCardId,
-    MessageContentBlock,
 } from '../../types';
+import { ChatComponentBlock } from '../../types/ChatComponentTypes';
 
 export const UserHistoryService = {
     /**
@@ -77,13 +77,13 @@ export const UserHistoryService = {
     /**
      * Creates a new chat history entry
      * @param chatHistory Array of chat messages
-     * @param contentBlocks Array of content blocks
+     * @param componentBlocks Array of component blocks from agent responses
      * @param signal Optional AbortController signal
      * @returns Promise containing the created conversation
      */
     async createChatHistory(
         chatHistory: ChatMessage[],
-        contentBlocks: MessageContentBlock[],
+        componentBlocks: ChatComponentBlock[],
         signal?: AbortSignal
     ): Promise<Conversation> {
         const headers = await getAuthHeaders();
@@ -91,7 +91,7 @@ export const UserHistoryService = {
             `${apiurl}/users/history`,
             {
                 chatHistory,
-                contentBlocks
+                componentBlocks
             },
             { headers, signal }
         );
@@ -102,14 +102,14 @@ export const UserHistoryService = {
      * Updates an existing chat history entry
      * @param chatId ID of the chat to update
      * @param chatHistory Updated array of chat messages
-     * @param contentBlocks Array of content blocks
+     * @param componentBlocks Array of component blocks from agent responses
      * @param signal Optional AbortController signal
      * @returns Promise<void>
      */
     async updateChatHistory(
         chatId: string,
         chatHistory: ChatMessage[],
-        contentBlocks: MessageContentBlock[],
+        componentBlocks: ChatComponentBlock[],
         signal?: AbortSignal
     ): Promise<void> {
         const headers = await getAuthHeaders();
@@ -117,7 +117,7 @@ export const UserHistoryService = {
             `${apiurl}/users/history/${chatId}`,
             {
                 chatHistory,
-                contentBlocks
+                componentBlocks
             },
             { headers, signal }
         );

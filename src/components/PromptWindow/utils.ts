@@ -1,8 +1,7 @@
-import { ChatMessage, ChatRequestData, Conversation, MessageContentBlock, SolutionContent } from '../../types/ChatTypes';
-import { InstructionsPreference } from '../../types/UserTypes';
-import { CreditCard } from '../../types/CreditCardTypes';
+import { ChatMessage, ChatRequestData, Conversation } from '../../types/ChatTypes';
+import { ChatComponentBlock } from '../../types/ChatComponentTypes';
 import { CHAT_SOURCE, RECOMMENDED_MAX_CHAT_MESSAGES, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, DEFAULT_CHAT_NAME_PLACEHOLDER } from '../../types';
-import { UserHistoryService, ChatService } from '../../services';
+import { UserHistoryService } from '../../services';
 
 // Constants
 export const aiClient = CHAT_SOURCE.ASSISTANT;
@@ -15,7 +14,41 @@ export const CHAT_HISTORY_MESSAGES: Record<ChatHistoryPreferenceType, string> = 
     [CHAT_HISTORY_PREFERENCE.KEEP_HISTORY]: ''
 };
 
+// ============================================
+// NEW: Agent Chat Utilities
+// ============================================
+
 /**
+ * Create a user message object
+ */
+export const createUserMessage = (content: string): ChatMessage => ({
+    id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    chatSource: CHAT_SOURCE.USER,
+    chatMessage: content,
+});
+
+/**
+ * Create an error message object (not persisted to database)
+ */
+export const createErrorMessage = (errorText: string): ChatMessage => ({
+    id: `error-${Date.now()}`,
+    chatSource: CHAT_SOURCE.ERROR,
+    chatMessage: errorText,
+    isError: true,
+});
+
+/**
+ * Extract component blocks from messages for storage
+ */
+export const extractComponentBlocks = (messages: ChatMessage[]): ChatComponentBlock[] => {
+    return messages
+        .filter(msg => msg.componentBlock)
+        .map(msg => msg.componentBlock!)
+        .filter(Boolean);
+};
+
+/**
+ * @deprecated Use prepareAgentRequest from AgentChatTypes instead
  * Prepares the data object for API requests.
  * Now simplified to only include essential fields as backend fetches all other data.
  *
@@ -37,61 +70,11 @@ export const prepareRequestData = (
 };
 
 /**
- * Processes the chat interaction and generates content blocks.
- * Handles both AI response generation and card recommendations.
- *
- * @param {ChatRequestData} requestData - Data for the API request
- * @param {ChatMessage} userMessage - The user's message
- * @param {AbortSignal} signal - Signal for request cancellation
- * @param {ChatMessage[]} chatHistory - Current chat history
- * @param {Function} setIsLoading - Function to update loading state
- * @param {Function} setIsLoadingSolutions - Function to update solutions loading state
- * @param {Function} setChatHistory - Function to update chat history state
- * @returns {Promise<{updatedHistory: ChatMessage[], contentBlocks: MessageContentBlock[]}>} Updated chat history and content blocks
- */
-export const processChatAndSolutions = async (
-    requestData: ChatRequestData,
-    userMessage: ChatMessage,
-    signal: AbortSignal,
-    chatHistory: ChatMessage[],
-    setIsLoading: (loading: boolean) => void,
-    setIsLoadingSolutions: (loading: boolean) => void,
-    setChatHistory: (history: ChatMessage[]) => void
-): Promise<{ updatedHistory: ChatMessage[], contentBlocks: MessageContentBlock[] }> => {
-    const aiResponse = await ChatService.getChatResponse(requestData, signal);
-    const updatedHistory = [...chatHistory, userMessage, {
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        chatSource: aiClient,
-        chatMessage: aiResponse
-    }];
-
-    setIsLoading(false);
-    setIsLoadingSolutions(true);
-
-    setChatHistory(limitChatHistory(updatedHistory));
-
-    const response = await ChatService.getChatSolution({
-        ...requestData,
-        chatHistory: limitChatHistory(updatedHistory)
-    }, signal);
-
-    if (signal.aborted) throw new Error('Request aborted');
-
-    // Extract contentBlocks from response
-    const contentBlocks = response.contentBlocks || [];
-
-    // Log content blocks to console for verification
-    console.log('Content Blocks received from backend:', contentBlocks);
-
-    return { updatedHistory, contentBlocks };
-};
-
-/**
  * Handles the storage and updating of chat history.
  * Creates new chat sessions or updates existing ones based on user preferences.
  *
  * @param {ChatMessage[]} updatedHistory - The new chat history to store
- * @param {MessageContentBlock[]} contentBlocks - The content blocks to store
+ * @param {ChatComponentBlock[]} componentBlocks - The component blocks to store
  * @param {AbortSignal} signal - Signal for request cancellation
  * @param {any} user - Current user object
  * @param {string} chatHistoryPreference - User's chat history preference
@@ -106,7 +89,7 @@ export const processChatAndSolutions = async (
  */
 export const handleHistoryStorage = async (
     updatedHistory: ChatMessage[],
-    contentBlocks: MessageContentBlock[],
+    componentBlocks: ChatComponentBlock[],
     signal: AbortSignal,
     user: any,
     chatHistoryPreference: string,
@@ -127,27 +110,20 @@ export const handleHistoryStorage = async (
     // Filter out error messages and failed user messages before saving
     const historyToSave = getSuccessfulMessages(updatedHistory);
 
-    // Extract the most recent solution block's selectedCardId for cardSelection
-    const solutionBlocks = contentBlocks.filter(block => block.contentType === 'solutions');
-    const mostRecentSolutionBlock = solutionBlocks[solutionBlocks.length - 1];
-    const cardSelection = (mostRecentSolutionBlock?.contentType === 'solutions'
-        ? (mostRecentSolutionBlock.content as SolutionContent).selectedCardId
-        : '') || '';
-
     if (isNewChat) {
         const response = await UserHistoryService.createChatHistory(
             historyToSave,
-            contentBlocks,
+            componentBlocks,
             signal
         );
 
-        const newChat = {
+        const newChat: Conversation = {
             chatId: response.chatId,
             timestamp: new Date().toISOString(),
             conversation: historyToSave,
-            cardSelection: cardSelection,
+            cardSelection: '',
             chatDescription: response.chatDescription || DEFAULT_CHAT_NAME,
-            contentBlocks: contentBlocks
+            componentBlocks: componentBlocks
         };
         onHistoryUpdate(newChat);
 
@@ -160,18 +136,18 @@ export const handleHistoryStorage = async (
         await UserHistoryService.updateChatHistory(
             chatId,
             historyToSave,
-            contentBlocks,
+            componentBlocks,
             signal
         );
 
         const existingChat = existingHistoryList.find(chat => chat.chatId === chatId);
-        const updatedChat = {
+        const updatedChat: Conversation = {
             chatId: chatId,
             timestamp: new Date().toISOString(),
             conversation: historyToSave,
-            cardSelection: cardSelection,
+            cardSelection: '',
             chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME,
-            contentBlocks: contentBlocks
+            componentBlocks: componentBlocks
         };
         onHistoryUpdate(updatedChat);
     }

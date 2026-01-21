@@ -777,14 +777,12 @@ function AppContent({}: AppContentProps) {
         <div className="app-content">
           <div className="prompt-window-container">
             <PromptWindow
-              creditCards={creditCards}
               user={user}
               returnCurrentChatId={getCurrentChatId}
               onHistoryUpdate={handleHistoryUpdate}
               clearChatCallback={clearChatCallback}
               setClearChatCallback={setClearChatCallback}
               existingHistoryList={chatHistory}
-              preferencesInstructions={preferencesInstructions}
               chatHistoryPreference={chatHistoryPreference}
               isLoadingHistory={isLoadingHistory}
             />
