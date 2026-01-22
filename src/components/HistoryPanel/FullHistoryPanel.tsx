@@ -1,35 +1,20 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
-import Icon from '../../icons';
-import {
-  Drawer,
-  DrawerContent,
-  DrawerTitle
-} from '../ui/drawer';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
 import {
   Conversation,
   LightweightConversation,
   PaginationData,
   CreditCard,
-  SubscriptionPlan,
-  SHOW_SUBSCRIPTION_MENTIONS,
   TERMINOLOGY,
-  HISTORY_PAGE_SIZE,
-  SUBSCRIPTION_PLAN
+  HISTORY_PAGE_SIZE
 } from '../../types';
-// Note: Do not update user preferences from this page; the toggle here is a local filter override
 import {
   organizeHistoryByDate,
-  getAvailableYears,
-  getAvailableMonths,
-  shouldShowUpgradeMessage,
-  getUpgradeMessageText,
   fetchPagedHistory,
-  fetchFirstEntryDate,
   handleHistoryDelete
 } from './utils';
 import {
@@ -41,7 +26,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '../ui/pagination';
-import HeaderControls from '@/components/PageControls/HeaderControls';
 import FooterControls from '@/components/PageControls/FooterControls';
  
 
@@ -55,28 +39,21 @@ export interface FullHistoryPanelProps {
   currentChatId: string | null;
   returnCurrentChatId: (chatId: string | null) => void;
   onHistoryUpdate: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
-  subscriptionPlan: SubscriptionPlan;
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
-  // Mobile filters drawer control (optional; if not provided, component manages its own state)
-  filtersDrawerOpen?: boolean;
-  onFiltersDrawerOpenChange?: (open: boolean) => void;
 }
 
 function FullHistoryPanel({
   currentChatId,
   returnCurrentChatId,
   onHistoryUpdate,
-  subscriptionPlan = SUBSCRIPTION_PLAN.FREE,
   creditCards,
-  historyRefreshTrigger,
-  filtersDrawerOpen,
-  onFiltersDrawerOpenChange
+  historyRefreshTrigger
 }: FullHistoryPanelProps) {
   const { user } = useAuth();
   // Use scroll height for this component's scrollable area
   useScrollHeight(true);
-  
+
   // Current page number in pagination
   const [currentPage, setCurrentPage] = useState<number>(1);
   // Pagination metadata from the API
@@ -87,51 +64,25 @@ function FullHistoryPanel({
   const [fetchError, setFetchError] = useState<string | null>(null);
   // List of paginated conversations
   const [paginatedList, setPaginatedList] = useState<LightweightConversation[]>([]);
-  // Selected month for filtering
-  const [selectedMonth, setSelectedMonth] = useState<string>('');
-  // Selected year for filtering
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
-  // Date of the first entry in history
-  const [firstEntryDate, setFirstEntryDate] = useState<Date | null>(null);
-  // Mobile filters drawer state (uncontrolled fallback)
-  const [isFiltersDrawerOpenInternal, setIsFiltersDrawerOpenInternal] = useState<boolean>(false);
-  const isFiltersDrawerOpen = typeof filtersDrawerOpen === 'boolean' ? filtersDrawerOpen : isFiltersDrawerOpenInternal;
-  const setIsFiltersDrawerOpen = (open: boolean) => {
-    if (onFiltersDrawerOpenChange) onFiltersDrawerOpenChange(open);
-    else setIsFiltersDrawerOpenInternal(open);
-  };
 
   // Ref to track if component has mounted to prevent duplicate initial API calls
   const hasMountedRef = useRef(false);
-  const isInitialMountRef = useRef(true);
 
-  // Removed session storage persistence in favor of App-scoped state
-
-  // Fetch data function - not memoized to avoid dependency issues
+  // Fetch data function
   const fetchData = async () => {
     if (!user) return;
 
     setIsLoading(true);
     setFetchError(null);
     try {
-      // Fetch history data
       const result = await fetchPagedHistory({
         currentPage,
-        pageSize: PAGE_SIZE_LIMIT,
-        selectedMonth,
-        selectedYear
+        pageSize: PAGE_SIZE_LIMIT
       });
 
       if (result.chatHistory) {
         setPaginatedList(result.chatHistory);
         setPaginationData(result.pagination);
-      }
-
-      // Only fetch first entry date on initial mount
-      if (isInitialMountRef.current) {
-        const date = await fetchFirstEntryDate();
-        setFirstEntryDate(date);
-        isInitialMountRef.current = false;
       }
     } catch (err) {
       console.error('Failed to fetch history:', err);
@@ -141,46 +92,18 @@ function FullHistoryPanel({
     }
   };
 
-  // Single effect handles all data fetching and page resets
+  // Fetch data on mount, page change, or refresh trigger
   useEffect(() => {
     if (!user) return;
 
-    // Auto-reset to page 1 when filters change (except initial mount)
-    if (hasMountedRef.current && currentPage !== 1) {
-      setCurrentPage(1);
-      return; // Let the page change trigger the next fetch
-    }
-
-    // Set mounted flag after first render
     if (!hasMountedRef.current) {
       hasMountedRef.current = true;
     }
 
     fetchData();
-  }, [user, currentPage, selectedMonth, selectedYear, historyRefreshTrigger]);
-
-  // No propagation
-
+  }, [user, currentPage, historyRefreshTrigger]);
 
   if (!user) return null;
-
-  const handleClearFilter = () => {
-    setSelectedMonth('');
-    setCurrentPage(1);
-  };
-
-  /**
-   * Resets all filters to default state
-   * - Month cleared
-   * - Year set to current year
-   */
-  const handleResetFilters = () => {
-    const currentYear = new Date().getFullYear();
-    setSelectedMonth('');
-    setSelectedYear(currentYear);
-    setCurrentPage(1);
-  };
-
 
   /**
    * Wrapper function to handle deletion
@@ -318,106 +241,8 @@ function FullHistoryPanel({
     );
   };
 
-  /**
-   * Renders the upgrade message if needed
-   * @returns JSX for upgrade message
-   */
-  const renderUpgradeMessage = () => {
-    if (!SHOW_SUBSCRIPTION_MENTIONS || !shouldShowUpgradeMessage(true, paginationData, subscriptionPlan, selectedMonth, selectedYear, firstEntryDate)) return null;
-
-    return (
-      <InfoDisplay
-        type="info"
-        message={getUpgradeMessageText(selectedMonth, selectedYear)}
-        showTitle={false}
-        transparent={false}
-      />
-    );
-  };
-
-  /**
-   * Renders the date filter controls
-   * @returns JSX for date filter controls
-   */
-  const renderDateFilter = () => {
-    return (
-      <div className="date-filter statement-filter">
-        <label className="filter-label">View Monthly Statement</label>
-        <div className={`filter-wrapper ${selectedMonth && selectedYear ? 'active' : ''}`}>
-          <select 
-            value={selectedYear}
-            onChange={(e) => {
-              const newYear = e.target.value ? parseInt(e.target.value) : selectedYear;
-              setSelectedYear(newYear);
-              // Reset month when year changes to prevent invalid combinations
-              setSelectedMonth('');
-              setCurrentPage(1);
-            }}
-            className="year-select default-select"
-          >
-            <option value="">Select Year</option>
-            {getAvailableYears(subscriptionPlan, firstEntryDate).map(year => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-          <select 
-            value={selectedMonth}
-            onChange={(e) => {
-              setSelectedMonth(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="month-select default-select"
-            disabled={!selectedYear}
-          >
-            <option value="">Select Month</option>
-            {selectedYear && getAvailableMonths(subscriptionPlan, firstEntryDate, selectedYear).map(month => (
-              <option key={month.value} value={month.value}>
-                {month.label}
-              </option>
-            ))}
-          </select>
-          {selectedMonth && (
-            <button 
-              className="clear-filter"
-              onClick={handleClearFilter}
-              aria-label="Clear filter"
-            >
-              ×
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="history-panel full-history">
-      {/* Sticky header with filters */}
-      <HeaderControls className="history-panel-header">
-        <div className="header-controls desktop-only">
-          {renderDateFilter()}
-        </div>
-        <div className="header-actions">
-          <button
-            className="button outline small desktop-only"
-            onClick={handleResetFilters}
-            aria-label="Reset filters to defaults"
-          >
-            Reset Filters
-          </button>
-          <button
-            className="button small mobile-only icon with-text"
-            onClick={() => setIsFiltersDrawerOpen(true)}
-            aria-label="Open filters drawer"
-          >
-            <Icon name="filter" variant="mini" size={16} />
-            Filters
-          </button>
-        </div>
-      </HeaderControls>
-
       {/* Scrollable content area */}
       <div className="history-panel-content">
         {fetchError ? (
@@ -447,84 +272,30 @@ function FullHistoryPanel({
           />
         ) : (
           <>
-            {/* Show filtered results without categories */}
-            {(selectedMonth !== '') ? (
-              <div className="section-entries">
-                {paginatedList.map(entry => (
-                  <HistoryEntry 
-                    key={entry.chatId} 
-                    chatEntry={entry}
-                    currentChatId={currentChatId}
-                    onDelete={handleDelete}
-                    refreshHistory={forceHistoryRefresh}
-                    returnCurrentChatId={returnCurrentChatId}
-                    creditCards={creditCards}
-                    variant="full-page"
-                  />
-                ))}
-              </div>
-            ) : (
-              // Show categorized view only when no filters are applied
-              organizeHistoryByDate(paginatedList).map(section => (
-                <div key={section.title} className="history-section">
-                  <div className="section-header">
-                    <p className="section-title">{section.title}</p>
-                  </div>
-                  <div className="section-entries">
-                    {section.entries.map(entry => (
-                      <HistoryEntry 
-                        key={entry.chatId} 
-                        chatEntry={entry}
-                        currentChatId={currentChatId}
-                        onDelete={handleDelete}
-                        refreshHistory={forceHistoryRefresh}
-                        returnCurrentChatId={returnCurrentChatId}
-                        creditCards={creditCards}
-                        variant="full-page"
-                      />
-                    ))}
-                  </div>
+            {organizeHistoryByDate(paginatedList).map(section => (
+              <div key={section.title} className="history-section">
+                <div className="section-header">
+                  <p className="section-title">{section.title}</p>
                 </div>
-              ))
-            )}
-            {renderUpgradeMessage()}
+                <div className="section-entries">
+                  {section.entries.map(entry => (
+                    <HistoryEntry
+                      key={entry.chatId}
+                      chatEntry={entry}
+                      currentChatId={currentChatId}
+                      onDelete={handleDelete}
+                      refreshHistory={forceHistoryRefresh}
+                      returnCurrentChatId={returnCurrentChatId}
+                      creditCards={creditCards}
+                      variant="full-page"
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
           </>
         )}
       </div>
-
-      {/* Mobile Filters Drawer */}
-      <Drawer open={isFiltersDrawerOpen} onOpenChange={setIsFiltersDrawerOpen}>
-        <DrawerContent className="mobile-history-filters-drawer" fitContent maxHeight="80vh">
-          <DrawerTitle className="sr-only">Filters</DrawerTitle>
-          <div className="dialog-header drawer-sticky-header history-filters-header">
-            <h2>Filters</h2>
-            <div className="header-actions">
-              <span
-                className="reset-link"
-                onClick={handleResetFilters}
-                role="button"
-                tabIndex={0}
-                aria-label="Reset filters to defaults"
-              >
-                Reset
-              </span>
-            </div>
-          </div>
-          <div className="dialog-body">
-            {renderDateFilter()}
-          </div>
-          <div className="dialog-footer">
-            <div className="button-group">
-              <button
-                className="button"
-                onClick={() => setIsFiltersDrawerOpen(false)}
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        </DrawerContent>
-      </Drawer>
 
       {/* Sticky footer with pagination */}
       {paginationData && (

@@ -92,33 +92,11 @@
           font-size: $font-chat;
         }
 
-        ul p,
-        ol p,
-        li p {
-          margin: $space-1 0;
-        }
-
-        li {
-          margin: $space-1 0;
-        }
-
+        // Lists - compact styling
         ul, ol {
-          margin: $space-2 0;
-        }
-        
-        // Typography
-        strong {
-          font-weight: $font-semibold;
-        }
-
-        em {
-          font-style: italic;
-        }
-        
-        // Lists
-        ul, ol {
+          margin: $space-1 0;
           padding-left: $space-4;
-          list-style-position: outside;
+          list-style-position: inside;
         }
 
         ul {
@@ -131,6 +109,22 @@
 
         li {
           display: list-item;
+          margin: 0;
+        }
+
+        // Remove paragraph margins inside list items (markdown wraps li content in p)
+        li p {
+          margin: 0;
+          display: inline;
+        }
+
+        // Typography
+        strong {
+          font-weight: $font-semibold;
+        }
+
+        em {
+          font-style: italic;
         }
         
         // Headers - progressive sizing from h6 (1.0rem) to h1 (1.2rem)

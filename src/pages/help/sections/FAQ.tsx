@@ -23,8 +23,8 @@ const FAQ: React.FC = () => {
 
           <HelpSection title={`Is ${APP_NAME} free?`} defaultExpanded={false}>
             <p>
-              Basic features are free. Premium unlocks additional features like unlimited chat history
-              and advanced analytics.
+              Yes, {APP_NAME} is free to use. All features including full chat history access
+              are available to all users.
             </p>
           </HelpSection>
 

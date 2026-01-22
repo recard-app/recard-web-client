@@ -1,6 +1,6 @@
 import React from 'react';
 import FullHistoryPanel from '../../components/HistoryPanel/FullHistoryPanel';
-import { Conversation, CreditCard, FREE_PLAN_HISTORY_DAYS, PAGE_NAMES, PAGE_ICONS, SubscriptionPlan } from '../../types';
+import { Conversation, CreditCard, PAGE_NAMES, PAGE_ICONS, SubscriptionPlan } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import './History.scss';
@@ -13,9 +13,6 @@ interface HistoryProps {
   subscriptionPlan: SubscriptionPlan;
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
-  // Mobile filters drawer control (optional)
-  filtersDrawerOpen?: boolean;
-  onFiltersDrawerOpenChange?: (open: boolean) => void;
 }
 
 function History({
@@ -25,37 +22,24 @@ function History({
   onHistoryUpdate,
   subscriptionPlan,
   creditCards,
-  historyRefreshTrigger,
-  filtersDrawerOpen,
-  onFiltersDrawerOpenChange
+  historyRefreshTrigger
 }: HistoryProps): React.ReactElement {
   // Use the full height hook for this page
   useFullHeight(true);
-
-  const getHistorySubtitle = (): string | undefined => {
-    if (subscriptionPlan === 'free') {
-      return `Last ${FREE_PLAN_HISTORY_DAYS} Days`;
-    }
-    return undefined;
-  };
 
   return (
     <div className="standard-page-layout">
       <PageHeader
         title={PAGE_NAMES.TRANSACTION_HISTORY}
         icon={PAGE_ICONS.TRANSACTION_HISTORY.MINI}
-        subtitle={getHistorySubtitle()}
       />
       <div className="standard-page-content--no-padding">
         <FullHistoryPanel
           currentChatId={currentChatId}
           returnCurrentChatId={returnCurrentChatId}
           onHistoryUpdate={onHistoryUpdate}
-          subscriptionPlan={subscriptionPlan}
           creditCards={creditCards}
           historyRefreshTrigger={historyRefreshTrigger}
-          filtersDrawerOpen={filtersDrawerOpen}
-          onFiltersDrawerOpenChange={onFiltersDrawerOpenChange}
         />
       </div>
     </div>

@@ -1,20 +1,11 @@
 import {
   Conversation,
   LightweightConversation,
-  SubscriptionPlan,
   HistoryParams,
   PaginationData
 } from '../../types';
-import { MONTH_OPTIONS, MONTH_NAMES, SUBSCRIPTION_PLAN, TERMINOLOGY } from '../../types';
+import { MONTH_NAMES } from '../../types';
 import { UserHistoryService } from '../../services';
-
-/**
- * Interface representing a month option in the dropdown
- */
-export interface MonthOption {
-  value: number;
-  label: string;
-}
 
 /**
  * Interface representing a section of history entries grouped by date
@@ -31,9 +22,7 @@ export interface HistorySection {
 export const fetchPagedHistory = async (
     params: {
       currentPage: number,
-      pageSize: number,
-      selectedMonth: string,
-      selectedYear: number
+      pageSize: number
     }
   ): Promise<{
     chatHistory: LightweightConversation[],
@@ -46,15 +35,9 @@ export const fetchPagedHistory = async (
         page: params.currentPage,
         page_size: params.pageSize
       };
-      
-      // Only add month/year if selected
-      if (params.selectedMonth !== '') {
-        apiParams.month = params.selectedMonth;
-        apiParams.year = params.selectedYear.toString();
-      }
-      
+
       const response = await UserHistoryService.fetchPagedHistory(apiParams);
-      
+
       return {
         chatHistory: response.chatHistory || [],
         pagination: response.pagination
@@ -66,22 +49,6 @@ export const fetchPagedHistory = async (
         pagination: null,
         error: error instanceof Error ? error : new Error('Unknown error occurred')
       };
-    }
-  };
-  
-  /**
-   * Fetches the first entry date from the API
-   */
-  export const fetchFirstEntryDate = async (): Promise<Date | null> => {
-    try {
-      const response = await UserHistoryService.fetchFirstEntryDate();
-      if (response.firstEntryDate) {
-        return new Date(response.firstEntryDate);
-      }
-      return null;
-    } catch (error) {
-      console.error('Error fetching first entry date:', error);
-      return null;
     }
   };
   
@@ -104,73 +71,6 @@ export const fetchPagedHistory = async (
       onHistoryUpdate(prevHistory => prevHistory.filter(chat => chat.chatId !== deletedChatId));
     }
   };
-
-/**
- * Gets the list of available years based on subscription plan and first entry date
- */
-export const getAvailableYears = (
-  subscriptionPlan: SubscriptionPlan = SUBSCRIPTION_PLAN.FREE,
-  firstEntryDate: Date | null
-): number[] => {
-  const now = new Date();
-  const cutoffDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 90);
-  const years: number[] = [];
-
-  if (subscriptionPlan === SUBSCRIPTION_PLAN.PREMIUM && firstEntryDate) {
-    // For premium users, show years from first entry up to current
-    const startYear = firstEntryDate.getFullYear();
-    const endYear = now.getFullYear();
-    for (let year = endYear; year >= startYear; year--) {
-      years.push(year);
-    }
-  } else {
-    // For free users, only show years within 90 days
-    const startYear = cutoffDate.getFullYear();
-    const endYear = now.getFullYear();
-    for (let year = endYear; year >= startYear; year--) {
-      years.push(year);
-    }
-  }
-
-  return years;
-};
-
-/**
- * Gets the list of available months based on subscription plan and selected year
- */
-export const getAvailableMonths = (
-  subscriptionPlan: SubscriptionPlan = SUBSCRIPTION_PLAN.FREE,
-  firstEntryDate: Date | null,
-  selectedYear: number
-): MonthOption[] => {
-  const now = new Date();
-  const cutoffDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 90);
-  
-  let availableMonths = [...MONTH_OPTIONS];
-
-  if (subscriptionPlan === SUBSCRIPTION_PLAN.PREMIUM && firstEntryDate) {
-    // For premium users, limit months based on firstEntryDate
-    if (selectedYear === firstEntryDate.getFullYear()) {
-      availableMonths = availableMonths.filter(month => 
-        month.value >= firstEntryDate.getMonth() + 1
-      );
-    }
-  } else {
-    // For free users, only show months within 90 days
-    if (selectedYear === cutoffDate.getFullYear()) {
-      availableMonths = availableMonths.filter(month => 
-        month.value >= cutoffDate.getMonth() + 1
-      );
-    }
-    if (selectedYear === now.getFullYear()) {
-      availableMonths = availableMonths.filter(month => 
-        month.value <= now.getMonth() + 1
-      );
-    }
-  }
-
-  return availableMonths;
-};
 
 /**
  * Organizes history entries into sections based on date
@@ -246,63 +146,4 @@ export const organizeHistoryByDate = (entries: Conversation[] | LightweightConve
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       )
     }));
-};
-
-/**
- * Determines if upgrade message should be shown
- */
-export const shouldShowUpgradeMessage = (
-  fullListSize: boolean,
-  paginationData: { current_page: number; total_pages: number } | null,
-  subscriptionPlan: SubscriptionPlan,
-  selectedMonth: string,
-  selectedYear: number,
-  firstEntryDate: Date | null
-): boolean => {
-  if (!fullListSize || !paginationData || subscriptionPlan === SUBSCRIPTION_PLAN.PREMIUM) return false;
-  
-  // Only show on last page
-  if (paginationData.current_page !== paginationData.total_pages) return false;
-
-  const now = new Date();
-  const cutoffDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 90);
-  
-  // If viewing a specific month/year (statement view)
-  if (selectedMonth !== '') {
-    const selectedDate = new Date(selectedYear, parseInt(selectedMonth) - 1, 1);
-
-    // Show upgrade message if the selected date is more than 90 days old
-    return selectedDate < cutoffDate;
-  }
-
-  // For regular transaction view, show message if there are entries older than 90 days
-  return firstEntryDate ? firstEntryDate < cutoffDate : false;
-};
-
-/**
- * Gets the appropriate upgrade message text
- */
-export const getUpgradeMessageText = (
-  selectedMonth: string,
-  selectedYear: number
-): string => {
-  if (!selectedMonth) {
-    return `Unlock your complete ${TERMINOLOGY.nounSingular} history with Premium`;
-  }
-
-  const now = new Date();
-  const cutoffDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 90);
-  const selectedDate = new Date(selectedYear, parseInt(selectedMonth) - 1, 1);
-
-  // Calculate months difference
-  const monthsDiff = (cutoffDate.getFullYear() - selectedDate.getFullYear()) * 12 + 
-                    (cutoffDate.getMonth() - selectedDate.getMonth());
-
-  // If the selected month is close to the 90-day cutoff (within 1 month)
-  if (monthsDiff <= 1 && selectedDate < cutoffDate) {
-    return `Any ${TERMINOLOGY.nounPlural} older than 90 days may be hidden from this statement. Unlock all ${TERMINOLOGY.nounSingular} history with Premium`;
-  }
-
-  // If the selected month is well beyond the 90-day cutoff
-  return `Access your complete ${MONTH_OPTIONS.find(m => m.value === parseInt(selectedMonth))?.label} ${selectedYear} ${TERMINOLOGY.nounSingular} history with Premium`;
 };

@@ -34,11 +34,10 @@ function PromptHistory({
 }: PromptHistoryProps): React.ReactElement {
   const chatEntries = chatHistory;
 
-  // Initialize the showdown converter with options to minimize whitespace
+  // Initialize the showdown converter for markdown to HTML conversion
   const converter = useMemo(() => {
-    // First create basic converter with common options
     const instance = new showdown.Converter({
-      simpleLineBreaks: true,       // Convert \n to <br>
+      simpleLineBreaks: false,      // Use traditional markdown: double newline = new paragraph
       strikethrough: true,          // Support ~~text~~ for strikethrough
       tables: true,                 // Support tables
       tasklists: true,              // Support task lists
@@ -53,64 +52,13 @@ function PromptHistory({
       disableForced4SpacesIndentedSublists: true // More compact sublists
     });
 
-    // Set output format to minimize whitespace
+    // Set output format options
     instance.setOption('noHeaderId', true);
     instance.setOption('ghCompatibleHeaderId', false);
     instance.setOption('omitExtraWLInCodeBlocks', true);
 
-    // Custom extensions to eliminate space between elements
-    const removeWhitespaceExtension = () => {
-      return [
-        // Replace paragraphs with more compact versions
-        {
-          type: 'output',
-          filter: (html: string) => {
-            // Remove whitespace between tags
-            html = html.replace(/>\s+</g, '><');
-
-            // Remove excess newlines
-            html = html.replace(/\n\s*\n/g, '\n');
-
-            // Fix for paragraph spacing - eliminate spacing between p tags
-            html = html.replace(/<\/p>\s*<p>/g, '</p><p>');
-
-            // Fix for list spacing - eliminate spacing between list items
-            html = html.replace(/<\/li>\s*<li>/g, '</li><li>');
-
-            // Fix for list spacing - eliminate spacing between ul/ol and li
-            html = html.replace(/<ul>\s*<li>/g, '<ul><li>');
-            html = html.replace(/<ol>\s*<li>/g, '<ol><li>');
-            html = html.replace(/<\/li>\s*<\/ul>/g, '</li></ul>');
-            html = html.replace(/<\/li>\s*<\/ol>/g, '</li></ol>');
-
-            // Remove excess whitespace before and after content
-            html = html.trim();
-
-            return html;
-          }
-        },
-        // Custom paragraph handling
-        {
-          type: 'lang',
-          filter: (text: string) => {
-            // Eliminate double line breaks where possible
-            return text.replace(/\n\n+/g, '\n\n');
-          }
-        }
-      ];
-    };
-
-    // Add extension to converter
-    instance.addExtension(removeWhitespaceExtension(), 'removeWhitespace');
-
     return instance;
   }, []);
-
-  // Process the HTML to further remove unwanted spacing
-  const processHtml = (html: string): string => {
-    // Remove any remaining whitespace between tags
-    return html.replace(/>\s+</g, '><');
-  };
 
   // Default handlers for component clicks
   const handleCardClick = onCardClick || (() => {});
@@ -143,7 +91,7 @@ function PromptHistory({
               <img src={PLACEHOLDER_ASSISTANT_IMAGE} alt="AI Assistant" className="assistant-avatar" />
               <div className="message-text">
                 <div
-                  dangerouslySetInnerHTML={{ __html: processHtml(converter.makeHtml(streamedText)) }}
+                  dangerouslySetInnerHTML={{ __html: converter.makeHtml(streamedText) }}
                 />
                 {isStreaming && <span className="cursor-blink" />}
               </div>
@@ -212,7 +160,7 @@ function PromptHistory({
                   <div className="message-text">
                     <div
                       dangerouslySetInnerHTML={{
-                        __html: processHtml(converter.makeHtml(chatEntry.chatMessage))
+                        __html: converter.makeHtml(chatEntry.chatMessage)
                       }}
                     ></div>
                     {/* Render component block if present (new agent format) */}
