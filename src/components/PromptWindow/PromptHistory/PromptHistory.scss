@@ -58,7 +58,6 @@
       width: 100%;
 
       .message-text {
-        white-space: pre-line;
         word-wrap: break-word;
         word-break: normal;
         overflow-wrap: break-word;
@@ -67,36 +66,28 @@
         margin: 0;
         width: 100%;
         font-size: $font-chat;
+        line-height: 1.5;
 
         // TOGGLE: Mobile-only overrides for prompt history that makes text bubbles take up less space
         @media (max-width: $mobile-breakpoint) {
           padding: 0 $space-2;
         }
-        
-        // Reset for direct markdown content only
-        // Exclude chat component block which has its own styling
-        > :not(.chat-component-block) {
-          margin: 0;
-          padding: 0;
-          line-height: 1.5;
-        }
 
-        > :not(.chat-component-block) * {
-          margin: 0;
-          padding: 0;
-          line-height: 1.5;
-        }
-
+        // Paragraphs
         p {
-          margin: $space-2 0;
+          margin: 0 0 $space-2 0;
           font-size: $font-chat;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
         }
 
-        // Lists - compact styling
+        // Lists - ChatGPT/Claude style with bullets outside
         ul, ol {
-          margin: $space-1 0;
-          padding-left: $space-4;
-          list-style-position: inside;
+          margin: $space-2 0;
+          padding-left: $space-5;
+          list-style-position: outside;
         }
 
         ul {
@@ -108,14 +99,18 @@
         }
 
         li {
-          display: list-item;
-          margin: 0;
+          margin-bottom: $space-1;
+          padding-left: $space-1;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
         }
 
-        // Remove paragraph margins inside list items (markdown wraps li content in p)
-        li p {
+        // Markdown wraps li content in <p> - remove its margin
+        li > p {
           margin: 0;
-          display: inline;
+          display: block;
         }
 
         // Typography
@@ -125,56 +120,6 @@
 
         em {
           font-style: italic;
-        }
-        
-        // Headers - progressive sizing from h6 (1.0rem) to h1 (1.2rem)
-        h6 {
-          font-size: 1.0rem;
-          font-weight: $font-medium;
-          margin: $space-2 0 $space-1 0;
-          line-height: 1.4;
-        }
-
-        h5 {
-          font-size: 1.033rem;
-          font-weight: $font-medium;
-          margin: $space-2 0 $space-1 0;
-          line-height: 1.4;
-        }
-
-        h4 {
-          font-size: 1.067rem;
-          font-weight: $font-medium;
-          margin: $space-2 0 $space-1 0;
-          line-height: 1.4;
-        }
-
-        h3 {
-          font-size: 1.1rem;
-          font-weight: $font-medium;
-          margin: $space-2 0 $space-1 0;
-          line-height: 1.4;
-        }
-
-        h2 {
-          font-size: 1.133rem;
-          font-weight: $font-medium;
-          margin: $space-2 0 $space-1 0;
-          line-height: 1.4;
-        }
-
-        h1 {
-          font-size: 1.2rem;
-          font-weight: $font-medium;
-          margin: $space-3 0 $space-1-5 0;
-          line-height: 1.4;
-        }
-        
-        // Line breaks
-        br {
-          display: inline;
-          height: 0;
-          line-height: 0;
         }
       }
     }

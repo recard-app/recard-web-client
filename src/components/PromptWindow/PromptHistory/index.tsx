@@ -35,28 +35,13 @@ function PromptHistory({
   const chatEntries = chatHistory;
 
   // Initialize the showdown converter for markdown to HTML conversion
+  // Only supports: bold, italic, bullet lists, numbered lists, paragraphs
   const converter = useMemo(() => {
     const instance = new showdown.Converter({
-      simpleLineBreaks: false,      // Use traditional markdown: double newline = new paragraph
-      strikethrough: true,          // Support ~~text~~ for strikethrough
-      tables: true,                 // Support tables
-      tasklists: true,              // Support task lists
-      ghCodeBlocks: true,           // Support GitHub style code blocks
-      emoji: true,                  // Support emoji
-      parseImgDimensions: true,     // Parse dimensions from image syntax
-      excludeTrailingPunctuationFromURLs: true, // Exclude trailing punctuation from URLs
-      literalMidWordUnderscores: true,          // Treat underscores in middle of words literally
-      simplifiedAutoLink: true,     // Automatically link URLs
-      smoothLivePreview: false,     // No extra spacing/newlines
-      smartIndentationFix: true,    // Fix indentation
-      disableForced4SpacesIndentedSublists: true // More compact sublists
+      simpleLineBreaks: false,                    // Double newline = paragraph (no <br> for single newlines)
+      literalMidWordUnderscores: true,            // Don't italicize underscores in words
+      disableForced4SpacesIndentedSublists: true, // More intuitive sublist handling
     });
-
-    // Set output format options
-    instance.setOption('noHeaderId', true);
-    instance.setOption('ghCompatibleHeaderId', false);
-    instance.setOption('omitExtraWLInCodeBlocks', true);
-
     return instance;
   }, []);
 
@@ -158,11 +143,13 @@ function PromptHistory({
                     <img src={PLACEHOLDER_ASSISTANT_IMAGE} alt="AI Assistant" className="assistant-avatar" />
                   )}
                   <div className="message-text">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: converter.makeHtml(chatEntry.chatMessage)
-                      }}
-                    ></div>
+                    {chatEntry.chatMessage && (
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: converter.makeHtml(chatEntry.chatMessage)
+                        }}
+                      />
+                    )}
                     {/* Render component block if present (new agent format) */}
                     {chatEntry.componentBlock && (
                       <ChatErrorBoundary>
