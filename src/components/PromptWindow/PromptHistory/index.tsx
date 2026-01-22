@@ -55,7 +55,7 @@ function PromptHistory({
   const renderStreamingContent = () => {
     if (!streamingState) return null;
 
-    const { isStreaming, indicatorMessage, streamedText, componentBlock } = streamingState;
+    const { isStreaming, indicatorMessage, indicatorIcon, streamedText, componentBlock } = streamingState;
 
     // Only show streaming content while actively streaming
     // Once streaming is done, the message is added to chatHistory, so we don't show it here
@@ -66,6 +66,7 @@ function PromptHistory({
         {/* Indicator */}
         <StreamingIndicator
           message={indicatorMessage}
+          icon={indicatorIcon}
           isVisible={!!indicatorMessage}
         />
 

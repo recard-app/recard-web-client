@@ -27,6 +27,7 @@ import { CHAT_SOURCE, NO_DISPLAY_NAME_PLACEHOLDER } from '../types/Constants';
 export interface StreamingState {
   isStreaming: boolean;
   indicatorMessage: string | null;
+  indicatorIcon: string | null;
   streamedText: string;
   componentBlock: ChatComponentBlock | null;
   error: string | null;
@@ -57,6 +58,7 @@ export interface UseAgentChatReturn {
 export const initialStreamingState: StreamingState = {
   isStreaming: false,
   indicatorMessage: null,
+  indicatorIcon: null,
   streamedText: '',
   componentBlock: null,
   error: null,
@@ -122,10 +124,11 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
     cleanupRef.current = sendAgentMessageStreaming(
       requestData,
       {
-        onIndicator: (message) => {
+        onIndicator: (message, icon) => {
           setStreamingState(prev => ({
             ...prev,
             indicatorMessage: message,
+            indicatorIcon: icon,
           }));
         },
 
@@ -133,6 +136,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
           setStreamingState(prev => ({
             ...prev,
             indicatorMessage: null,
+            indicatorIcon: null,
           }));
         },
 

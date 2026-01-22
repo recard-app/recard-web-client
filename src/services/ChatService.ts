@@ -48,7 +48,7 @@ export async function sendAgentMessage(
  * Streaming callbacks for SSE events
  */
 export interface StreamingCallbacks {
-  onIndicator: (message: string) => void;
+  onIndicator: (message: string, icon: string) => void;
   onIndicatorEnd: () => void;
   onText: (content: string) => void;
   onComponents: (block: ChatComponentBlock) => void;
@@ -86,7 +86,7 @@ export function sendAgentMessageStreaming(
         onEvent: (event: StreamEvent) => {
           switch (event.type) {
             case 'indicator':
-              callbacks.onIndicator(event.message);
+              callbacks.onIndicator(event.message, event.icon);
               break;
             case 'indicator_end':
               callbacks.onIndicatorEnd();

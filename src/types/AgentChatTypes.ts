@@ -76,6 +76,7 @@ export type StreamEventType =
 export interface StreamIndicatorEvent {
   type: 'indicator';
   message: string;
+  icon: string;
   agentType?: string;
 }
 
