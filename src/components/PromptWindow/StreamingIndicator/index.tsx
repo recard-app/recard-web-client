@@ -1,6 +1,6 @@
 import React from 'react';
 import { InfoDisplay } from '../../../elements';
-import { Icon, IconName } from '../../../icons';
+import { Icon } from '../../../icons';
 import './styles.scss';
 
 interface StreamingIndicatorProps {
@@ -23,15 +23,19 @@ export const StreamingIndicator: React.FC<StreamingIndicatorProps> = ({
   if (!isVisible) return null;
 
   const displayMessage = message || 'Processing...';
-  const iconName = (icon || 'spinner') as IconName;
-  const iconElement = <Icon name={iconName} variant="outline" size={16} />;
+  const iconName = icon || 'spinner';
+
+  // Create icon function for InfoDisplay's IconRenderer
+  const iconComponent = (props: { className?: string; size?: number }) => (
+    <Icon name={iconName} variant="outline" size={props.size || 16} className={props.className} />
+  );
 
   return (
     <div className={`streaming-indicator ${className}`}>
       <InfoDisplay
         type="loading"
         message={displayMessage}
-        icon={iconElement}
+        icon={iconComponent}
         showTitle={false}
         transparent={true}
       />
