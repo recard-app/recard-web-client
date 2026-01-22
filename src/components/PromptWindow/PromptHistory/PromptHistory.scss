@@ -70,7 +70,7 @@
 
         // TOGGLE: Mobile-only overrides for prompt history that makes text bubbles take up less space
         @media (max-width: $mobile-breakpoint) {
-          padding: 0 $space-2;
+          padding: $space-1-5 $space-2;
         }
 
         // Paragraphs
