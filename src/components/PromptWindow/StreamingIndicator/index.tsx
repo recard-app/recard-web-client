@@ -1,5 +1,4 @@
 import React from 'react';
-import { InfoDisplay } from '../../../elements';
 import { Icon } from '../../../icons';
 import './styles.scss';
 
@@ -12,7 +11,7 @@ interface StreamingIndicatorProps {
 
 /**
  * Streaming indicator for agent responses
- * Shows contextual icon based on the current operation
+ * Shows: <icon> action text with pulsing animation
  */
 export const StreamingIndicator: React.FC<StreamingIndicatorProps> = ({
   message,
@@ -22,23 +21,20 @@ export const StreamingIndicator: React.FC<StreamingIndicatorProps> = ({
 }) => {
   if (!isVisible) return null;
 
-  const displayMessage = message || 'Processing...';
-  const iconName = icon || 'spinner';
-
-  // Create icon function for InfoDisplay's IconRenderer
-  const iconComponent = (props: { className?: string; size?: number }) => (
-    <Icon name={iconName} variant="outline" size={props.size || 16} className={props.className} />
-  );
+  const displayMessage = message || 'Thinking...';
+  const iconName = icon || 'chat-bubble-oval-left-ellipsis';
 
   return (
     <div className={`streaming-indicator ${className}`}>
-      <InfoDisplay
-        type="loading"
-        message={displayMessage}
-        icon={iconComponent}
-        showTitle={false}
-        transparent={true}
-      />
+      <div className="streaming-indicator-content pulsing">
+        <Icon
+          name={iconName}
+          variant="mini"
+          size={16}
+          className="streaming-icon"
+        />
+        <span className="streaming-message">{displayMessage}</span>
+      </div>
     </div>
   );
 };

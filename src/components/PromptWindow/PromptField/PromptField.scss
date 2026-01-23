@@ -64,6 +64,10 @@
         border: none !important;
         box-shadow: none !important;
       }
+      &:disabled {
+        background: transparent;
+        cursor: not-allowed;
+      }
       @media (max-width: $mobile-breakpoint) {
         font-size: $font-base;
         height: 34px;

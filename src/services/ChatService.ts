@@ -9,7 +9,7 @@ import {
   DataChangedFlags,
 } from '../types/AgentChatTypes';
 import { ChatComponentBlock } from '../types/ChatComponentTypes';
-import { RECOMMENDED_MAX_CHAT_MESSAGES } from '../types/Constants';
+import { MAX_CHAT_MESSAGES } from '../types/Constants';
 import { getSSEClient } from './SSEClient';
 
 // ============================================
@@ -29,7 +29,7 @@ export async function sendAgentMessage(
   // Limit chat history to prevent large payloads
   const limitedData = {
     ...requestData,
-    chatHistory: requestData.chatHistory?.slice(-RECOMMENDED_MAX_CHAT_MESSAGES),
+    chatHistory: requestData.chatHistory?.slice(-MAX_CHAT_MESSAGES),
   };
 
   const response = await axios.post<AgentResponse>(
@@ -70,7 +70,7 @@ export function sendAgentMessageStreaming(
   // Limit chat history
   const limitedData = {
     ...requestData,
-    chatHistory: requestData.chatHistory?.slice(-RECOMMENDED_MAX_CHAT_MESSAGES),
+    chatHistory: requestData.chatHistory?.slice(-MAX_CHAT_MESSAGES),
   };
 
   // Start connection asynchronously

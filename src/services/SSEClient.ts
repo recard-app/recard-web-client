@@ -44,7 +44,7 @@ export class SSEClient {
 
     // Show initial loading indicator while waiting for server to route the request
     // Server will send agent-specific indicator after routing
-    onEvent({ type: 'indicator', message: 'Processing...', icon: 'spinner' });
+    onEvent({ type: 'indicator', message: 'Thinking...', icon: 'chat-bubble-oval-left-ellipsis' });
 
     try {
       const response = await fetch(url, {
@@ -82,14 +82,14 @@ export class SSEClient {
         // Show agent-specific indicator briefly if agentType is available
         if (jsonData.agentType) {
           const agentIndicators: Record<string, { message: string; icon: string }> = {
-            spend: { message: 'Finding best card...', icon: 'card' },
-            card: { message: 'Looking up card details...', icon: 'card' },
+            spend: { message: 'Finding the best card...', icon: 'card' },
+            card: { message: 'Looking up card info...', icon: 'card' },
             credit: { message: 'Checking your credits...', icon: 'banknotes' },
-            stats: { message: 'Analyzing your stats...', icon: 'chart-bar' },
-            action: { message: 'Processing your request...', icon: 'pencil' },
+            stats: { message: 'Calculating your stats...', icon: 'chart-bar' },
+            action: { message: 'Updating your data...', icon: 'pencil' },
             chat: { message: 'Thinking...', icon: 'chat-bubble-oval-left-ellipsis' },
           };
-          const indicator = agentIndicators[jsonData.agentType] || { message: 'Thinking...', icon: 'spinner' };
+          const indicator = agentIndicators[jsonData.agentType] || { message: 'Thinking...', icon: 'chat-bubble-oval-left-ellipsis' };
           onEvent({ type: 'indicator', message: indicator.message, icon: indicator.icon });
         }
 

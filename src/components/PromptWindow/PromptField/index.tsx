@@ -19,9 +19,10 @@ interface PromptFieldProps {
   returnPrompt: (prompt: string) => void;
   isProcessing: boolean;
   onCancel: () => void;
+  disabled?: boolean;
 }
 
-function PromptField({ returnPrompt, isProcessing, onCancel }: PromptFieldProps): JSX.Element {
+function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false }: PromptFieldProps): JSX.Element {
   // Stores the current value of the prompt textarea
   const [promptValue, setPromptValue] = useState<string>('');
   // Reference to the textarea element for dynamic height adjustment
@@ -195,19 +196,20 @@ function PromptField({ returnPrompt, isProcessing, onCancel }: PromptFieldProps)
         value={promptValue}
         onChange={inputChange}
         onKeyDown={handleKeyDown}
-        placeholder='Where are you shopping today?'
+        placeholder={disabled ? 'Chat limit reached' : 'Where are you shopping today?'}
         rows={1}
         data-virtualkeyboard="true"
+        disabled={disabled}
       />
       {isProcessing ? (
         <button className="button icon" onClick={onCancel} title="Cancel">
           <Icon name="stop" variant="solid" size={16} />
         </button>
       ) : (
-        <button 
-          className="button icon" 
-          onClick={handleSubmit} 
-          disabled={!promptValue.trim()}
+        <button
+          className="button icon"
+          onClick={handleSubmit}
+          disabled={disabled || !promptValue.trim()}
           title="Submit"
         >
           <Icon name="arrow-up" variant="solid" size={16} />

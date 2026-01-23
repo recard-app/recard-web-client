@@ -8,6 +8,7 @@ import {
   ActionDisplay,
   ShowMoreButton,
 } from '../../../elements/ChatComponents';
+import { StreamingIndicator } from '../../../components/PromptWindow/StreamingIndicator';
 import {
   mockCardComponentItems,
   mockCreditComponentItems,
@@ -98,12 +99,45 @@ const ChatComponentsSection: React.FC = () => {
     perkId: 'demo',
   };
 
+  // Streaming indicator states to showcase
+  const streamingIndicatorStates = [
+    { message: 'Thinking...', icon: 'chat-bubble-oval-left-ellipsis', label: 'Default / Chat' },
+    { message: 'Finding the best card...', icon: 'card', label: 'Spend Agent' },
+    { message: 'Checking your credits...', icon: 'banknotes', label: 'Credit Agent' },
+    { message: 'Looking up card info...', icon: 'card', label: 'Card Agent' },
+    { message: 'Calculating your stats...', icon: 'chart-bar', label: 'Stats Agent' },
+    { message: 'Updating your data...', icon: 'pencil', label: 'Action Agent' },
+    { message: 'Loading your cards...', icon: 'wallet', label: 'User Cards Tool' },
+    { message: 'Loading components...', icon: 'card', label: 'Components Tool' },
+    { message: 'Loading details...', icon: 'card', label: 'Hydration' },
+  ];
+
   return (
     <div className="ds-subsection">
       <h2>Chat Components</h2>
       <p className="ds-description">
         Components displayed inline after chat messages with optional action/undo functionality.
       </p>
+
+      {/* Streaming Indicator States */}
+      <div className="ds-subsection">
+        <h3>StreamingIndicator States</h3>
+        <p className="ds-description">
+          Loading indicators shown during agent/tool execution with contextual icons.
+        </p>
+        <div className="ds-showcase-grid">
+          {streamingIndicatorStates.map((state, index) => (
+            <div key={index} className="ds-showcase-item">
+              <span className="ds-showcase-label">{state.label}</span>
+              <StreamingIndicator
+                message={state.message}
+                icon={state.icon}
+                isVisible={true}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* ActionDisplay States */}
       <div className="ds-subsection">

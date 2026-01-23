@@ -1,12 +1,12 @@
 import { ChatMessage, Conversation } from '../../types/ChatTypes';
 import { ChatComponentBlock } from '../../types/ChatComponentTypes';
-import { CHAT_SOURCE, RECOMMENDED_MAX_CHAT_MESSAGES, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, DEFAULT_CHAT_NAME_PLACEHOLDER } from '../../types';
+import { CHAT_SOURCE, MAX_CHAT_MESSAGES, CHAT_HISTORY_PREFERENCE, ChatHistoryPreferenceType, DEFAULT_CHAT_NAME_PLACEHOLDER } from '../../types';
 import { UserHistoryService } from '../../services';
 
 // Constants
 export const aiClient = CHAT_SOURCE.ASSISTANT;
 export const userClient = CHAT_SOURCE.USER;
-export const MAX_CHAT_MESSAGES = RECOMMENDED_MAX_CHAT_MESSAGES;
+export { MAX_CHAT_MESSAGES };
 export const DEFAULT_CHAT_NAME = DEFAULT_CHAT_NAME_PLACEHOLDER;
 
 export const CHAT_HISTORY_MESSAGES: Record<ChatHistoryPreferenceType, string> = {

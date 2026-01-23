@@ -458,11 +458,12 @@ function PromptWindow({
                         returnPrompt={getPrompt}
                         isProcessing={isProcessing}
                         onCancel={handleCancel}
+                        disabled={chatHistory.length >= MAX_CHAT_MESSAGES}
                     />
                 </div>
                 {chatHistory.length >= MAX_CHAT_MESSAGES && (
                     <div className="below-prompt-field-text">
-                        Remember to <button onClick={onNewChat} className="inline-button">{TERMINOLOGY.inlineNewChatReminder}</button> for best results.
+                        This chat has reached its message limit. <button onClick={onNewChat} className="inline-button">Create a new chat</button> to continue.
                     </div>
                 )}
                 {CHAT_HISTORY_MESSAGES[chatHistoryPreference] && (
