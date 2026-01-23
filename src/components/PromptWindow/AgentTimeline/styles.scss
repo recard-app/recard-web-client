@@ -1,0 +1,188 @@
+@use '../../../styling/globals' as *;
+
+.agent-timeline {
+  padding: $space-1 0;
+  animation: fadeIn 0.2s ease-in-out;
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes colorPulse {
+    0%, 100% { color: $primary-light; }
+    50% { color: $primary-color; }
+  }
+
+  // ========================================
+  // Expanded State
+  // ========================================
+  &.expanded {
+    .timeline-expanded {
+      display: flex;
+      flex-direction: column;
+      gap: $space-1;
+      cursor: pointer;
+    }
+  }
+
+  // ========================================
+  // Collapsed State
+  // ========================================
+  &.collapsed {
+    .collapsed-timeline {
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      padding: $space-1 $space-2;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: $radius-sm;
+      transition: background-color 0.15s ease;
+
+      &:hover {
+        background-color: $neutral-light-gray;
+      }
+
+      .collapsed-icons {
+        display: flex;
+        align-items: center;
+        gap: $space-half;
+
+        .collapsed-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 20px;
+          height: 20px;
+          border-radius: $radius-full;
+          background-color: $neutral-light-gray;
+          color: $neutral-dark-gray;
+
+          .icon {
+            flex-shrink: 0;
+          }
+        }
+
+        .collapsed-more {
+          font-size: $font-xs;
+          color: $neutral-gray;
+          font-weight: $font-medium;
+        }
+      }
+
+      .collapsed-hint {
+        display: flex;
+        align-items: center;
+        gap: $space-half;
+        font-size: $font-xs;
+        color: $neutral-gray;
+        font-style: italic;
+
+        .hint-icon {
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+
+  // ========================================
+  // Timeline Node
+  // ========================================
+  .timeline-node {
+    .node-header {
+      display: flex;
+      align-items: center;
+      gap: $space-1;
+
+      .node-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .node-message {
+        font-size: $font-sm;
+        font-style: italic;
+      }
+    }
+
+    // Active state
+    &.active {
+      .node-header {
+        color: $primary-light;
+
+        &.pulsing {
+          animation: colorPulse 1.5s ease-in-out infinite;
+        }
+      }
+    }
+
+    // Completed state
+    &.completed {
+      .node-header {
+        color: $neutral-gray;
+      }
+    }
+
+    // Error state
+    &.error {
+      .node-header {
+        color: $error;
+      }
+    }
+
+    // Nested tools container
+    .node-tools {
+      margin-left: $space-4;
+      padding-left: $space-2;
+      margin-top: $space-half;
+      border-left: 1px solid $neutral-light-gray;
+      display: flex;
+      flex-direction: column;
+      gap: $space-half;
+    }
+  }
+
+  // ========================================
+  // Timeline Tool
+  // ========================================
+  .timeline-tool {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+
+    .tool-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .tool-message {
+      font-size: $font-xs;
+      font-style: italic;
+    }
+
+    // Active state
+    &.active {
+      color: $primary-light;
+
+      &.pulsing {
+        animation: colorPulse 1.5s ease-in-out infinite;
+      }
+    }
+
+    // Completed state
+    &.completed {
+      color: $neutral-gray;
+    }
+
+    // Error state
+    &.error {
+      color: $error;
+    }
+  }
+}

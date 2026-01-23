@@ -4,7 +4,7 @@ import { ChatMessage } from '../../../types/ChatTypes';
 import { InfoDisplay } from '../../../elements';
 import { ChatComponentBlock } from '../../../elements/ChatComponents';
 import { StreamingState } from '../../../types/AgentChatTypes';
-import StreamingIndicator from '../StreamingIndicator';
+import AgentTimeline from '../AgentTimeline';
 import { ChatErrorBoundary } from '../ErrorBoundary';
 import './PromptHistory.scss';
 import { PLACEHOLDER_ASSISTANT_IMAGE, TERMINOLOGY, CHAT_SOURCE } from '../../../types';
@@ -55,7 +55,7 @@ function PromptHistory({
   const renderStreamingContent = () => {
     if (!streamingState) return null;
 
-    const { isStreaming, activeNode, streamedText, componentBlock } = streamingState;
+    const { isStreaming, streamedText, componentBlock, timeline } = streamingState;
 
     // Only show streaming content while actively streaming
     // Once streaming is done, the message is added to chatHistory, so we don't show it here
@@ -63,10 +63,10 @@ function PromptHistory({
 
     return (
       <div className="streaming-content">
-        {/* Node indicator - shows current processing step */}
-        <StreamingIndicator
-          activeNode={activeNode}
-          isVisible={!!activeNode}
+        {/* Agent Timeline - shows full execution history */}
+        <AgentTimeline
+          timeline={timeline}
+          isStreaming={isStreaming}
         />
 
         {/* Streaming text (token by token) */}

@@ -9,6 +9,8 @@ import {
   ShowMoreButton,
 } from '../../../elements/ChatComponents';
 import { StreamingIndicator } from '../../../components/PromptWindow/StreamingIndicator';
+import { AgentTimeline } from '../../../components/PromptWindow/AgentTimeline';
+import { TimelineState } from '../../../types/AgentChatTypes';
 import {
   mockCardComponentItems,
   mockCreditComponentItems,
@@ -101,15 +103,137 @@ const ChatComponentsSection: React.FC = () => {
 
   // Streaming indicator states to showcase (using ActiveNode format)
   const streamingIndicatorStates = [
-    { node: { name: 'router_node', message: 'Thinking...', startTime: Date.now() }, label: 'Default / Chat' },
-    { node: { name: 'spend_node', message: 'Finding the best card...', startTime: Date.now() }, label: 'Spend Agent' },
-    { node: { name: 'credit_node', message: 'Checking your credits...', startTime: Date.now() }, label: 'Credit Agent' },
-    { node: { name: 'card_node', message: 'Looking up card info...', startTime: Date.now() }, label: 'Card Agent' },
-    { node: { name: 'stats_node', message: 'Calculating your stats...', startTime: Date.now() }, label: 'Stats Agent' },
-    { node: { name: 'action_node', message: 'Updating your data...', startTime: Date.now() }, label: 'Action Agent' },
-    { node: { name: 'chat_node', message: 'Loading your cards...', startTime: Date.now() }, label: 'User Cards Tool' },
-    { node: { name: 'composer_node', message: 'Preparing response...', startTime: Date.now() }, label: 'Composer' },
+    { node: { name: 'router_node', message: 'Thinking...', startTime: Date.now() }, tool: null, label: 'Default / Chat' },
+    { node: { name: 'spend_node', message: 'Finding the best card...', startTime: Date.now() }, tool: null, label: 'Spend Agent' },
+    { node: { name: 'credit_node', message: 'Checking your credits...', startTime: Date.now() }, tool: null, label: 'Credit Agent' },
+    { node: { name: 'card_node', message: 'Looking up card info...', startTime: Date.now() }, tool: null, label: 'Card Agent' },
+    { node: { name: 'stats_node', message: 'Calculating your stats...', startTime: Date.now() }, tool: null, label: 'Stats Agent' },
+    { node: { name: 'action_node', message: 'Updating your data...', startTime: Date.now() }, tool: null, label: 'Action Agent' },
+    { node: { name: 'composer_node', message: 'Preparing response...', startTime: Date.now() }, tool: null, label: 'Composer' },
   ];
+
+  // Tool indicator states to showcase (tool nested under node)
+  const toolIndicatorStates = [
+    {
+      node: { name: 'spend_node', message: 'Finding the best card...', startTime: Date.now() },
+      tool: { name: 'get_user_cards', message: 'Loading your cards...', startTime: Date.now() },
+      label: 'Node + Tool'
+    },
+    {
+      node: { name: 'credit_node', message: 'Checking your credits...', startTime: Date.now() },
+      tool: { name: 'get_expiring_credits', message: 'Checking expiring credits...', startTime: Date.now() },
+      label: 'Credit + Expiring Tool'
+    },
+    {
+      node: { name: 'stats_node', message: 'Calculating your stats...', startTime: Date.now() },
+      tool: { name: 'get_monthly_stats', message: 'Calculating monthly stats...', startTime: Date.now() },
+      label: 'Stats + Monthly Tool'
+    },
+  ];
+
+  // Mock timeline states for AgentTimeline demos
+  const mockActiveTimeline: TimelineState = {
+    nodes: [
+      {
+        id: 'node-1',
+        node: 'router_node',
+        message: 'Thinking...',
+        status: 'completed',
+        startTime: Date.now() - 2000,
+        endTime: Date.now() - 1500,
+        toolCalls: [],
+      },
+      {
+        id: 'node-2',
+        node: 'spend_node',
+        message: 'Finding the best card...',
+        status: 'active',
+        startTime: Date.now() - 1500,
+        toolCalls: [
+          {
+            id: 'tool-1',
+            tool: 'get_user_cards',
+            parentNode: 'spend_node',
+            activeMessage: 'Loading your cards...',
+            resultMessage: 'Your cards loaded',
+            status: 'completed',
+            startTime: Date.now() - 1400,
+            endTime: Date.now() - 1200,
+          },
+          {
+            id: 'tool-2',
+            tool: 'get_expiring_credits',
+            parentNode: 'spend_node',
+            activeMessage: 'Finding expiring credits...',
+            status: 'active',
+            startTime: Date.now() - 500,
+          },
+        ],
+      },
+    ],
+    isComplete: false,
+    isCollapsed: false,
+  };
+
+  const mockCompletedTimeline: TimelineState = {
+    nodes: [
+      {
+        id: 'node-1',
+        node: 'router_node',
+        message: 'Thinking...',
+        status: 'completed',
+        startTime: Date.now() - 3000,
+        endTime: Date.now() - 2500,
+        toolCalls: [],
+      },
+      {
+        id: 'node-2',
+        node: 'spend_node',
+        message: 'Finding the best card...',
+        status: 'completed',
+        startTime: Date.now() - 2500,
+        endTime: Date.now() - 1500,
+        toolCalls: [
+          {
+            id: 'tool-1',
+            tool: 'get_user_cards',
+            parentNode: 'spend_node',
+            activeMessage: 'Loading your cards...',
+            resultMessage: 'Your cards loaded',
+            status: 'completed',
+            startTime: Date.now() - 2400,
+            endTime: Date.now() - 2200,
+          },
+          {
+            id: 'tool-2',
+            tool: 'get_expiring_credits',
+            parentNode: 'spend_node',
+            activeMessage: 'Finding expiring credits...',
+            resultMessage: 'Found expiring',
+            status: 'completed',
+            startTime: Date.now() - 2000,
+            endTime: Date.now() - 1800,
+          },
+        ],
+      },
+      {
+        id: 'node-3',
+        node: 'composer_node',
+        message: 'Preparing response...',
+        status: 'completed',
+        startTime: Date.now() - 1500,
+        endTime: Date.now() - 500,
+        toolCalls: [],
+      },
+    ],
+    isComplete: true,
+    isCollapsed: false,
+  };
+
+  const mockCollapsedTimeline: TimelineState = {
+    ...mockCompletedTimeline,
+    isCollapsed: true,
+  };
 
   return (
     <div className="ds-subsection">
@@ -118,11 +242,11 @@ const ChatComponentsSection: React.FC = () => {
         Components displayed inline after chat messages with optional action/undo functionality.
       </p>
 
-      {/* Streaming Indicator States */}
+      {/* Streaming Indicator States - Node Only */}
       <div className="ds-subsection">
-        <h3>StreamingIndicator States</h3>
+        <h3>StreamingIndicator - Node States</h3>
         <p className="ds-description">
-          Loading indicators shown during agent/tool execution with contextual icons.
+          Loading indicators shown during agent node execution with contextual icons.
         </p>
         <div className="ds-showcase-grid">
           {streamingIndicatorStates.map((state, index) => (
@@ -130,10 +254,74 @@ const ChatComponentsSection: React.FC = () => {
               <span className="ds-showcase-label">{state.label}</span>
               <StreamingIndicator
                 activeNode={state.node}
+                activeTool={state.tool}
                 isVisible={true}
               />
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Streaming Indicator States - Node + Tool */}
+      <div className="ds-subsection">
+        <h3>StreamingIndicator - Node + Tool States</h3>
+        <p className="ds-description">
+          Tool indicators shown nested under node when executing a tool within an agent.
+        </p>
+        <div className="ds-showcase-grid">
+          {toolIndicatorStates.map((state, index) => (
+            <div key={index} className="ds-showcase-item">
+              <span className="ds-showcase-label">{state.label}</span>
+              <StreamingIndicator
+                activeNode={state.node}
+                activeTool={state.tool}
+                isVisible={true}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Agent Timeline States */}
+      <div className="ds-subsection">
+        <h3>AgentTimeline - Active</h3>
+        <p className="ds-description">
+          Timeline during streaming: router completed, spend_node active with nested tools.
+          Active items pulse, completed items are gray.
+        </p>
+        <div className="ds-component-list">
+          <AgentTimeline
+            timeline={mockActiveTimeline}
+            isStreaming={true}
+          />
+        </div>
+      </div>
+
+      <div className="ds-subsection">
+        <h3>AgentTimeline - Completed (Expanded)</h3>
+        <p className="ds-description">
+          Timeline after streaming completes. All nodes and tools show as completed (gray).
+          Click to collapse.
+        </p>
+        <div className="ds-component-list">
+          <AgentTimeline
+            timeline={mockCompletedTimeline}
+            isStreaming={false}
+          />
+        </div>
+      </div>
+
+      <div className="ds-subsection">
+        <h3>AgentTimeline - Collapsed</h3>
+        <p className="ds-description">
+          Auto-collapsed state after response completes. Shows mini icons row.
+          Click to expand and view agent steps.
+        </p>
+        <div className="ds-component-list">
+          <AgentTimeline
+            timeline={mockCollapsedTimeline}
+            isStreaming={false}
+          />
         </div>
       </div>
 

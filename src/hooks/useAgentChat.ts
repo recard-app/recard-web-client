@@ -14,6 +14,9 @@ import {
   DataChangedFlags,
   StreamingState,
   initialStreamingState,
+  initialTimelineState,
+  TimelineNode,
+  TimelineToolCall,
 } from '../types/AgentChatTypes';
 import {
   sendAgentMessageStreaming,
@@ -21,6 +24,78 @@ import {
   sendAgentMessage,
 } from '../services/ChatService';
 import { CHAT_SOURCE, NO_DISPLAY_NAME_PLACEHOLDER } from '../types/Constants';
+
+// ============================================
+// Tool Message Helpers
+// ============================================
+
+const TOOL_ACTIVE_MESSAGES: Record<string, string> = {
+  // Card tools
+  get_all_cards: 'Loading cards...',
+  get_card_details: 'Loading card details...',
+  get_user_cards: 'Loading your cards...',
+  get_user_cards_details: 'Loading card details...',
+  get_user_components: 'Loading components...',
+  add_card: 'Adding card...',
+  remove_card: 'Removing card...',
+  set_card_frozen: 'Updating card status...',
+  set_card_preferred: 'Setting preferred card...',
+  set_card_open_date: 'Updating open date...',
+  // Credit tools
+  get_user_credits: 'Checking credits...',
+  get_prioritized_credits: 'Prioritizing credits...',
+  get_expiring_credits: 'Finding expiring credits...',
+  get_credit_history: 'Loading credit history...',
+  // Stats tools
+  get_monthly_stats: 'Calculating monthly stats...',
+  get_annual_stats: 'Calculating annual stats...',
+  get_to_date_stats: 'Calculating to-date stats...',
+  get_expiring_stats: 'Calculating expiring stats...',
+  get_roi_stats: 'Calculating ROI...',
+  get_lost_stats: 'Calculating lost value...',
+  get_category_stats: 'Analyzing categories...',
+  // Action tools
+  update_credit_usage: 'Updating credit usage...',
+  update_component_tracking: 'Updating tracking...',
+};
+
+const TOOL_RESULT_MESSAGES: Record<string, string> = {
+  // Card tools
+  get_all_cards: 'Cards loaded',
+  get_card_details: 'Details loaded',
+  get_user_cards: 'Your cards loaded',
+  get_user_cards_details: 'Details loaded',
+  get_user_components: 'Components loaded',
+  add_card: 'Card added',
+  remove_card: 'Card removed',
+  set_card_frozen: 'Status updated',
+  set_card_preferred: 'Preference set',
+  set_card_open_date: 'Date updated',
+  // Credit tools
+  get_user_credits: 'Credits checked',
+  get_prioritized_credits: 'Credits prioritized',
+  get_expiring_credits: 'Found expiring',
+  get_credit_history: 'History loaded',
+  // Stats tools
+  get_monthly_stats: 'Stats calculated',
+  get_annual_stats: 'Stats calculated',
+  get_to_date_stats: 'Stats calculated',
+  get_expiring_stats: 'Stats calculated',
+  get_roi_stats: 'ROI calculated',
+  get_lost_stats: 'Lost value calculated',
+  get_category_stats: 'Categories analyzed',
+  // Action tools
+  update_credit_usage: 'Usage updated',
+  update_component_tracking: 'Tracking updated',
+};
+
+function getToolActiveMessage(tool: string): string {
+  return TOOL_ACTIVE_MESSAGES[tool] || 'Processing...';
+}
+
+function getToolResultMessage(tool: string): string {
+  return TOOL_RESULT_MESSAGES[tool] || 'Done';
+}
 
 // ============================================
 // Types
@@ -108,12 +183,26 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       requestData,
       {
         onNodeStart: (node, message) => {
+          const newNode: TimelineNode = {
+            id: `node-${Date.now()}-${node}`,
+            node,
+            message,
+            status: 'active',
+            startTime: Date.now(),
+            toolCalls: [],
+          };
+
           setStreamingState(prev => ({
             ...prev,
             activeNode: {
               name: node,
               message,
               startTime: Date.now(),
+            },
+            timeline: {
+              ...prev.timeline,
+              nodes: [...prev.timeline.nodes, newNode],
+              isCollapsed: false,
             },
           }));
         },
@@ -123,6 +212,68 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
             ...prev,
             activeNode: prev.activeNode?.name === node ? null : prev.activeNode,
             completedNodes: [...prev.completedNodes, node],
+            timeline: {
+              ...prev.timeline,
+              nodes: prev.timeline.nodes.map(n =>
+                n.node === node && n.status === 'active'
+                  ? { ...n, status: 'completed' as const, endTime: Date.now() }
+                  : n
+              ),
+            },
+          }));
+        },
+
+        onToolStart: (tool, message) => {
+          setStreamingState(prev => {
+            const activeNodeName = prev.activeNode?.name || 'unknown';
+            const newTool: TimelineToolCall = {
+              id: `tool-${Date.now()}-${tool}`,
+              tool,
+              parentNode: activeNodeName,
+              activeMessage: message || getToolActiveMessage(tool),
+              status: 'active',
+              startTime: Date.now(),
+            };
+
+            return {
+              ...prev,
+              activeTool: {
+                name: tool,
+                message: message || getToolActiveMessage(tool),
+                startTime: Date.now(),
+              },
+              timeline: {
+                ...prev.timeline,
+                nodes: prev.timeline.nodes.map(n =>
+                  n.status === 'active'
+                    ? { ...n, toolCalls: [...n.toolCalls, newTool] }
+                    : n
+                ),
+              },
+            };
+          });
+        },
+
+        onToolEnd: (tool) => {
+          setStreamingState(prev => ({
+            ...prev,
+            activeTool: prev.activeTool?.name === tool ? null : prev.activeTool,
+            timeline: {
+              ...prev.timeline,
+              nodes: prev.timeline.nodes.map(n => ({
+                ...n,
+                toolCalls: n.toolCalls.map(t =>
+                  t.tool === tool && t.status === 'active'
+                    ? {
+                        ...t,
+                        status: 'completed' as const,
+                        endTime: Date.now(),
+                        resultMessage: getToolResultMessage(tool),
+                      }
+                    : t
+                ),
+              })),
+            },
           }));
         },
 
@@ -152,12 +303,18 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
             ...prev,
             isStreaming: false,
             activeNode: null,
+            activeTool: null,
             // Use final text response (may be composed from multiple agents)
             streamedText: textResponse,
             componentBlock: receivedComponentBlock,
             messageId: receivedMessageId,
             timestamp: receivedTimestamp,
             agentType: receivedAgentType,
+            timeline: {
+              ...prev.timeline,
+              isComplete: true,
+              isCollapsed: true,
+            },
           }));
 
           // Notify about data changes (for UI refresh)
@@ -186,7 +343,19 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
             ...prev,
             isStreaming: false,
             activeNode: null,
+            activeTool: null,
             error: message,
+            timeline: {
+              ...prev.timeline,
+              isComplete: true,
+              isCollapsed: true,
+              // Mark any active nodes as error
+              nodes: prev.timeline.nodes.map(n =>
+                n.status === 'active'
+                  ? { ...n, status: 'error' as const, endTime: Date.now() }
+                  : n
+              ),
+            },
           }));
           onError?.(message);
         },
@@ -202,6 +371,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       ...prev,
       isStreaming: false,
       activeNode: null,
+      activeTool: null,
     }));
   }, []);
 
@@ -266,6 +436,7 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
       setStreamingState({
         isStreaming: false,
         activeNode: null,
+        activeTool: null,
         streamedText: normalized.textResponse,
         componentBlock: normalized.componentBlock || null,
         error: null,
@@ -273,6 +444,11 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
         timestamp: normalized.timestamp,
         agentType: normalized.agentType || null,
         completedNodes: [],
+        timeline: {
+          ...initialTimelineState,
+          isComplete: true,
+          isCollapsed: true,
+        },
       });
 
       if (onMessageComplete) {
@@ -291,6 +467,7 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
         ...prev,
         isStreaming: false,
         activeNode: null,
+        activeTool: null,
         error: errorMessage,
       }));
       onError?.(errorMessage);
@@ -303,6 +480,7 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
       ...prev,
       isStreaming: false,
       activeNode: null,
+      activeTool: null,
     }));
   }, []);
 

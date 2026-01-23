@@ -180,6 +180,60 @@ export interface DataChangedFlags {
 }
 
 // ============================================
+// Timeline Types (Agent Progress Tracking)
+// ============================================
+
+/**
+ * Status of a timeline item (node or tool)
+ */
+export type TimelineItemStatus = 'pending' | 'active' | 'completed' | 'error';
+
+/**
+ * A tool call within a timeline node
+ */
+export interface TimelineToolCall {
+  id: string;
+  tool: string;
+  parentNode: string;
+  activeMessage: string;      // "Loading credits..."
+  resultMessage?: string;     // "Credits loaded"
+  status: TimelineItemStatus;
+  startTime: number;
+  endTime?: number;
+}
+
+/**
+ * A node (agent) in the timeline
+ */
+export interface TimelineNode {
+  id: string;
+  node: string;
+  message: string;
+  status: TimelineItemStatus;
+  startTime: number;
+  endTime?: number;
+  toolCalls: TimelineToolCall[];
+}
+
+/**
+ * Complete timeline state
+ */
+export interface TimelineState {
+  nodes: TimelineNode[];
+  isComplete: boolean;
+  isCollapsed: boolean;
+}
+
+/**
+ * Initial timeline state
+ */
+export const initialTimelineState: TimelineState = {
+  nodes: [],
+  isComplete: false,
+  isCollapsed: false,
+};
+
+// ============================================
 // Streaming State Types
 // ============================================
 
@@ -196,6 +250,19 @@ export interface ActiveNode {
 }
 
 /**
+ * Current tool being executed (for indicator display)
+ * Separate from activeNode to allow independent rendering/styling
+ */
+export interface ActiveTool {
+  /** Tool name (e.g., 'get_user_cards', 'get_expiring_credits') */
+  name: string;
+  /** Human-readable message (e.g., 'Loading your cards...') */
+  message: string;
+  /** Timestamp when tool started */
+  startTime: number;
+}
+
+/**
  * Streaming state for the chat hook
  * Tracks all state during LangGraph stream processing
  */
@@ -204,6 +271,8 @@ export interface StreamingState {
   isStreaming: boolean;
   /** Active node (for indicator) */
   activeNode: ActiveNode | null;
+  /** Active tool within node (for indicator) - separate from activeNode for independent styling */
+  activeTool: ActiveTool | null;
   /** Accumulated text (token by token) */
   streamedText: string;
   /** Component block (arrives with final event) */
@@ -218,6 +287,8 @@ export interface StreamingState {
   agentType: string | null;
   /** Nodes that have completed */
   completedNodes: string[];
+  /** Timeline state for agent progress visualization */
+  timeline: TimelineState;
 }
 
 /**
@@ -226,6 +297,7 @@ export interface StreamingState {
 export const initialStreamingState: StreamingState = {
   isStreaming: false,
   activeNode: null,
+  activeTool: null,
   streamedText: '',
   componentBlock: null,
   error: null,
@@ -233,6 +305,7 @@ export const initialStreamingState: StreamingState = {
   timestamp: null,
   agentType: null,
   completedNodes: [],
+  timeline: initialTimelineState,
 };
 
 // ============================================

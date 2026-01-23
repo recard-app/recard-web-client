@@ -45,6 +45,38 @@ export async function sendAgentMessage(
 }
 
 /**
+ * Tool name to human-readable message mapping
+ */
+function getToolMessage(toolName: string): string {
+  const messages: Record<string, string> = {
+    get_all_cards: 'Loading cards...',
+    get_card_details: 'Loading card details...',
+    get_user_cards: 'Loading your cards...',
+    get_user_cards_details: 'Loading card details...',
+    get_user_components: 'Loading components...',
+    add_card: 'Adding card...',
+    remove_card: 'Removing card...',
+    set_card_frozen: 'Updating card status...',
+    set_card_preferred: 'Setting preferred card...',
+    set_card_open_date: 'Updating open date...',
+    get_user_credits: 'Loading your credits...',
+    get_prioritized_credits: 'Loading prioritized credits...',
+    get_expiring_credits: 'Checking expiring credits...',
+    get_credit_history: 'Loading credit history...',
+    get_monthly_stats: 'Calculating monthly stats...',
+    get_annual_stats: 'Calculating annual stats...',
+    get_to_date_stats: 'Calculating to-date stats...',
+    get_expiring_stats: 'Checking expiring stats...',
+    get_roi_stats: 'Calculating ROI...',
+    get_lost_stats: 'Checking lost credits...',
+    get_category_stats: 'Calculating category stats...',
+    update_credit_usage: 'Updating credit usage...',
+    update_component_tracking: 'Updating tracking...',
+  };
+  return messages[toolName] || 'Processing...';
+}
+
+/**
  * Streaming callbacks for LangGraph SSE events
  */
 export interface StreamingCallbacks {
@@ -52,6 +84,10 @@ export interface StreamingCallbacks {
   onNodeStart: (node: string, message: string) => void;
   /** Called when an agent node completes */
   onNodeEnd: (node: string) => void;
+  /** Called when a tool starts execution (optional) */
+  onToolStart?: (tool: string, message: string) => void;
+  /** Called when a tool completes (optional) */
+  onToolEnd?: (tool: string) => void;
   /** Called for each token during LLM streaming */
   onToken: (content: string, node: string) => void;
   /** Called when the final response is ready */
@@ -123,10 +159,15 @@ export function sendAgentMessageStreaming(
               callbacks.onError(event.data.message);
               break;
 
-            // Optionally handle tool events (not currently exposed to UI)
             case 'tool_start':
+              callbacks.onToolStart?.(
+                event.data.tool as string,
+                getToolMessage(event.data.tool as string)
+              );
+              break;
+
             case 'tool_end':
-              // Could add tool status to UI if desired
+              callbacks.onToolEnd?.(event.data.tool as string);
               break;
           }
         },
