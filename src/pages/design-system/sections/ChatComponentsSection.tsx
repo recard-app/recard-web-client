@@ -99,17 +99,16 @@ const ChatComponentsSection: React.FC = () => {
     perkId: 'demo',
   };
 
-  // Streaming indicator states to showcase
+  // Streaming indicator states to showcase (using ActiveNode format)
   const streamingIndicatorStates = [
-    { message: 'Thinking...', icon: 'chat-bubble-oval-left-ellipsis', label: 'Default / Chat' },
-    { message: 'Finding the best card...', icon: 'card', label: 'Spend Agent' },
-    { message: 'Checking your credits...', icon: 'banknotes', label: 'Credit Agent' },
-    { message: 'Looking up card info...', icon: 'card', label: 'Card Agent' },
-    { message: 'Calculating your stats...', icon: 'chart-bar', label: 'Stats Agent' },
-    { message: 'Updating your data...', icon: 'pencil', label: 'Action Agent' },
-    { message: 'Loading your cards...', icon: 'wallet', label: 'User Cards Tool' },
-    { message: 'Loading components...', icon: 'card', label: 'Components Tool' },
-    { message: 'Loading details...', icon: 'card', label: 'Hydration' },
+    { node: { name: 'router_node', message: 'Thinking...', startTime: Date.now() }, label: 'Default / Chat' },
+    { node: { name: 'spend_node', message: 'Finding the best card...', startTime: Date.now() }, label: 'Spend Agent' },
+    { node: { name: 'credit_node', message: 'Checking your credits...', startTime: Date.now() }, label: 'Credit Agent' },
+    { node: { name: 'card_node', message: 'Looking up card info...', startTime: Date.now() }, label: 'Card Agent' },
+    { node: { name: 'stats_node', message: 'Calculating your stats...', startTime: Date.now() }, label: 'Stats Agent' },
+    { node: { name: 'action_node', message: 'Updating your data...', startTime: Date.now() }, label: 'Action Agent' },
+    { node: { name: 'chat_node', message: 'Loading your cards...', startTime: Date.now() }, label: 'User Cards Tool' },
+    { node: { name: 'composer_node', message: 'Preparing response...', startTime: Date.now() }, label: 'Composer' },
   ];
 
   return (
@@ -130,8 +129,7 @@ const ChatComponentsSection: React.FC = () => {
             <div key={index} className="ds-showcase-item">
               <span className="ds-showcase-label">{state.label}</span>
               <StreamingIndicator
-                message={state.message}
-                icon={state.icon}
+                activeNode={state.node}
                 isVisible={true}
               />
             </div>

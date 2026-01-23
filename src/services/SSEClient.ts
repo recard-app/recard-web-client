@@ -1,8 +1,14 @@
 /**
- * SSE Client for Agent Chat Streaming
+ * SSE Client for Agent Chat Streaming (LangGraph)
  *
  * Handles Server-Sent Events for POST-based streaming from the /chat/agent endpoint.
  * Uses the Fetch API with ReadableStream for streaming responses.
+ *
+ * Updated for LangGraph native events:
+ * - node_start / node_end: Agent lifecycle
+ * - token: LLM streaming tokens
+ * - final: Complete response
+ * - error: Error handling
  */
 
 import { StreamEvent } from '../types/AgentChatTypes';
@@ -43,8 +49,14 @@ export class SSEClient {
     const startTime = performance.now();
 
     // Show initial loading indicator while waiting for server to route the request
-    // Server will send agent-specific indicator after routing
-    onEvent({ type: 'indicator', message: 'Thinking...', icon: 'chat-bubble-oval-left-ellipsis' });
+    // Server will send node_start event after routing
+    onEvent({
+      type: 'node_start',
+      data: {
+        node: 'router_node',
+        message: 'Thinking...',
+      },
+    });
 
     try {
       const response = await fetch(url, {
@@ -78,39 +90,7 @@ export class SSEClient {
         console.log('[SSEClient] Server returned JSON instead of SSE, parsing as fallback...');
 
         const jsonData = await response.json();
-
-        // Show agent-specific indicator briefly if agentType is available
-        if (jsonData.agentType) {
-          const agentIndicators: Record<string, { message: string; icon: string }> = {
-            spend: { message: 'Finding the best card...', icon: 'card' },
-            card: { message: 'Looking up card info...', icon: 'card' },
-            credit: { message: 'Checking your credits...', icon: 'banknotes' },
-            stats: { message: 'Calculating your stats...', icon: 'chart-bar' },
-            action: { message: 'Updating your data...', icon: 'pencil' },
-            chat: { message: 'Thinking...', icon: 'chat-bubble-oval-left-ellipsis' },
-          };
-          const indicator = agentIndicators[jsonData.agentType] || { message: 'Thinking...', icon: 'chat-bubble-oval-left-ellipsis' };
-          onEvent({ type: 'indicator', message: indicator.message, icon: indicator.icon });
-        }
-
-        // Clear the loading indicator
-        onEvent({ type: 'indicator_end' });
-
-        // Emit events based on JSON response structure
-        if (jsonData.textResponse) {
-          onEvent({ type: 'text', content: jsonData.textResponse });
-        }
-        if (jsonData.componentBlock) {
-          console.log('[SSEClient] Component block received:', JSON.stringify(jsonData.componentBlock, null, 2));
-          onEvent({ type: 'components', block: jsonData.componentBlock });
-        } else {
-          console.log('[SSEClient] No componentBlock in response');
-        }
-        onEvent({
-          type: 'done',
-          messageId: jsonData.messageId || `msg-${Date.now()}`,
-          timestamp: jsonData.timestamp || new Date().toISOString()
-        });
+        this.handleJsonFallback(jsonData, onEvent);
         onClose?.();
         return;
       }
@@ -194,12 +174,104 @@ export class SSEClient {
 
       try {
         const event = JSON.parse(jsonStr) as StreamEvent;
-        console.log(`[SSEClient] Event: ${event.type}`, event.type === 'text' ? `"${(event as any).content?.slice(0, 50)}..."` : '');
+        console.log(`[SSEClient] Event: ${event.type}`, this.getEventLogData(event));
         onEvent(event);
       } catch (parseError) {
         console.warn('[SSEClient] Failed to parse SSE event:', jsonStr, parseError);
       }
     }
+  }
+
+  /**
+   * Get log-friendly data for an event
+   */
+  private getEventLogData(event: StreamEvent): string {
+    switch (event.type) {
+      case 'token':
+        return `"${event.data.content.slice(0, 30)}..."`;
+      case 'node_start':
+        return `node=${event.data.node}`;
+      case 'node_end':
+        return `node=${event.data.node}`;
+      case 'final':
+        return `textLen=${event.data.textResponse?.length || 0}`;
+      case 'error':
+        return `msg=${event.data.message}`;
+      default:
+        return '';
+    }
+  }
+
+  /**
+   * Handle JSON fallback response (non-streaming)
+   * Converts JSON response to LangGraph-style events
+   */
+  private handleJsonFallback(
+    jsonData: any,
+    onEvent: (event: StreamEvent) => void
+  ): void {
+    // Determine agent type for proper icon
+    const agentType = jsonData.agentType || 'chat';
+    const agentNode = `${agentType}_node`;
+
+    // Show agent-specific indicator briefly
+    onEvent({
+      type: 'node_start',
+      data: {
+        node: agentNode,
+        message: this.getNodeMessage(agentNode),
+      },
+    });
+
+    // End the node
+    onEvent({
+      type: 'node_end',
+      data: { node: agentNode },
+    });
+
+    // Handle response based on format
+    if (jsonData.textResponse !== undefined) {
+      // Full response format
+      onEvent({
+        type: 'final',
+        data: {
+          textResponse: jsonData.textResponse,
+          componentBlock: jsonData.componentBlock,
+          agentType: jsonData.agentType,
+          success: !jsonData.isError,
+          messageId: jsonData.messageId || `msg-${Date.now()}`,
+          timestamp: jsonData.timestamp || new Date().toISOString(),
+        },
+      });
+    } else if (jsonData.response) {
+      // Quick response format
+      onEvent({
+        type: 'final',
+        data: {
+          textResponse: jsonData.response,
+          success: true,
+          messageId: `msg-${Date.now()}`,
+          timestamp: new Date().toISOString(),
+        },
+      });
+    }
+  }
+
+  /**
+   * Get human-readable message for a node
+   */
+  private getNodeMessage(nodeName: string): string {
+    const messages: Record<string, string> = {
+      router_node: 'Thinking...',
+      spend_node: 'Finding the best card...',
+      credit_node: 'Checking your credits...',
+      card_node: 'Looking up card info...',
+      stats_node: 'Calculating your stats...',
+      action_node: 'Updating your data...',
+      chat_node: 'Thinking...',
+      composer_node: 'Preparing response...',
+    };
+    return messages[nodeName] || 'Processing...';
   }
 
   disconnect(): void {

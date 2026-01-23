@@ -1,7 +1,7 @@
 /**
  * useAgentChat Hook
  *
- * React hook for managing agent chat streaming state.
+ * React hook for managing agent chat streaming state with LangGraph.
  * Provides both streaming (SSE) and fallback (non-streaming) implementations.
  */
 
@@ -12,6 +12,8 @@ import {
   AgentRequestData,
   filterMessagesForApi,
   DataChangedFlags,
+  StreamingState,
+  initialStreamingState,
 } from '../types/AgentChatTypes';
 import {
   sendAgentMessageStreaming,
@@ -23,17 +25,6 @@ import { CHAT_SOURCE, NO_DISPLAY_NAME_PLACEHOLDER } from '../types/Constants';
 // ============================================
 // Types
 // ============================================
-
-export interface StreamingState {
-  isStreaming: boolean;
-  indicatorMessage: string | null;
-  indicatorIcon: string | null;
-  streamedText: string;
-  componentBlock: ChatComponentBlock | null;
-  error: string | null;
-  messageId: string | null;
-  timestamp: string | null;
-}
 
 export interface UseAgentChatOptions {
   userName?: string;
@@ -51,20 +42,8 @@ export interface UseAgentChatReturn {
   isProcessing: boolean;
 }
 
-// ============================================
-// Initial State
-// ============================================
-
-export const initialStreamingState: StreamingState = {
-  isStreaming: false,
-  indicatorMessage: null,
-  indicatorIcon: null,
-  streamedText: '',
-  componentBlock: null,
-  error: null,
-  messageId: null,
-  timestamp: null,
-};
+// Re-export StreamingState for backward compatibility
+export type { StreamingState };
 
 // ============================================
 // Hook Implementation
@@ -76,6 +55,9 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
   const [streamingState, setStreamingState] = useState<StreamingState>(initialStreamingState);
   const abortControllerRef = useRef<AbortController | null>(null);
   const cleanupRef = useRef<(() => void) | null>(null);
+
+  // Track accumulated text for final message
+  const accumulatedTextRef = useRef('');
 
   // Cleanup on unmount
   useEffect(() => {
@@ -98,6 +80,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
     abortControllerRef.current = new AbortController();
 
     // Reset state and start streaming
+    accumulatedTextRef.current = '';
     setStreamingState({
       ...initialStreamingState,
       isStreaming: true,
@@ -114,65 +97,67 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
 
     console.log('[useAgentChat] Filtered history length:', requestData.chatHistory?.length || 0);
 
-    // Accumulate streamed text
-    let accumulatedText = '';
+    // Track received data
     let receivedComponentBlock: ChatComponentBlock | null = null;
     let receivedMessageId: string | null = null;
     let receivedTimestamp: string | null = null;
+    let receivedAgentType: string | null = null;
 
     // Start streaming
     cleanupRef.current = sendAgentMessageStreaming(
       requestData,
       {
-        onIndicator: (message, icon) => {
+        onNodeStart: (node, message) => {
           setStreamingState(prev => ({
             ...prev,
-            indicatorMessage: message,
-            indicatorIcon: icon,
+            activeNode: {
+              name: node,
+              message,
+              startTime: Date.now(),
+            },
           }));
         },
 
-        onIndicatorEnd: () => {
+        onNodeEnd: (node) => {
           setStreamingState(prev => ({
             ...prev,
-            indicatorMessage: null,
-            indicatorIcon: null,
+            activeNode: prev.activeNode?.name === node ? null : prev.activeNode,
+            completedNodes: [...prev.completedNodes, node],
           }));
         },
 
-        onText: (content) => {
-          accumulatedText += content;
+        onToken: (content, _node) => {
+          accumulatedTextRef.current += content;
           setStreamingState(prev => ({
             ...prev,
-            streamedText: accumulatedText,
+            streamedText: accumulatedTextRef.current,
           }));
         },
 
-        onComponents: (block) => {
-          receivedComponentBlock = block;
-          setStreamingState(prev => ({
-            ...prev,
-            componentBlock: block,
-          }));
-        },
-
-        onDone: (messageId, timestamp, dataChanged) => {
+        onFinal: (textResponse, componentBlock, agentType, messageId, timestamp, dataChanged) => {
           const totalTime = performance.now() - startTime;
           console.log(`[useAgentChat] Done in ${(totalTime / 1000).toFixed(2)}s, messageId: ${messageId}`);
-          console.log(`[useAgentChat] Total text length: ${accumulatedText.length} chars`);
+          console.log(`[useAgentChat] Total text length: ${textResponse.length} chars`);
           if (dataChanged) {
             console.log(`[useAgentChat] Data changed:`, dataChanged);
           }
 
-          // messageId and timestamp are now required per Phase 2 decision
+          // Store received values
+          receivedComponentBlock = componentBlock || null;
           receivedMessageId = messageId;
           receivedTimestamp = timestamp;
+          receivedAgentType = agentType || null;
 
           setStreamingState(prev => ({
             ...prev,
             isStreaming: false,
+            activeNode: null,
+            // Use final text response (may be composed from multiple agents)
+            streamedText: textResponse,
+            componentBlock: receivedComponentBlock,
             messageId: receivedMessageId,
             timestamp: receivedTimestamp,
+            agentType: receivedAgentType,
           }));
 
           // Notify about data changes (for UI refresh)
@@ -183,10 +168,10 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
           // Create final message and notify
           if (onMessageComplete) {
             const message: ChatMessage = {
-              id: receivedMessageId,
+              id: receivedMessageId!,
               chatSource: CHAT_SOURCE.ASSISTANT,
-              chatMessage: accumulatedText,
-              timestamp: receivedTimestamp,
+              chatMessage: textResponse,
+              timestamp: receivedTimestamp!,
               componentBlock: receivedComponentBlock || undefined,
             };
             onMessageComplete(message, receivedComponentBlock || undefined);
@@ -200,6 +185,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
           setStreamingState(prev => ({
             ...prev,
             isStreaming: false,
+            activeNode: null,
             error: message,
           }));
           onError?.(message);
@@ -215,6 +201,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
     setStreamingState(prev => ({
       ...prev,
       isStreaming: false,
+      activeNode: null,
     }));
   }, []);
 
@@ -258,7 +245,11 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
     setStreamingState({
       ...initialStreamingState,
       isStreaming: true,
-      indicatorMessage: 'Thinking...',
+      activeNode: {
+        name: 'router_node',
+        message: 'Thinking...',
+        startTime: Date.now(),
+      },
     });
 
     try {
@@ -274,12 +265,14 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
 
       setStreamingState({
         isStreaming: false,
-        indicatorMessage: null,
+        activeNode: null,
         streamedText: normalized.textResponse,
         componentBlock: normalized.componentBlock || null,
         error: null,
         messageId: normalized.messageId,
         timestamp: normalized.timestamp,
+        agentType: normalized.agentType || null,
+        completedNodes: [],
       });
 
       if (onMessageComplete) {
@@ -297,6 +290,7 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
       setStreamingState(prev => ({
         ...prev,
         isStreaming: false,
+        activeNode: null,
         error: errorMessage,
       }));
       onError?.(errorMessage);
@@ -308,6 +302,7 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
     setStreamingState(prev => ({
       ...prev,
       isStreaming: false,
+      activeNode: null,
     }));
   }, []);
 

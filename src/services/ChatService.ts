@@ -45,19 +45,30 @@ export async function sendAgentMessage(
 }
 
 /**
- * Streaming callbacks for SSE events
+ * Streaming callbacks for LangGraph SSE events
  */
 export interface StreamingCallbacks {
-  onIndicator: (message: string, icon: string) => void;
-  onIndicatorEnd: () => void;
-  onText: (content: string) => void;
-  onComponents: (block: ChatComponentBlock) => void;
-  onDone: (messageId: string, timestamp: string, dataChanged?: DataChangedFlags) => void;
+  /** Called when an agent node starts processing */
+  onNodeStart: (node: string, message: string) => void;
+  /** Called when an agent node completes */
+  onNodeEnd: (node: string) => void;
+  /** Called for each token during LLM streaming */
+  onToken: (content: string, node: string) => void;
+  /** Called when the final response is ready */
+  onFinal: (
+    textResponse: string,
+    componentBlock: ChatComponentBlock | undefined,
+    agentType: string | undefined,
+    messageId: string,
+    timestamp: string,
+    dataChanged?: DataChangedFlags
+  ) => void;
+  /** Called when an error occurs */
   onError: (message: string) => void;
 }
 
 /**
- * Send message to agent endpoint with SSE streaming
+ * Send message to agent endpoint with SSE streaming (LangGraph)
  * Returns cleanup function to cancel the stream
  */
 export function sendAgentMessageStreaming(
@@ -85,23 +96,37 @@ export function sendAgentMessageStreaming(
         signal,
         onEvent: (event: StreamEvent) => {
           switch (event.type) {
-            case 'indicator':
-              callbacks.onIndicator(event.message, event.icon);
+            case 'node_start':
+              callbacks.onNodeStart(event.data.node, event.data.message);
               break;
-            case 'indicator_end':
-              callbacks.onIndicatorEnd();
+
+            case 'node_end':
+              callbacks.onNodeEnd(event.data.node);
               break;
-            case 'text':
-              callbacks.onText(event.content);
+
+            case 'token':
+              callbacks.onToken(event.data.content, event.data.node);
               break;
-            case 'components':
-              callbacks.onComponents(event.block);
+
+            case 'final':
+              callbacks.onFinal(
+                event.data.textResponse,
+                event.data.componentBlock,
+                event.data.agentType,
+                event.data.messageId,
+                event.data.timestamp,
+                undefined // dataChanged not yet implemented in LangGraph backend
+              );
               break;
-            case 'done':
-              callbacks.onDone(event.messageId, event.timestamp, event.dataChanged);
-              break;
+
             case 'error':
-              callbacks.onError(event.message);
+              callbacks.onError(event.data.message);
+              break;
+
+            // Optionally handle tool events (not currently exposed to UI)
+            case 'tool_start':
+            case 'tool_end':
+              // Could add tool status to UI if desired
               break;
           }
         },

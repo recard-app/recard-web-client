@@ -37,6 +37,7 @@ export interface AgentResponseData {
   messageId: string;
   timestamp: string;
   isError?: boolean;
+  agentType?: string;
 }
 
 /**
@@ -62,37 +63,111 @@ export function isAgentResponse(data: AgentResponse): data is AgentResponseData 
 }
 
 // ============================================
-// SSE Event Types
+// SSE Event Types (LangGraph Native)
 // ============================================
 
+/**
+ * LangGraph stream event types
+ */
 export type StreamEventType =
-  | 'indicator'
-  | 'indicator_end'
-  | 'text'
-  | 'components'
-  | 'done'
-  | 'error';
+  | 'node_start'    // Agent/node begins processing
+  | 'node_end'      // Agent/node completes
+  | 'token'         // LLM token (for real-time text streaming)
+  | 'tool_start'    // Tool execution begins (optional)
+  | 'tool_end'      // Tool execution ends (optional)
+  | 'final'         // Complete response with all data
+  | 'error';        // Error occurred
 
-export interface StreamIndicatorEvent {
-  type: 'indicator';
-  message: string;
-  icon: string;
-  agentType?: string;
+/**
+ * Node start event - fired when an agent node begins processing
+ */
+export interface NodeStartEvent {
+  type: 'node_start';
+  data: {
+    node: string;
+    message: string;
+  };
 }
 
-export interface StreamIndicatorEndEvent {
-  type: 'indicator_end';
+/**
+ * Node end event - fired when an agent node completes
+ */
+export interface NodeEndEvent {
+  type: 'node_end';
+  data: {
+    node: string;
+  };
 }
 
-export interface StreamTextEvent {
-  type: 'text';
-  content: string;
+/**
+ * Token event - fired for each LLM token during streaming
+ */
+export interface TokenEvent {
+  type: 'token';
+  data: {
+    content: string;
+    node: string;
+  };
 }
 
-export interface StreamComponentsEvent {
-  type: 'components';
-  block: ChatComponentBlock;
+/**
+ * Tool start event - fired when a tool begins execution (optional)
+ */
+export interface ToolStartEvent {
+  type: 'tool_start';
+  data: {
+    tool: string;
+    input?: unknown;
+  };
 }
+
+/**
+ * Tool end event - fired when a tool completes (optional)
+ */
+export interface ToolEndEvent {
+  type: 'tool_end';
+  data: {
+    tool: string;
+    success: boolean;
+  };
+}
+
+/**
+ * Final response event - contains complete response data
+ */
+export interface FinalEvent {
+  type: 'final';
+  data: {
+    textResponse: string;
+    componentBlock?: ChatComponentBlock;
+    agentType?: string;
+    success: boolean;
+    messageId: string;
+    timestamp: string;
+  };
+}
+
+/**
+ * Error event - fired when an error occurs
+ */
+export interface StreamErrorEvent {
+  type: 'error';
+  data: {
+    message: string;
+  };
+}
+
+/**
+ * Union of all LangGraph stream events
+ */
+export type StreamEvent =
+  | NodeStartEvent
+  | NodeEndEvent
+  | TokenEvent
+  | ToolStartEvent
+  | ToolEndEvent
+  | FinalEvent
+  | StreamErrorEvent;
 
 /**
  * Flags indicating which data was modified by the AI
@@ -104,26 +179,61 @@ export interface DataChangedFlags {
   preferences?: boolean;
 }
 
-export interface StreamDoneEvent {
-  type: 'done';
-  messageId: string;
-  timestamp: string;
-  agentType?: string;
-  dataChanged?: DataChangedFlags;
-}
+// ============================================
+// Streaming State Types
+// ============================================
 
-export interface StreamErrorEvent {
-  type: 'error';
+/**
+ * Current node being processed (for indicator display)
+ */
+export interface ActiveNode {
+  /** Node name (e.g., 'router_node', 'spend_node') */
+  name: string;
+  /** Human-readable message (e.g., 'Finding best card...') */
   message: string;
+  /** Timestamp when node started (for elapsed time display) */
+  startTime: number;
 }
 
-export type StreamEvent =
-  | StreamIndicatorEvent
-  | StreamIndicatorEndEvent
-  | StreamTextEvent
-  | StreamComponentsEvent
-  | StreamDoneEvent
-  | StreamErrorEvent;
+/**
+ * Streaming state for the chat hook
+ * Tracks all state during LangGraph stream processing
+ */
+export interface StreamingState {
+  /** Whether currently streaming */
+  isStreaming: boolean;
+  /** Active node (for indicator) */
+  activeNode: ActiveNode | null;
+  /** Accumulated text (token by token) */
+  streamedText: string;
+  /** Component block (arrives with final event) */
+  componentBlock: ChatComponentBlock | null;
+  /** Error message if failed */
+  error: string | null;
+  /** Final message ID */
+  messageId: string | null;
+  /** Final timestamp */
+  timestamp: string | null;
+  /** Agent that handled the request */
+  agentType: string | null;
+  /** Nodes that have completed */
+  completedNodes: string[];
+}
+
+/**
+ * Initial streaming state
+ */
+export const initialStreamingState: StreamingState = {
+  isStreaming: false,
+  activeNode: null,
+  streamedText: '',
+  componentBlock: null,
+  error: null,
+  messageId: null,
+  timestamp: null,
+  agentType: null,
+  completedNodes: [],
+};
 
 // ============================================
 // Message Filtering Utilities

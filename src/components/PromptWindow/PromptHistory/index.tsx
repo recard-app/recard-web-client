@@ -3,7 +3,7 @@ import showdown from 'showdown';
 import { ChatMessage } from '../../../types/ChatTypes';
 import { InfoDisplay } from '../../../elements';
 import { ChatComponentBlock } from '../../../elements/ChatComponents';
-import { StreamingState } from '../../../hooks/useAgentChat';
+import { StreamingState } from '../../../types/AgentChatTypes';
 import StreamingIndicator from '../StreamingIndicator';
 import { ChatErrorBoundary } from '../ErrorBoundary';
 import './PromptHistory.scss';
@@ -55,7 +55,7 @@ function PromptHistory({
   const renderStreamingContent = () => {
     if (!streamingState) return null;
 
-    const { isStreaming, indicatorMessage, indicatorIcon, streamedText, componentBlock } = streamingState;
+    const { isStreaming, activeNode, streamedText, componentBlock } = streamingState;
 
     // Only show streaming content while actively streaming
     // Once streaming is done, the message is added to chatHistory, so we don't show it here
@@ -63,14 +63,13 @@ function PromptHistory({
 
     return (
       <div className="streaming-content">
-        {/* Indicator */}
+        {/* Node indicator - shows current processing step */}
         <StreamingIndicator
-          message={indicatorMessage}
-          icon={indicatorIcon}
-          isVisible={!!indicatorMessage}
+          activeNode={activeNode}
+          isVisible={!!activeNode}
         />
 
-        {/* Streaming text */}
+        {/* Streaming text (token by token) */}
         {streamedText && (
           <div className="entry entry-assistant streaming">
             <div className="entry-content">
@@ -79,6 +78,7 @@ function PromptHistory({
                 <div
                   dangerouslySetInnerHTML={{ __html: converter.makeHtml(streamedText) }}
                 />
+                {/* Blinking cursor while streaming */}
                 {isStreaming && <span className="cursor-blink" />}
               </div>
             </div>
