@@ -48,16 +48,6 @@ export class SSEClient {
     console.log('[SSEClient] Connecting to:', url);
     const startTime = performance.now();
 
-    // Show initial loading indicator while waiting for server to route the request
-    // Server will send node_start event after routing
-    onEvent({
-      type: 'node_start',
-      data: {
-        node: 'router_node',
-        message: 'Thinking...',
-      },
-    });
-
     try {
       const response = await fetch(url, {
         method: 'POST',

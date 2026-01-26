@@ -38,8 +38,11 @@ const AgentTimeline: React.FC<AgentTimelineProps> = ({ timeline, isStreaming }) 
     }
   }, [isComplete, timelineCollapsed, isExpanded]);
 
-  // Don't render if no nodes
-  if (nodes.length === 0) {
+  // Filter out chat_node - it shows "Thinking..." which is redundant with router_node
+  const visibleNodes = nodes.filter(n => n.node !== 'chat_node');
+
+  // Don't render if no visible nodes
+  if (visibleNodes.length === 0) {
     return null;
   }
 
@@ -57,12 +60,12 @@ const AgentTimeline: React.FC<AgentTimelineProps> = ({ timeline, isStreaming }) 
     <div className={`agent-timeline ${isExpanded ? 'expanded' : 'collapsed'}`}>
       {isExpanded ? (
         <div className="timeline-expanded" onClick={handleCollapse}>
-          {nodes.map((node) => (
+          {visibleNodes.map((node) => (
             <TimelineNode key={node.id} node={node} />
           ))}
         </div>
       ) : (
-        <CollapsedTimeline nodes={nodes} onClick={handleExpand} />
+        <CollapsedTimeline nodes={visibleNodes} onClick={handleExpand} />
       )}
     </div>
   );
