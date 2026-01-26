@@ -1,6 +1,6 @@
 import React from 'react';
 import PreferencesModule from '../../components/PreferencesModule';
-import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
+import { ChatHistoryPreference, ChatModePreference, InstructionsPreference } from '../../types/UserTypes';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import { PAGE_NAMES, PAGE_ICONS } from '../../types';
@@ -11,13 +11,17 @@ interface PreferencesProps {
     setPreferencesInstructions: (instructions: InstructionsPreference) => void;
     chatHistoryPreference: ChatHistoryPreference;
     setChatHistoryPreference: (preference: ChatHistoryPreference) => void;
+    chatMode: ChatModePreference;
+    setChatMode: (mode: ChatModePreference) => void;
 }
 
 const Preferences: React.FC<PreferencesProps> = ({
     preferencesInstructions,
     setPreferencesInstructions,
     chatHistoryPreference,
-    setChatHistoryPreference
+    setChatHistoryPreference,
+    chatMode,
+    setChatMode
 }) => {
     // Use the full height hook to prevent double scroll
     useFullHeight(true);
@@ -35,6 +39,8 @@ const Preferences: React.FC<PreferencesProps> = ({
                         onInstructionsUpdate={setPreferencesInstructions}
                         chatHistoryPreference={chatHistoryPreference}
                         setChatHistoryPreference={setChatHistoryPreference}
+                        chatMode={chatMode}
+                        setChatMode={setChatMode}
                     />
                 </ContentContainer>
             </div>

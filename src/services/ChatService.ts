@@ -9,7 +9,7 @@ import {
   DataChangedFlags,
 } from '../types/AgentChatTypes';
 import { ChatComponentBlock } from '../types/ChatComponentTypes';
-import { MAX_CHAT_MESSAGES } from '../types/Constants';
+import { MAX_CHAT_MESSAGES, ChatModeType } from '../types/Constants';
 import { getSSEClient } from './SSEClient';
 
 // ============================================
@@ -22,9 +22,15 @@ import { getSSEClient } from './SSEClient';
  */
 export async function sendAgentMessage(
   requestData: AgentRequestData,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  chatMode?: ChatModeType
 ): Promise<AgentResponse> {
   const headers = await getAuthHeaders();
+
+  // Add chat mode header if specified
+  if (chatMode) {
+    headers['X-Chat-Mode'] = chatMode;
+  }
 
   // Limit chat history to prevent large payloads
   const limitedData = {
@@ -110,7 +116,8 @@ export interface StreamingCallbacks {
 export function sendAgentMessageStreaming(
   requestData: AgentRequestData,
   callbacks: StreamingCallbacks,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  chatMode?: ChatModeType
 ): () => void {
   const client = getSSEClient();
 
@@ -124,6 +131,11 @@ export function sendAgentMessageStreaming(
   (async () => {
     try {
       const headers = await getAuthHeaders();
+
+      // Add chat mode header if specified
+      if (chatMode) {
+        headers['X-Chat-Mode'] = chatMode;
+      }
 
       await client.connect({
         url: `${apiurl}/chat/agent`,

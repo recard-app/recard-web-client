@@ -23,7 +23,7 @@ import {
   normalizeAgentResponse,
   sendAgentMessage,
 } from '../services/ChatService';
-import { CHAT_SOURCE, NO_DISPLAY_NAME_PLACEHOLDER } from '../types/Constants';
+import { CHAT_SOURCE, NO_DISPLAY_NAME_PLACEHOLDER, ChatModeType } from '../types/Constants';
 
 // ============================================
 // Tool Message Helpers
@@ -104,6 +104,7 @@ function getToolResultMessage(tool: string): string {
 export interface UseAgentChatOptions {
   userName?: string;
   conversationId?: string;
+  chatMode?: ChatModeType;
   onMessageComplete?: (message: ChatMessage, componentBlock?: ChatComponentBlock) => void;
   onError?: (error: string) => void;
   onDataChanged?: (dataChanged: DataChangedFlags) => void;
@@ -125,7 +126,7 @@ export type { StreamingState };
 // ============================================
 
 export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatReturn {
-  const { userName, conversationId, onMessageComplete, onError, onDataChanged } = options;
+  const { userName, conversationId, chatMode, onMessageComplete, onError, onDataChanged } = options;
 
   const [streamingState, setStreamingState] = useState<StreamingState>(initialStreamingState);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -360,9 +361,10 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
           onError?.(message);
         },
       },
-      abortControllerRef.current.signal
+      abortControllerRef.current.signal,
+      chatMode
     );
-  }, [userName, conversationId, onMessageComplete, onError, onDataChanged]);
+  }, [userName, conversationId, chatMode, onMessageComplete, onError, onDataChanged]);
 
   const cancelStream = useCallback(() => {
     abortControllerRef.current?.abort();
@@ -397,7 +399,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
  * Uses regular POST request
  */
 export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgentChatReturn {
-  const { userName, conversationId, onMessageComplete, onError } = options;
+  const { userName, conversationId, chatMode, onMessageComplete, onError } = options;
 
   const [streamingState, setStreamingState] = useState<StreamingState>(initialStreamingState);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -430,7 +432,7 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
         conversationId,
       };
 
-      const response = await sendAgentMessage(requestData, abortControllerRef.current.signal);
+      const response = await sendAgentMessage(requestData, abortControllerRef.current.signal, chatMode);
       const normalized = normalizeAgentResponse(response);
 
       setStreamingState({

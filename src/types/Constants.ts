@@ -23,6 +23,13 @@ export const CHAT_HISTORY_PREFERENCE = {
 } as const;
 export type ChatHistoryPreferenceType = typeof CHAT_HISTORY_PREFERENCE[keyof typeof CHAT_HISTORY_PREFERENCE];
 
+export const CHAT_MODE = {
+    UNIFIED: 'unified',
+    ORCHESTRATED: 'orchestrated'
+} as const;
+export type ChatModeType = typeof CHAT_MODE[keyof typeof CHAT_MODE];
+export const DEFAULT_CHAT_MODE: ChatModeType = CHAT_MODE.UNIFIED;
+
 export const SUBSCRIPTION_PLAN = {
     FREE: 'free',
     PREMIUM: 'premium'

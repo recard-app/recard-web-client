@@ -57,9 +57,19 @@
     }
 
     .chat-history-preference,
-    .show-completed-preference {
+    .show-completed-preference,
+    .chat-mode-preference {
       display: grid;
       gap: $space-2;
+    }
+
+    .chat-mode-preference {
+      .chat-mode-description {
+        font-size: $font-xs;
+        color: $neutral-medium-gray;
+        margin: 0;
+        font-style: italic;
+      }
     }
 
     .save-button {

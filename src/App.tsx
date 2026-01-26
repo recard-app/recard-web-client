@@ -93,14 +93,17 @@ import { usePageBackground } from './hooks/usePageBackground';
 import { useViewportHeight } from './hooks/useViewportHeight';
 
 // Constants and Types
-import { 
+import {
   GLOBAL_QUICK_HISTORY_SIZE,
   CHAT_HISTORY_PREFERENCE,
+  CHAT_MODE,
+  DEFAULT_CHAT_MODE,
   SUBSCRIPTION_PLAN,
   LOADING_ICON,
   LOADING_ICON_SIZE,
   Conversation,
   ChatHistoryPreference,
+  ChatModePreference,
   InstructionsPreference,
   SubscriptionPlan,
   MonthlyStatsResponse
@@ -209,6 +212,11 @@ function AppContent({}: AppContentProps) {
   const [preferencesInstructions, setPreferencesInstructions] = useState<InstructionsPreference>('');
   // State for managing chat history preference (keep/clear)
   const [chatHistoryPreference, setChatHistoryPreference] = useState<ChatHistoryPreference>(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
+  // State for managing chat mode preference (unified/orchestrated) - stored in localStorage
+  const [chatMode, setChatMode] = useState<ChatModePreference>(() => {
+    const stored = localStorage.getItem('swipe_chat_mode');
+    return (stored as ChatModePreference) || DEFAULT_CHAT_MODE;
+  });
   // State for tracking user's subscription plan
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
   // State for managing side panel visibility with localStorage persistence
@@ -833,6 +841,7 @@ function AppContent({}: AppContentProps) {
               setClearChatCallback={setClearChatCallback}
               existingHistoryList={chatHistory}
               chatHistoryPreference={chatHistoryPreference}
+              chatMode={chatMode}
               isLoadingHistory={isLoadingHistory}
               onNewChat={handleClearChat}
               onCardSelect={handleCardSelectById}
@@ -1170,6 +1179,8 @@ function AppContent({}: AppContentProps) {
                         setPreferencesInstructions={setPreferencesInstructions}
                         chatHistoryPreference={chatHistoryPreference}
                         setChatHistoryPreference={(preference: ChatHistoryPreference) => setChatHistoryPreference(preference)}
+                        chatMode={chatMode}
+                        setChatMode={setChatMode}
                       />
                     </ProtectedRoute>
                   } />

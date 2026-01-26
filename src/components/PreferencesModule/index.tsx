@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
+import { ChatHistoryPreference, InstructionsPreference, ChatModePreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
-import { CHAT_HISTORY_OPTIONS } from './utils';
-import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH } from '../../types/Constants';
+import { CHAT_HISTORY_OPTIONS, CHAT_MODE_OPTIONS, CHAT_MODE_STORAGE_KEY } from './utils';
+import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH, DEFAULT_CHAT_MODE } from '../../types/Constants';
 import './PreferencesModule.scss';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 
@@ -14,19 +14,25 @@ import { InfoDisplay, ErrorWithRetry } from '../../elements';
  * @param onInstructionsUpdate - Callback to update instructions.
  * @param chatHistoryPreference - Current chat history preference.
  * @param setChatHistoryPreference - Function to set chat history preference.
+ * @param chatMode - Current chat mode preference.
+ * @param setChatMode - Function to set chat mode preference.
  */
 interface PreferencesModuleProps {
     customInstructions: InstructionsPreference;
     onInstructionsUpdate: (instructions: InstructionsPreference) => void;
     chatHistoryPreference: ChatHistoryPreference;
     setChatHistoryPreference: (preference: ChatHistoryPreference) => void;
+    chatMode: ChatModePreference;
+    setChatMode: (mode: ChatModePreference) => void;
 }
 
 function PreferencesModule({
     customInstructions,
     onInstructionsUpdate,
     chatHistoryPreference,
-    setChatHistoryPreference
+    setChatHistoryPreference,
+    chatMode,
+    setChatMode
 }: PreferencesModuleProps) {
     const [instructions, setInstructions] = useState<string>(customInstructions || '');
     const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -69,6 +75,15 @@ function PreferencesModule({
     useEffect(() => {
         loadAllPreferences();
     }, []);
+
+    /**
+     * Handles chat mode change - saves to localStorage immediately
+     */
+    const handleChatModeChange = (mode: ChatModePreference): void => {
+        setChatMode(mode);
+        localStorage.setItem(CHAT_MODE_STORAGE_KEY, mode);
+        toast.success(`Chat mode changed to ${mode === 'unified' ? 'Unified' : 'Orchestrated'}`);
+    };
 
     /**
      * Handles saving user preferences.
@@ -132,7 +147,7 @@ function PreferencesModule({
                     <select
                         id="chatHistorySelect"
                         value={chatHistoryPreference || 'keep_history'}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                             setChatHistoryPreference(e.target.value as ChatHistoryPreference)}
                         className={`chat-history-select default-select ${isLoading ? 'loading' : ''}`}
                         disabled={isLoading}
@@ -143,6 +158,26 @@ function PreferencesModule({
                             </option>
                         ))}
                     </select>
+                </div>
+
+                <div className="chat-mode-preference">
+                    <label htmlFor="chatModeSelect">AI Mode (Beta):</label>
+                    <select
+                        id="chatModeSelect"
+                        value={chatMode || DEFAULT_CHAT_MODE}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                            handleChatModeChange(e.target.value as ChatModePreference)}
+                        className="chat-mode-select default-select"
+                    >
+                        {CHAT_MODE_OPTIONS.map(option => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                    <p className="chat-mode-description">
+                        {CHAT_MODE_OPTIONS.find(opt => opt.value === chatMode)?.description || ''}
+                    </p>
                 </div>
 
                 <button
