@@ -9,31 +9,11 @@
   min-height: 0; // Critical for nested flex scroll containment
 }
 
-// Mobile-only sticky header with year dropdown
+// Sticky header with year dropdown
 .portfolio-header-controls {
   // HeaderControls provides sticky, border, shadow
   // Just adjust alignment
   justify-content: flex-end;
-}
-
-// Desktop-only inline header
-.portfolio-header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: $space-3 $space-5;
-  gap: $space-3;
-  flex-shrink: 0;
-
-  // Ensure year dropdown doesn't stretch
-  .year-dropdown {
-    flex: 0 0 auto;
-    width: auto;
-  }
-
-  @media (max-width: $mobile-breakpoint) {
-    padding: $space-2;
-  }
 }
 
 // Scrollable content area - KEY for edge-aligned scroll
@@ -41,11 +21,11 @@
   flex: 1;
   overflow-y: auto;
   min-height: 0; // Critical for flex scroll containment
-  padding: 0 $space-5 $space-5;
+  padding: $space-5;
   @include universal-scrollbar;
 
   @media (max-width: $mobile-breakpoint) {
-    padding: 0 $space-2 $space-2;
+    padding: $space-2;
   }
 }
 
@@ -79,21 +59,4 @@
   justify-content: center;
   flex: 1;
   min-height: 200px;
-}
-
-// Responsive visibility utilities
-.mobile-only {
-  display: none !important;
-
-  @media (max-width: $mobile-breakpoint) {
-    display: flex !important;
-  }
-}
-
-.desktop-only {
-  display: flex;
-
-  @media (max-width: $mobile-breakpoint) {
-    display: none !important;
-  }
 }

@@ -1,9 +1,11 @@
 import React from 'react';
+import Icon, { IconName } from '@/icons';
 import './TabBar.scss';
 
 export interface TabBarOption {
   id: string;
   label: string;
+  icon?: IconName;
 }
 
 export interface TabBarProps {
@@ -30,6 +32,7 @@ export const TabBar: React.FC<TabBarProps> = ({
           className={`tab-bar-button ${activeId === option.id ? 'active' : ''}`}
           onClick={() => onChange(option.id)}
         >
+          {option.icon && <Icon name={option.icon} variant="micro" size={14} />}
           {option.label}
         </button>
       ))}

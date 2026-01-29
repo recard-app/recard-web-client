@@ -4,10 +4,10 @@
 
 .history-entry {
     // Base styles - common to all variants
-    background-color: $neutral-white;
+    // Sidebar variant uses borderless, full-page variant uses bordered
+    @include card-base-borderless;
     padding: $space-1-5;
     margin-bottom: 1px;
-    border-radius: $radius-md;
     position: relative;
     display: flex;
     align-items: center;
@@ -15,7 +15,7 @@
     transition: all 0.2s ease;
     min-height: 42px;
     line-height: 42px;
-    
+
     p {
         margin: 0;
     }

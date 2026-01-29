@@ -269,8 +269,7 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
 
     return (
       <div className="credit-portfolio-panel">
-        {/* Mobile-only: Sticky header with year dropdown */}
-        <HeaderControls className="portfolio-header-controls mobile-only">
+        <HeaderControls className="portfolio-header-controls">
           <YearDropdown
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
@@ -278,16 +277,6 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
             loading={isLoading}
           />
         </HeaderControls>
-
-        {/* Desktop-only: Inline header */}
-        <div className="portfolio-header desktop-only">
-          <YearDropdown
-            selectedYear={selectedYear}
-            onYearChange={handleYearChange}
-            availableYears={availableYears}
-            loading={isLoading}
-          />
-        </div>
 
         <div className="portfolio-content">
           <div className="portfolio-empty">
@@ -306,8 +295,7 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
 
   return (
     <div className="credit-portfolio-panel">
-      {/* Mobile-only: Sticky header with year dropdown */}
-      <HeaderControls className="portfolio-header-controls mobile-only">
+      <HeaderControls className="portfolio-header-controls">
         <YearDropdown
           selectedYear={selectedYear}
           onYearChange={handleYearChange}
@@ -315,16 +303,6 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
           loading={isLoading}
         />
       </HeaderControls>
-
-      {/* Desktop-only: Inline header with year dropdown */}
-      <div className="portfolio-header desktop-only">
-        <YearDropdown
-          selectedYear={selectedYear}
-          onYearChange={handleYearChange}
-          availableYears={availableYears}
-          loading={isLoading}
-        />
-      </div>
 
       {/* Scrollable content area */}
       <div className="portfolio-content">

@@ -376,9 +376,8 @@
       gap: $space-3;
 
       .category-group {
+        @include card-base;
         background-color: $neutral-lightest-gray;
-        border: $border-half solid $neutral-light-gray;
-        border-radius: $radius-base;
         overflow: hidden;
 
         .category-title {
@@ -626,9 +625,8 @@
       gap: $space-4;
       
       .credit-item {
+        @include card-base;
         background-color: $neutral-lightest-gray;
-        border: $border-half solid $neutral-light-gray;
-        border-radius: $radius-base;
         padding: $space-3;
         transition: all $transition-base;
       
@@ -672,9 +670,8 @@
       gap: $space-4;
       
       .perk-item {
+        @include card-base;
         background-color: $neutral-lightest-gray;
-        border: $border-half solid $neutral-light-gray;
-        border-radius: $radius-base;
         padding: $space-3;
         transition: all $transition-base;
         
@@ -853,11 +850,9 @@
 
   // Unified Component Card Styles
   .component-card {
+    @include card-base;
     display: flex;
     flex-direction: column;
-    background-color: $neutral-white;
-    border: $border-half solid $neutral-light-gray;
-    border-radius: $radius-base;
     overflow: hidden;
     transition: box-shadow $transition-base;
 

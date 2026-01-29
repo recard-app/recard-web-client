@@ -4,9 +4,11 @@
 .credit-card-accordion {
   @include interactive-card;
   overflow: hidden;
+  background-color: $neutral-white;
 
   &.expanded {
     border-color: $neutral-gray;
+    background-color: $neutral-white;
   }
 
   // Accordion header - clickable button
@@ -102,49 +104,35 @@
     gap: $space-4;
     flex-shrink: 0;
 
-    .usage-stat {
+    .usage-summary {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 2px;
+      gap: $space-1;
+    }
+
+    .usage-stat {
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      gap: $space-1;
+      font-family: $font-manrope;
+      font-size: $font-sm;
 
       .usage-value {
-        font-family: $font-manrope;
-        font-size: $font-sm;
         font-weight: $font-semibold;
         color: $neutral-black;
       }
 
       .usage-label {
-        font-family: $font-manrope;
-        font-size: $font-xs;
         color: $neutral-dark-gray;
       }
     }
 
     .usage-percentage {
-      .percentage-value {
-        font-family: $font-manrope;
-        font-size: $font-sm;
-        font-weight: $font-bold;
-        padding: $space-1 $space-2;
-        border-radius: $radius-sm;
-
-        &.high {
-          color: $success;
-          background-color: rgba($success, 0.1);
-        }
-
-        &.medium {
-          color: $warning;
-          background-color: rgba($warning, 0.1);
-        }
-
-        &.low {
-          color: $neutral-dark-gray;
-          background-color: $neutral-lightest-gray;
-        }
-      }
+      font-family: $font-manrope;
+      font-size: $font-xs;
+      color: $neutral-dark-gray;
     }
 
     .chevron-icon {
@@ -159,7 +147,8 @@
   // Accordion content
   .accordion-content {
     border-top: $border-full solid $neutral-light-gray;
-    padding: 0 $space-4 $space-4;
+    padding: 0 0 $space-4;
+    background-color: $neutral-white;
   }
 
   // Responsive
@@ -179,10 +168,16 @@
       flex: 1 1 100%;
       justify-content: space-between;
 
-      .usage-stat {
+      .usage-summary {
         flex-direction: row;
-        align-items: baseline;
-        gap: $space-1;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: $space-2;
+      }
+
+      .usage-percentage {
+        text-align: right;
       }
 
       .chevron-icon {
@@ -193,7 +188,7 @@
     }
 
     .accordion-content {
-      padding: 0 $space-3 $space-3;
+      padding: 0 0 $space-3;
     }
   }
 }

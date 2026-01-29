@@ -5,18 +5,18 @@ import FooterControls from '../FooterControls';
 import './CreditsTabFooter.scss';
 
 const CREDITS_TABS = [
-  { id: 'summary', label: 'Summary' },
-  { id: 'by-card', label: 'By Card' }
+  { id: 'this-month', label: 'This Month', icon: 'calendar' as const },
+  { id: 'history', label: 'History', icon: 'history-clock' as const }
 ];
 
 export default function CreditsTabFooter() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const activeTab = location.pathname === PAGES.MY_CREDITS_HISTORY.PATH ? 'by-card' : 'summary';
+  const activeTab = location.pathname === PAGES.MY_CREDITS_HISTORY.PATH ? 'history' : 'this-month';
 
   const handleTabChange = (tabId: string) => {
-    if (tabId === 'summary') {
+    if (tabId === 'this-month') {
       navigate(PAGES.MY_CREDITS.PATH);
     } else {
       navigate(PAGES.MY_CREDITS_HISTORY.PATH);

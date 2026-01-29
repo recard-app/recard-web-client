@@ -81,16 +81,6 @@ const CreditSection: React.FC<CreditSectionProps> = ({
         </div>
       </div>
 
-      <div className="credit-period-display">
-        <CreditUsageTracker
-          userCredit={credit}
-          currentYear={year}
-          creditMaxValue={creditValue}
-          onPeriodSelect={(periodNumber, anniversaryYear) => onPeriodClick(periodNumber, anniversaryYear)}
-          isUpdating={isUpdating}
-        />
-      </div>
-
       {usageStats.totalPossible > 0 && (
         <div className="credit-usage-bar">
           <UsageBar
@@ -103,6 +93,16 @@ const CreditSection: React.FC<CreditSectionProps> = ({
           />
         </div>
       )}
+
+      <div className="credit-period-display">
+        <CreditUsageTracker
+          userCredit={credit}
+          currentYear={year}
+          creditMaxValue={creditValue}
+          onPeriodSelect={(periodNumber, anniversaryYear) => onPeriodClick(periodNumber, anniversaryYear)}
+          isUpdating={isUpdating}
+        />
+      </div>
     </div>
   );
 };

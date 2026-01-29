@@ -4,18 +4,15 @@
 
 // New row-based layout - matches history entry pattern
 .credit-entry-row {
-  background-color: $neutral-white;
+  @include interactive-card;
   padding: $space-2;
   margin-bottom: 1px;
-  border-radius: $radius-md;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: $space-3;
-  cursor: pointer;
   min-height: 42px;
-  border: $border-half solid $neutral-light-gray;
 
   &:not(.updating) {
     transition: all 0.2s ease;
@@ -33,7 +30,6 @@
 
   // Mobile styling
   @media (max-width: $mobile-breakpoint) {
-    border-color: $neutral-lightest-gray;
     padding: $space-1-5;
   }
 }
@@ -230,115 +226,6 @@
       }
     }
   }
-}
-
-// === SHARED USAGE DROPDOWN STYLING ===
-// (Moved to UsageDropdown.scss)
-
-// Legacy styles for modal view (keep existing)
-.credit-entry {
-  @include card-panel;
-  padding: 0;
-  //max-width: 500px;
-  width: 100%;
-  margin: 0; // let grid alignment control positioning
-  display: flex;
-  flex-direction: column;
-  min-height: 164px;
-  border: $border-half solid $neutral-light-gray;
-}
-
-.credit-description {
-  padding: $space-3;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.credit-line {
-  padding: $space-1-5 $space-3;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $space-3;
-  border-top: $border-half solid $neutral-light-gray;
-}
-
-.credit-value-used {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: $space-2;
-}
-
-.credit-usage {
-  flex: 0 0 auto;
-}
-
-.credit-slider {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.credit-amount {
-  flex: 0 0 auto;
-  white-space: nowrap;
-  //font-size: $font-xs;
-  //font-weight: $font-semibold;
-  color: $neutral-dark-gray;
-  font-variant-numeric: tabular-nums;
-}
-
-// Dropdown button styling: no background, hover shows neutral light gray
-.credit-usage button {
-  background: transparent;
-  //border: $border-half solid currentColor;
-  padding: $space-1-5 $space-2;
-  width: auto; // Let button size to content
-  justify-content: flex-end;
-}
-
-// Increase specificity and add !important to override global button hover
-.credit-entry .credit-line .credit-usage button:hover:not(:disabled) {
-  background-color: var(--usage-tint-hover, $neutral-light-gray) !important;
-}
-
-// Override active/focus states to prevent global dark-green flash
-.credit-entry .credit-line .credit-usage button:active:not(:disabled) {
-  background-color: var(--usage-tint-hover, $neutral-light-gray) !important;
-  transform: none !important;
-}
-
-.credit-entry .credit-line .credit-usage button:focus,
-.credit-entry .credit-line .credit-usage button:focus-visible {
-  background-color: var(--usage-tint-hover, $neutral-light-gray) !important;
-  box-shadow: none !important;
-}
-
-
-// Make the unused track area stand out with a border
-.credit-entry .credit-line .credit-slider [data-slot="slider-track"] {
-  border: $border-half solid $neutral-gray;
-}
-
-.credit-usage { font-size: $font-xs; }
-.credit-value-used { font-variant-numeric: tabular-nums; text-align: left; }
-
-.credit-card-ref {
-  margin-top: $space-1;
-  font-size: $font-xs;
-  color: $neutral-dark-gray;
-}
-
-// Make credit-description clickable
-.credit-description {
-  &:hover {
-    background-color: $neutral-lightest-gray;
-    border-radius: $radius-sm;
-  }
-
-  transition: background-color 0.2s ease;
 }
 
 // === CREDIT ENTRY DETAILS MODAL STYLING ===
@@ -606,13 +493,13 @@ body:has(.mobile-credit-details-drawer) [data-radix-popper-content-wrapper] .usa
 
 // Sidebar variant styling
 .credit-entry-sidebar {
+  @include interactive-card-borderless;
   display: flex;
   flex-direction: column;
   gap: $space-1;
   padding: $space-2 $space-1;
   font-size: $font-xs;
   line-height: 1.2;
-  border-radius: $radius-base;
 
   &:not(.updating) {
     transition: background-color 0.2s ease;

@@ -1,11 +1,10 @@
 @use '../../styling/globals' as *;
+@use '../../styling/mixins' as *;
 @use 'sass:color';
 
 // Settings Card Container
 .settings-card {
-  background: $neutral-white;
-  border: $border-full solid $neutral-gray;
-  border-radius: $radius-lg;
+  @include card-base;
   overflow: hidden;
   box-shadow: $shadow-sm;
 
@@ -144,8 +143,6 @@
 // Mobile adjustments
 @media (max-width: $mobile-breakpoint) {
   .settings-card {
-    border-radius: $radius-base;
-
     &__header {
       padding: $space-2 $space-3;
     }

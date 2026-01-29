@@ -608,20 +608,52 @@
   }
 }
 
-// === INTERACTIVE CARD STYLING ===
+// === CARD STYLING ===
 
-// Standard interactive card styling for clickable list items
-// Used by: credit-entry-row, chat-component-item, history-entry (full-page), credit-card-accordion
-@mixin interactive-card {
+// Base card styling - standard border radius and border for card-like components
+// Use for non-interactive cards (static display items)
+@mixin card-base {
   background-color: $neutral-white;
   border: $border-half solid $neutral-light-gray;
   border-radius: $radius-md;
+}
+
+// Borderless card styling - for sidebar variants where borders add visual clutter
+// Same border-radius but no border
+@mixin card-base-borderless {
+  background-color: $neutral-white;
+  border: none;
+  border-radius: $radius-md;
+}
+
+// Standard interactive card styling for clickable list items
+// Extends card-base with hover/focus states
+// Used by: credit-entry-row, history-entry (full-page), credit-card-accordion
+@mixin interactive-card {
+  @include card-base;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 
   &:hover {
     background-color: $neutral-lightest-gray;
     border-color: $neutral-gray;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+// Interactive card without border - for sidebar variants
+// Same hover behavior but no border
+@mixin interactive-card-borderless {
+  @include card-base-borderless;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: $neutral-lightest-gray;
   }
 
   &:focus-visible {

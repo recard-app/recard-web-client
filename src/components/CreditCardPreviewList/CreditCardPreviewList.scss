@@ -1,4 +1,5 @@
 @use '../../styling/variables' as *;
+@use '../../styling/mixins' as *;
 
 /* Card list component styles */
 .cards-list {
@@ -28,40 +29,34 @@
 
 /* Individual card preview styles */
   .credit-card-preview {
-    // Base styles - common to all variants
+    // Base styles - use interactive card with border
+    @include interactive-card;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     padding: $space-1-5;
-    cursor: pointer;
-    transition: background-color 0.2s;
     min-height: 48px;
-    
+
     // Base states that apply to all variants
-    &:hover {
-      // Match HistoryEntry hover color
-      background-color: $neutral-lightest-gray;
-    }
-    
     &.selected {
       // Match HistoryEntry selected/active color
       background-color: $neutral-light-gray;
     }
-    
+
     // Base card content styles
     .card-content {
       display: flex;
       align-items: flex-start;
       flex: 1;
       gap: $space-2;
-      
+
       .card-thumbnail {
         width: $icon-large;
         height: auto;
         flex-shrink: 0;
         margin-top: 5px;
       }
-      
+
       .card-info {
         .card-name {
           font-weight: $font-semibold;
@@ -69,12 +64,12 @@
           font-size: $font-sm;
           font-family: $font-manrope;
         }
-        
+
         .card-network {
           font-size: $font-xs;
           color: $neutral-dark-gray;
         }
-        
+
         .preferred-star-icon {
           display: inline;
           margin-right: 2px;
@@ -91,13 +86,17 @@
       }
     }
 
-    // Variant templates - currently inherit all base styles
-    // Add variant-specific overrides here if needed in the future
+    // Sidebar variant - borderless
     &.sidebar-variant {
-      border-radius: $radius-base;
+      @include interactive-card-borderless;
     }
 
-    // my-cards variant currently uses base styles; include minimal non-empty rule for linter
+    // Mobile sidebar variant - borderless
+    &.mobile-sidebar-variant {
+      @include interactive-card-borderless;
+    }
+
+    // my-cards variant - keeps border (not in sidebar)
     &.my-cards-variant {
       .card-content { gap: $space-3; }
     }

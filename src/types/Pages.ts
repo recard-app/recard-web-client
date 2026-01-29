@@ -52,8 +52,8 @@ export const PAGES = {
     TITLE: 'My Credits',
   },
   MY_CREDITS_HISTORY: {
-    PATH: '/my-credits/all',
-    TITLE: 'All Credits',
+    PATH: '/my-credits/history',
+    TITLE: 'Credit History',
   },
   DELETE_HISTORY: {
     PATH: '/delete-history',

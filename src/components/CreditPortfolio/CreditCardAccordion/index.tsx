@@ -147,14 +147,14 @@ const CreditCardAccordion: React.FC<CreditCardAccordionProps> = ({
         </div>
 
         <div className="header-stats">
-          <div className="usage-stat">
-            <span className="usage-value">${summary.totalUsedValue.toFixed(0)}</span>
-            <span className="usage-label">of ${summary.totalPossibleValue.toFixed(0)}</span>
-          </div>
-          <div className="usage-percentage">
-            <span className={`percentage-value ${usagePercentage >= 80 ? 'high' : usagePercentage >= 50 ? 'medium' : 'low'}`}>
-              {usagePercentage}%
-            </span>
+          <div className="usage-summary">
+            <div className="usage-stat">
+              <span className="usage-value">${summary.totalUsedValue.toFixed(0)}</span>
+              <span className="usage-label">of ${summary.totalPossibleValue.toFixed(0)}</span>
+            </div>
+            <div className="usage-percentage">
+              {usagePercentage}% used
+            </div>
           </div>
           <Icon
             name="chevron-down"

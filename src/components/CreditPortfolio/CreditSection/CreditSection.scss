@@ -1,7 +1,7 @@
 @use '../../../styling/variables' as *;
 
 .credit-section {
-  padding: $space-4 0;
+  padding: $space-2 $space-4;
 
   // Divider between credit sections
   & + & {
@@ -56,5 +56,11 @@
 
   .credit-usage-bar {
     margin-top: $space-3;
+  }
+}
+
+@media (max-width: $mobile-breakpoint) {
+  .credit-section {
+    padding: $space-2 $space-3;
   }
 }
