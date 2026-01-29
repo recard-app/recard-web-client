@@ -6,9 +6,9 @@
   // Base dropdown menu styling
   background-color: $dropdown-white !important;
   border: 1px solid $border-light-gray !important;
-  border-radius: 4px !important;
+  border-radius: $radius-base !important;
   box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
-  padding: 8px 0 !important;
+  padding: 0 !important;
   min-width: 150px !important;
   z-index: 999999 !important;
   
@@ -23,6 +23,7 @@
   text-align: left !important;
   background: none !important;
   border: none !important;
+  border-radius: 0 !important;
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
@@ -128,14 +129,39 @@
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
-  
+
   .dropdown-item-icon {
     width: 16px;
     height: 16px;
     flex-shrink: 0;
   }
-  
+
   .dropdown-item-text {
     flex-grow: 1;
+  }
+}
+
+// Mobile-friendly dropdown styling
+@media (max-width: $mobile-breakpoint) {
+  // Dropdown container
+  [data-slot="dropdown-menu-content"] {
+    min-width: 200px !important;
+    max-width: calc(100vw - ($space-4 * 2)) !important;
+  }
+
+  // Dropdown items - larger touch targets, matching sidebar primary-links
+  [data-slot="dropdown-menu-item"] {
+    padding: $space-3 $space-4 !important;
+    min-height: 44px !important;
+    font-size: $font-chat !important;
+
+    .dropdown-item-text {
+      font-size: $font-chat;
+    }
+
+    .dropdown-item-icon {
+      width: $icon-small;
+      height: $icon-small;
+    }
   }
 }

@@ -444,12 +444,6 @@
     }
   }
 
-  // Make the account dropdown as wide as the drawer
-  .mobile-drawer-dropdown[data-slot="dropdown-menu-content"] {
-    width: 280px;
-    max-width: 80vw;
-  }
-
   // Improve signout appearance within dropdown
   .mobile-drawer-dropdown .signout-action[data-slot="dropdown-menu-item"] {
     color: $error;
