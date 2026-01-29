@@ -444,6 +444,13 @@
     }
   }
 
+  // Make account dropdown match user-profile-section width (drawer width minus padding)
+  .mobile-drawer-dropdown[data-slot="dropdown-menu-content"] {
+    min-width: calc(280px - ($space-1 * 2)) !important;
+    width: calc(280px - ($space-1 * 2)) !important;
+    max-width: calc(80vw - ($space-1 * 2)) !important;
+  }
+
   // Improve signout appearance within dropdown
   .mobile-drawer-dropdown .signout-action[data-slot="dropdown-menu-item"] {
     color: $error;
