@@ -3,7 +3,9 @@ import PageHeader from '../../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, PAGES } from '../../../types';
 import { CreditCardDetails } from '../../../types/CreditCardTypes';
 import { CreditPortfolioView } from '../../../components/CreditPortfolio';
+import CreditsTabFooter from '@/components/PageControls/CreditsTabFooter';
 import { useFullHeight } from '../../../hooks/useFullHeight';
+import '../shared-credits-layout.scss';
 import './CreditsPortfolio.scss';
 
 interface CreditsPortfolioProps {
@@ -37,15 +39,18 @@ const CreditsPortfolio: React.FC<CreditsPortfolioProps> = ({
       />
 
       <div className="standard-page-content--no-padding">
-        <CreditPortfolioView
-          userCardDetails={userCardDetails}
-          reloadTrigger={reloadTrigger}
-          onRefreshMonthlyStats={onRefreshMonthlyStats}
-          onAddUpdatingCreditId={onAddUpdatingCreditId}
-          onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
-          isCreditUpdating={isCreditUpdating}
-          onClearAllUpdatingCredits={onClearAllUpdatingCredits}
-        />
+        <div className="credits-history-panel">
+          <CreditPortfolioView
+            userCardDetails={userCardDetails}
+            reloadTrigger={reloadTrigger}
+            onRefreshMonthlyStats={onRefreshMonthlyStats}
+            onAddUpdatingCreditId={onAddUpdatingCreditId}
+            onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+            isCreditUpdating={isCreditUpdating}
+            onClearAllUpdatingCredits={onClearAllUpdatingCredits}
+          />
+          <CreditsTabFooter />
+        </div>
       </div>
     </div>
   );

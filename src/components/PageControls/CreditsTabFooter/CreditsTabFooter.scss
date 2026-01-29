@@ -1,0 +1,52 @@
+@use '@/styling/globals' as *;
+
+.credits-tab-footer {
+  padding: $space-3 $space-4;
+  background: $neutral-white;
+  border-top: $border-half solid $neutral-light-gray;
+  flex-shrink: 0;
+
+  .credits-tabs {
+    display: flex;
+    width: 100%;
+    background-color: $neutral-light-gray;
+    border-radius: $radius-base;
+    padding: $space-half;
+    gap: $space-half;
+
+    .tab-button {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: $space-2 $space-3;
+      font-size: $font-sm;
+      font-weight: $font-semibold;
+      color: $neutral-dark-gray;
+      background-color: transparent;
+      border: none;
+      border-radius: $radius-sm;
+      cursor: pointer;
+      transition: all $transition-base;
+      text-align: center;
+
+      &:hover:not(.active) {
+        background-color: $neutral-white;
+        color: $neutral-black;
+      }
+
+      &.active {
+        background-color: $neutral-white;
+        color: $primary-color;
+        box-shadow: $shadow-sm;
+      }
+    }
+  }
+}
+
+// Mobile: add safe area padding
+@media (max-width: $mobile-breakpoint) {
+  .credits-tab-footer {
+    padding-bottom: calc($space-3 + env(safe-area-inset-bottom, 0px));
+  }
+}

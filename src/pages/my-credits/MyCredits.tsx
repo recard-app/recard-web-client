@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/PageHeader';
-import { PAGE_ICONS, PAGE_NAMES, PAGES, CalendarUserCredits, UserCredit, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS } from '../../types';
+import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, UserCredit, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS } from '../../types';
 import { UserCreditCardService } from '../../services';
 import CreditsDisplay from '../../components/CreditsDisplay';
 import { CreditCardDetails } from '../../types/CreditCardTypes';
@@ -11,6 +10,7 @@ import Icon from '../../icons';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import CreditSummary from '../../components/CreditSummary';
+import CreditsTabFooter from '@/components/PageControls/CreditsTabFooter';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import './shared-credits-layout.scss';
 import './MyCredits.scss';
@@ -42,7 +42,6 @@ const MyCredits: React.FC<MyCreditsProps> = ({
 }) => {
   // Use the full height hook for this page
   useFullHeight(true);
-  const navigate = useNavigate();
 
   const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -190,15 +189,6 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                   showAllPeriods={true}
                   useSimpleDisplay={true}
                   showPeriodLabel={true}
-                  customHeaderActions={
-                    <button
-                      className="button ghost icon with-text no-padding"
-                      onClick={() => navigate(PAGES.MY_CREDITS_HISTORY.PATH)}
-                    >
-                      <Icon name="history-clock" variant="micro" size={14} />
-                      View All Credits
-                    </button>
-                  }
                   onUpdateComplete={onRefreshMonthlyStats}
                   isUpdating={isUpdatingMonthlyStats}
                   onAddUpdatingCreditId={onAddUpdatingCreditId}
@@ -228,6 +218,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
               </>
             )}
           </div>
+          <CreditsTabFooter />
         </div>
       </div>
     </div>
