@@ -1,0 +1,48 @@
+@use '@/styling/globals' as *;
+
+.tab-bar {
+  display: flex;
+  width: 100%;
+  background-color: $neutral-light-gray;
+  border-radius: $radius-base;
+  padding: $space-half;
+  gap: $space-half;
+
+  .tab-bar-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $space-2 $space-3;
+    font-size: $font-sm;
+    font-weight: $font-semibold;
+    color: $neutral-dark-gray;
+    background-color: transparent;
+    border: none;
+    border-radius: $radius-sm;
+    cursor: pointer;
+    transition: all $transition-base;
+    text-align: center;
+
+    &:hover:not(.active) {
+      background-color: $neutral-white;
+      color: $neutral-black;
+    }
+
+    &.active {
+      background-color: $neutral-white;
+      color: $primary-color;
+      box-shadow: $shadow-sm;
+    }
+  }
+
+  // Small size variant
+  &.small {
+    padding: $space-half;
+
+    .tab-bar-button {
+      padding: $space-1-5 $space-2;
+      font-size: $font-xs;
+    }
+  }
+}

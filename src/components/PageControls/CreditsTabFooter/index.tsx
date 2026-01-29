@@ -1,32 +1,35 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import { TabBar } from '@/elements';
 import { PAGES } from '../../../types';
+import FooterControls from '../FooterControls';
 import './CreditsTabFooter.scss';
+
+const CREDITS_TABS = [
+  { id: 'summary', label: 'Summary' },
+  { id: 'by-card', label: 'By Card' }
+];
 
 export default function CreditsTabFooter() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isSummary = location.pathname === PAGES.MY_CREDITS.PATH;
-  const isByCard = location.pathname === PAGES.MY_CREDITS_HISTORY.PATH;
+  const activeTab = location.pathname === PAGES.MY_CREDITS_HISTORY.PATH ? 'by-card' : 'summary';
+
+  const handleTabChange = (tabId: string) => {
+    if (tabId === 'summary') {
+      navigate(PAGES.MY_CREDITS.PATH);
+    } else {
+      navigate(PAGES.MY_CREDITS_HISTORY.PATH);
+    }
+  };
 
   return (
-    <div className="credits-tab-footer">
-      <div className="credits-tabs">
-        <button
-          type="button"
-          className={`tab-button ${isSummary ? 'active' : ''}`}
-          onClick={() => navigate(PAGES.MY_CREDITS.PATH)}
-        >
-          Summary
-        </button>
-        <button
-          type="button"
-          className={`tab-button ${isByCard ? 'active' : ''}`}
-          onClick={() => navigate(PAGES.MY_CREDITS_HISTORY.PATH)}
-        >
-          By Card
-        </button>
-      </div>
-    </div>
+    <FooterControls className="credits-tab-footer">
+      <TabBar
+        options={CREDITS_TABS}
+        activeId={activeTab}
+        onChange={handleTabChange}
+      />
+    </FooterControls>
   );
 }

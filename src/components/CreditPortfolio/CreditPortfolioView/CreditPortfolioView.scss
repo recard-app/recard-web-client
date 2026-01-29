@@ -1,11 +1,12 @@
 @use '../../../styling/variables' as *;
 @use '../../../styling/globals' as *;
 
-// Panel container - takes full height for edge-aligned scrolling
+// Panel container - flex child that expands to fill available space
 .credit-portfolio-panel {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0; // Critical for nested flex scroll containment
 }
 
 // Mobile-only sticky header with year dropdown
@@ -28,29 +29,6 @@
   .year-dropdown {
     flex: 0 0 auto;
     width: auto;
-  }
-
-  .expand-collapse-button {
-    padding: $space-2 $space-3;
-    background-color: transparent;
-    border: $border-full solid $neutral-light-gray;
-    border-radius: $radius-md;
-    font-family: $font-manrope;
-    font-size: $font-sm;
-    font-weight: $font-medium;
-    color: $neutral-dark-gray;
-    cursor: pointer;
-    transition: all 0.15s ease;
-
-    &:hover {
-      background-color: $neutral-lightest-gray;
-      border-color: $neutral-gray;
-    }
-
-    &:focus-visible {
-      outline: 2px solid $primary-medium;
-      outline-offset: 2px;
-    }
   }
 
   @media (max-width: $mobile-breakpoint) {

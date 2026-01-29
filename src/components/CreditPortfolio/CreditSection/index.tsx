@@ -2,8 +2,7 @@ import React, { useMemo } from 'react';
 import { CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_NAMES } from '@/types/CardCreditsTypes';
 import { COLORS } from '@/types/Colors';
 import UsageBar from '@/components/UsageBar';
-import PeriodTracker from '../PeriodGrids/PeriodTracker';
-import { buildPeriodInfo } from '../PeriodGrids/utils';
+import CreditUsageTracker from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditEntryDetails/CreditUsageTracker';
 import { CreditSectionProps } from '../types';
 import './CreditSection.scss';
 
@@ -65,11 +64,6 @@ const CreditSection: React.FC<CreditSectionProps> = ({
   // Determine if this is an anniversary-based credit
   const isAnniversaryBased = credit.isAnniversaryBased ?? cardCredit?.isAnniversaryBased ?? false;
 
-  // Build period info for the unified PeriodTracker
-  const periods = useMemo(() => {
-    return buildPeriodInfo(credit, year, creditValue);
-  }, [credit, year, creditValue]);
-
   // Determine period type label
   const periodTypeLabel = isAnniversaryBased
     ? 'Anniversary-based'
@@ -88,9 +82,11 @@ const CreditSection: React.FC<CreditSectionProps> = ({
       </div>
 
       <div className="credit-period-display">
-        <PeriodTracker
-          periods={periods}
-          onPeriodClick={(periodNumber, anniversaryYear) => onPeriodClick(periodNumber, anniversaryYear)}
+        <CreditUsageTracker
+          userCredit={credit}
+          currentYear={year}
+          creditMaxValue={creditValue}
+          onPeriodSelect={(periodNumber, anniversaryYear) => onPeriodClick(periodNumber, anniversaryYear)}
           isUpdating={isUpdating}
         />
       </div>

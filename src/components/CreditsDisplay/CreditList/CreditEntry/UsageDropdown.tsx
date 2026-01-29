@@ -78,7 +78,7 @@ const UsageDropdown: React.FC<UsageDropdownProps> = ({
                     color: USAGE_COLOR_BY_STATE[usageKey]
                   }}
                 />
-                <span className="usage-dropdown-text" style={{ color: USAGE_COLOR_BY_STATE[usageKey] }}>
+                <span className="usage-dropdown-text">
                   {label}
                 </span>
               </DropdownMenuItem>

@@ -227,16 +227,6 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     return isCreditUpdating(cardId, creditId, periodNumber);
   }, [isCreditUpdating]);
 
-  // Expand all cards
-  const expandAll = useCallback(() => {
-    setExpandedCardIds(new Set(cardsWithCredits.map(c => c.id)));
-  }, [cardsWithCredits]);
-
-  // Collapse all cards
-  const collapseAll = useCallback(() => {
-    setExpandedCardIds(new Set());
-  }, []);
-
   // Loading state
   if (isLoading && !creditData) {
     return (
@@ -314,8 +304,6 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     );
   }
 
-  const allExpanded = expandedCardIds.size === cardsWithCredits.length;
-
   return (
     <div className="credit-portfolio-panel">
       {/* Mobile-only: Sticky header with year dropdown */}
@@ -328,15 +316,8 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
         />
       </HeaderControls>
 
-      {/* Desktop-only: Inline header with expand/collapse + dropdown */}
+      {/* Desktop-only: Inline header with year dropdown */}
       <div className="portfolio-header desktop-only">
-        <button
-          className="expand-collapse-button"
-          onClick={allExpanded ? collapseAll : expandAll}
-          type="button"
-        >
-          {allExpanded ? 'Collapse All' : 'Expand All'}
-        </button>
         <YearDropdown
           selectedYear={selectedYear}
           onYearChange={handleYearChange}

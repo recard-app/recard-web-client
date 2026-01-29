@@ -5,3 +5,5 @@ export { default as ErrorWithRetry } from './ErrorWithRetry/ErrorWithRetry';
 export { default as SearchField } from './SearchField/SearchField';
 export { default as DatePicker } from './DatePicker/DatePicker';
 export { default as ButtonSpinner } from './ButtonSpinner/ButtonSpinner';
+export { default as TabBar } from './TabBar/TabBar';
+export type { TabBarProps, TabBarOption } from './TabBar/TabBar';

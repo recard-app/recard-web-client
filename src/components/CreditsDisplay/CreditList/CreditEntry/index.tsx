@@ -296,6 +296,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                   currentYear={now.getFullYear()}
                   selectedPeriodNumber={selectedPeriodNumber}
                   onPeriodSelect={setSelectedPeriodNumber}
+                  creditMaxValue={creditMaxValue}
                 />
                 <CreditModalControls
                   userCredit={enrichedCredit}
@@ -350,6 +351,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                   currentYear={now.getFullYear()}
                   selectedPeriodNumber={selectedPeriodNumber}
                   onPeriodSelect={setSelectedPeriodNumber}
+                  creditMaxValue={creditMaxValue}
                 />
               </>
             )}
@@ -606,13 +608,10 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 // Static display when dropdown is disabled
                 <div
                   className="credit-usage-button static"
-                  style={{
-                    color: usageColor
-                  } as React.CSSProperties}
                 >
                   <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
                   <div className="credit-usage-label">
-                    <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
+                    <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usageColor }} />
                     <span>
                       {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
                       {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
@@ -630,14 +629,11 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                   trigger={
                     <button
                       className="credit-usage-button"
-                      style={{
-                        color: usageColor
-                      } as React.CSSProperties}
                       onClick={(e) => e.stopPropagation()} // Prevent card click from opening modal
                     >
                       <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
                       <div className="credit-usage-label">
-                        <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} />
+                        <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usageColor }} />
                         <span>
                           {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
                           {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}

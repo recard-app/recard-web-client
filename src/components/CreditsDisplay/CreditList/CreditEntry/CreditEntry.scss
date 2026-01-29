@@ -199,15 +199,16 @@
         font-weight: $font-bold;
         font-variant-numeric: tabular-nums;
         line-height: 1.4;
+        color: $neutral-black;
       }
-      
+
       .credit-usage-label {
         display: flex;
         align-items: center;
         gap: $space-1;
         font-size: $font-xs;
         font-weight: $font-medium;
-        opacity: 0.8;
+        color: $neutral-dark-gray;
         
         span {
           font-size: $font-xs;

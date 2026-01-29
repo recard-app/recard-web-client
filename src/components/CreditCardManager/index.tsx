@@ -29,6 +29,7 @@ import Icon from '../../icons';
 import { CardIcon } from '../../icons';
 import CardSwitcherDropdown from '../CardSwitcherDropdown';
 import HeaderControls from '../PageControls/HeaderControls';
+import FooterControls from '../PageControls/FooterControls';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -627,7 +628,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
 
             {/* Mobile-only sticky footer controls */}
             {isMobileViewport && (
-                <div className="mobile-sticky-footer" role="region" aria-label="Card actions">
+                <FooterControls className="card-manager-footer">
                     {!isLoading && selectedCards.length === 0 ? (
                         <>
                             <p className="caps-label">Add your credit cards</p>
@@ -660,7 +661,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                             </button>
                         </>
                     )}
-                </div>
+                </FooterControls>
             )}
             
             {/* Card selector modal/drawer */}

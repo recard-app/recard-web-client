@@ -34,8 +34,6 @@ const CreditsPortfolio: React.FC<CreditsPortfolioProps> = ({
       <PageHeader
         title={PAGE_NAMES.MY_CREDITS}
         icon={PAGE_ICONS.MY_CREDITS.MINI}
-        subtitle="All Credits"
-        titleLink={PAGES.MY_CREDITS.PATH}
       />
 
       <div className="standard-page-content--no-padding">

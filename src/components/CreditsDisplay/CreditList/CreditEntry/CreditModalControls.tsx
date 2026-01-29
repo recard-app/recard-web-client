@@ -24,6 +24,7 @@ interface CreditModalControlsProps {
   selectedPeriodNumber?: number;
   onPeriodSelect?: (periodNumber: number) => void;
   isUpdating?: boolean;
+  onLiveChange?: (usage: CreditUsageType, valueUsed: number) => void;
 }
 
 const CreditModalControls: React.FC<CreditModalControlsProps> = ({
@@ -34,7 +35,8 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   onUpdateHistoryEntry,
   selectedPeriodNumber: propSelectedPeriodNumber,
   onPeriodSelect: propOnPeriodSelect,
-  isUpdating
+  isUpdating,
+  onLiveChange
 }) => {
   // Calculate default current period using the selected date context
   const defaultCurrentPeriod = (() => {
@@ -68,10 +70,16 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   // Update local state when selected period changes
   useEffect(() => {
     if (selectedHistory) {
-      setUsage(selectedHistory.CreditUsage as CreditUsageType);
-      setValueUsed(selectedHistory.ValueUsed ?? 0);
+      const newUsage = selectedHistory.CreditUsage as CreditUsageType;
+      const newValueUsed = selectedHistory.ValueUsed ?? 0;
+      setUsage(newUsage);
+      setValueUsed(newValueUsed);
+      // Notify parent of initial values when period changes
+      if (onLiveChange) {
+        onLiveChange(newUsage, newValueUsed);
+      }
     }
-  }, [selectedHistory, userCredit.CardId, userCredit.CreditId, selectedPeriodNumber]);
+  }, [selectedHistory, userCredit.CardId, userCredit.CreditId, selectedPeriodNumber, onLiveChange]);
 
   const maxValue = getMaxValue(creditMaxValue);
   const isSliderDisabled = usage === CREDIT_USAGE.INACTIVE || usage === CREDIT_USAGE.DISABLED;
@@ -168,24 +176,40 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
       if (newUsage === CREDIT_USAGE.INACTIVE) {
         // Disable slider but RETAIN existing value; persist same value
         await persistUpdate(newUsage, valueUsed);
+        // Notify parent of committed change
+        if (onLiveChange) {
+          onLiveChange(newUsage, valueUsed);
+        }
         return;
       }
       if (newUsage === CREDIT_USAGE.NOT_USED) {
         // Keep value at 0, reflect NOT_USED state
         setValueUsed(0);
         await persistUpdate(newUsage, 0);
+        // Notify parent of committed change
+        if (onLiveChange) {
+          onLiveChange(newUsage, 0);
+        }
         return;
       }
       if (newUsage === CREDIT_USAGE.PARTIALLY_USED) {
         const val = getValueForUsage(CREDIT_USAGE.PARTIALLY_USED, maxValue);
         setValueUsed(val);
         await persistUpdate(newUsage, val);
+        // Notify parent of committed change
+        if (onLiveChange) {
+          onLiveChange(newUsage, val);
+        }
         return;
       }
       if (newUsage === CREDIT_USAGE.USED) {
         const val = maxValue;
         setValueUsed(val);
         await persistUpdate(newUsage, val);
+        // Notify parent of committed change
+        if (onLiveChange) {
+          onLiveChange(newUsage, val);
+        }
         return;
       }
     } catch (e) {
@@ -230,6 +254,10 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
 
       try {
         await persistUpdate(correctedStatus, v);
+        // Notify parent of committed change
+        if (onLiveChange) {
+          onLiveChange(correctedStatus, v);
+        }
       } catch (e) {
         console.error('Failed to update credit via slider:', e);
       }
@@ -237,6 +265,10 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
       // Use the consistent local state values
       try {
         await persistUpdate(finalStatus, finalValue);
+        // Notify parent of committed change
+        if (onLiveChange) {
+          onLiveChange(finalStatus, finalValue);
+        }
       } catch (e) {
         console.error('Failed to update credit via slider:', e);
       }

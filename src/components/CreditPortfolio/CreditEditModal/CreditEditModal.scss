@@ -5,6 +5,18 @@
     padding: 0 $space-4 $space-4;
     overflow: auto;
   }
+
+  // Center the card display in drawer header (match mobile-credit-details-drawer)
+  .drawer-sticky-header .header-card-display {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  // Add drop shadow to footer (match mobile-credit-details-drawer)
+  [data-slot="drawer-footer"] {
+    box-shadow: $container-shadow-top;
+    background-color: $neutral-lightest-gray;
+  }
 }
 
 // Shared styles for both modal and drawer
@@ -29,4 +41,28 @@
 
 .header-card-display {
   margin-top: $space-1;
+}
+
+// Header row with title and year selector
+.header-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  width: 100%;
+
+  h2 {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.modal-year-selector {
+  flex-shrink: 0;
+
+  .year-dropdown {
+    min-width: 80px;
+    font-size: $font-sm;
+  }
 }

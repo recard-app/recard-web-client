@@ -24,12 +24,13 @@ export interface CreditEntryDetailsProps {
   onPeriodSelect?: (periodNumber: number) => void;
 }
 
-const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({ 
-  userCredit, 
-  now, 
-  card, 
-  cardCredit, 
-  creditMaxValue, 
+const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
+  userCredit,
+  now,
+  card,
+  cardCredit,
+  creditMaxValue,
+  currentYear,
   onUpdateHistoryEntry,
   hideControls = false,
   selectedPeriodNumber: propSelectedPeriodNumber,
@@ -170,7 +171,7 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
       {/* Usage Statistics */}
       <div className="usage-stats-section">
         <div className="credit-detail-item">
-          <span className="credit-detail-label">Usage This Year</span>
+          <span className="credit-detail-label">Usage for {currentYear}</span>
           <div className="credit-detail-value">
             ${userCredit.History.reduce((total: any, entry: any) => total + (entry.ValueUsed || 0), 0)} / ${(Number(cardCredit?.Value) || 0) * userCredit.History.length} used
           </div>

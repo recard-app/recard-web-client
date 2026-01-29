@@ -52,17 +52,11 @@
       background-color: $neutral-lightest-gray;
     }
 
-    /* Footer with actions (occupies layout space, not floating) */
-    .mobile-sticky-footer {
-      position: relative;
-      flex-shrink: 0;
-      background-color: $neutral-white;
-      border-top: $border-full solid $neutral-light-gray;
-      padding: $space-2 $space-4 $space-4 $space-4;
-      display: flex;
+    /* Footer uses FooterControls - only add specific overrides */
+    .card-manager-footer {
       flex-direction: column;
       gap: $space-2;
-      box-shadow: $container-shadow-top-bigger;
+      padding: $space-2 $space-4 $space-4 $space-4;
 
       .view-card-select {
         @include default-select;

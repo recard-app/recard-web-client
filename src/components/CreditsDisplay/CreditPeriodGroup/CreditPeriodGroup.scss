@@ -20,26 +20,6 @@
     gap: 0; // Remove gap, use space-between instead
     margin-bottom: $space-2;
   }
-
-  // When custom header actions are present
-  &.with-custom-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: $space-3;
-
-    .period-title-group {
-      display: flex;
-      align-items: center;
-      gap: $space-2;
-    }
-
-    .custom-header-actions {
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-    }
-  }
 }
 
 .period-title {
@@ -52,47 +32,6 @@
   }
 }
 
-.mobile-period-label {
-  display: none;
-
-  // Show only on mobile
-  @media (max-width: $mobile-breakpoint) {
-    display: flex;
-    align-items: center;
-    gap: $space-1;
-    font-size: $font-xs;
-    color: $neutral-dark-gray;
-
-    .period-label {
-      font-weight: $font-semibold;
-      text-transform: uppercase;
-    }
-
-    svg {
-      color: $primary-medium;
-      flex-shrink: 0;
-    }
-  }
-
-  // Show on desktop when feature flag makes it desktop-visible
-  &.desktop-visible {
-    display: flex;
-    align-items: center;
-    gap: $space-1;
-    font-size: $font-xs;
-    color: $neutral-dark-gray;
-
-    .period-label {
-      font-weight: $font-semibold;
-      text-transform: uppercase;
-    }
-
-    svg {
-      color: $primary-medium;
-      flex-shrink: 0;
-    }
-  }
-}
 
 .period-bar {
   display: flex;

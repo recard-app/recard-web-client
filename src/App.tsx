@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard, UserCredit, CreditCardDetails, CardCredit } from './types';
+import { buildYearOptions } from './pages/my-credits/utils';
 import { Icon, CardIcon } from './icons';
 // Services
 import {
@@ -240,6 +241,8 @@ function AppContent({}: AppContentProps) {
     card: CreditCardDetails;
     cardCredit: CardCredit | null;
   } | null>(null);
+  const [creditModalYear, setCreditModalYear] = useState<number>(() => new Date().getFullYear());
+  const [creditModalAccountCreatedAt, setCreditModalAccountCreatedAt] = useState<Date | null>(null);
   const [cardsVersion, setCardsVersion] = useState<number>(0);
   const [isSavingCards, setIsSavingCards] = useState(false);
   const [cardSelectorSearchTerm, setCardSelectorSearchTerm] = useState<string>('');
@@ -726,7 +729,34 @@ function AppContent({}: AppContentProps) {
   const handleCloseCreditModal = () => {
     setIsCreditModalOpen(false);
     setSelectedCreditForModal(null);
+    // Reset year to current when closing
+    setCreditModalYear(new Date().getFullYear());
   };
+
+  // Handle year change in credit modal
+  const handleCreditModalYearChange = useCallback((year: number) => {
+    setCreditModalYear(year);
+  }, []);
+
+  // Fetch account creation date for credit modal year dropdown
+  useEffect(() => {
+    const fetchAccountDate = async () => {
+      try {
+        const date = await UserService.fetchAccountCreationDate();
+        setCreditModalAccountCreatedAt(date);
+      } catch (error) {
+        console.error('Failed to fetch account creation date:', error);
+      }
+    };
+    if (user) {
+      fetchAccountDate();
+    }
+  }, [user]);
+
+  // Available years for credit modal dropdown
+  const creditModalAvailableYears = useMemo(() => {
+    return buildYearOptions(creditModalAccountCreatedAt);
+  }, [creditModalAccountCreatedAt]);
 
   // Function to handle saving credit card selections
   const handleSaveCardSelections = async () => {
@@ -1130,14 +1160,13 @@ function AppContent({}: AppContentProps) {
           </Dialog>
 
           {/* Credit Detail Modal (opened from chat component clicks) */}
-          {/* Credit Detail Modal (opened from chat component clicks) */}
           <CreditEditModal
             isOpen={isCreditModalOpen}
             onClose={handleCloseCreditModal}
             userCredit={selectedCreditForModal?.userCredit || null}
             card={selectedCreditForModal?.card || null}
             cardCredit={selectedCreditForModal?.cardCredit || null}
-            year={new Date().getFullYear()}
+            year={creditModalYear}
             isLoading={isCreditModalLoading}
             onUpdateComplete={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
           />

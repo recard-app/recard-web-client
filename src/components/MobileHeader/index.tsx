@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY } from '../../types';
+import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY, MY_CARDS_IN_ACCOUNT_MENU } from '../../types';
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -332,19 +332,21 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                           </Link>
                         </Drawer.Close>
                       </li>
-                      <li className={isActive(PAGES.MY_CARDS.PATH) ? 'active' : ''}>
-                        <Drawer.Close asChild>
-                          <Link to={PAGES.MY_CARDS.PATH}>
-                            <Icon 
-                              name="card" 
-                              variant={isActive(PAGES.MY_CARDS.PATH) ? 'solid' : 'outline'} 
-                              size={18}
-                              color={SIDEBAR_INACTIVE_ICON_COLOR}
-                            />
-                            <span>{PAGE_NAMES.MY_CARDS}</span>
-                          </Link>
-                        </Drawer.Close>
-                      </li>
+                      {!MY_CARDS_IN_ACCOUNT_MENU && (
+                        <li className={isActive(PAGES.MY_CARDS.PATH) ? 'active' : ''}>
+                          <Drawer.Close asChild>
+                            <Link to={PAGES.MY_CARDS.PATH}>
+                              <Icon
+                                name="card"
+                                variant={isActive(PAGES.MY_CARDS.PATH) ? 'solid' : 'outline'}
+                                size={18}
+                                color={SIDEBAR_INACTIVE_ICON_COLOR}
+                              />
+                              <span>{PAGE_NAMES.MY_CARDS}</span>
+                            </Link>
+                          </Drawer.Close>
+                        </li>
+                      )}
                       <li className={isActive(PAGES.MY_CREDITS.PATH) ? 'active' : ''}>
                         <Drawer.Close asChild>
                           <Link to={PAGES.MY_CREDITS.PATH}>
@@ -383,16 +385,18 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                     </div>
                   </div>
 
-                  <div className="mobile-drawer-section">
-                    <div className="section-title">My Cards</div>
-                    <CreditCardPreviewList
-                      cards={creditCards}
-                      loading={isLoadingCreditCards}
-                      showOnlySelected={true}
-                      onCardSelect={onCardSelect!}
-                      variant="mobile-sidebar"
-                    />
-                  </div>
+                  {!MY_CARDS_IN_ACCOUNT_MENU && (
+                    <div className="mobile-drawer-section">
+                      <div className="section-title">My Cards</div>
+                      <CreditCardPreviewList
+                        cards={creditCards}
+                        loading={isLoadingCreditCards}
+                        showOnlySelected={true}
+                        onCardSelect={onCardSelect!}
+                        variant="mobile-sidebar"
+                      />
+                    </div>
+                  )}
 
                   <div className="mobile-drawer-section">
                     <div className="section-title">{PAGE_NAMES.MY_CREDITS}</div>
@@ -469,6 +473,15 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                               </DropdownMenuItem>
                             </Link>
                           </Drawer.Close>
+                          {MY_CARDS_IN_ACCOUNT_MENU && (
+                            <Drawer.Close asChild>
+                              <Link to={PAGES.MY_CARDS.PATH}>
+                                <DropdownMenuItem icon={DROPDOWN_ICONS.MY_CARDS.NORMAL}>
+                                  {PAGE_NAMES.MY_CARDS}
+                                </DropdownMenuItem>
+                              </Link>
+                            </Drawer.Close>
+                          )}
                           <Drawer.Close asChild>
                             <Link to={PAGES.PREFERENCES.PATH}>
                               <DropdownMenuItem icon={DROPDOWN_ICONS.PREFERENCES.NORMAL}>

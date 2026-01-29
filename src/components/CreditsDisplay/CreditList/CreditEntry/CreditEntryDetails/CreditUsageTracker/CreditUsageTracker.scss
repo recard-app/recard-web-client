@@ -5,14 +5,13 @@
 
   .tracker-periods {
     display: flex;
-    gap: 6px;
-    align-items: center;
+    gap: $space-1;
+    align-items: flex-end; // Align bars to bottom
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
-    padding-top: $space-2;
-    padding-bottom: $space-2; // Small margin to prevent scrollbar from covering content
-    height: 70px;
+    padding: $space-2 0;
+    height: auto;
     // Universal scrollbar styling
     @include universal-scrollbar;
     @media (max-width: $mobile-breakpoint) {
@@ -23,55 +22,73 @@
   }
 
   .tracker-period {
-    border-radius: 8px;
-    border: 1px solid;
-    padding: 8px 6px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    gap: $space-1;
+    min-width: 36px;
+    cursor: default;
+    padding: $space-1;
+    border-radius: $radius-sm;
+    transition: background-color 0.2s ease;
     flex-shrink: 0;
-    min-width: 48px;
-    min-height: 48px;
-    transition: all 0.2s ease;
+
+    // Remove old box styles
+    border: none;
+    background: transparent;
 
     &.clickable {
       cursor: pointer;
 
       &:hover {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: $neutral-lightest-gray;
       }
     }
 
     &.selected {
-      min-height: 56px; // 8px taller than the default 48px
-      min-width: 52px;
-      padding: 12px 12px; // Increase top/bottom padding for better visual balance
+      background-color: $neutral-light-gray; // Highlight background
     }
 
     &.future {
       opacity: 0.4;
-      filter: grayscale(0.5);
       cursor: not-allowed;
     }
 
-    .period-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
+    &.updating {
+      opacity: 0.6;
+      cursor: wait;
     }
+  }
 
-    .period-name {
-      font-size: $font-xxs;
-      font-weight: 600;
-      line-height: 1.1;
-      text-align: center;
-      white-space: nowrap;
-    }
+  .period-bar-container {
+    display: block;
+    width: 24px;
+    height: 48px;
+    min-height: 48px;
+    min-width: 24px;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
 
-    // Icons inherit the text color (usage color)
-    svg {
-      flex-shrink: 0;
-    }
+  .period-bar-fill {
+    display: block;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: $radius-sm $radius-sm 0 0;
+    transition: height 0.2s ease;
+    box-sizing: border-box;
+  }
+
+  .period-label {
+    font-size: $font-xxs;
+    font-weight: $font-semibold;
+    color: $neutral-dark-gray;
+    text-align: center;
+    white-space: nowrap;
   }
 }

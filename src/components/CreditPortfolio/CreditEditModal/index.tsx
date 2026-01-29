@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import { CardIcon } from '@/icons';
@@ -60,8 +60,13 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
   onRemoveUpdatingCreditId
 }) => {
   const isMobile = useIsMobile();
-  // Recalculate `now` when modal opens to ensure period calculations are fresh
-  const now = useMemo(() => new Date(), [isOpen]);
+  // Use the selected year for date calculations, not today's date
+  // This ensures period calculations work correctly for previous years
+  const now = useMemo(() => {
+    const date = new Date();
+    date.setFullYear(year);
+    return date;
+  }, [isOpen, year]);
 
   // Get credit max value (already a number)
   const creditMaxValue = useMemo(() => {
@@ -95,12 +100,31 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
     initialPeriodNumber ?? currentPeriodNumber
   );
 
+  // Live update state for real-time bar graph updates
+  const [liveUsage, setLiveUsage] = useState<CreditUsageType | undefined>(undefined);
+  const [liveValueUsed, setLiveValueUsed] = useState<number | undefined>(undefined);
+
+  // Handler for live changes from CreditModalControls
+  const handleLiveChange = useCallback((usage: CreditUsageType, valueUsed: number) => {
+    setLiveUsage(usage);
+    setLiveValueUsed(valueUsed);
+  }, []);
+
   // Update selected period when modal opens or initial period changes
   useEffect(() => {
     if (isOpen) {
       setSelectedPeriodNumber(initialPeriodNumber ?? currentPeriodNumber);
+      // Reset live values when period changes
+      setLiveUsage(undefined);
+      setLiveValueUsed(undefined);
     }
   }, [isOpen, initialPeriodNumber, currentPeriodNumber]);
+
+  // Reset live values when selected period changes
+  useEffect(() => {
+    setLiveUsage(undefined);
+    setLiveValueUsed(undefined);
+  }, [selectedPeriodNumber]);
 
   // Handle credit history updates
   const handleUpdateHistoryEntry = async (update: {
@@ -201,6 +225,9 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
         currentYear={year}
         selectedPeriodNumber={selectedPeriodNumber}
         onPeriodSelect={setSelectedPeriodNumber}
+        creditMaxValue={creditMaxValue}
+        currentUsage={liveUsage}
+        currentValueUsed={liveValueUsed}
       />
     </>
   );
@@ -215,6 +242,7 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
       selectedPeriodNumber={selectedPeriodNumber}
       onPeriodSelect={setSelectedPeriodNumber}
       isUpdating={isUpdating}
+      onLiveChange={handleLiveChange}
     />
   );
 

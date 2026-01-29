@@ -188,7 +188,6 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                   showInactive={true}
                   showAllPeriods={true}
                   useSimpleDisplay={true}
-                  showPeriodLabel={true}
                   onUpdateComplete={onRefreshMonthlyStats}
                   isUpdating={isUpdatingMonthlyStats}
                   onAddUpdatingCreditId={onAddUpdatingCreditId}

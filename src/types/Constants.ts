@@ -124,6 +124,10 @@ export const SHOW_CARD_ON_HISTORY_ENTRY_PREVIEW = false;
 // TRUE: Shows card name in a bubble with period below (existing style)
 // FALSE: Shows only card icon with period inline (e.g., "<icon> - Monthly"), no bubble border
 export const SHOW_CARD_NAME_BUBBLE_IN_CREDITS = false;
+// Move My Cards navigation from sidebar to account dropdown menu
+// TRUE: My Cards appears in account dropdown menu (below Account & Settings, above Preferences)
+// FALSE: My Cards appears in sidebar navigation (default behavior)
+export const MY_CARDS_IN_ACCOUNT_MENU = true;
 
 export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
 export const PLACEHOLDER_PROFILE_IMAGE = '/temp_account.png';
@@ -262,6 +266,10 @@ export const DROPDOWN_RED_ICON_COLOR = ICON_RED;
 
 // Dropdown icons with normal and red variants
 export const DROPDOWN_ICONS = {
+    MY_CARDS: {
+        NORMAL: (props: any = {}) => createIconVariant('card', 'mini', DROPDOWN_NORMAL_ICON_COLOR, props.size),
+        RED: (props: any = {}) => createIconVariant('card', 'mini', DROPDOWN_RED_ICON_COLOR, props.size)
+    },
     PREFERENCES: {
         NORMAL: (props: any = {}) => createIconVariant('preferences', 'mini', DROPDOWN_NORMAL_ICON_COLOR, props.size),
         RED: (props: any = {}) => createIconVariant('preferences', 'mini', DROPDOWN_RED_ICON_COLOR, props.size)

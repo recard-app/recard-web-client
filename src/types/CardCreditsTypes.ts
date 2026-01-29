@@ -466,7 +466,7 @@ import { COLORS } from './Colors';
 export const CREDIT_USAGE_DISPLAY_COLORS = {
     USED: COLORS.PRIMARY_MEDIUM,
     NOT_USED: COLORS.NEUTRAL_BLACK,
-    PARTIALLY_USED: COLORS.ACCENT_MEDIUM,
+    PARTIALLY_USED: COLORS.NEUTRAL_BLACK,
     INACTIVE: COLORS.NEUTRAL_MEDIUM_GRAY,
     DISABLED: COLORS.DISABLED_GRAY
 } as const;
@@ -477,7 +477,7 @@ export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[key
  */
 export const CREDIT_USAGE_ICON_NAMES = {
     USED: 'used-icon-filled',
-    NOT_USED: 'not-used-icon-filled-alt',
+    NOT_USED: 'not-used-icon-v2',
     PARTIALLY_USED: 'partially-used-icon-filled',
     INACTIVE: 'inactive-filled',
     DISABLED: 'disabled-filled'

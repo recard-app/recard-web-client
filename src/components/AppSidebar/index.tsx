@@ -26,7 +26,8 @@ import {
   SIDEBAR_TOGGLE_ICON_COLOR,
   ICON_GRAY,
   TERMINOLOGY,
-  PAGES
+  PAGES,
+  MY_CARDS_IN_ACCOUNT_MENU
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { MonthlyStatsResponse, PrioritizedCredit } from '../../types/CardCreditsTypes';
@@ -159,21 +160,22 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
   // Mini navigation items for collapsed state
   const miniMiddleNavItems = [
-    { 
-      to: PAGES.HOME.PATH, 
-      name: PAGE_NAMES.HOME, 
+    {
+      to: PAGES.HOME.PATH,
+      name: PAGE_NAMES.HOME,
       icon: () => getIconVariant(PAGE_ICONS.HOME, PAGES.HOME.PATH)({ size: 20 })
     },
-    { 
-      to: PAGES.HISTORY.PATH, 
-      name: PAGE_NAMES.TRANSACTION_HISTORY, 
+    {
+      to: PAGES.HISTORY.PATH,
+      name: PAGE_NAMES.TRANSACTION_HISTORY,
       icon: () => getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, PAGES.HISTORY.PATH)({ size: 20 })
     },
-    { 
-      to: PAGES.MY_CARDS.PATH, 
-      name: PAGE_NAMES.MY_CARDS, 
+    // Only include My Cards in sidebar navigation if not moved to account menu
+    ...(!MY_CARDS_IN_ACCOUNT_MENU ? [{
+      to: PAGES.MY_CARDS.PATH,
+      name: PAGE_NAMES.MY_CARDS,
       icon: () => getIconVariant(PAGE_ICONS.MY_CARDS, PAGES.MY_CARDS.PATH)({ size: 20 })
-    },
+    }] : []),
     {
       to: PAGES.MY_CREDITS.PATH,
       name: PAGE_NAMES.MY_CREDITS,
@@ -309,20 +311,22 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 />
               </SidebarItem>
 
-              {/* My Cards as SidebarItem */}
-              <SidebarItem
-                icon={PAGE_ICONS.MY_CARDS.INACTIVE}
-                name={PAGE_NAMES.MY_CARDS}
-                isDropdown={true}
-              >
-                <CreditCardPreviewList
-                  cards={creditCards}
-                  loading={isLoadingCreditCards}
-                  showOnlySelected={true}
-                  onCardSelect={onCardSelect}
-                  variant="sidebar"
-                />
-              </SidebarItem>
+              {/* My Cards as SidebarItem - only show if not moved to account menu */}
+              {!MY_CARDS_IN_ACCOUNT_MENU && (
+                <SidebarItem
+                  icon={PAGE_ICONS.MY_CARDS.INACTIVE}
+                  name={PAGE_NAMES.MY_CARDS}
+                  isDropdown={true}
+                >
+                  <CreditCardPreviewList
+                    cards={creditCards}
+                    loading={isLoadingCreditCards}
+                    showOnlySelected={true}
+                    onCardSelect={onCardSelect}
+                    variant="sidebar"
+                  />
+                </SidebarItem>
+              )}
 
               {/* My Credits as SidebarItem */}
               <SidebarItem
@@ -448,6 +452,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                       {PAGE_NAMES.MY_ACCOUNT}
                     </DropdownMenuItem>
                   </Link>
+                  {MY_CARDS_IN_ACCOUNT_MENU && (
+                    <Link to={PAGES.MY_CARDS.PATH}>
+                      <DropdownMenuItem icon={DROPDOWN_ICONS.MY_CARDS.NORMAL}>
+                        {PAGE_NAMES.MY_CARDS}
+                      </DropdownMenuItem>
+                    </Link>
+                  )}
                   <Link to={PAGES.PREFERENCES.PATH}>
                     <DropdownMenuItem icon={DROPDOWN_ICONS.PREFERENCES.NORMAL}>
                       {PAGE_NAMES.PREFERENCES}
@@ -495,6 +506,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                           {PAGE_NAMES.MY_ACCOUNT}
                         </DropdownMenuItem>
                       </Link>
+                      {MY_CARDS_IN_ACCOUNT_MENU && (
+                        <Link to={PAGES.MY_CARDS.PATH}>
+                          <DropdownMenuItem icon={DROPDOWN_ICONS.MY_CARDS.NORMAL}>
+                            {PAGE_NAMES.MY_CARDS}
+                          </DropdownMenuItem>
+                        </Link>
+                      )}
                       <Link to={PAGES.HELP_CENTER.PATH}>
                         <DropdownMenuItem icon={DROPDOWN_ICONS.HELP_CENTER.NORMAL}>
                           {PAGE_NAMES.HELP_CENTER}

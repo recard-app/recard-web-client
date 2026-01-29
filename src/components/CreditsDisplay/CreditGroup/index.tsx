@@ -3,17 +3,13 @@ import '../CreditPeriodGroup/CreditPeriodGroup.scss'; // Share the same CSS
 import { CreditUsageType, UserCredit, UserCreditWithExpiration } from '../../../types';
 import CreditList from '../CreditList';
 import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
-import Icon from '@/icons';
 
 export interface CreditGroupProps {
-  title: string;
-  periodLabel?: string;
   credits: (UserCredit | UserCreditWithExpiration)[];
   now: Date;
   cardById: Map<string, CreditCardDetails>;
   creditByPair: Map<string, CardCredit>;
   displayPeriod?: boolean; // flag to display the period text (default: true)
-  customHeaderActions?: React.ReactNode; // Optional custom actions to display on the right side of the header
   onUpdateHistoryEntry?: (update: {
     cardId: string;
     creditId: string;
@@ -29,14 +25,11 @@ export interface CreditGroupProps {
 }
 
 const CreditGroup: React.FC<CreditGroupProps> = ({
-  title,
-  periodLabel,
   credits,
   now,
   cardById,
   creditByPair,
   displayPeriod = true,
-  customHeaderActions,
   onUpdateHistoryEntry,
   onUpdateComplete,
   isUpdating,
@@ -49,26 +42,7 @@ const CreditGroup: React.FC<CreditGroupProps> = ({
   }
 
   return (
-    <section className="credit-period-group" aria-labelledby={`credit-group-${title}`}>
-      <div className={`period-header ${customHeaderActions ? 'with-custom-actions' : ''}`}>
-        <div className="period-title-group">
-          <h3 id={`credit-group-${title}`} className="period-title">{title}</h3>
-
-          {periodLabel && (
-            <div className="mobile-period-label desktop-visible">
-              <Icon name="calendar" variant="micro" size={12} />
-              <span className="period-label">{periodLabel}</span>
-            </div>
-          )}
-        </div>
-
-        {customHeaderActions && (
-          <div className="custom-header-actions">
-            {customHeaderActions}
-          </div>
-        )}
-      </div>
-
+    <section className="credit-period-group">
       <CreditList
         credits={credits}
         now={now}

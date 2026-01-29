@@ -76,20 +76,3 @@ export interface SelectedCreditState {
   periodNumber: number;
   anniversaryYear?: number;  // For anniversary-based credits
 }
-
-// Period Tracker types
-export interface PeriodInfo {
-  periodNumber: number;
-  label: string;
-  status: CreditUsageType;
-  valueUsed: number;
-  maxValue: number;
-  isFuture: boolean;
-  anniversaryYear?: number;
-}
-
-export interface PeriodTrackerProps {
-  periods: PeriodInfo[];
-  onPeriodClick: (periodNumber: number, anniversaryYear?: number) => void;
-  isUpdating?: (periodNumber: number) => boolean;
-}
