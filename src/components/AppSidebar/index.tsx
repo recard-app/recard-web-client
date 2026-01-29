@@ -311,22 +311,20 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 />
               </SidebarItem>
 
-              {/* My Cards as SidebarItem - only show if not moved to account menu */}
-              {!MY_CARDS_IN_ACCOUNT_MENU && (
-                <SidebarItem
-                  icon={PAGE_ICONS.MY_CARDS.INACTIVE}
-                  name={PAGE_NAMES.MY_CARDS}
-                  isDropdown={true}
-                >
-                  <CreditCardPreviewList
-                    cards={creditCards}
-                    loading={isLoadingCreditCards}
-                    showOnlySelected={true}
-                    onCardSelect={onCardSelect}
-                    variant="sidebar"
-                  />
-                </SidebarItem>
-              )}
+              {/* My Cards as SidebarItem - always show card list, navigation icon controlled by MY_CARDS_IN_ACCOUNT_MENU */}
+              <SidebarItem
+                icon={PAGE_ICONS.MY_CARDS.INACTIVE}
+                name={PAGE_NAMES.MY_CARDS}
+                isDropdown={true}
+              >
+                <CreditCardPreviewList
+                  cards={creditCards}
+                  loading={isLoadingCreditCards}
+                  showOnlySelected={true}
+                  onCardSelect={onCardSelect}
+                  variant="sidebar"
+                />
+              </SidebarItem>
 
               {/* My Credits as SidebarItem */}
               <SidebarItem

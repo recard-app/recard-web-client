@@ -1,7 +1,6 @@
 import React, { useMemo, ReactNode } from 'react';
 import './CreditsDisplay.scss';
-import { CalendarUserCredits, CREDIT_PERIODS, CreditPeriodType, CreditUsageType } from '../../types';
-import CreditPeriodGroup from './CreditPeriodGroup';
+import { CalendarUserCredits, CreditUsageType } from '../../types';
 import CreditGroup from './CreditGroup';
 import { CreditCardDetails, CardCredit } from '../../types/CreditCardTypes';
 import { useCredits } from '../../contexts/ComponentsContext';
@@ -13,17 +12,6 @@ export interface CreditsDisplayProps {
   // Allows callers to override the notion of "now" (useful for tests)
   now?: Date;
   userCards?: CreditCardDetails[];
-  // Navigation helpers provided by parent (MyCredits)
-  onJumpMonths?: (deltaMonths: number) => void;
-  canJumpMonths?: (deltaMonths: number) => boolean;
-  // Visibility filters
-  showUsed?: boolean;
-  showNotUsed?: boolean;
-  showPartiallyUsed?: boolean;
-  showInactive?: boolean;
-  showAllPeriods?: boolean;
-  // Display mode - if true, uses CreditGroup (display-only) instead of CreditPeriodGroup
-  useSimpleDisplay?: boolean;
   // Show period text on individual credit entries (default: true)
   displayPeriod?: boolean;
   onUpdateHistoryEntry?: (update: {
@@ -41,14 +29,22 @@ export interface CreditsDisplayProps {
   isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
 }
 
-const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = false, now, userCards = [], onJumpMonths, canJumpMonths, showUsed = true, showNotUsed = true, showPartiallyUsed = true, showInactive = true, showAllPeriods = true, useSimpleDisplay = false, displayPeriod = true, onUpdateHistoryEntry, onUpdateComplete, children, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
+const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
+  calendar,
+  isLoading = false,
+  now,
+  userCards = [],
+  displayPeriod = true,
+  onUpdateHistoryEntry,
+  onUpdateComplete,
+  children,
+  isUpdating,
+  onAddUpdatingCreditId,
+  onRemoveUpdatingCreditId,
+  isCreditUpdating
+}) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
   const credits = useCredits(); // Get all credit data from the context
-
-  const periodOrder: CreditPeriodType[] = useMemo(() => {
-    // Use the order defined in CREDIT_PERIODS from the types file
-    return Object.values(CREDIT_PERIODS) as CreditPeriodType[];
-  }, []);
 
   // Build lookup maps for quick resolution in child components
   const cardById = useMemo(() => {
@@ -95,58 +91,24 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({ calendar, isLoading = f
     );
   }
 
-  if (useSimpleDisplay) {
-    // For simple display mode, just show all credits in a single group
-    return (
-      <div className="credits-display">
-        <CreditGroup
-          credits={calendar.Credits}
-          now={effectiveNow}
-          cardById={cardById}
-          creditByPair={creditByPair}
-          displayPeriod={displayPeriod}
-          onUpdateHistoryEntry={onUpdateHistoryEntry}
-          onUpdateComplete={onUpdateComplete}
-          isUpdating={isUpdating}
-          onAddUpdatingCreditId={onAddUpdatingCreditId}
-          onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
-          isCreditUpdating={isCreditUpdating}
-        />
-        {children}
-      </div>
-    );
-  }
-
   return (
     <div className="credits-display">
-      {periodOrder.map((period) => (
-        <CreditPeriodGroup
-          key={period}
-          period={period}
-          calendar={calendar}
-          now={effectiveNow}
-          cardById={cardById}
-          creditByPair={creditByPair}
-          onJumpMonths={onJumpMonths}
-          canJumpMonths={canJumpMonths}
-          showUsed={showUsed}
-          showNotUsed={showNotUsed}
-          showPartiallyUsed={showPartiallyUsed}
-          showInactive={showInactive}
-          showAllPeriods={showAllPeriods}
-          displayPeriod={displayPeriod}
-          onUpdateHistoryEntry={onUpdateHistoryEntry}
-          onUpdateComplete={onUpdateComplete}
-          isUpdating={isUpdating}
-          onAddUpdatingCreditId={onAddUpdatingCreditId}
-          onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
-          isCreditUpdating={isCreditUpdating}
-        />
-      ))}
+      <CreditGroup
+        credits={calendar.Credits}
+        now={effectiveNow}
+        cardById={cardById}
+        creditByPair={creditByPair}
+        displayPeriod={displayPeriod}
+        onUpdateHistoryEntry={onUpdateHistoryEntry}
+        onUpdateComplete={onUpdateComplete}
+        isUpdating={isUpdating}
+        onAddUpdatingCreditId={onAddUpdatingCreditId}
+        onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+        isCreditUpdating={isCreditUpdating}
+      />
       {children}
     </div>
   );
 };
 
 export default CreditsDisplay;
-

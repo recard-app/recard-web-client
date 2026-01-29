@@ -5,4 +5,5 @@ export * from './AgentChatTypes';
 export * from './UserTypes';
 export * from './AuthTypes';
 export * from './Constants';
+export * from './FeatureFlags';
 export * from './Pages';

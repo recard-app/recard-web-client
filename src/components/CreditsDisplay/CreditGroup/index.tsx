@@ -1,5 +1,5 @@
 import React from 'react';
-import '../CreditPeriodGroup/CreditPeriodGroup.scss'; // Share the same CSS
+import './CreditGroup.scss';
 import { CreditUsageType, UserCredit, UserCreditWithExpiration } from '../../../types';
 import CreditList from '../CreditList';
 import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
@@ -42,7 +42,7 @@ const CreditGroup: React.FC<CreditGroupProps> = ({
   }
 
   return (
-    <section className="credit-period-group">
+    <section className="credit-group">
       <CreditList
         credits={credits}
         now={now}

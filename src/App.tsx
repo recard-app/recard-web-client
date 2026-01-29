@@ -33,7 +33,6 @@ import AuthAction from './pages/authentication/AuthAction';
 import History from './pages/history/History';
 import MyCards from './pages/my-cards/MyCards';
 import MyCredits from './pages/my-credits/MyCredits';
-import CreditsHistory from './pages/my-credits/history-legacy/CreditsHistory';
 import CreditsPortfolio from './pages/my-credits/history/CreditsPortfolio';
 import DesignSystem from './pages/design-system/DesignSystem';
 import FullComponents from './pages/design-system/components/FullComponents';
@@ -1253,19 +1252,6 @@ function AppContent({}: AppContentProps) {
                   <Route path={PAGES.MY_CREDITS_HISTORY.PATH} element={
                     <ProtectedRoute>
                       <CreditsPortfolio
-                        userCardDetails={userDetailedCardDetails}
-                        reloadTrigger={cardsVersion}
-                        onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
-                        onAddUpdatingCreditId={addUpdatingCreditId}
-                        onRemoveUpdatingCreditId={removeUpdatingCreditId}
-                        isCreditUpdating={isCreditUpdating}
-                        onClearAllUpdatingCredits={clearAllUpdatingCredits}
-                      />
-                    </ProtectedRoute>
-                  } />
-                  <Route path={PAGES.MY_CREDITS_HISTORY_LEGACY.PATH} element={
-                    <ProtectedRoute>
-                      <CreditsHistory
                         userCardDetails={userDetailedCardDetails}
                         reloadTrigger={cardsVersion}
                         onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}

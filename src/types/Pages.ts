@@ -55,10 +55,6 @@ export const PAGES = {
     PATH: '/my-credits/all',
     TITLE: 'All Credits',
   },
-  MY_CREDITS_HISTORY_LEGACY: {
-    PATH: '/my-credits/history-legacy',
-    TITLE: 'Credit History (Legacy)',
-  },
   DELETE_HISTORY: {
     PATH: '/delete-history',
     TITLE: 'Delete History',
@@ -170,7 +166,6 @@ export const {
   MY_CARDS,
   MY_CREDITS,
   MY_CREDITS_HISTORY,
-  MY_CREDITS_HISTORY_LEGACY,
   DELETE_HISTORY,
   DELETE_ACCOUNT,
   HELP_CENTER,

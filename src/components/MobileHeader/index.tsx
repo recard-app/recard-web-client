@@ -385,18 +385,17 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                     </div>
                   </div>
 
-                  {!MY_CARDS_IN_ACCOUNT_MENU && (
-                    <div className="mobile-drawer-section">
-                      <div className="section-title">My Cards</div>
-                      <CreditCardPreviewList
-                        cards={creditCards}
-                        loading={isLoadingCreditCards}
-                        showOnlySelected={true}
-                        onCardSelect={onCardSelect!}
-                        variant="mobile-sidebar"
-                      />
-                    </div>
-                  )}
+                  {/* My Cards section - always show card list, navigation link controlled by MY_CARDS_IN_ACCOUNT_MENU */}
+                  <div className="mobile-drawer-section">
+                    <div className="section-title">My Cards</div>
+                    <CreditCardPreviewList
+                      cards={creditCards}
+                      loading={isLoadingCreditCards}
+                      showOnlySelected={true}
+                      onCardSelect={onCardSelect!}
+                      variant="mobile-sidebar"
+                    />
+                  </div>
 
                   <div className="mobile-drawer-section">
                     <div className="section-title">{PAGE_NAMES.MY_CREDITS}</div>
