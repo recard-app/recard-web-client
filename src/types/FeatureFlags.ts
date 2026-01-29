@@ -42,3 +42,5 @@ export const SHOW_CARD_NAME_BUBBLE_IN_CREDITS = false;
 // TRUE: My Cards appears in account dropdown menu (below Account & Settings, above Preferences)
 // FALSE: My Cards appears in sidebar navigation (default behavior)
 export const MY_CARDS_IN_ACCOUNT_MENU = true;
+// Label for "My Cards" when displayed in account dropdown menu (when MY_CARDS_IN_ACCOUNT_MENU is true)
+export const MY_CARDS_DROPDOWN_LABEL = 'Manage Cards';

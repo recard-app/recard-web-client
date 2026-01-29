@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY, MY_CARDS_IN_ACCOUNT_MENU } from '../../types';
+import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL } from '../../types';
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -476,7 +476,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                             <Drawer.Close asChild>
                               <Link to={PAGES.MY_CARDS.PATH}>
                                 <DropdownMenuItem icon={DROPDOWN_ICONS.MY_CARDS.NORMAL}>
-                                  {PAGE_NAMES.MY_CARDS}
+                                  {MY_CARDS_DROPDOWN_LABEL}
                                 </DropdownMenuItem>
                               </Link>
                             </Drawer.Close>

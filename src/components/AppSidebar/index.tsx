@@ -27,7 +27,8 @@ import {
   ICON_GRAY,
   TERMINOLOGY,
   PAGES,
-  MY_CARDS_IN_ACCOUNT_MENU
+  MY_CARDS_IN_ACCOUNT_MENU,
+  MY_CARDS_DROPDOWN_LABEL
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { MonthlyStatsResponse, PrioritizedCredit } from '../../types/CardCreditsTypes';
@@ -453,7 +454,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   {MY_CARDS_IN_ACCOUNT_MENU && (
                     <Link to={PAGES.MY_CARDS.PATH}>
                       <DropdownMenuItem icon={DROPDOWN_ICONS.MY_CARDS.NORMAL}>
-                        {PAGE_NAMES.MY_CARDS}
+                        {MY_CARDS_DROPDOWN_LABEL}
                       </DropdownMenuItem>
                     </Link>
                   )}
@@ -507,7 +508,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                       {MY_CARDS_IN_ACCOUNT_MENU && (
                         <Link to={PAGES.MY_CARDS.PATH}>
                           <DropdownMenuItem icon={DROPDOWN_ICONS.MY_CARDS.NORMAL}>
-                            {PAGE_NAMES.MY_CARDS}
+                            Manage Cards
                           </DropdownMenuItem>
                         </Link>
                       )}
