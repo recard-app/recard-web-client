@@ -132,14 +132,12 @@ function PreferencesModule({
                     fillContainer
                 />
             ) : isLoading ? (
-                <div className="loading-overlay">
-                    <InfoDisplay
-                        type="loading"
-                        message="Loading preferences..."
-                        showTitle={false}
-                        transparent={true}
-                    />
-                </div>
+                <InfoDisplay
+                    type="loading"
+                    message="Loading preferences..."
+                    showTitle={false}
+                    transparent={true}
+                />
             ) : null}
             <div className="preferences-content" style={{ display: loadError ? 'none' : 'block' }}>
                 <div className="special-instructions-field">
