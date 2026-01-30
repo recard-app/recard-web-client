@@ -67,6 +67,7 @@ export interface CreditCardAccordionProps {
   onToggle: () => void;
   onPeriodClick: (credit: UserCredit, cardCredit: CardCredit, periodNumber: number, anniversaryYear?: number) => void;
   isUpdating?: (creditId: string, periodNumber: number) => boolean;
+  isLoading?: boolean;  // Indicates year data is loading (show pulse animation)
 }
 
 export interface SelectedCreditState {

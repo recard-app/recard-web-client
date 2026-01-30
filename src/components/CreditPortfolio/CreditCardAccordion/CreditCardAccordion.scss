@@ -104,6 +104,10 @@
     gap: $space-4;
     flex-shrink: 0;
 
+    &.updating .usage-stat {
+      @include updating-state;
+    }
+
     .usage-stat {
       display: flex;
       flex-direction: row;
@@ -136,6 +140,21 @@
     border-top: $border-full solid $neutral-light-gray;
     padding: 0 0 $space-4;
     background-color: $neutral-white;
+
+    &.updating {
+      @include updating-state;
+      // Minimum height during loading to prevent layout shifts
+      min-height: 120px;
+    }
+  }
+
+  // Empty state message for cards with no data in selected year
+  .accordion-empty-year {
+    padding: $space-4;
+    text-align: center;
+    color: $neutral-medium-gray;
+    font-family: $font-inter;
+    font-size: $font-sm;
   }
 
   // Responsive

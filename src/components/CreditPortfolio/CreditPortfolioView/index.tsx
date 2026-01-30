@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { UserCreditService } from '@/services/UserServices/UserCreditService';
 import { UserService } from '@/services/UserServices/UserService';
-import { CalendarUserCredits, UserCredit } from '@/types/CardCreditsTypes';
+import { CalendarUserCredits, UserCredit, CREDIT_PERIODS } from '@/types/CardCreditsTypes';
 import { CardCredit, CreditCardDetails } from '@/types/CreditCardTypes';
 import { useCredits } from '@/contexts/ComponentsContext';
 import { InfoDisplay, ErrorWithRetry } from '@/elements';
@@ -22,6 +22,44 @@ const sortCreditCards = (cards: CreditCardDetails[]): CreditCardDetails[] => {
     }
     // Then sort alphabetically by name
     return a.CardName.localeCompare(b.CardName);
+  });
+};
+
+// Period type sort order (lower = first): monthly -> quarterly -> semiannually -> annually -> anniversary
+const PERIOD_SORT_ORDER: Record<string, number> = {
+  [CREDIT_PERIODS.Monthly]: 1,
+  [CREDIT_PERIODS.Quarterly]: 2,
+  [CREDIT_PERIODS.Semiannually]: 3,
+  [CREDIT_PERIODS.Annually]: 4
+};
+
+// Get sort order for a credit (handles anniversary-based credits)
+const getCreditSortOrder = (credit: UserCredit): number => {
+  // Anniversary-based credits go after annually (order 5)
+  if (credit.isAnniversaryBased) {
+    return 5;
+  }
+  return PERIOD_SORT_ORDER[credit.AssociatedPeriod] ?? 99;
+};
+
+// Sort credits: by period type, then alphabetically by title
+const sortCredits = (
+  credits: UserCredit[],
+  creditMetadata: Map<string, CardCredit>
+): UserCredit[] => {
+  return [...credits].sort((a, b) => {
+    // First sort by period type (with anniversary handling)
+    const periodOrderA = getCreditSortOrder(a);
+    const periodOrderB = getCreditSortOrder(b);
+
+    if (periodOrderA !== periodOrderB) {
+      return periodOrderA - periodOrderB;
+    }
+
+    // Then sort alphabetically by title
+    const titleA = creditMetadata.get(a.CreditId)?.Title ?? '';
+    const titleB = creditMetadata.get(b.CreditId)?.Title ?? '';
+    return titleA.localeCompare(titleB);
   });
 };
 
@@ -58,10 +96,14 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   // Credit data state
   const [creditData, setCreditData] = useState<CalendarUserCredits | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isYearLoading, setIsYearLoading] = useState(false);  // Track year-change loading separately
   const [error, setError] = useState<string | null>(null);
 
   // Expanded cards state
   const [expandedCardIds, setExpandedCardIds] = useState<Set<string>>(new Set());
+
+  // Track cards from previous year to preserve expanded state during year changes
+  const [previousCardsWithCredits, setPreviousCardsWithCredits] = useState<CreditCardDetails[]>([]);
 
   // Modal state
   const [selectedCredit, setSelectedCredit] = useState<SelectedCreditState | null>(null);
@@ -69,6 +111,13 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
 
   // AbortController ref for cancelling in-flight requests on rapid year switching
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Track if initial load has completed (to distinguish year changes from initial load)
+  const hasInitialLoadCompleted = useRef(false);
+
+  // Scroll container ref for preserving scroll position during year changes
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const savedScrollPosition = useRef<number>(0);
 
   // Build credit metadata map from context credits
   const creditMetadataMap = useMemo(() => {
@@ -79,7 +128,7 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     return map;
   }, [allCredits]);
 
-  // Organize credits by card ID
+  // Organize credits by card ID and sort within each card
   const creditsByCard = useMemo(() => {
     const map = new Map<string, UserCredit[]>();
     if (!creditData?.Credits) return map;
@@ -91,8 +140,14 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
       }
       map.get(cardId)!.push(credit);
     }
+
+    // Sort credits within each card by period type, then alphabetically
+    for (const [cardId, credits] of map) {
+      map.set(cardId, sortCredits(credits, creditMetadataMap));
+    }
+
     return map;
-  }, [creditData]);
+  }, [creditData, creditMetadataMap]);
 
   // Cards that have credits (sorted: preferred first, then alphabetically)
   const cardsWithCredits = useMemo(() => {
@@ -100,8 +155,29 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     return sortCreditCards(filtered);
   }, [userCardDetails, creditsByCard]);
 
+  // Merge cards for display: show current cards plus any expanded cards from previous year
+  // This preserves expanded accordions even if the card has no data in the new year
+  const displayCards = useMemo(() => {
+    if (previousCardsWithCredits.length === 0) {
+      return cardsWithCredits;
+    }
+    // Merge: current cards + expanded previous cards that aren't in current
+    const currentIds = new Set(cardsWithCredits.map(c => c.id));
+    const expandedPreviousNotInCurrent = previousCardsWithCredits.filter(
+      c => !currentIds.has(c.id) && expandedCardIds.has(c.id)
+    );
+    if (expandedPreviousNotInCurrent.length === 0) {
+      return cardsWithCredits;
+    }
+    return sortCreditCards([...cardsWithCredits, ...expandedPreviousNotInCurrent]);
+  }, [cardsWithCredits, previousCardsWithCredits, expandedCardIds]);
+
+  // Check if user has any cards with credits (across all years)
+  const hasAnyCardsWithCredits = allCredits.length > 0;
+
   // Fetch credit data for selected year
-  const fetchCredits = useCallback(async (showLoading: boolean = true) => {
+  // isYearChange: true = year change (use pulse animation), false = initial/background load
+  const fetchCredits = useCallback(async (showLoading: boolean = true, isYearChange: boolean = false) => {
     // Cancel any in-flight request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -111,8 +187,10 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     abortControllerRef.current = new AbortController();
     const { signal } = abortControllerRef.current;
 
-    // Only show loading spinner when requested (not during background refreshes)
-    if (showLoading) {
+    // Use different loading states for year changes vs initial load
+    if (isYearChange) {
+      setIsYearLoading(true);
+    } else if (showLoading) {
       setIsLoading(true);
     }
     setError(null);
@@ -126,6 +204,8 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
       // Only update state if request wasn't aborted
       if (!signal.aborted) {
         setCreditData(data);
+        // Don't clear previousCardsWithCredits here - keep them until next year change
+        // so expanded cards without data in new year remain visible
       }
     } catch (err) {
       // Ignore aborted requests
@@ -139,13 +219,17 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     } finally {
       if (!signal.aborted) {
         setIsLoading(false);
+        setIsYearLoading(false);
       }
     }
   }, [selectedYear]);
 
   // Fetch on mount and when year changes
   useEffect(() => {
-    fetchCredits();
+    const isYearChange = hasInitialLoadCompleted.current;
+    fetchCredits(true, isYearChange).then(() => {
+      hasInitialLoadCompleted.current = true;
+    });
   }, [fetchCredits, reloadTrigger]);
 
   // Cleanup AbortController on unmount
@@ -157,12 +241,30 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     };
   }, []);
 
-  // Handle year change
+  // Restore scroll position after year loading completes
+  useEffect(() => {
+    if (!isYearLoading && savedScrollPosition.current > 0 && scrollContainerRef.current) {
+      // Use requestAnimationFrame to ensure DOM has updated
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = savedScrollPosition.current;
+          savedScrollPosition.current = 0; // Reset after restoring
+        }
+      });
+    }
+  }, [isYearLoading]);
+
+  // Handle year change - preserve expanded state and show pulse animation
   const handleYearChange = useCallback((year: number) => {
+    // Save scroll position before year change
+    if (scrollContainerRef.current) {
+      savedScrollPosition.current = scrollContainerRef.current.scrollTop;
+    }
+    // Save current cards before changing year to preserve expanded accordion state
+    setPreviousCardsWithCredits(cardsWithCredits);
     setSelectedYear(year);
-    // Collapse all cards when changing year
-    setExpandedCardIds(new Set());
-  }, []);
+    // DON'T reset expandedCardIds - keep accordions open during year change
+  }, [cardsWithCredits]);
 
   // Toggle card expansion
   const toggleCard = useCallback((cardId: string) => {
@@ -257,11 +359,9 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     );
   }
 
-  // Check if user has any cards with credits (across all years)
-  const hasAnyCardsWithCredits = allCredits.length > 0;
-
   // Empty state - no cards with credits for selected year
-  if (cardsWithCredits.length === 0) {
+  // Skip empty state if we have cards to display (either current or expanded previous)
+  if (displayCards.length === 0) {
     // Differentiate message based on whether user has credits at all
     const emptyMessage = hasAnyCardsWithCredits
       ? `No credit usage tracked for ${selectedYear}. Select a different year or update your credit usage.`
@@ -274,7 +374,7 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
             availableYears={availableYears}
-            loading={isLoading}
+            loading={isLoading || isYearLoading}
           />
         </HeaderControls>
 
@@ -300,39 +400,28 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
           selectedYear={selectedYear}
           onYearChange={handleYearChange}
           availableYears={availableYears}
-          loading={isLoading}
+          loading={isLoading || isYearLoading}
         />
       </HeaderControls>
 
       {/* Scrollable content area */}
-      <div className="portfolio-content">
-        {isLoading ? (
-          <div className="portfolio-loading">
-            <InfoDisplay
-              type="loading"
-              message="Loading..."
-              showTitle={false}
-              transparent={true}
-              centered={true}
+      <div ref={scrollContainerRef} className="portfolio-content">
+        <div className="card-accordions">
+          {displayCards.map(card => (
+            <CreditCardAccordion
+              key={card.id}
+              card={card}
+              credits={creditsByCard.get(card.id) || []}
+              creditMetadata={creditMetadataMap}
+              year={selectedYear}
+              isExpanded={expandedCardIds.has(card.id)}
+              onToggle={() => toggleCard(card.id)}
+              onPeriodClick={handlePeriodClick}
+              isUpdating={(creditId, periodNumber) => isUpdatingPeriod(card.id, creditId, periodNumber)}
+              isLoading={isYearLoading}
             />
-          </div>
-        ) : (
-          <div className="card-accordions">
-            {cardsWithCredits.map(card => (
-              <CreditCardAccordion
-                key={card.id}
-                card={card}
-                credits={creditsByCard.get(card.id) || []}
-                creditMetadata={creditMetadataMap}
-                year={selectedYear}
-                isExpanded={expandedCardIds.has(card.id)}
-                onToggle={() => toggleCard(card.id)}
-                onPeriodClick={handlePeriodClick}
-                isUpdating={(creditId, periodNumber) => isUpdatingPeriod(card.id, creditId, periodNumber)}
-              />
-            ))}
-          </div>
-        )}
+          ))}
+        </div>
       </div>
 
       {/* Credit Edit Modal */}

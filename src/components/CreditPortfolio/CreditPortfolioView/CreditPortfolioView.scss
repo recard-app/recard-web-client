@@ -20,6 +20,7 @@
 .portfolio-content {
   flex: 1;
   overflow-y: auto;
+  overflow-anchor: none; // Prevent browser scroll anchoring during content updates
   min-height: 0; // Critical for flex scroll containment
   padding: $space-5;
   @include universal-scrollbar;
@@ -36,6 +37,7 @@
   gap: $space-4;
   max-width: 720px;
   margin: 0 auto;
+  overflow-anchor: none; // Prevent scroll anchoring during content updates
 
   @media (max-width: $mobile-breakpoint) {
     gap: $space-3;
