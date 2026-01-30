@@ -79,6 +79,9 @@ function PromptWindow({
     const [chatId, setChatId] = useState<string>('');
     // Ref to store chatId immediately (synchronous) for use in callbacks
     const chatIdRef = useRef<string>('');
+    // Ref to store chatHistory immediately (synchronous) for use in callbacks
+    // This avoids React state timing issues on mobile Safari
+    const chatHistoryRef = useRef<ChatMessage[]>([]);
     // Tracks whether this is a new chat conversation (true) or loading an existing one (false)
     const [isNewChat, setIsNewChat] = useState<boolean>(false);
     // Indicates whether a new chat creation request is in progress
@@ -99,20 +102,20 @@ function PromptWindow({
         }
         isSavingRef.current = true;
 
-        // Add assistant message to history
-        let historyForStorage: ChatMessage[] = [];
+        // Build history synchronously using ref BEFORE any async operations
+        // This avoids React state timing issues on mobile Safari where
+        // setTimeout runs before setChatHistory callback executes
+        const historyForStorage = [...chatHistoryRef.current, message];
 
-        setChatHistory(prev => {
-            const updatedHistory = [...prev, message];
-            historyForStorage = updatedHistory;
-            return limitChatHistory(updatedHistory);
-        });
+        // Update the ref immediately (synchronous)
+        chatHistoryRef.current = historyForStorage;
 
-        // Update the chat with the complete conversation
-        // Chat was already created in getPrompt, so we just update it
-        setTimeout(async () => {
+        // Update React state (async, but we don't depend on it for saving)
+        setChatHistory(prev => limitChatHistory([...prev, message]));
+
+        // Save the chat - run as async IIFE to avoid setTimeout timing issues
+        (async () => {
             // Use ref for chatId to avoid React state timing issues
-            // (state may not be updated yet when this callback runs)
             const currentChatId = chatIdRef.current;
 
             try {
@@ -136,12 +139,16 @@ function PromptWindow({
 
                 const componentBlocks = extractComponentBlocks(historyForStorage);
 
+                console.log('[handleMessageComplete] Saving', historyToSave.length, 'messages to chat:', currentChatId);
+
                 // Update the existing chat
                 await UserHistoryService.updateChatHistory(
                     currentChatId,
                     historyToSave,
                     componentBlocks
                 );
+
+                console.log('[handleMessageComplete] Chat updated successfully');
 
                 // Update sidebar with the new conversation
                 const existingChat = existingHistoryList.find(chat => chat.chatId === currentChatId);
@@ -158,6 +165,7 @@ function PromptWindow({
                 if (!existingChat?.chatDescription || existingChat.chatDescription === 'New Chat') {
                     try {
                         const newTitle = await UserHistoryService.generateChatTitle(currentChatId);
+                        console.log('[handleMessageComplete] Generated title:', newTitle);
 
                         // Update sidebar with the new title
                         onHistoryUpdate({
@@ -176,13 +184,14 @@ function PromptWindow({
             } finally {
                 isSavingRef.current = false;
             }
-        }, 0);
+        })();
     }, [user, chatHistoryPreference, existingHistoryList, onHistoryUpdate]);
 
     // Handler for stream errors
     const handleStreamError = useCallback((error: string) => {
         const errorInfo = classifyError(new Error(error));
         const errorMessage = createErrorMessage(errorInfo.message);
+        chatHistoryRef.current = [...chatHistoryRef.current, errorMessage];
         setChatHistory(prev => [...prev, errorMessage]);
         setIsNewChatPending(false);
     }, []);
@@ -234,6 +243,8 @@ function PromptWindow({
 
         // Create user message and add to history
         const userMessage = createUserMessage(returnPromptStr);
+        // Update ref immediately (synchronous) for use in callbacks
+        chatHistoryRef.current = [...chatHistoryRef.current, userMessage];
         setChatHistory(prev => [...prev, userMessage]);
 
         // For NEW chats: Create chat immediately with just the user message
@@ -261,6 +272,7 @@ function PromptWindow({
                 console.error('Failed to create chat:', error);
                 setIsNewChatPending(false);
                 // Remove the user message we added optimistically
+                chatHistoryRef.current = chatHistoryRef.current.filter(m => m.id !== userMessage.id);
                 setChatHistory(prev => prev.filter(m => m.id !== userMessage.id));
                 return;
             }
@@ -278,7 +290,9 @@ function PromptWindow({
         conversation: ChatMessage[],
         newChatId: string
     ) => {
-        setChatHistory(limitChatHistory(conversation));
+        const limitedHistory = limitChatHistory(conversation);
+        chatHistoryRef.current = limitedHistory;
+        setChatHistory(limitedHistory);
         chatIdRef.current = newChatId;
         setChatId(newChatId);
         setIsNewChat(false);
@@ -308,6 +322,7 @@ function PromptWindow({
 
                 // If there's no urlChatId, we're on the home page - clear everything for a new chat
                 if (!urlChatId) {
+                    chatHistoryRef.current = [];
                     setChatHistory([]);
                     chatIdRef.current = '';
                     setChatId('');
@@ -325,6 +340,7 @@ function PromptWindow({
                 }
 
                 // Always reset state when loading a new chat
+                chatHistoryRef.current = [];
                 setChatHistory([]);
 
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
@@ -448,6 +464,7 @@ function PromptWindow({
         cancelStream();
 
         // Clear local state
+        chatHistoryRef.current = [];
         setChatHistory([]);
         setIsNewChat(true);
         setIsNewChatPending(false);
