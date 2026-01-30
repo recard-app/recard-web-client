@@ -95,7 +95,6 @@ function PromptWindow({
     ) => {
         // Prevent duplicate saves (React strict mode can call this multiple times)
         if (isSavingRef.current) {
-            console.log('[handleMessageComplete] Already saving, skipping duplicate call');
             return;
         }
         isSavingRef.current = true;
@@ -144,8 +143,6 @@ function PromptWindow({
                     componentBlocks
                 );
 
-                console.log('[handleMessageComplete] Updated chat:', currentChatId);
-
                 // Update sidebar with the new conversation
                 const existingChat = existingHistoryList.find(chat => chat.chatId === currentChatId);
                 const updatedChat: Conversation = {
@@ -161,7 +158,6 @@ function PromptWindow({
                 if (!existingChat?.chatDescription || existingChat.chatDescription === 'New Chat') {
                     try {
                         const newTitle = await UserHistoryService.generateChatTitle(currentChatId);
-                        console.log('[handleMessageComplete] Generated title:', newTitle);
 
                         // Update sidebar with the new title
                         onHistoryUpdate({
@@ -193,8 +189,6 @@ function PromptWindow({
 
     // Handler for data changes (triggers UI refresh)
     const handleDataChanged = useCallback((dataChanged: { credits?: boolean; cards?: boolean; preferences?: boolean }) => {
-        console.log('[PromptWindow] Data changed, triggering refresh:', dataChanged);
-
         if (dataChanged.credits && onRefreshCredits) {
             onRefreshCredits();
         }
@@ -230,7 +224,6 @@ function PromptWindow({
      */
     const getPrompt = async (returnPromptStr: string) => {
         if (isNewChat && isNewChatPending) {
-            console.log('New chat creation in progress, please wait...');
             return;
         }
 
@@ -264,8 +257,6 @@ function PromptWindow({
 
                 // Add to sidebar immediately with placeholder title
                 onHistoryUpdate(response);
-
-                console.log('[getPrompt] Created new chat:', response.chatId);
             } catch (error) {
                 console.error('Failed to create chat:', error);
                 setIsNewChatPending(false);
@@ -330,7 +321,6 @@ function PromptWindow({
 
                 // Wait for initial history loading to complete before checking for existing chat
                 if (isLoadingHistory) {
-                    console.log('Waiting for history to finish loading before loading chat...');
                     return;
                 }
 
@@ -341,7 +331,6 @@ function PromptWindow({
 
                 if (existingChat) {
                     // Chat found in pre-loaded history - fast path
-                    console.log('Chat found in pre-loaded history - using fast path');
                     setExistingChatStates(existingChat.conversation, urlChatId);
                     return;
                 }
