@@ -33,20 +33,22 @@
     transition: background-color 0.2s ease;
     flex-shrink: 0;
 
-    // Remove old box styles
-    border: none;
+    // Transparent border to prevent layout shift on hover/selected
+    //border: 0.5px solid transparent;
     background: transparent;
 
     &.clickable {
       cursor: pointer;
 
       &:hover {
-        background-color: $neutral-lightest-gray;
+        background-color: $neutral-light-gray;
+        //border: 0.5px solid $neutral-light-gray;
       }
     }
 
     &.selected {
-      background-color: $neutral-light-gray; // Highlight background
+      background-color: $neutral-light-gray !important; // Highlight background
+      //border: 0.5px solid $neutral-light-gray !important;
     }
 
     &.future {
