@@ -35,9 +35,15 @@ function PreferencesModule({
     setChatMode
 }: PreferencesModuleProps) {
     const [instructions, setInstructions] = useState<string>(customInstructions || '');
+    const [pendingChatMode, setPendingChatMode] = useState<ChatModePreference>(chatMode);
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [loadError, setLoadError] = useState<string | null>(null);
+
+    // Sync pending chat mode when prop changes (e.g., on load)
+    useEffect(() => {
+        setPendingChatMode(chatMode);
+    }, [chatMode]);
 
     const isOverLimit = instructions.length > SPECIAL_INSTRUCTIONS_MAX_LENGTH;
 
@@ -77,12 +83,10 @@ function PreferencesModule({
     }, []);
 
     /**
-     * Handles chat mode change - saves to localStorage immediately
+     * Handles chat mode change - updates pending state only, saved on Save button click
      */
     const handleChatModeChange = (mode: ChatModePreference): void => {
-        setChatMode(mode);
-        localStorage.setItem(CHAT_MODE_STORAGE_KEY, mode);
-        toast.success(`Chat mode changed to ${mode === 'unified' ? 'Unified' : 'Orchestrated'}`);
+        setPendingChatMode(mode);
     };
 
     /**
@@ -98,6 +102,11 @@ function PreferencesModule({
 
         try {
             await UserPreferencesService.savePreferences(instructions, chatHistoryPreference);
+
+            // Save chat mode to localStorage and update state
+            setChatMode(pendingChatMode);
+            localStorage.setItem(CHAT_MODE_STORAGE_KEY, pendingChatMode);
+
             toast.success('All preferences saved successfully!');
             onInstructionsUpdate(instructions);
         } catch (error) {
@@ -164,7 +173,7 @@ function PreferencesModule({
                     <label htmlFor="chatModeSelect">AI Mode (Beta):</label>
                     <select
                         id="chatModeSelect"
-                        value={chatMode || DEFAULT_CHAT_MODE}
+                        value={pendingChatMode || DEFAULT_CHAT_MODE}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                             handleChatModeChange(e.target.value as ChatModePreference)}
                         className="chat-mode-select default-select"
@@ -176,7 +185,7 @@ function PreferencesModule({
                         ))}
                     </select>
                     <p className="chat-mode-description">
-                        {CHAT_MODE_OPTIONS.find(opt => opt.value === chatMode)?.description || ''}
+                        {CHAT_MODE_OPTIONS.find(opt => opt.value === pendingChatMode)?.description || ''}
                     </p>
                 </div>
 

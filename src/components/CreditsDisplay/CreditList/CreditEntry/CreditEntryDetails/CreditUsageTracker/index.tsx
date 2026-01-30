@@ -1,8 +1,9 @@
 import React, { useMemo, useEffect, useRef } from 'react';
 import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, MONTH_LABEL_ABBREVIATIONS } from '../../../../../../types';
-import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_DISPLAY_NAMES } from '../../../../../../types/CardCreditsTypes';
+import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_DISPLAY_NAMES, CREDIT_USAGE_ICON_NAMES } from '../../../../../../types/CardCreditsTypes';
 import { COLORS } from '../../../../../../types/Colors';
 import { isPeriodFuture } from '../../utils';
+import Icon from '@/icons';
 import './CreditUsageTracker.scss';
 
 interface CreditUsageTrackerProps {
@@ -55,12 +56,12 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
       return 100;
     }
 
-    // NOT_USED = minimum 5% so it's visible
+    // NOT_USED = 5% minimum solid fill so it's visible
     if (usage === CREDIT_USAGE.NOT_USED || valueUsed === 0) {
       return 5;
     }
 
-    // PARTIALLY_USED = actual percentage (minimum 5%)
+    // PARTIALLY_USED = actual percentage (minimum 5% so it's visible)
     const percentage = maxValue > 0 ? (valueUsed / maxValue) * 100 : 5;
     return Math.max(5, Math.min(100, percentage));
   };
@@ -189,6 +190,13 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
     }
   };
 
+  // Determine if this usage type should show potential (unused portion background)
+  const shouldShowPotential = (usage: CreditUsageType, isFuture: boolean): boolean => {
+    // Only show potential background for partially used and not used (non-future) credits
+    if (isFuture) return false;
+    return usage === CREDIT_USAGE.PARTIALLY_USED || usage === CREDIT_USAGE.NOT_USED;
+  };
+
   const getUsageLabel = (usage: CreditUsageType, isFuture: boolean): string => {
     if (isFuture && usage === CREDIT_USAGE.NOT_USED) {
       return 'Future';
@@ -260,6 +268,26 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
               onKeyDown={(e) => handleKeyDown(e, period)}
             >
               <div className="period-bar-container">
+                {/* Show potential (unused portion) background for partially used and not used credits */}
+                {shouldShowPotential(period.usage, period.isFuture) && (
+                  <div
+                    className="period-bar-potential"
+                    style={{
+                      backgroundColor: usageColor
+                    }}
+                  />
+                )}
+                {/* Show inactive icon for untracked periods */}
+                {period.usage === CREDIT_USAGE.INACTIVE && (
+                  <div className="period-bar-inactive-icon">
+                    <Icon
+                      name={CREDIT_USAGE_ICON_NAMES.INACTIVE}
+                      variant="micro"
+                      size={16}
+                      style={{ color: usageColor }}
+                    />
+                  </div>
+                )}
                 <div
                   className="period-bar-fill"
                   style={{

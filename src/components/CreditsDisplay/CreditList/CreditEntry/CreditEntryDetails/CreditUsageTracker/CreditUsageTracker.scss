@@ -72,6 +72,32 @@
     box-sizing: border-box;
   }
 
+  // Background showing the unused potential (lighter opacity)
+  .period-bar-potential {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: $radius-sm $radius-sm 0 0;
+    opacity: 0.25;
+    box-sizing: border-box;
+  }
+
+  // Icon container for inactive/untracked periods
+  .period-bar-inactive-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+  }
+
   .period-bar-fill {
     display: block;
     width: 100%;
