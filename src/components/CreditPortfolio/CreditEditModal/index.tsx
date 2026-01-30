@@ -100,6 +100,16 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
     initialPeriodNumber ?? currentPeriodNumber
   );
 
+  // Local copy of userCredit for optimistic updates
+  const [localUserCredit, setLocalUserCredit] = useState<UserCredit | null>(userCredit);
+
+  // Sync local state when modal opens or userCredit prop changes
+  useEffect(() => {
+    if (userCredit) {
+      setLocalUserCredit(userCredit);
+    }
+  }, [userCredit?.CardId, userCredit?.CreditId, isOpen]);
+
   // Live update state for real-time bar graph updates
   const [liveUsage, setLiveUsage] = useState<CreditUsageType | undefined>(undefined);
   const [liveValueUsed, setLiveValueUsed] = useState<number | undefined>(undefined);
@@ -134,12 +144,30 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => {
-    if (!userCredit) return;
+    if (!localUserCredit) return;
 
     // Add this credit to the updating set
     if (onAddUpdatingCreditId) {
       onAddUpdatingCreditId(update.cardId, update.creditId, update.periodNumber);
     }
+
+    // Optimistically update local state for immediate UI feedback
+    setLocalUserCredit((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        History: prev.History.map((h) => {
+          if (h.PeriodNumber === update.periodNumber) {
+            return {
+              ...h,
+              CreditUsage: update.creditUsage,
+              ValueUsed: update.valueUsed
+            };
+          }
+          return h;
+        })
+      };
+    });
 
     try {
       // Call the API to persist the update
@@ -150,7 +178,7 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
         creditUsage: update.creditUsage,
         valueUsed: update.valueUsed,
         year: year,
-        anniversaryYear: userCredit.isAnniversaryBased ? userCredit.anniversaryYear : undefined
+        anniversaryYear: localUserCredit.isAnniversaryBased ? localUserCredit.anniversaryYear : undefined
       });
 
       // Notify parent that update was successful
@@ -159,6 +187,11 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
       }
     } catch (error) {
       console.error('Failed to update credit history entry:', error);
+
+      // Revert optimistic update on error
+      if (userCredit) {
+        setLocalUserCredit(userCredit);
+      }
 
       // Remove from updating set on error
       if (onRemoveUpdatingCreditId) {
@@ -206,10 +239,13 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
 
   const title = cardCredit.Title ?? userCredit.CreditId;
 
-  const modalContent = (
+  // Use localUserCredit for display to reflect optimistic updates
+  const displayCredit = localUserCredit ?? userCredit;
+
+  const modalContent = displayCredit ? (
     <>
       <CreditEntryDetails
-        userCredit={userCredit}
+        userCredit={displayCredit}
         now={now}
         card={card}
         cardCredit={cardCredit}
@@ -221,7 +257,7 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
         onPeriodSelect={setSelectedPeriodNumber}
       />
       <CreditUsageTracker
-        userCredit={userCredit}
+        userCredit={displayCredit}
         currentYear={year}
         selectedPeriodNumber={selectedPeriodNumber}
         onPeriodSelect={setSelectedPeriodNumber}
@@ -230,11 +266,11 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
         currentValueUsed={liveValueUsed}
       />
     </>
-  );
+  ) : null;
 
-  const modalControls = (
+  const modalControls = localUserCredit ? (
     <CreditModalControls
-      userCredit={userCredit}
+      userCredit={localUserCredit}
       cardCredit={cardCredit}
       creditMaxValue={creditMaxValue}
       now={now}
@@ -244,7 +280,7 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
       isUpdating={isUpdating}
       onLiveChange={handleLiveChange}
     />
-  );
+  ) : null;
 
   const cardBubble = (
     <p className="card-bubble-display header-card-display">
