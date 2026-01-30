@@ -87,6 +87,8 @@ function PromptWindow({
 
     // Ref to track if we're currently saving to prevent duplicate saves
     const isSavingRef = useRef<boolean>(false);
+    // Ref to track the pending user message that was just sent (for reliable history building)
+    const pendingUserMessageRef = useRef<ChatMessage | null>(null);
 
     // Handler for completed messages - saves to history
     const handleMessageComplete = useCallback((
@@ -104,11 +106,33 @@ function PromptWindow({
         // because React may call state updaters multiple times in strict mode
         let historyForStorage: ChatMessage[] = [];
 
+        // Capture the pending user message before the state update
+        const pendingUserMessage = pendingUserMessageRef.current;
+
         setChatHistory(prev => {
-            const updatedHistory = [...prev, message];
+            let updatedHistory = [...prev, message];
+
+            // If the pending user message isn't in prev (due to React batching), add it
+            if (pendingUserMessage && !prev.some(m => m.id === pendingUserMessage.id)) {
+                console.log('[handleMessageComplete] Adding pending user message that was not in state yet');
+                updatedHistory = [...prev, pendingUserMessage, message];
+            }
+
             historyForStorage = updatedHistory;
+            // Debug logging
+            console.log('[handleMessageComplete] Building history:', {
+                prevLength: prev.length,
+                newLength: updatedHistory.length,
+                messageSources: updatedHistory.map(m => m.chatSource),
+                isNewChat,
+                hadPendingMessage: !!pendingUserMessage,
+                pendingWasInPrev: pendingUserMessage ? prev.some(m => m.id === pendingUserMessage.id) : null
+            });
             return limitChatHistory(updatedHistory);
         });
+
+        // Clear the pending user message ref after processing
+        pendingUserMessageRef.current = null;
 
         // Handle history persistence OUTSIDE the state updater to avoid double calls
         // Use setTimeout to ensure state update has been processed
@@ -201,6 +225,8 @@ function PromptWindow({
 
         // Create user message and add to history
         const userMessage = createUserMessage(returnPromptStr);
+        // Store in ref for reliable history building (in case React batches the state update)
+        pendingUserMessageRef.current = userMessage;
         setChatHistory(prev => [...prev, userMessage]);
 
         // Send to agent endpoint (hook handles streaming)

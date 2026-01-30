@@ -88,6 +88,15 @@ export const handleHistoryStorage = async (
     // Filter out error messages and failed user messages before saving
     const historyToSave = getSuccessfulMessages(updatedHistory);
 
+    // Debug logging for chat history issues
+    console.log('[handleHistoryStorage] Saving chat:', {
+        isNewChat,
+        updatedHistoryLength: updatedHistory.length,
+        historyToSaveLength: historyToSave.length,
+        messageSources: updatedHistory.map(m => m.chatSource),
+        filteredSources: historyToSave.map(m => m.chatSource)
+    });
+
     if (isNewChat) {
         const response = await UserHistoryService.createChatHistory(
             historyToSave,
