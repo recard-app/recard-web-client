@@ -77,6 +77,8 @@ function PromptWindow({
     const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     // Unique identifier for the current chat conversation
     const [chatId, setChatId] = useState<string>('');
+    // Ref to store chatId immediately (synchronous) for use in callbacks
+    const chatIdRef = useRef<string>('');
     // Tracks whether this is a new chat conversation (true) or loading an existing one (false)
     const [isNewChat, setIsNewChat] = useState<boolean>(false);
     // Indicates whether a new chat creation request is in progress
@@ -110,9 +112,20 @@ function PromptWindow({
         // Update the chat with the complete conversation
         // Chat was already created in getPrompt, so we just update it
         setTimeout(async () => {
+            // Use ref for chatId to avoid React state timing issues
+            // (state may not be updated yet when this callback runs)
+            const currentChatId = chatIdRef.current;
+
             try {
                 // Skip if user preference is to not track history
                 if (!user || chatHistoryPreference === 'do_not_track_history') {
+                    setIsNewChatPending(false);
+                    return;
+                }
+
+                // Skip if no chatId (shouldn't happen, but safety check)
+                if (!currentChatId) {
+                    console.error('[handleMessageComplete] No chatId available');
                     setIsNewChatPending(false);
                     return;
                 }
@@ -126,17 +139,17 @@ function PromptWindow({
 
                 // Update the existing chat
                 await UserHistoryService.updateChatHistory(
-                    chatId,
+                    currentChatId,
                     historyToSave,
                     componentBlocks
                 );
 
-                console.log('[handleMessageComplete] Updated chat:', chatId);
+                console.log('[handleMessageComplete] Updated chat:', currentChatId);
 
                 // Update sidebar with the new conversation
-                const existingChat = existingHistoryList.find(chat => chat.chatId === chatId);
+                const existingChat = existingHistoryList.find(chat => chat.chatId === currentChatId);
                 const updatedChat: Conversation = {
-                    chatId: chatId,
+                    chatId: currentChatId,
                     timestamp: new Date().toISOString(),
                     conversation: historyToSave,
                     chatDescription: existingChat?.chatDescription || 'New Chat',
@@ -147,7 +160,7 @@ function PromptWindow({
                 // Generate title if chat still has placeholder name
                 if (!existingChat?.chatDescription || existingChat.chatDescription === 'New Chat') {
                     try {
-                        const newTitle = await UserHistoryService.generateChatTitle(chatId);
+                        const newTitle = await UserHistoryService.generateChatTitle(currentChatId);
                         console.log('[handleMessageComplete] Generated title:', newTitle);
 
                         // Update sidebar with the new title
@@ -168,7 +181,7 @@ function PromptWindow({
                 isSavingRef.current = false;
             }
         }, 0);
-    }, [user, chatHistoryPreference, chatId, existingHistoryList, onHistoryUpdate]);
+    }, [user, chatHistoryPreference, existingHistoryList, onHistoryUpdate]);
 
     // Handler for stream errors
     const handleStreamError = useCallback((error: string) => {
@@ -243,6 +256,8 @@ function PromptWindow({
                 );
 
                 // Store the chatId and mark as no longer new
+                // Update ref immediately (synchronous) for use in callbacks
+                chatIdRef.current = response.chatId;
                 setChatId(response.chatId);
                 setIsNewChat(false);
                 returnCurrentChatId(response.chatId);
@@ -273,6 +288,7 @@ function PromptWindow({
         newChatId: string
     ) => {
         setChatHistory(limitChatHistory(conversation));
+        chatIdRef.current = newChatId;
         setChatId(newChatId);
         setIsNewChat(false);
         returnCurrentChatId(newChatId);
@@ -302,6 +318,7 @@ function PromptWindow({
                 // If there's no urlChatId, we're on the home page - clear everything for a new chat
                 if (!urlChatId) {
                     setChatHistory([]);
+                    chatIdRef.current = '';
                     setChatId('');
                     setIsNewChat(true);
                     returnCurrentChatId('');
@@ -445,6 +462,7 @@ function PromptWindow({
         setChatHistory([]);
         setIsNewChat(true);
         setIsNewChatPending(false);
+        chatIdRef.current = '';
         setChatId('');
 
         // Reset saving flag for the new chat
