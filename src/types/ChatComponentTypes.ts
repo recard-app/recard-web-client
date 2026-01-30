@@ -9,6 +9,7 @@
  */
 
 import { CreditUsageType } from './CardCreditsTypes';
+import { MONTH_ABBREVIATIONS } from './Constants';
 
 // =============================================================================
 // SIMPLIFIED COMPONENT DATA TYPES (matches backend hydration format)
@@ -353,8 +354,7 @@ export const MULTIPLIER_ACTION_DISPLAY_LABELS: Record<MultiplierActionType, stri
  * Get month name from period number for monthly credits
  */
 function getMonthName(periodNumber: number): string {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  return months[periodNumber - 1] || `Period ${periodNumber}`;
+  return MONTH_ABBREVIATIONS[periodNumber - 1] || `Period ${periodNumber}`;
 }
 
 /**
@@ -368,14 +368,13 @@ function getQuarterName(periodNumber: number): string {
  * Format anniversary date from MM-DD to display format (e.g., "Mar 15")
  */
 function formatAnniversaryDateShort(anniversaryDate: string): string {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   try {
     // Handle both MM-DD and MM/DD formats
     const [month, day] = anniversaryDate.includes('-')
       ? anniversaryDate.split('-').map(Number)
       : anniversaryDate.split('/').map(Number);
     if (month >= 1 && month <= 12) {
-      return `${months[month - 1]} ${day}`;
+      return `${MONTH_ABBREVIATIONS[month - 1]} ${day}`;
     }
   } catch {
     // Fall through to default

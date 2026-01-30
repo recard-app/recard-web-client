@@ -15,16 +15,12 @@ const getCreditValue = (value: number): number => {
 const getPeriodDisplayName = (period: string): string => {
   switch (period) {
     case CREDIT_PERIODS.Monthly:
-    case 'monthly':
       return 'Monthly';
     case CREDIT_PERIODS.Quarterly:
-    case 'quarterly':
       return 'Quarterly';
     case CREDIT_PERIODS.Semiannually:
-    case 'semiannually':
       return 'Semi-annually';
     case CREDIT_PERIODS.Annually:
-    case 'annually':
       return 'Annually';
     default:
       return period;

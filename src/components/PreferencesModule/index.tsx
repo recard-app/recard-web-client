@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { ChatHistoryPreference, InstructionsPreference, ChatModePreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
 import { CHAT_HISTORY_OPTIONS, CHAT_MODE_OPTIONS } from './utils';
-import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH, DEFAULT_CHAT_MODE } from '../../types/Constants';
+import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH, DEFAULT_CHAT_MODE, CHAT_HISTORY_PREFERENCE } from '../../types/Constants';
 import './PreferencesModule.scss';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 
@@ -158,7 +158,7 @@ function PreferencesModule({
                     <label htmlFor="chatHistorySelect">Chat History Preference:</label>
                     <select
                         id="chatHistorySelect"
-                        value={chatHistoryPreference || 'keep_history'}
+                        value={chatHistoryPreference || CHAT_HISTORY_PREFERENCE.KEEP_HISTORY}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                             setChatHistoryPreference(e.target.value as ChatHistoryPreference)}
                         className={`chat-history-select default-select ${isLoading ? 'loading' : ''}`}

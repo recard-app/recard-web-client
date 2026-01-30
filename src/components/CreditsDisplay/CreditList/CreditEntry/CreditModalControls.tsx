@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType, MOBILE_BREAKPOINT } from '../../../../types';
 import { CardCredit } from '../../../../types/CreditCardTypes';
-import { MONTH_ABBREVIATIONS } from '../../../../types/Constants';
+import { MONTH_ABBREVIATIONS, MONTH_NAMES } from '../../../../types/Constants';
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
 import { Slider } from '../../../ui/slider';
 import Icon from '@/icons';
@@ -278,8 +278,7 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   const getCurrentPeriodName = (): string => {
     const currentYear = now.getFullYear();
     if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
-      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      return monthNames[selectedPeriodNumber - 1] || `Month ${selectedPeriodNumber}`;
+      return MONTH_NAMES[selectedPeriodNumber - 1] || `Month ${selectedPeriodNumber}`;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
       const quarterSize = 3;
       const startIdx = (selectedPeriodNumber - 1) * quarterSize;

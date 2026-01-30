@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
-import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, MOBILE_BREAKPOINT, SHOW_CARD_NAME_BUBBLE_IN_CREDITS } from '../../../../types';
+import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, MOBILE_BREAKPOINT, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS } from '../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
 import { CardIcon } from '../../../../icons';
@@ -90,10 +90,10 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
 
   // Mapping for display-friendly period names
   const PERIOD_DISPLAY_NAMES: Record<string, string> = {
-    'monthly': 'Monthly',
-    'quarterly': 'Quarterly',
-    'semiannually': 'Semiannually',
-    'annually': 'Annually'
+    [CREDIT_PERIODS.Monthly]: 'Monthly',
+    [CREDIT_PERIODS.Quarterly]: 'Quarterly',
+    [CREDIT_PERIODS.Semiannually]: 'Semiannually',
+    [CREDIT_PERIODS.Annually]: 'Annually'
   };
 
   // Check if this is an anniversary-based credit
@@ -599,7 +599,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         <div className="credit-controls">
           {isUpdating ? (
             // Show updating text when updating
-            <div className="credit-updating-text" style={{ color: '#9CA3AF', fontSize: '14px', textAlign: 'center', padding: '8px' }}>
+            <div className="credit-updating-text" style={{ color: COLORS.DISABLED_GRAY, fontSize: '14px', textAlign: 'center', padding: '8px' }}>
               Updating...
             </div>
           ) : (

@@ -4,6 +4,7 @@ import {
   CREDIT_USAGE_DISPLAY_NAMES,
   CREDIT_USAGE_DISPLAY_COLORS,
   CREDIT_USAGE_ICON_NAMES,
+  CREDIT_PERIODS,
 } from '../../../types/CardCreditsTypes';
 import { CardIcon, Icon } from '../../../icons';
 import ActionDisplay from '../ActionDisplay';
@@ -21,10 +22,10 @@ interface ChatCreditComponentProps {
  * Period display names mapping
  */
 const PERIOD_DISPLAY_NAMES: Record<string, string> = {
-  'monthly': 'Monthly',
-  'quarterly': 'Quarterly',
-  'semiannually': 'Semiannual',
-  'annually': 'Annual',
+  [CREDIT_PERIODS.Monthly]: 'Monthly',
+  [CREDIT_PERIODS.Quarterly]: 'Quarterly',
+  [CREDIT_PERIODS.Semiannually]: 'Semiannual',
+  [CREDIT_PERIODS.Annually]: 'Annual',
 };
 
 /**

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Icon } from '@/icons';
 import { CardIcon } from '@/icons';
 import { COLORS } from '@/types/Colors';
-import { ICON_BLUE, ICON_PRIMARY } from '@/types';
+import { ICON_BLUE, ICON_PRIMARY, CREDIT_PERIODS } from '@/types';
 import CreditSection from '../CreditSection';
 import { CreditCardAccordionProps, CardCreditSummary } from '../types';
 import './CreditCardAccordion.scss';
@@ -30,16 +30,16 @@ const calculateCardSummary = (
     } else {
       // Calendar-based credits
       switch (credit.AssociatedPeriod) {
-        case 'monthly':
+        case CREDIT_PERIODS.Monthly:
           totalMonthlyValue += creditValue;
           break;
-        case 'quarterly':
+        case CREDIT_PERIODS.Quarterly:
           totalMonthlyValue += creditValue / 3;
           break;
-        case 'semiannually':
+        case CREDIT_PERIODS.Semiannually:
           totalMonthlyValue += creditValue / 6;
           break;
-        case 'annually':
+        case CREDIT_PERIODS.Annually:
           totalMonthlyValue += creditValue / 12;
           break;
       }

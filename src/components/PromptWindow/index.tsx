@@ -19,7 +19,7 @@ import { PAGES, TERMINOLOGY } from '../../types';
 import { ChatMessage, Conversation } from '../../types';
 import { ChatHistoryPreference, ChatModePreference } from '../../types';
 import { MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
-import { NO_DISPLAY_NAME_PLACEHOLDER } from '../../types';
+import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE, CHAT_SOURCE } from '../../types';
 import { UserHistoryService } from '../../services';
 import { ErrorWithRetry } from '../../elements';
 import { classifyError } from '../../types/AgentChatTypes';
@@ -120,7 +120,7 @@ function PromptWindow({
 
             try {
                 // Skip if user preference is to not track history
-                if (!user || chatHistoryPreference === 'do_not_track_history') {
+                if (!user || chatHistoryPreference === CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
                     setIsNewChatPending(false);
                     return;
                 }
@@ -134,7 +134,7 @@ function PromptWindow({
 
                 // Filter out error messages before saving
                 const historyToSave = historyForStorage.filter(
-                    m => m.chatSource !== 'error' && !m.isError
+                    m => m.chatSource !== CHAT_SOURCE.ERROR && !m.isError
                 );
 
                 const componentBlocks = extractComponentBlocks(historyForStorage);
@@ -156,13 +156,13 @@ function PromptWindow({
                     chatId: currentChatId,
                     timestamp: new Date().toISOString(),
                     conversation: historyToSave,
-                    chatDescription: existingChat?.chatDescription || 'New Chat',
+                    chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
                     componentBlocks: componentBlocks
                 };
                 onHistoryUpdate(updatedChat);
 
                 // Generate title if chat still has placeholder name
-                if (!existingChat?.chatDescription || existingChat.chatDescription === 'New Chat') {
+                if (!existingChat?.chatDescription || existingChat.chatDescription === DEFAULT_CHAT_NAME_PLACEHOLDER) {
                     try {
                         const newTitle = await UserHistoryService.generateChatTitle(currentChatId);
                         console.log('[handleMessageComplete] Generated title:', newTitle);

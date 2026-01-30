@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import './CreditCardManager.scss';
 import { CreditCard, CreditCardDetails } from '../../types/CreditCardTypes';
 import { UserCreditCard } from '../../types/UserTypes';
-import { MOBILE_BREAKPOINT } from '../../types';
+import { MOBILE_BREAKPOINT, COLORS } from '../../types';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService, UserCreditService } from '../../services';
 import CreditCardDetailView from '../CreditCardDetailView';
@@ -654,7 +654,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                                     </>
                                 ) : (
                                     <>
-                                        <Icon name="card" variant="mini" color="#C9CED3" />
+                                        <Icon name="card" variant="mini" color={COLORS.NEUTRAL_GRAY} />
                                         <span className="label-text">Select a card to view</span>
                                     </>
                                 )}

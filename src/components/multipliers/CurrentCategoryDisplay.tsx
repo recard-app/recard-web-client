@@ -1,4 +1,5 @@
 import type { RotatingScheduleEntry, SchedulePeriodType } from '@/types';
+import { MONTH_ABBREVIATIONS } from '@/types';
 
 interface CurrentCategoryDisplayProps {
   scheduleEntry: RotatingScheduleEntry;
@@ -38,8 +39,7 @@ function formatPeriodLabel(
     case 'quarter':
       return `Q${periodValue} ${year}`;
     case 'month':
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      return `${monthNames[(periodValue ?? 1) - 1]} ${year}`;
+      return `${MONTH_ABBREVIATIONS[(periodValue ?? 1) - 1]} ${year}`;
     case 'half_year':
       return `H${periodValue} ${year}`;
     case 'year':

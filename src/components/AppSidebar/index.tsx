@@ -28,7 +28,9 @@ import {
   TERMINOLOGY,
   PAGES,
   MY_CARDS_IN_ACCOUNT_MENU,
-  MY_CARDS_DROPDOWN_LABEL
+  MY_CARDS_DROPDOWN_LABEL,
+  SUBSCRIPTION_PLAN,
+  COLORS
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { MonthlyStatsResponse, PrioritizedCredit } from '../../types/CardCreditsTypes';
@@ -272,7 +274,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 onMouseLeave={() => hideTooltip()}
                 aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
               >
-                <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
+                <Icon name="plus-circle" variant="solid" color={COLORS.PRIMARY_COLOR} size={24} />
               </button>
 
               {miniMiddleNavItems.map((item, index) => {
@@ -388,7 +390,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 onMouseLeave={() => hideTooltip()}
                 aria-label={PAGE_NAMES.NEW_TRANSACTION_CHAT}
               >
-                <Icon name="plus-circle" variant="solid" color="#22CC9D" size={24} />
+                <Icon name="plus-circle" variant="solid" color={COLORS.PRIMARY_COLOR} size={24} />
               </button>
 
               {miniMiddleNavItems.map((item, index) => {
@@ -432,7 +434,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                       <div className="profile-info">
                         <span className="profile-name">{user.displayName || user.email}</span>
                         <span className="profile-plan">
-                          {subscriptionPlan === 'free' ? PLAN_DISPLAY_TEXT.FREE : PLAN_DISPLAY_TEXT.PREMIUM}
+                          {subscriptionPlan === SUBSCRIPTION_PLAN.FREE ? PLAN_DISPLAY_TEXT.FREE : PLAN_DISPLAY_TEXT.PREMIUM}
                         </span>
                       </div>
                       <Icon 

@@ -332,7 +332,7 @@ function AppContent({}: AppContentProps) {
             return {
               success: false,
               instructions: '',
-              chatHistory: 'keep_history' as ChatHistoryPreference
+              chatHistory: CHAT_HISTORY_PREFERENCE.KEEP_HISTORY
             };
           })
         ]);
