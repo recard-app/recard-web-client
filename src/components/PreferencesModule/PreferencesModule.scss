@@ -23,14 +23,16 @@
 
     .preferences-textarea.loading,
     .chat-history-select.loading,
-    .show-completed-select.loading {
+    .show-completed-select.loading,
+    .chat-mode-select.loading {
       opacity: 0.6;
       cursor: not-allowed;
     }
 
     .preferences-textarea:disabled,
     .chat-history-select:disabled,
-    .show-completed-select:disabled {
+    .show-completed-select:disabled,
+    .chat-mode-select:disabled {
       background-color: $neutral-light-gray;
       color: $neutral-medium-gray;
     }

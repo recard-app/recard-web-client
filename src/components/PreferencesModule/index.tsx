@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { ChatHistoryPreference, InstructionsPreference, ChatModePreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
-import { CHAT_HISTORY_OPTIONS, CHAT_MODE_OPTIONS, CHAT_MODE_STORAGE_KEY } from './utils';
+import { CHAT_HISTORY_OPTIONS, CHAT_MODE_OPTIONS } from './utils';
 import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH, DEFAULT_CHAT_MODE } from '../../types/Constants';
 import './PreferencesModule.scss';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
@@ -70,6 +70,12 @@ function PreferencesModule({
             if (response.chatHistory) {
                 setChatHistoryPreference(response.chatHistory);
             }
+
+            // Update chat mode preference
+            if (response.chatMode) {
+                setChatMode(response.chatMode);
+                setPendingChatMode(response.chatMode);
+            }
         } catch (error) {
             console.error('Error loading preferences:', error);
             setLoadError('Failed to load preferences. Please try again.');
@@ -101,14 +107,13 @@ function PreferencesModule({
         setIsSaving(true);
 
         try {
-            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference);
+            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference, pendingChatMode);
 
-            // Save chat mode to localStorage and update state
+            // Update app state with saved values
             setChatMode(pendingChatMode);
-            localStorage.setItem(CHAT_MODE_STORAGE_KEY, pendingChatMode);
+            onInstructionsUpdate(instructions);
 
             toast.success('All preferences saved successfully!');
-            onInstructionsUpdate(instructions);
         } catch (error) {
             console.error('Error saving preferences:', error);
             toast.error('Error saving preferences. Please try again.');
@@ -170,13 +175,14 @@ function PreferencesModule({
                 </div>
 
                 <div className="chat-mode-preference">
-                    <label htmlFor="chatModeSelect">AI Mode (Beta):</label>
+                    <label htmlFor="chatModeSelect">Agent Mode Preference:</label>
                     <select
                         id="chatModeSelect"
                         value={pendingChatMode || DEFAULT_CHAT_MODE}
                         onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                             handleChatModeChange(e.target.value as ChatModePreference)}
-                        className="chat-mode-select default-select"
+                        className={`chat-mode-select default-select ${isLoading ? 'loading' : ''}`}
+                        disabled={isLoading}
                     >
                         {CHAT_MODE_OPTIONS.map(option => (
                             <option key={option.value} value={option.value}>

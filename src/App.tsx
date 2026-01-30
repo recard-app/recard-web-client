@@ -212,11 +212,8 @@ function AppContent({}: AppContentProps) {
   const [preferencesInstructions, setPreferencesInstructions] = useState<InstructionsPreference>('');
   // State for managing chat history preference (keep/clear)
   const [chatHistoryPreference, setChatHistoryPreference] = useState<ChatHistoryPreference>(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
-  // State for managing chat mode preference (unified/orchestrated) - stored in localStorage
-  const [chatMode, setChatMode] = useState<ChatModePreference>(() => {
-    const stored = localStorage.getItem('swipe_chat_mode');
-    return (stored as ChatModePreference) || DEFAULT_CHAT_MODE;
-  });
+  // State for managing chat mode preference (unified/orchestrated) - stored server-side
+  const [chatMode, setChatMode] = useState<ChatModePreference>(DEFAULT_CHAT_MODE);
   // State for tracking user's subscription plan
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
   // State for managing side panel visibility with localStorage persistence

@@ -35,6 +35,3 @@ export const CHAT_MODE_OPTIONS: ChatModeOption[] = [
         description: 'Multiple specialized AI agents work together (more thorough)'
     },
 ];
-
-// LocalStorage key for chat mode
-export const CHAT_MODE_STORAGE_KEY = 'swipe_chat_mode';

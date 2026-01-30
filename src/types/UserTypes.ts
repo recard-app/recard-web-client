@@ -94,11 +94,13 @@ export interface BatchedPreferencesResponse {
     error?: string;
     instructions: InstructionsPreference;
     chatHistory: ChatHistoryPreference;
+    chatMode: ChatModePreference;
 }
 
 export interface BatchedPreferencesRequest {
     instructions?: InstructionsPreference;
     chatHistory?: ChatHistoryPreference;
+    chatMode?: ChatModePreference;
 }
 
 export interface SubscriptionPlanResponse {
