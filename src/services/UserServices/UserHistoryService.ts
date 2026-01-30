@@ -78,23 +78,41 @@ export const UserHistoryService = {
      * @param chatHistory Array of chat messages
      * @param componentBlocks Array of component blocks from agent responses
      * @param signal Optional AbortController signal
+     * @param skipTitleGeneration If true, skip AI title generation and use "New Chat"
      * @returns Promise containing the created conversation
      */
     async createChatHistory(
         chatHistory: ChatMessage[],
         componentBlocks: ChatComponentBlock[],
-        signal?: AbortSignal
+        signal?: AbortSignal,
+        skipTitleGeneration?: boolean
     ): Promise<Conversation> {
         const headers = await getAuthHeaders();
         const response = await axios.post<Conversation>(
             `${apiurl}/users/history`,
             {
                 chatHistory,
-                componentBlocks
+                componentBlocks,
+                skipTitleGeneration
             },
             { headers, signal }
         );
         return response.data;
+    },
+
+    /**
+     * Generates a title for a chat based on its conversation using AI
+     * @param chatId ID of the chat to generate title for
+     * @returns Promise containing the generated chat description
+     */
+    async generateChatTitle(chatId: string): Promise<string> {
+        const headers = await getAuthHeaders();
+        const response = await axios.post<{ chatDescription: string }>(
+            `${apiurl}/users/history/${chatId}/generate-title`,
+            {},
+            { headers }
+        );
+        return response.data.chatDescription;
     },
 
     /**

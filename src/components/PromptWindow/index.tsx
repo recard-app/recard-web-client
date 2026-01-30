@@ -8,7 +8,6 @@ import PromptHistory from './PromptHistory';
 import PromptField from './PromptField';
 import './PromptWindow.scss';
 import {
-    handleHistoryStorage,
     limitChatHistory,
     createUserMessage,
     createErrorMessage,
@@ -87,10 +86,8 @@ function PromptWindow({
 
     // Ref to track if we're currently saving to prevent duplicate saves
     const isSavingRef = useRef<boolean>(false);
-    // Ref to track the pending user message that was just sent (for reliable history building)
-    const pendingUserMessageRef = useRef<ChatMessage | null>(null);
 
-    // Handler for completed messages - saves to history
+    // Handler for completed messages - updates chat and generates title
     const handleMessageComplete = useCallback((
         message: ChatMessage
     ) => {
@@ -102,65 +99,76 @@ function PromptWindow({
         isSavingRef.current = true;
 
         // Add assistant message to history
-        // IMPORTANT: We must NOT call side effects (like handleHistoryStorage) inside setChatHistory
-        // because React may call state updaters multiple times in strict mode
         let historyForStorage: ChatMessage[] = [];
 
-        // Capture the pending user message before the state update
-        const pendingUserMessage = pendingUserMessageRef.current;
-
         setChatHistory(prev => {
-            let updatedHistory = [...prev, message];
-
-            // If the pending user message isn't in prev (due to React batching), add it
-            if (pendingUserMessage && !prev.some(m => m.id === pendingUserMessage.id)) {
-                console.log('[handleMessageComplete] Adding pending user message that was not in state yet');
-                updatedHistory = [...prev, pendingUserMessage, message];
-            }
-
+            const updatedHistory = [...prev, message];
             historyForStorage = updatedHistory;
-            // Debug logging
-            console.log('[handleMessageComplete] Building history:', {
-                prevLength: prev.length,
-                newLength: updatedHistory.length,
-                messageSources: updatedHistory.map(m => m.chatSource),
-                isNewChat,
-                hadPendingMessage: !!pendingUserMessage,
-                pendingWasInPrev: pendingUserMessage ? prev.some(m => m.id === pendingUserMessage.id) : null
-            });
             return limitChatHistory(updatedHistory);
         });
 
-        // Clear the pending user message ref after processing
-        pendingUserMessageRef.current = null;
+        // Update the chat with the complete conversation
+        // Chat was already created in getPrompt, so we just update it
+        setTimeout(async () => {
+            try {
+                // Skip if user preference is to not track history
+                if (!user || chatHistoryPreference === 'do_not_track_history') {
+                    setIsNewChatPending(false);
+                    return;
+                }
 
-        // Handle history persistence OUTSIDE the state updater to avoid double calls
-        // Use setTimeout to ensure state update has been processed
-        setTimeout(() => {
-            const componentBlocks = extractComponentBlocks(historyForStorage);
-            const storageAbortController = new AbortController();
+                // Filter out error messages before saving
+                const historyToSave = historyForStorage.filter(
+                    m => m.chatSource !== 'error' && !m.isError
+                );
 
-            handleHistoryStorage(
-                historyForStorage,
-                componentBlocks,
-                storageAbortController.signal,
-                user,
-                chatHistoryPreference,
-                isNewChat,
-                chatId,
-                existingHistoryList,
-                setIsNewChatPending,
-                onHistoryUpdate,
-                setChatId,
-                returnCurrentChatId,
-                setIsNewChat
-            ).catch(error => {
-                console.error('Error saving chat history:', error);
-            }).finally(() => {
+                const componentBlocks = extractComponentBlocks(historyForStorage);
+
+                // Update the existing chat
+                await UserHistoryService.updateChatHistory(
+                    chatId,
+                    historyToSave,
+                    componentBlocks
+                );
+
+                console.log('[handleMessageComplete] Updated chat:', chatId);
+
+                // Update sidebar with the new conversation
+                const existingChat = existingHistoryList.find(chat => chat.chatId === chatId);
+                const updatedChat: Conversation = {
+                    chatId: chatId,
+                    timestamp: new Date().toISOString(),
+                    conversation: historyToSave,
+                    chatDescription: existingChat?.chatDescription || 'New Chat',
+                    componentBlocks: componentBlocks
+                };
+                onHistoryUpdate(updatedChat);
+
+                // Generate title if chat still has placeholder name
+                if (!existingChat?.chatDescription || existingChat.chatDescription === 'New Chat') {
+                    try {
+                        const newTitle = await UserHistoryService.generateChatTitle(chatId);
+                        console.log('[handleMessageComplete] Generated title:', newTitle);
+
+                        // Update sidebar with the new title
+                        onHistoryUpdate({
+                            ...updatedChat,
+                            chatDescription: newTitle
+                        });
+                    } catch (titleError) {
+                        console.error('Failed to generate title:', titleError);
+                        // Chat still works, just keeps "New Chat" title
+                    }
+                }
+
+                setIsNewChatPending(false);
+            } catch (error) {
+                console.error('Error updating chat history:', error);
+            } finally {
                 isSavingRef.current = false;
-            });
+            }
         }, 0);
-    }, [user, chatHistoryPreference, isNewChat, chatId, existingHistoryList, onHistoryUpdate, returnCurrentChatId]);
+    }, [user, chatHistoryPreference, chatId, existingHistoryList, onHistoryUpdate]);
 
     // Handler for stream errors
     const handleStreamError = useCallback((error: string) => {
@@ -205,9 +213,9 @@ function PromptWindow({
 
     /**
      * Retrieves user prompt input and triggers the chat process.
-     * Prevents new chat creation if one is already pending.
+     * For new chats, creates the chat immediately before sending to agent.
      */
-    const getPrompt = (returnPromptStr: string) => {
+    const getPrompt = async (returnPromptStr: string) => {
         if (isNewChat && isNewChatPending) {
             console.log('New chat creation in progress, please wait...');
             return;
@@ -218,18 +226,42 @@ function PromptWindow({
             return;
         }
 
-        // Mark new chat as pending
-        if (isNewChat) {
-            setIsNewChatPending(true);
-        }
-
         // Create user message and add to history
         const userMessage = createUserMessage(returnPromptStr);
-        // Store in ref for reliable history building (in case React batches the state update)
-        pendingUserMessageRef.current = userMessage;
         setChatHistory(prev => [...prev, userMessage]);
 
+        // For NEW chats: Create chat immediately with just the user message
+        if (isNewChat) {
+            setIsNewChatPending(true);
+            try {
+                // Create chat with skipTitleGeneration - title will be generated after AI responds
+                const response = await UserHistoryService.createChatHistory(
+                    [userMessage],
+                    [],
+                    undefined,
+                    true  // skipTitleGeneration
+                );
+
+                // Store the chatId and mark as no longer new
+                setChatId(response.chatId);
+                setIsNewChat(false);
+                returnCurrentChatId(response.chatId);
+
+                // Add to sidebar immediately with placeholder title
+                onHistoryUpdate(response);
+
+                console.log('[getPrompt] Created new chat:', response.chatId);
+            } catch (error) {
+                console.error('Failed to create chat:', error);
+                setIsNewChatPending(false);
+                // Remove the user message we added optimistically
+                setChatHistory(prev => prev.filter(m => m.id !== userMessage.id));
+                return;
+            }
+        }
+
         // Send to agent endpoint (hook handles streaming)
+        // Note: chatHistory state may not be updated yet, but agent receives prompt directly
         sendAgentMessage(returnPromptStr, chatHistory);
     };
 
