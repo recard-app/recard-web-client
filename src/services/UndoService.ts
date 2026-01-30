@@ -12,6 +12,9 @@ import {
   isPerkAction,
   isMultiplierAction,
   CARD_ACTION_TYPES,
+  PERK_ACTION_TYPES,
+  MULTIPLIER_ACTION_TYPES,
+  CHAT_COMPONENT_TYPES,
 } from '../types/ChatComponentTypes';
 
 /**
@@ -301,14 +304,14 @@ export const UndoService = {
       const headers = await getAuthHeaders();
 
       // track -> disabled: true, untrack -> disabled: false
-      const disabled = action.actionType === 'track';
+      const disabled = action.actionType === PERK_ACTION_TYPES.TRACK;
 
       // Use V1 endpoint
       await axios.patch(
         `${apiurl}/api/v1/users/components/${action.perkId}/tracking`,
         {
           cardId: action.cardId,
-          componentType: 'perk',
+          componentType: CHAT_COMPONENT_TYPES.PERK,
           disabled,
         },
         { headers: { ...headers, 'Content-Type': 'application/json' } }
@@ -338,14 +341,14 @@ export const UndoService = {
       const headers = await getAuthHeaders();
 
       // track -> disabled: true, untrack -> disabled: false
-      const disabled = action.actionType === 'track';
+      const disabled = action.actionType === MULTIPLIER_ACTION_TYPES.TRACK;
 
       // Use V1 endpoint
       await axios.patch(
         `${apiurl}/api/v1/users/components/${action.multiplierId}/tracking`,
         {
           cardId: action.cardId,
-          componentType: 'multiplier',
+          componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
           disabled,
         },
         { headers: { ...headers, 'Content-Type': 'application/json' } }
