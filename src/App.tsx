@@ -629,10 +629,14 @@ function AppContent({}: AppContentProps) {
     // Return early if updatedChat is undefined
     if (!updatedChat) return;
 
+    // Track whether this is an update to an existing chat (vs new chat creation)
+    let isExistingChatUpdate = false;
+
     // If updatedChat is a function, it's a delete operation
     if (typeof updatedChat === 'function') {
       setChatHistory(updatedChat);  // Apply the filter function directly
       handleClearChat();
+      isExistingChatUpdate = true; // Deletions count as updates to existing chats
     } else {
       // Handle normal chat updates
       setChatHistory(prevHistory => {
@@ -644,7 +648,9 @@ function AppContent({}: AppContentProps) {
             ...updatedChat,
             chatDescription: updatedChat.chatDescription || newHistory[existingIndex].chatDescription,
           };
+          isExistingChatUpdate = true;
         } else {
+          // New chat - just add to history, no refresh needed
           newHistory.unshift(updatedChat);
         }
 
@@ -653,7 +659,13 @@ function AppContent({}: AppContentProps) {
     }
 
     setLastUpdateTimestamp(new Date().toISOString());
-    setHistoryRefreshTrigger(prev => prev + 1);
+
+    // Only trigger history refresh for updates to existing chats, not new chat creation.
+    // New chats are already added to state directly above, so refetching would cause
+    // a race condition where isLoadingHistory=true blocks the chat from loading.
+    if (isExistingChatUpdate) {
+      setHistoryRefreshTrigger(prev => prev + 1);
+    }
   };
 
   // Function to trigger chat clearing
