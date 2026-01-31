@@ -32,8 +32,9 @@ import {
 import { UserHistoryService } from '../../../services';
 import { useState } from 'react';
 
-// Toggle timestamp visibility on mobile
-const SHOW_TIMESTAMP_ON_MOBILE = false;
+// Toggle timestamp visibility on mobile for sidebar variant
+// Full-page variant always shows timestamps on mobile
+const HIDE_TIMESTAMP_ON_MOBILE_SIDEBAR = true;
 
 /**
  * Props interface for the HistoryEntry component
@@ -169,7 +170,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
   return (
     <>
       <div
-        className={`history-entry ${!SHOW_TIMESTAMP_ON_MOBILE ? 'hide-timestamp-on-mobile' : ''} ${variant === 'sidebar' ? 'sidebar-variant' : 'full-page-variant'} ${isCurrent ? 'current' : ''}`}
+        className={`history-entry ${HIDE_TIMESTAMP_ON_MOBILE_SIDEBAR && variant === 'sidebar' ? 'hide-timestamp-on-mobile' : ''} ${variant === 'sidebar' ? 'sidebar-variant' : 'full-page-variant'} ${isCurrent ? 'current' : ''}`}
         id={chatEntry.chatId}
         onClick={handleClick}
         style={{ cursor: 'pointer' }}
