@@ -144,6 +144,7 @@ export interface FinalEvent {
     success: boolean;
     messageId: string;
     timestamp: string;
+    dataChanged?: DataChangedFlags;
   };
 }
 

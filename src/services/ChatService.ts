@@ -163,7 +163,7 @@ export function sendAgentMessageStreaming(
                 event.data.agentType,
                 event.data.messageId,
                 event.data.timestamp,
-                undefined // dataChanged not yet implemented in LangGraph backend
+                event.data.dataChanged
               );
               break;
 
