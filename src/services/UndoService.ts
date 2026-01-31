@@ -12,6 +12,7 @@ import {
   isPerkAction,
   isMultiplierAction,
   CARD_ACTION_TYPES,
+  CREDIT_ACTION_TYPES,
   PERK_ACTION_TYPES,
   MULTIPLIER_ACTION_TYPES,
   CHAT_COMPONENT_TYPES,
@@ -253,12 +254,34 @@ export const UndoService = {
   },
 
   /**
-   * Undo a credit action
+   * Undo a credit action (usage update or tracking toggle)
    */
   async undoCreditAction(action: CreditAction): Promise<UndoResult> {
     try {
       const headers = await getAuthHeaders();
 
+      // Handle tracking actions (track/untrack)
+      if (action.actionType === CREDIT_ACTION_TYPES.TRACK || action.actionType === CREDIT_ACTION_TYPES.UNTRACK) {
+        // track -> disabled: true, untrack -> disabled: false
+        const disabled = action.actionType === CREDIT_ACTION_TYPES.TRACK;
+
+        await axios.patch(
+          `${apiurl}/api/v1/users/components/${action.creditId}/tracking`,
+          {
+            cardId: action.cardId,
+            componentType: CHAT_COMPONENT_TYPES.CREDIT,
+            disabled,
+          },
+          { headers: { ...headers, 'Content-Type': 'application/json' } }
+        );
+
+        // Invalidate component preferences cache
+        apiCache.invalidate(CACHE_KEYS.COMPONENT_TRACKING_PREFERENCES);
+
+        return { success: true, action };
+      }
+
+      // Handle usage update actions
       // Derive status from fromValue (the value we're restoring to)
       // 0 = not_used, partial = partially_used, full = used
       // Note: We can't know the max value here, so we use partially_used for any non-zero value
@@ -287,7 +310,7 @@ export const UndoService = {
     } catch (error) {
       const errorMessage = axios.isAxiosError(error)
         ? error.response?.data?.message || error.message
-        : 'Failed to restore credit usage';
+        : 'Failed to restore credit';
       return {
         success: false,
         action,
