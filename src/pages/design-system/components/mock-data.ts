@@ -806,6 +806,64 @@ export const mockCreditComponentItems: CreditComponentItem[] = [
       anniversaryDate: '03-15',
     },
   },
+  // Credit tracking actions (enable/disable)
+  {
+    id: 'item-credit-5-track',
+    componentType: CHAT_COMPONENT_TYPES.CREDIT,
+    displayOrder: 5,
+    userCredit: toChatComponentUserCredit(mockUserCredits[2]),
+    cardCredit: toChatComponentCredit(mockCardCredits[2]), // DoorDash Credit
+    card: toChatComponentCard(mockCreditCards[1]), // Chase Sapphire
+    creditMaxValue: 60,
+    currentValueUsed: 0,
+    action: {
+      id: 'action-credit-5',
+      componentType: CHAT_COMPONENT_TYPES.CREDIT,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: CREDIT_ACTION_TYPES.TRACK,
+      cardId: 'card-chase-sapphire',
+      creditId: 'credit-chase-doordash',
+    },
+  },
+  {
+    id: 'item-credit-6-untrack',
+    componentType: CHAT_COMPONENT_TYPES.CREDIT,
+    displayOrder: 6,
+    userCredit: toChatComponentUserCredit(mockUserCredits[4]),
+    cardCredit: toChatComponentCredit(mockCardCredits[4]), // Hotel Credit
+    card: toChatComponentCard(mockCreditCards[2]), // Citi Premier
+    creditMaxValue: 100,
+    currentValueUsed: 0,
+    action: {
+      id: 'action-credit-6',
+      componentType: CHAT_COMPONENT_TYPES.CREDIT,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: CREDIT_ACTION_TYPES.UNTRACK,
+      cardId: 'card-citi-premier',
+      creditId: 'credit-citi-hotel',
+    },
+  },
+  {
+    id: 'item-credit-7-track-undone',
+    componentType: CHAT_COMPONENT_TYPES.CREDIT,
+    displayOrder: 7,
+    userCredit: toChatComponentUserCredit(mockUserCredits[3]),
+    cardCredit: toChatComponentCredit(mockCardCredits[3]), // Travel Credit
+    card: toChatComponentCard(mockCreditCards[1]), // Chase Sapphire
+    creditMaxValue: 300,
+    currentValueUsed: 150,
+    action: {
+      id: 'action-credit-7',
+      componentType: CHAT_COMPONENT_TYPES.CREDIT,
+      timestamp: new Date().toISOString(),
+      isUndone: true, // Undone state
+      actionType: CREDIT_ACTION_TYPES.TRACK,
+      cardId: 'card-chase-sapphire',
+      creditId: 'credit-chase-travel',
+    },
+  },
 ];
 
 // Perk items

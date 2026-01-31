@@ -1,5 +1,5 @@
 import React from 'react';
-import { CreditComponentItem, CreditAction } from '../../../types/ChatComponentTypes';
+import { CreditComponentItem, CreditAction, CREDIT_ACTION_TYPES } from '../../../types/ChatComponentTypes';
 import {
   CREDIT_USAGE_DISPLAY_NAMES,
   CREDIT_USAGE_DISPLAY_COLORS,
@@ -94,12 +94,28 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
     ? 'Anniversary'
     : PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod;
 
+  // Check if this is a tracking action (track/untrack) - only show total value, not usage
+  const isTrackingAction = action && (
+    action.actionType === CREDIT_ACTION_TYPES.TRACK ||
+    action.actionType === CREDIT_ACTION_TYPES.UNTRACK
+  );
+
   const className = [
     'chat-credit-component',
     'chat-component-item',
     'clickable',
     isUndoPending ? 'undo-pending' : '',
   ].filter(Boolean).join(' ');
+
+  // Build aria-label based on action type
+  let ariaLabel = `${cardCredit.Title} credit`;
+  if (action) {
+    if (isTrackingAction) {
+      ariaLabel += `. Action: ${action.actionType === CREDIT_ACTION_TYPES.TRACK ? 'Now tracking' : 'Stopped tracking'}`;
+    } else {
+      ariaLabel += `. Action: Updated from $${action.fromValue} to $${action.toValue}`;
+    }
+  }
 
   return (
     <div className={className}>
@@ -109,7 +125,7 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
         onKeyDown={handleKeyDown}
         role="button"
         tabIndex={0}
-        aria-label={`${cardCredit.Title} credit${action ? `. Action: Updated from $${action.fromValue} to $${action.toValue}` : ''}`}
+        aria-label={ariaLabel}
       >
         <div className="credit-row">
           {/* Left side: Credit info */}
@@ -126,14 +142,20 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
             <span className="period-text">{periodText}</span>
           </div>
 
-          {/* Right side: Usage display */}
-          <div className="credit-usage" style={{ color: usageInfo.color }}>
-            <div className="usage-amount">${currentValueUsed} / ${creditMaxValue}</div>
-            <div className="usage-status">
-              <Icon name={usageInfo.iconName} size={12} color={usageInfo.color} />
-              <span>{usageInfo.status}</span>
+          {/* Right side: Value display - simplified for tracking actions */}
+          {isTrackingAction ? (
+            <div className="credit-value">
+              <span className="value-amount">${creditMaxValue}</span>
             </div>
-          </div>
+          ) : (
+            <div className="credit-usage" style={{ color: usageInfo.color }}>
+              <div className="usage-amount">${currentValueUsed} / ${creditMaxValue}</div>
+              <div className="usage-status">
+                <Icon name={usageInfo.iconName} size={12} color={usageInfo.color} />
+                <span>{usageInfo.status}</span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

@@ -68,5 +68,18 @@
     }
   }
 
+  // Simplified value display for tracking actions (no usage info)
+  .credit-value {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+
+    .value-amount {
+      font-size: $font-sm;
+      font-weight: $font-semibold;
+      color: $neutral-black;
+    }
+  }
+
   // .action-row styles are in shared.scss
 }

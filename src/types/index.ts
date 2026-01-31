@@ -7,3 +7,4 @@ export * from './AuthTypes';
 export * from './Constants';
 export * from './FeatureFlags';
 export * from './Pages';
+export * from './Colors';

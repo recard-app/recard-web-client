@@ -104,7 +104,9 @@ export type CardActionType = typeof CARD_ACTION_TYPES[keyof typeof CARD_ACTION_T
 
 // Credit Actions
 export const CREDIT_ACTION_TYPES = {
-  UPDATE_USAGE: 'update_usage'
+  UPDATE_USAGE: 'update_usage',
+  TRACK: 'track',
+  UNTRACK: 'untrack'
 } as const;
 
 export type CreditActionType = typeof CREDIT_ACTION_TYPES[keyof typeof CREDIT_ACTION_TYPES];
@@ -164,8 +166,8 @@ export interface CardAction extends BaseChatComponentAction {
 
 /**
  * Credit action data
- * - Non-binary: shows "from $X to $Y" format
- * - Status is derived from value (0 = not_used, max = used)
+ * - For update_usage: shows "from $X to $Y" format with period info
+ * - For track/untrack: binary action (enable/disable tracking)
  *
  * Anniversary-Based Credits:
  * When isAnniversaryBased is true, the credit period is based on the user's card
@@ -178,15 +180,16 @@ export interface CreditAction extends BaseChatComponentAction {
   actionType: CreditActionType;
   cardId: string;
   creditId: string;
-  periodNumber: number;
-  /** Year the action applies to (calendar year or anniversaryYear) */
-  year: number;
+  /** Period number (required for update_usage, not used for track/untrack) */
+  periodNumber?: number;
+  /** Year the action applies to (required for update_usage, not used for track/untrack) */
+  year?: number;
   /** Period type for display formatting (e.g., 'monthly', 'quarterly') */
   periodType?: string;
-  /** Previous value before the action */
-  fromValue: number;
-  /** New value after the action */
-  toValue: number;
+  /** Previous value before the action (for update_usage) */
+  fromValue?: number;
+  /** New value after the action (for update_usage) */
+  toValue?: number;
   /** Previous usage status (derived, for display reference) */
   fromUsage?: CreditUsageType;
   /** New usage status (derived, for display reference) */
@@ -351,6 +354,15 @@ export const MULTIPLIER_ACTION_DISPLAY_LABELS: Record<MultiplierActionType, stri
 };
 
 /**
+ * Human-readable labels for credit tracking actions (not usage updates)
+ * Usage updates use formatCreditActionText instead
+ */
+export const CREDIT_TRACKING_DISPLAY_LABELS: Record<string, string> = {
+  [CREDIT_ACTION_TYPES.TRACK]: 'Now tracking',
+  [CREDIT_ACTION_TYPES.UNTRACK]: 'Stopped tracking'
+};
+
+/**
  * Get month name from period number for monthly credits
  */
 function getMonthName(periodNumber: number): string {
@@ -438,13 +450,21 @@ export function formatPeriodText(
 
 /**
  * Format credit action display text
- * @example "Set from $1 to $6 (Jan 2025)"
+ * @example "Set from $1 to $6 (Jan 2025)" for update_usage
  * @example "Set from $0 to $200 (Mar 15, 2024)" for anniversary credits
+ * @example "Now tracking" for track
+ * @example "Stopped tracking" for untrack
  */
 export function formatCreditActionText(action: CreditAction): string {
-  const valueText = `Set from $${action.fromValue} to $${action.toValue}`;
+  // Handle tracking actions (track/untrack)
+  if (action.actionType === CREDIT_ACTION_TYPES.TRACK || action.actionType === CREDIT_ACTION_TYPES.UNTRACK) {
+    return CREDIT_TRACKING_DISPLAY_LABELS[action.actionType] || action.actionType;
+  }
+
+  // Handle usage update actions
+  const valueText = `Set from $${action.fromValue ?? 0} to $${action.toValue ?? 0}`;
   const periodText = formatPeriodText(
-    action.periodNumber,
+    action.periodNumber ?? 1,
     action.periodType,
     action.year,
     action.isAnniversaryBased,

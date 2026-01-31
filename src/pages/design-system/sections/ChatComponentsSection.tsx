@@ -91,6 +91,26 @@ const ChatComponentsSection: React.FC = () => {
     toValue: 10,
   };
 
+  const mockCreditTrackAction: CreditAction = {
+    id: 'demo-credit-track-action',
+    componentType: CHAT_COMPONENT_TYPES.CREDIT,
+    timestamp: new Date().toISOString(),
+    isUndone: false,
+    actionType: CREDIT_ACTION_TYPES.TRACK,
+    cardId: 'demo',
+    creditId: 'demo',
+  };
+
+  const mockCreditUntrackAction: CreditAction = {
+    id: 'demo-credit-untrack-action',
+    componentType: CHAT_COMPONENT_TYPES.CREDIT,
+    timestamp: new Date().toISOString(),
+    isUndone: false,
+    actionType: CREDIT_ACTION_TYPES.UNTRACK,
+    cardId: 'demo',
+    creditId: 'demo',
+  };
+
   const mockUndoneAction: PerkAction = {
     id: 'demo-undone-action',
     componentType: CHAT_COMPONENT_TYPES.PERK,
@@ -338,9 +358,25 @@ const ChatComponentsSection: React.FC = () => {
             />
           </div>
           <div className="ds-showcase-item">
-            <span className="ds-showcase-label">Credit Action</span>
+            <span className="ds-showcase-label">Credit Usage</span>
             <ActionDisplay
               action={mockCreditAction}
+              onUndo={() => console.log('Undo clicked')}
+              canUndo={true}
+            />
+          </div>
+          <div className="ds-showcase-item">
+            <span className="ds-showcase-label">Credit Track</span>
+            <ActionDisplay
+              action={mockCreditTrackAction}
+              onUndo={() => console.log('Undo clicked')}
+              canUndo={true}
+            />
+          </div>
+          <div className="ds-showcase-item">
+            <span className="ds-showcase-label">Credit Untrack</span>
+            <ActionDisplay
+              action={mockCreditUntrackAction}
               onUndo={() => console.log('Undo clicked')}
               canUndo={true}
             />
@@ -420,7 +456,7 @@ const ChatComponentsSection: React.FC = () => {
       <div className="ds-subsection">
         <h3>ChatCreditComponent</h3>
         <p className="ds-description">
-          Credits with usage display and update actions
+          Credits with usage display, update actions, and track/untrack actions
         </p>
         <div className="ds-component-list">
           {mockCreditComponentItems.map((item) => (
