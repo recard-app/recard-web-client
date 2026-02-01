@@ -1,3 +1,14 @@
+/**
+ * CreditEntry Component
+ *
+ * Main component for displaying and interacting with credit usage entries.
+ *
+ * DOCUMENTATION: For comprehensive documentation of the credits system including
+ * data models, edge cases, sync mechanisms, and API reference, see:
+ * - Documents/credits-system-documentation.md
+ * - Documents/credits-system-audit-report.md
+ */
+
 import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
 import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, MOBILE_BREAKPOINT, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS } from '../../../../types';
