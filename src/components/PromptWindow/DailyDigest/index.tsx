@@ -22,6 +22,11 @@ export const DailyDigest: React.FC<DailyDigestProps> = ({ title, content }) => {
         });
     }, []);
 
+    // Hide component if content is empty
+    if (!content?.trim()) {
+        return null;
+    }
+
     return (
         <div className="daily-digest">
             <div className="daily-digest__header">

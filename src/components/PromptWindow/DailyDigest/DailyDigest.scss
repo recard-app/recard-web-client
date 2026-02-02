@@ -8,7 +8,7 @@
     text-align: left;
     max-width: 500px;
     width: 100%;
-    background-color: $neutral-lightest-gray;
+    //background-color: $neutral-lightest-gray;
     border: $border-half solid $primary-light;
 
     &__header {
@@ -35,6 +35,9 @@
         font-size: $font-sm;
         line-height: $leading-normal;
         color: $neutral-dark-gray;
+        max-height: 400px;
+        overflow-y: auto;
+        @include universal-scrollbar;
 
         // Ensure all child elements inherit the font size
         p, li, ul, ol, strong, em, span {
