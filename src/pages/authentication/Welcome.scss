@@ -1,4 +1,5 @@
 @use '../../styling/globals' as *;
+@use '../../styling/mixins' as *;
 
 .welcome-wrapper {
   display: grid;
@@ -53,31 +54,78 @@
   }
 
   .step-card {
-    display: grid;
-    gap: $space-2;
-    background: $neutral-white;
-    border: $border-half solid $neutral-gray;
-    border-radius: $radius-base;
-    padding: $space-3;
+    @include card-base;
+    overflow: hidden;
+    border-color: $primary-light;
 
-    h4 { @include heading-6; margin: 0; }
-    p { margin: 0; color: $neutral-dark-gray; }
-
-    &.active {
+    &__header {
+      display: flex;
+      align-items: center;
+      gap: $space-1;
+      padding: $space-2 $space-3;
       background: $primary-lightest;
-      border-color: $primary-light;
+      border-bottom: $border-half solid $primary-light;
+    }
+
+    &__title {
+      font-family: $font-inter;
+      font-size: $font-xs;
+      font-weight: $font-semibold;
+      color: $primary-medium;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0;
+    }
+
+    &__content {
+      display: grid;
+      gap: $space-2;
+      padding: $space-3;
+    }
+
+    &__description {
+      font-size: $font-sm;
+      color: $neutral-dark-gray;
+      margin: 0;
     }
 
     .card-actions {
       margin-top: $space-1;
     }
+
+    &.active {
+      background: $primary-lightest;
+      border-color: $primary-light;
+    }
   }
 
   .tips {
-    background: $neutral-lightest-gray;
-    border: $border-half solid $neutral-gray;
-    border-radius: $radius-base;
-    padding: $space-3;
+    @include card-base;
+    overflow: hidden;
+    border-color: $primary-light;
+
+    .tips__header {
+      display: flex;
+      align-items: center;
+      gap: $space-1;
+      padding: $space-2 $space-3;
+      background: $primary-lightest;
+      border-bottom: $border-half solid $primary-light;
+    }
+
+    .tips__title {
+      font-family: $font-inter;
+      font-size: $font-xs;
+      font-weight: $font-semibold;
+      color: $primary-medium;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0;
+    }
+
+    .tips__content {
+      padding: $space-3;
+    }
 
     .tips-list {
       display: grid;
@@ -86,6 +134,7 @@
       padding-left: $space-4;
       list-style: disc;
       color: $neutral-dark-gray;
+      font-size: $font-sm;
     }
 
     .tip-actions {
@@ -94,14 +143,37 @@
   }
 
   .help-section {
-    background: $neutral-lightest-gray;
-    border: $border-half solid $neutral-gray;
-    border-radius: $radius-base;
-    padding: $space-3;
+    @include card-base;
+    overflow: hidden;
+    border-color: $primary-light;
+
+    .help-section__header {
+      display: flex;
+      align-items: center;
+      gap: $space-1;
+      padding: $space-2 $space-3;
+      background: $primary-lightest;
+      border-bottom: $border-half solid $primary-light;
+    }
+
+    .help-section__title {
+      font-family: $font-inter;
+      font-size: $font-xs;
+      font-weight: $font-semibold;
+      color: $primary-medium;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0;
+    }
+
+    .help-section__content {
+      padding: $space-3;
+    }
 
     .help-description {
       margin: 0;
       color: $neutral-dark-gray;
+      font-size: $font-sm;
     }
 
     .help-actions {
@@ -111,7 +183,41 @@
 
   .subtle {
     color: $neutral-dark-gray;
+    font-size: $font-sm;
   }
 }
 
+// Mobile adjustments
+@media (max-width: $mobile-breakpoint) {
+  .welcome-wrapper {
+    .step-card {
+      &__header {
+        padding: $space-1-5 $space-2;
+      }
 
+      &__content {
+        padding: $space-2;
+      }
+    }
+
+    .tips {
+      .tips__header {
+        padding: $space-1-5 $space-2;
+      }
+
+      .tips__content {
+        padding: $space-2;
+      }
+    }
+
+    .help-section {
+      .help-section__header {
+        padding: $space-1-5 $space-2;
+      }
+
+      .help-section__content {
+        padding: $space-2;
+      }
+    }
+  }
+}
