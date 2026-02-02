@@ -46,6 +46,13 @@
       color: $neutral-dark-gray;
       margin-bottom: $space-2;
     }
+
+    .info-component {
+      width: 100%;
+      align-self: flex-start;
+      margin-top: $space-2;
+      padding: 0;
+    }
   }
 
   .entry {

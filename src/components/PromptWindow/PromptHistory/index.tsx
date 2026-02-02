@@ -16,6 +16,7 @@ import { PLACEHOLDER_ASSISTANT_IMAGE, TERMINOLOGY, CHAT_SOURCE } from '../../../
 interface DigestData {
   title: string;
   content: string;
+  generatedAt?: string;
 }
 
 /**
@@ -28,6 +29,8 @@ interface PromptHistoryProps {
   // Daily digest props
   digest?: DigestData | null;
   digestLoading?: boolean;
+  onRegenerateDigest?: () => void;
+  isRegeneratingDigest?: boolean;
   // Component click handlers
   onCardClick?: (cardId: string) => void;
   onCreditClick?: (cardId: string, creditId: string) => void;
@@ -41,6 +44,8 @@ function PromptHistory({
   isNewChat = false,
   digest,
   digestLoading = false,
+  onRegenerateDigest,
+  isRegeneratingDigest = false,
   onCardClick,
   onCreditClick,
   onPerkClick,
@@ -129,11 +134,17 @@ function PromptHistory({
                 message="Loading your daily snapshot..."
                 showTitle={false}
                 transparent={true}
-                centered={true}
+                centered={false}
               />
             )}
             {!digestLoading && digest && (
-              <DailyDigest title={digest.title} content={digest.content} />
+              <DailyDigest
+                title={digest.title}
+                content={digest.content}
+                generatedAt={digest.generatedAt}
+                onRegenerate={onRegenerateDigest}
+                isRegenerating={isRegeneratingDigest}
+              />
             )}
           </div>
         ) : (

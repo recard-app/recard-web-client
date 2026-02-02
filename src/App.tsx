@@ -215,8 +215,9 @@ function AppContent({}: AppContentProps) {
   // State for managing chat mode preference (unified/orchestrated) - stored server-side
   const [chatMode, setChatMode] = useState<ChatModePreference>(DEFAULT_CHAT_MODE);
   // State for daily digest (persists across chat sessions)
-  const [digest, setDigest] = useState<{ title: string; content: string } | null>(null);
+  const [digest, setDigest] = useState<{ title: string; content: string; generatedAt?: string } | null>(null);
   const [digestLoading, setDigestLoading] = useState<boolean>(false);
+  const [isRegeneratingDigest, setIsRegeneratingDigest] = useState<boolean>(false);
   const digestFetchedRef = useRef<boolean>(false);
   // State for tracking user's subscription plan
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
@@ -288,7 +289,8 @@ function AppContent({}: AppContentProps) {
         if (response) {
           setDigest({
             title: response.data.title,
-            content: response.data.content
+            content: response.data.content,
+            generatedAt: response.data.generatedAt
           });
         }
       })
@@ -299,6 +301,27 @@ function AppContent({}: AppContentProps) {
         setDigestLoading(false);
       });
   }, [user]);
+
+  // Handler to regenerate the daily digest
+  const handleRegenerateDigest = async () => {
+    if (isRegeneratingDigest) return;
+
+    setIsRegeneratingDigest(true);
+    try {
+      const response = await UserService.fetchDailyDigest(true); // force refresh
+      if (response) {
+        setDigest({
+          title: response.data.title,
+          content: response.data.content,
+          generatedAt: response.data.generatedAt
+        });
+      }
+    } catch {
+      // Silent failure - user can try again
+    } finally {
+      setIsRegeneratingDigest(false);
+    }
+  };
 
   // Effect to handle navigation when on root path with active chat
   useEffect(() => {
@@ -924,6 +947,8 @@ function AppContent({}: AppContentProps) {
               onRefreshCards={() => setCardsVersion(v => v + 1)}
               digest={digest}
               digestLoading={digestLoading}
+              onRegenerateDigest={handleRegenerateDigest}
+              isRegeneratingDigest={isRegeneratingDigest}
             />
           </div>
         </div>

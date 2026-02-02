@@ -62,13 +62,15 @@ export const UserService = {
     /**
      * Fetches the daily digest for the authenticated user.
      * Returns null on error (silent failure - digest is optional).
+     * @param forceRefresh - If true, forces regeneration instead of using cache
      */
-    async fetchDailyDigest(): Promise<DailyDigestResponse | null> {
+    async fetchDailyDigest(forceRefresh = false): Promise<DailyDigestResponse | null> {
         try {
             const headers = await getAuthHeaders();
+            const params = forceRefresh ? { forceRefresh: 'true' } : {};
             const response = await axios.get<DailyDigestResponse>(
                 `${apiurl}/api/v1/users/digest`,
-                { headers }
+                { headers, params }
             );
             return response.data;
         } catch (error) {

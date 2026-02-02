@@ -30,6 +30,7 @@ import { classifyError } from '../../types/AgentChatTypes';
 interface DigestData {
     title: string;
     content: string;
+    generatedAt?: string;
 }
 
 /**
@@ -56,6 +57,10 @@ interface PromptWindowProps {
     digest?: DigestData | null;
     /** Whether digest is currently loading */
     digestLoading?: boolean;
+    /** Callback to regenerate the daily digest */
+    onRegenerateDigest?: () => void;
+    /** Whether digest is currently being regenerated */
+    isRegeneratingDigest?: boolean;
 }
 
 /**
@@ -79,6 +84,8 @@ function PromptWindow({
     onRefreshCards,
     digest = null,
     digestLoading = false,
+    onRegenerateDigest,
+    isRegeneratingDigest = false,
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
@@ -553,6 +560,8 @@ function PromptWindow({
                         isNewChat={isNewChat}
                         digest={digest}
                         digestLoading={digestLoading}
+                        onRegenerateDigest={onRegenerateDigest}
+                        isRegeneratingDigest={isRegeneratingDigest}
                         onCardClick={handleCardClick}
                         onCreditClick={handleCreditClick}
                         onPerkClick={handlePerkClick}
