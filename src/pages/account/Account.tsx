@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '../../context/AuthContext';
-import { SubscriptionPlan, PAGE_NAMES, PAGE_ICONS, LOADING_ICON, LOADING_ICON_SIZE } from '../../types';
+import { SubscriptionPlan, PAGE_NAMES, PAGE_ICONS, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY } from '../../types';
+import Icon from '../../icons';
 import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
 import {
   handleVerificationEmail as handleVerificationEmailUtil,
@@ -255,6 +256,12 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                   label="Preferences"
                   to={PAGES.PREFERENCES.PATH}
                 />
+                <SettingsRow
+                  label={isSigningOut ? 'Signing out...' : 'Sign Out'}
+                  onClick={handleSignOut}
+                  disabled={isSigningOut}
+                  icon={<Icon name="sign-out" variant="mini" size={16} color={ICON_GRAY} />}
+                />
               </SettingsCard>
 
               {/* Help */}
@@ -282,15 +289,6 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                   variant="danger"
                 />
               </SettingsCard>
-
-              {/* Sign Out Button */}
-              <button
-                className="sign-out-button"
-                onClick={handleSignOut}
-                disabled={isSigningOut}
-              >
-                {isSigningOut ? 'Signing out...' : 'Sign Out'}
-              </button>
 
               {/* Change Name Modal */}
               <Dialog open={isNameModalOpen} onOpenChange={setIsNameModalOpen}>

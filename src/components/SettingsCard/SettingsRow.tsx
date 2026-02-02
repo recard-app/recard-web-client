@@ -11,6 +11,7 @@ interface SettingsRowProps {
   variant?: 'default' | 'danger';
   disabled?: boolean;
   loading?: boolean;
+  icon?: React.ReactNode;
 }
 
 const SettingsRow: React.FC<SettingsRowProps> = ({
@@ -20,12 +21,14 @@ const SettingsRow: React.FC<SettingsRowProps> = ({
   onClick,
   variant = 'default',
   disabled = false,
-  loading = false
+  loading = false,
+  icon
 }) => {
   const isDisabled = disabled || loading;
 
   const content = (
     <>
+      {icon && <span className="settings-row__icon">{icon}</span>}
       <div className="settings-row__content">
         <span className="settings-row__label">{label}</span>
         {(value || loading) && (

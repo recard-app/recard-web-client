@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Icon } from '../../icons';
-import { ICON_GRAY } from '../../types';
+import { ICON_GRAY, ICON_RED } from '../../types';
 import './SettingsCard.scss';
 
 interface SettingsCardProps {
@@ -42,7 +42,7 @@ const SettingsCard: React.FC<SettingsCardProps> = ({
             name="chevron-down"
             variant="mini"
             size={16}
-            color={ICON_GRAY}
+            color={variant === 'danger' ? ICON_RED : ICON_GRAY}
             className={`settings-card__chevron ${isCollapsed ? '' : 'settings-card__chevron--expanded'}`}
           />
         )}

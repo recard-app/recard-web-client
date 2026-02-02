@@ -7,27 +7,22 @@
   @include card-base;
   overflow: hidden;
   box-shadow: $shadow-sm;
-
-  &--danger {
-    .settings-card__title {
-      color: $error;
-    }
-  }
+  border-color: $primary-light;
 
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: $space-3 $space-4;
-    border-bottom: $border-full solid $neutral-light-gray;
-    background: $neutral-light-gray;
+    padding: $space-2 $space-3;
+    border-bottom: $border-half solid $primary-light;
+    background: $primary-lightest;
 
     &--clickable {
       cursor: pointer;
       user-select: none;
 
       &:hover {
-        background: color.adjust($neutral-light-gray, $lightness: -3%);
+        background: color.adjust($primary-lightest, $lightness: -3%);
       }
 
       &:focus-visible {
@@ -41,7 +36,7 @@
     font-family: $font-inter;
     font-size: $font-xs;
     font-weight: $font-semibold;
-    color: $neutral-black;
+    color: $primary-medium;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -69,6 +64,28 @@
   &__content-inner {
     min-height: 0;
     overflow: hidden;
+  }
+
+  // Danger variant - must come after base styles
+  &--danger {
+    border-color: color.adjust($error, $lightness: 25%);
+
+    .settings-card__header {
+      background: color.adjust($error, $lightness: 40%);
+      border-bottom-color: color.adjust($error, $lightness: 25%);
+
+      &--clickable:hover {
+        background: color.adjust($error, $lightness: 35%);
+      }
+
+      &--clickable:focus-visible {
+        outline-color: $error;
+      }
+    }
+
+    .settings-card__title {
+      color: $error;
+    }
   }
 }
 
@@ -114,6 +131,14 @@
     opacity: 0.5;
   }
 
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: $space-1-5;
+  }
+
   &__content {
     display: flex;
     flex-direction: column;
@@ -144,7 +169,7 @@
 @media (max-width: $mobile-breakpoint) {
   .settings-card {
     &__header {
-      padding: $space-2 $space-3;
+      padding: $space-1-5 $space-2;
     }
   }
 

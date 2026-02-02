@@ -1,4 +1,5 @@
 @use '../../styling/globals' as *;
+@use '../../styling/mixins' as *;
 
 // Account layout
 .account-wrapper {
@@ -12,18 +13,21 @@
   display: flex;
   align-items: center;
   gap: $space-4;
-  background: $neutral-white;
-  border: $border-full solid $neutral-gray;
+  background: linear-gradient(
+    to left,
+    $primary-lightest 0%,
+    $primary-light 20%,
+    transparent 70%
+  );
+  border: $border-full solid $primary-light;
   border-radius: $radius-lg;
-  padding: $space-4;
-  box-shadow: $shadow-sm;
+  padding: $space-4 $space-5;
 
   &__avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: $border-full solid $neutral-light-gray;
-    box-shadow: $shadow-sm;
+    width: $space-16;
+    height: $space-16;
+    border-radius: $radius-full;
+    border: $border-full solid $primary-light;
     object-fit: cover;
     flex-shrink: 0;
 
@@ -31,29 +35,32 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, $primary-light 0%, $primary-color 100%);
-      color: $neutral-white;
+      background: $primary-lightest;
+      color: $primary-medium;
       font-size: $font-h4;
       font-weight: $font-bold;
       text-transform: uppercase;
+      border-color: $primary-light;
     }
   }
 
   &__info {
     display: flex;
     flex-direction: column;
-    gap: $space-1;
+    gap: $space-half;
     min-width: 0;
   }
 
   &__name {
-    @include heading-5;
+    font-family: $font-inter;
+    font-size: $font-h6;
+    font-weight: $font-semibold;
     margin: 0;
     color: $neutral-black;
   }
 
   &__email {
-    @include body-regular;
+    @include label;
     color: $neutral-dark-gray;
     margin: 0;
     overflow: hidden;
@@ -63,7 +70,7 @@
 
   &__badges {
     display: flex;
-    gap: $space-2;
+    gap: $space-1-5;
     flex-wrap: wrap;
     margin-top: $space-1;
   }
@@ -170,57 +177,27 @@
   }
 }
 
-// Sign Out Button
-.sign-out-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: $space-3 $space-4;
-  border: $border-full solid $neutral-medium-gray;
-  border-radius: $radius-lg;
-  background: $neutral-white;
-  color: $neutral-dark-gray;
-  box-shadow: $shadow-sm;
-  font-size: $font-base;
-  font-weight: $font-medium;
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover:not(:disabled) {
-    background: $neutral-lightest-gray;
-    border-color: $neutral-dark-gray;
-  }
-
-  &:focus-visible {
-    outline: 2px solid $primary-color;
-    outline-offset: 2px;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-}
-
 // Mobile adjustments
 @media (max-width: $mobile-breakpoint) {
   .profile-card {
-    padding: $space-3;
+    padding: $space-3 $space-4;
     gap: $space-3;
 
     &__avatar {
-      width: 64px;
-      height: 64px;
-      font-size: $font-h5;
+      width: $space-12;
+      height: $space-12;
+
+      &--placeholder {
+        font-size: $font-base;
+      }
     }
 
     &__name {
-      font-size: $font-h5;
+      font-size: $font-base;
     }
-  }
 
-  .sign-out-button {
-    padding: $space-3;
+    &__email {
+      font-size: $font-xs;
+    }
   }
 }
