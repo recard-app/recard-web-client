@@ -80,17 +80,22 @@ const CardsSettings: React.FC = () => {
         <li>Click the hide/disable toggle</li>
       </ol>
 
-      <h3>Anniversary Dates</h3>
+      <h3>Open Dates (Anniversary Dates)</h3>
       <p>
-        Your card's anniversary date is when you opened the account. This is important for
-        credits that reset on your anniversary rather than the calendar year.
+        Your card's open date is when you opened the account. Setting this is important for
+        accurate credit tracking - many credits reset on your anniversary rather than January 1.
       </p>
+
+      <div className="callout callout--warning">
+        <strong>Don't skip this!</strong> Without the correct open date, anniversary-based credits
+        like the Chase Sapphire Reserve's $300 travel credit may show incorrect periods.
+      </div>
+
       <p><strong>Why it matters:</strong></p>
       <ul>
         <li>Some credits reset on your anniversary, not January 1</li>
         <li>Your annual fee typically posts on this date</li>
-        <li>Helps track how long you've had the card</li>
-        <li>Important for downgrade/upgrade timing</li>
+        <li>Helps track card age for upgrade/downgrade decisions</li>
       </ul>
       <p><strong>How to set:</strong></p>
       <ol>
@@ -101,8 +106,8 @@ const CardsSettings: React.FC = () => {
       </ol>
 
       <div className="callout callout--tip">
-        <strong>Don't know your anniversary date?</strong> Check your credit card statement
-        or log into your card issuer's website - it's usually shown in account details.
+        <strong>Don't know your open date?</strong> Check your card issuer's website/app under
+        account details, or search your email for the welcome message from when you were approved.
       </div>
 
       <h3>Removing Cards</h3>

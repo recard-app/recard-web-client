@@ -98,8 +98,8 @@ const Glossary: React.FC = () => {
           definition: 'Credits that reset on January 1 for all cardholders, regardless of when the account was opened.'
         },
         {
-          term: 'Anniversary Date',
-          definition: 'The date you opened your credit card account. Some credits reset on this date rather than the calendar year.'
+          term: 'Anniversary Date / Open Date',
+          definition: 'The date you opened your credit card account. Setting this is important because many credits reset on this date rather than January 1. Also determines when your annual fee posts.'
         },
         {
           term: 'Anniversary-Based',

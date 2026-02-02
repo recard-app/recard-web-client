@@ -87,10 +87,11 @@ const FAQ: React.FC = () => {
             </p>
           </HelpSection>
 
-          <HelpSection title="Why should I set an anniversary date?" defaultExpanded={false}>
+          <HelpSection title="Why should I set my card's open date?" defaultExpanded={false}>
             <p>
-              Some credits reset on your card's anniversary date instead of January 1. Setting the
-              anniversary date ensures accurate credit tracking for these benefits.
+              Many credits reset on your card's anniversary, not January 1. Without the correct
+              open date, these credits may show incorrect periods. Set it in your card settings
+              to ensure accurate tracking.
             </p>
           </HelpSection>
         </div>

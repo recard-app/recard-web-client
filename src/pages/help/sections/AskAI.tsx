@@ -59,7 +59,6 @@ const AskAI: React.FC = () => {
         <ul>
           <li>"Is the Amex Gold worth $250/year for me?"</li>
           <li>"What card am I missing in my wallet?"</li>
-          <li>"How should I split a $500 purchase for maximum points?"</li>
         </ul>
       </HelpSection>
 
@@ -73,8 +72,8 @@ const AskAI: React.FC = () => {
             </ul>
           </li>
           <li>
-            <strong>Mention the amount</strong> (for bonus thresholds)
-            <p>"Best way to spend $4,000 this quarter"</p>
+            <strong>Mention the amount</strong> (helps with recommendations)
+            <p>"Best card for a $1,500 laptop purchase"</p>
           </li>
           <li>
             <strong>Include constraints</strong>
