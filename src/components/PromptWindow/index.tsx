@@ -414,7 +414,15 @@ function PromptWindow({
             // Small delay to ensure content is rendered
             setTimeout(scrollToBottom, 100);
         }
-    }, [chatHistory, streamingState.streamedText, shouldAutoScroll]);
+    }, [
+        chatHistory,
+        streamingState.streamedText,
+        streamingState.isStreaming,      // Scroll when streaming starts
+        streamingState.timeline.nodes,   // Scroll when timeline nodes update
+        streamingState.activeNode,       // Scroll when active node changes
+        streamingState.activeTool,       // Scroll when active tool changes
+        shouldAutoScroll
+    ]);
 
     // Add scroll event listener to track when user is near bottom
     useEffect(() => {
