@@ -11,7 +11,7 @@
   width: 100%;
   max-width: 480px;
   background-color: $neutral-white;
-  border: $border-full solid $neutral-gray;
+  border: $border-full solid $primary-light;
   border-radius: $radius-2xl;
   box-shadow: $shadow-xl;
   padding: $space-8;
@@ -40,12 +40,13 @@
   margin-bottom: $space-6;
 
   h1 {
-    @include heading-3;
+    @include heading-4;
     margin-bottom: $space-2;
   }
 
   .subtitle {
-    @include body-regular;
+    font-family: $font-inter;
+    font-size: $font-sm;
     color: $neutral-dark-gray;
   }
 }
@@ -62,6 +63,8 @@
 
   // Enhanced input transitions
   input {
+    font-size: $font-sm;
+    color: $neutral-black;
     transition: border-color $transition-base, box-shadow $transition-base;
 
     &:hover:not(:focus) {
@@ -80,6 +83,10 @@
   align-items: center;
   justify-content: space-between;
   margin-top: $space-1;
+
+  .aux-link {
+    font-size: $font-sm;
+  }
 }
 
 // Submit button with enhanced states and loading support
@@ -89,6 +96,7 @@
   align-items: center;
   justify-content: center;
   gap: $space-2;
+  font-size: $font-sm;
   transition: background-color 150ms ease, transform 100ms ease, opacity 150ms ease;
 
   &:hover:not(:disabled) {
@@ -135,7 +143,7 @@
   gap: $space-3;
   margin: $space-6 0;
   color: $neutral-dark-gray;
-  @include label;
+  font-size: $font-sm;
 
   &::before,
   &::after {
@@ -146,13 +154,17 @@
   }
 }
 
-// Social button with Google icon support
+// Social button with Google icon support - white background
 .social-button {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: $space-2;
+  font-size: $font-sm;
+  background-color: $neutral-white;
+  color: $neutral-dark-gray;
+  border: $border-full solid $neutral-gray;
   transition: background-color 150ms ease, border-color 150ms ease;
 
   .google-icon {
@@ -162,7 +174,12 @@
   }
 
   &:hover:not(:disabled) {
+    background-color: $neutral-lightest-gray;
     border-color: $neutral-medium-gray;
+  }
+
+  &:active:not(:disabled) {
+    background-color: $neutral-light-gray;
   }
 
   &:disabled {
@@ -174,6 +191,7 @@
 .auth-redirect {
   text-align: center;
   margin-top: $space-6;
+  font-size: $font-sm;
 
   a {
     transition: color 150ms ease;
@@ -182,12 +200,14 @@
 
 .aux-link {
   @include link-subtle;
+  font-size: $font-sm;
   transition: color 150ms ease;
 }
 
 // Compact copy in forgot password
 .helper-text {
-  @include body-regular;
+  font-family: $font-inter;
+  font-size: $font-sm;
   color: $neutral-dark-gray;
   margin-bottom: $space-4;
 }
