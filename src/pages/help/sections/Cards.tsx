@@ -24,10 +24,12 @@ const Cards: React.FC = () => {
         <h4>Common Questions</h4>
         <ul>
           <li>
-            <strong>Card not found?</strong> Contact us to add it to our database.
+            <strong>Card not found?</strong> Contact us to add it to our database. We're building
+            a card request feature to make this easier in the future.
           </li>
           <li>
-            <strong>Wrong benefits showing?</strong> Report an issue so we can fix it.
+            <strong>Wrong benefits showing?</strong> Contact us so we can fix it. We're working
+            on an in-app feedback system.
           </li>
           <li>
             <strong>Have the same card twice?</strong> Only add it once - benefits are the same.

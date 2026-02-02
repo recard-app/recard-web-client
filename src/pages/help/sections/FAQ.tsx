@@ -41,6 +41,14 @@ const FAQ: React.FC = () => {
               see your transactions, balances, or account numbers.
             </p>
           </HelpSection>
+
+          <HelpSection title="How do I view my chat history?" defaultExpanded={false}>
+            <p>
+              Go to <Link to={PAGES.HISTORY.PATH} className="nav-path">Previous Chats</Link> to see
+              all your past conversations with the AI. Click any conversation to continue it or
+              review past recommendations.
+            </p>
+          </HelpSection>
         </div>
 
         <div className="faq__category">
@@ -56,7 +64,8 @@ const FAQ: React.FC = () => {
           <HelpSection title="What if my card isn't in the database?" defaultExpanded={false}>
             <p>
               Contact us and we'll add it. We're constantly expanding our card database to include
-              more issuers and cards.
+              more issuers and cards. We're also building a card request feature to make this easier
+              in the future.
             </p>
           </HelpSection>
 
@@ -167,6 +176,29 @@ const FAQ: React.FC = () => {
               to your transactions, balances, or any other account information.
             </p>
           </HelpSection>
+
+          <HelpSection title="Can the AI add cards or update credits for me?" defaultExpanded={false}>
+            <p>
+              Yes! The AI can take actions on your behalf during a conversation:
+            </p>
+            <ul>
+              <li>Add new cards to your wallet</li>
+              <li>Update credit status (mark as used, partial, etc.)</li>
+              <li>Set card preferences</li>
+              <li>Freeze or unfreeze cards</li>
+            </ul>
+            <p>
+              Just ask the AI to do it, and it will handle the action for you.
+            </p>
+          </HelpSection>
+
+          <HelpSection title="What is the Daily Digest?" defaultExpanded={false}>
+            <p>
+              The Daily Digest is an AI-generated summary that appears when you start a new chat.
+              It shows expiring credits, quick wins, and your monthly progress. Learn more in the{' '}
+              <Link to="/help/daily-digest" className="nav-path">Daily Digest</Link> help section.
+            </p>
+          </HelpSection>
         </div>
 
         <div className="faq__category">
@@ -179,12 +211,6 @@ const FAQ: React.FC = () => {
             </p>
           </HelpSection>
 
-          <HelpSection title="Can I export my data?" defaultExpanded={false}>
-            <p>
-              This feature is coming soon.
-            </p>
-          </HelpSection>
-
           <HelpSection title="How do I change my email?" defaultExpanded={false}>
             <p>
               Go to <Link to={PAGES.ACCOUNT.PATH} className="nav-path">Account</Link> to
@@ -192,10 +218,24 @@ const FAQ: React.FC = () => {
             </p>
           </HelpSection>
 
-          <HelpSection title="How do I cancel premium?" defaultExpanded={false}>
+          <HelpSection title="How do I change my display name?" defaultExpanded={false}>
             <p>
               Go to <Link to={PAGES.ACCOUNT.PATH} className="nav-path">Account</Link>, find the
-              Subscription section, and click Cancel.
+              Profile Information section, and click on your display name to edit it.
+            </p>
+          </HelpSection>
+
+          <HelpSection title="What happens when I delete my account?" defaultExpanded={false}>
+            <p>
+              Deleting your account permanently removes all your data including:
+            </p>
+            <ul>
+              <li>All cards and credit tracking history</li>
+              <li>All chat conversations</li>
+              <li>All preferences and settings</li>
+            </ul>
+            <p>
+              This action cannot be undone. You'll need to type "DELETE" to confirm.
             </p>
           </HelpSection>
         </div>

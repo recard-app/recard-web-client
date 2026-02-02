@@ -36,6 +36,18 @@ const Glossary: React.FC = () => {
         {
           term: 'Category',
           definition: 'A spending type that credits, perks, and multipliers apply to (e.g., dining, travel, groceries, gas, streaming).'
+        },
+        {
+          term: 'Chat History',
+          definition: 'Your past conversations with the AI assistant. Access them from the Previous Chats page to review recommendations or continue a conversation.'
+        },
+        {
+          term: 'Custom Instructions',
+          definition: 'Personalized guidelines you set in Preferences that the AI follows when making recommendations. Use these to tell the AI your priorities, like preferring cashback or targeting specific airlines.'
+        },
+        {
+          term: 'Daily Digest',
+          definition: 'An AI-generated daily summary that appears when you start a new chat. It shows expiring credits, quick wins, monthly progress, and total value realized.'
         }
       ]
     },
@@ -106,6 +118,10 @@ const Glossary: React.FC = () => {
         {
           term: 'Frozen',
           definition: 'A card state where the card is temporarily excluded from AI recommendations but remains in your portfolio.'
+        },
+        {
+          term: 'Account Deletion',
+          definition: 'Permanent removal of all your data including cards, credits, chat history, and preferences. Requires typing "DELETE" to confirm and cannot be undone.'
         }
       ]
     },
@@ -115,11 +131,11 @@ const Glossary: React.FC = () => {
       terms: [
         {
           term: 'Selectable Multiplier',
-          definition: 'A multiplier where you choose which category earns the bonus. Some cards let you pick one category, others let you select multiple. Your selection may be locked for a period or changeable anytime.'
+          definition: 'A multiplier where you choose which category earns the bonus. Some cards let you pick one category, others let you select multiple. Selection periods vary: some lock your choice for a month, quarter, or year, while others let you change anytime. Examples include U.S. Bank Cash+ (two 5% categories, quarterly selection) and Bank of America Customized Cash (one 3% category, changeable monthly).'
         },
         {
           term: 'Rotating Multiplier',
-          definition: 'Bonus categories that change every quarter on some cards. You may need to activate these categories to earn the bonus. Common on cashback cards like Chase Freedom and Discover it.'
+          definition: 'Bonus categories that change every quarter, typically offering 5% back. You usually need to activate/enroll in these categories each quarter to earn the bonus. Common examples include Chase Freedom Flex (5% on quarterly categories like groceries, gas, Amazon) and Discover it Cash Back (5% on rotating categories). Check your card issuer\'s website to see current categories and activate them.'
         }
       ]
     }

@@ -95,6 +95,14 @@ const GettingStarted: React.FC = () => {
             <td>Set my preferences</td>
             <td><Link to={PAGES.PREFERENCES.PATH} className="nav-path">Preferences</Link></td>
           </tr>
+          <tr>
+            <td>View chat history</td>
+            <td><Link to={PAGES.HISTORY.PATH} className="nav-path">Previous Chats</Link></td>
+          </tr>
+          <tr>
+            <td>Manage my account</td>
+            <td><Link to={PAGES.ACCOUNT.PATH} className="nav-path">Account</Link></td>
+          </tr>
         </tbody>
       </table>
     </div>

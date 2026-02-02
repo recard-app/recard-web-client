@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { HelpSection } from '../components';
 
 const AskAI: React.FC = () => {
@@ -106,6 +107,53 @@ const AskAI: React.FC = () => {
             <li>Rotating categories change quarterly</li>
           </ul>
         </div>
+      </HelpSection>
+
+      <HelpSection title="What the AI Can Do For You" defaultExpanded={true}>
+        <p>The AI isn't just for recommendations. It can take actions on your behalf:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>How to Ask</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Add cards to your wallet</strong></td>
+              <td>"Add the Chase Sapphire Preferred to my cards"</td>
+            </tr>
+            <tr>
+              <td><strong>Update credit status</strong></td>
+              <td>"Mark my Amex dining credit as used"</td>
+            </tr>
+            <tr>
+              <td><strong>Set card preferences</strong></td>
+              <td>"Set my Gold card as preferred for dining"</td>
+            </tr>
+            <tr>
+              <td><strong>Freeze/unfreeze cards</strong></td>
+              <td>"Freeze my Capital One card"</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Just ask naturally, and the AI will handle the action for you.</p>
+      </HelpSection>
+
+      <HelpSection title="Daily Digest" defaultExpanded={true}>
+        <p>
+          Each day when you start a new chat, you'll see a Daily Digest. This AI-generated
+          summary shows you:
+        </p>
+        <ul>
+          <li>Credits expiring soon</li>
+          <li>Quick wins you can act on today</li>
+          <li>Your monthly progress</li>
+        </ul>
+        <p>
+          Learn more about the Daily Digest in the{' '}
+          <Link to="/help/daily-digest" className="nav-path">Daily Digest</Link> help section.
+        </p>
       </HelpSection>
     </div>
   );

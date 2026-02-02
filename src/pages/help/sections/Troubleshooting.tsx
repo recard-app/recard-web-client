@@ -68,11 +68,19 @@ const Troubleshooting: React.FC = () => {
         </HelpSection>
 
         <HelpSection title="I'm not receiving email notifications" defaultExpanded={false}>
+          <p>
+            Email notifications are coming soon. We're working on features like credit expiration
+            reminders and monthly summaries. For now, check the app regularly or use the Daily
+            Digest to stay on top of your credits.
+          </p>
+          <p>
+            If you're having trouble receiving account-related emails (like password resets or
+            email verification):
+          </p>
           <ol>
             <li>Check your spam/junk folder</li>
             <li>Add our email to your contacts</li>
             <li>Verify your email address in Account settings</li>
-            <li>Check notification preferences</li>
           </ol>
         </HelpSection>
 

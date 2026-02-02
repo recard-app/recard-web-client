@@ -42,6 +42,8 @@ import {
   AskAI,
   AskAIPrompts,
   AskAITips,
+  ChatHistory,
+  DailyDigest,
   Cards,
   CardsSettings,
   CardsDetails,
@@ -49,6 +51,8 @@ import {
   CreditsDashboard,
   CreditsUpdating,
   CreditsHistory as CreditsHistoryHelp,
+  AccountSettings,
+  PreferencesHelp,
   ReferenceColors,
   ReferenceFrequencies,
   Glossary,
@@ -1383,6 +1387,8 @@ function AppContent({}: AppContentProps) {
                     <Route path="ask-ai" element={<AskAI />} />
                     <Route path="ask-ai/prompts" element={<AskAIPrompts />} />
                     <Route path="ask-ai/tips" element={<AskAITips />} />
+                    <Route path="chat-history" element={<ChatHistory />} />
+                    <Route path="daily-digest" element={<DailyDigest />} />
                     <Route path="cards" element={<Cards />} />
                     <Route path="cards/settings" element={<CardsSettings />} />
                     <Route path="cards/details" element={<CardsDetails />} />
@@ -1390,6 +1396,8 @@ function AppContent({}: AppContentProps) {
                     <Route path="credits/dashboard" element={<CreditsDashboard />} />
                     <Route path="credits/updating" element={<CreditsUpdating />} />
                     <Route path="credits/history" element={<CreditsHistoryHelp />} />
+                    <Route path="account" element={<AccountSettings />} />
+                    <Route path="preferences" element={<PreferencesHelp />} />
                     <Route path="reference/colors" element={<ReferenceColors />} />
                     <Route path="reference/frequencies" element={<ReferenceFrequencies />} />
                     <Route path="glossary" element={<Glossary />} />

@@ -108,6 +108,24 @@ const Credits: React.FC = () => {
         </table>
       </HelpSection>
 
+      <HelpSection title="Period Boundaries & Timing" defaultExpanded={true}>
+        <p>
+          Credits reset at midnight <strong>Eastern Time</strong>. This applies to all period types:
+        </p>
+        <ul>
+          <li><strong>Monthly:</strong> Resets at 12:00 AM ET on the 1st of each month</li>
+          <li><strong>Quarterly:</strong> Resets at 12:00 AM ET on Jan 1, Apr 1, Jul 1, Oct 1</li>
+          <li><strong>Semi-Annual:</strong> Resets at 12:00 AM ET on Jan 1, Jul 1</li>
+          <li><strong>Annual:</strong> Resets at 12:00 AM ET on Jan 1 (or your anniversary)</li>
+        </ul>
+
+        <div className="callout callout--info">
+          <strong>Timezone note:</strong> If you're not in Eastern Time, remember that period
+          boundaries are based on ET. A "monthly" credit ending on January 31st actually ends
+          at midnight ET, which may be late evening on the 30th in Pacific Time.
+        </div>
+      </HelpSection>
+
       <HelpSection title="Managing Credits" defaultExpanded={true}>
         <p>
           Track your credits in <Link to={PAGES.MY_CREDITS.PATH} className="nav-path">My Credits</Link>.

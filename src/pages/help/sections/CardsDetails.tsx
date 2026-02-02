@@ -102,7 +102,8 @@ const CardsDetails: React.FC = () => {
 
       <div className="callout callout--info">
         <strong>See something wrong?</strong> Card benefits change over time. If you notice
-        incorrect information, please report it so we can update our database.
+        incorrect information, please contact us so we can update our database. We're working
+        on an in-app feedback system to make this easier.
       </div>
     </div>
   );

@@ -92,6 +92,42 @@ const CreditsDashboard: React.FC = () => {
         <strong>Pro tip:</strong> Check your credits at the beginning of each month to see
         what's available, and again near the end to make sure you've used everything.
       </div>
+
+      <h3>Expiration Warnings</h3>
+      <p>
+        The dashboard highlights credits that are expiring soon. Warning thresholds vary by
+        frequency to give you appropriate time to act:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Credit Frequency</th>
+            <th>Warning Threshold</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Monthly</td>
+            <td>10 days before expiration</td>
+          </tr>
+          <tr>
+            <td>Quarterly</td>
+            <td>30 days before expiration</td>
+          </tr>
+          <tr>
+            <td>Semi-Annual</td>
+            <td>45 days before expiration</td>
+          </tr>
+          <tr>
+            <td>Annual</td>
+            <td>60 days before expiration</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The Daily Digest also surfaces expiring credits when you start a new chat, so you
+        never miss an opportunity.
+      </p>
     </div>
   );
 };

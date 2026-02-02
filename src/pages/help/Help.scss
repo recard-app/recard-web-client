@@ -17,7 +17,7 @@
   &__sidebar {
     grid-area: sidebar;
     position: sticky;
-    top: $space-4;
+    top: 0;
     align-self: start;
   }
 
@@ -122,6 +122,9 @@ button.help-layout__mobile-toggle {
   border: $border-full solid $neutral-gray;
   border-radius: $radius-lg;
   box-shadow: $shadow-sm;
+  // Constrain height to viewport minus header (~60px) and padding
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
 }
 
 // Help navigation section (collapsible)
@@ -223,6 +226,11 @@ button.help-nav-section__header {
   border-radius: $radius-base;
   transition: background-color $transition-fast, color $transition-fast;
   outline: none;
+
+  // Override global :visited styling to maintain consistent nav color
+  &:visited {
+    color: $neutral-dark-gray;
+  }
 
   &:hover {
     background: $neutral-lightest-gray;

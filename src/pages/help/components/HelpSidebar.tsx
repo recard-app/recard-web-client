@@ -15,6 +15,8 @@ const HelpSidebar: React.FC<HelpSidebarProps> = ({ onNavClick }) => {
         <HelpNavItem label="Overview" to="/help/ask-ai" indent onClick={onNavClick} />
         <HelpNavItem label="Example Prompts" to="/help/ask-ai/prompts" indent onClick={onNavClick} />
         <HelpNavItem label="Tips for Better Answers" to="/help/ask-ai/tips" indent onClick={onNavClick} />
+        <HelpNavItem label="Chat History" to="/help/chat-history" indent onClick={onNavClick} />
+        <HelpNavItem label="Daily Digest" to="/help/daily-digest" indent onClick={onNavClick} />
       </HelpNavSection>
 
       <HelpNavSection title="Your Cards" defaultExpanded={true}>
@@ -28,6 +30,11 @@ const HelpSidebar: React.FC<HelpSidebarProps> = ({ onNavClick }) => {
         <HelpNavItem label="Credits Dashboard" to="/help/credits/dashboard" indent onClick={onNavClick} />
         <HelpNavItem label="Updating Credits" to="/help/credits/updating" indent onClick={onNavClick} />
         <HelpNavItem label="Credit History" to="/help/credits/history" indent onClick={onNavClick} />
+      </HelpNavSection>
+
+      <HelpNavSection title="Account & Settings" defaultExpanded={true}>
+        <HelpNavItem label="Account Settings" to="/help/account" indent onClick={onNavClick} />
+        <HelpNavItem label="Preferences" to="/help/preferences" indent onClick={onNavClick} />
       </HelpNavSection>
 
       <HelpNavSection title="Quick Reference" defaultExpanded={true}>
