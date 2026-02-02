@@ -20,9 +20,17 @@ import { ChatMessage, Conversation } from '../../types';
 import { ChatHistoryPreference, ChatModePreference } from '../../types';
 import { MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE, CHAT_SOURCE } from '../../types';
-import { UserHistoryService } from '../../services';
+import { UserHistoryService, UserService } from '../../services';
 import { ErrorWithRetry } from '../../elements';
 import { classifyError } from '../../types/AgentChatTypes';
+
+/**
+ * Data structure for daily digest
+ */
+interface DigestData {
+    title: string;
+    content: string;
+}
 
 /**
  * Props for the PromptWindow component.
@@ -88,6 +96,11 @@ function PromptWindow({
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
     // Error state for when loading an existing chat fails
     const [chatLoadError, setChatLoadError] = useState<string | null>(null);
+
+    // Daily digest state
+    const [digest, setDigest] = useState<DigestData | null>(null);
+    const [digestLoading, setDigestLoading] = useState<boolean>(false);
+    const digestFetchedRef = useRef<boolean>(false);
 
     // Ref to track if we're currently saving to prevent duplicate saves
     const isSavingRef = useRef<boolean>(false);
@@ -523,6 +536,39 @@ function PromptWindow({
         }
     }, [urlChatId, chatHistory.length]);
 
+    // Reset digest state when user changes
+    useEffect(() => {
+        // Reset digest fetch flag and state when user changes
+        digestFetchedRef.current = false;
+        setDigest(null);
+        setDigestLoading(false);
+    }, [user?.uid]);
+
+    // Fetch daily digest for new chats
+    useEffect(() => {
+        // Only fetch for new chats, only once, and only if user is authenticated
+        if (!isNewChat || digestFetchedRef.current || !user) return;
+
+        digestFetchedRef.current = true;
+        setDigestLoading(true);
+
+        UserService.fetchDailyDigest()
+            .then(response => {
+                if (response) {
+                    setDigest({
+                        title: response.data.title,
+                        content: response.data.content
+                    });
+                }
+            })
+            .catch(() => {
+                // Silent failure - digest is optional
+            })
+            .finally(() => {
+                setDigestLoading(false);
+            });
+    }, [isNewChat, user]);
+
     return (
         <div className='prompt-window'>
             <div ref={promptHistoryRef} className="prompt-history-container">
@@ -537,6 +583,8 @@ function PromptWindow({
                         chatHistory={chatHistory}
                         streamingState={streamingState}
                         isNewChat={isNewChat}
+                        digest={digest}
+                        digestLoading={digestLoading}
                         onCardClick={handleCardClick}
                         onCreditClick={handleCreditClick}
                         onPerkClick={handlePerkClick}

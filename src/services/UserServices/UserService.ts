@@ -2,6 +2,23 @@ import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
 import { SUBSCRIPTION_PLAN, SubscriptionPlan, SubscriptionPlanResponse } from '../../types';
 
+/**
+ * Response structure for daily digest endpoint
+ */
+export interface DailyDigestResponse {
+    data: {
+        date: string;
+        title: string;
+        content: string;
+        generatedAt: string;
+        expiresAt: string;
+    };
+    meta: {
+        cached: boolean;
+        cacheAge?: number;
+    };
+}
+
 export const UserService = {
     /**
      * Fetches user's subscription plan
@@ -38,6 +55,24 @@ export const UserService = {
             }
             return null;
         } catch (error) {
+            return null;
+        }
+    },
+
+    /**
+     * Fetches the daily digest for the authenticated user.
+     * Returns null on error (silent failure - digest is optional).
+     */
+    async fetchDailyDigest(): Promise<DailyDigestResponse | null> {
+        try {
+            const headers = await getAuthHeaders();
+            const response = await axios.get<DailyDigestResponse>(
+                `${apiurl}/api/v1/users/digest`,
+                { headers }
+            );
+            return response.data;
+        } catch (error) {
+            // Silent failure - digest is optional enhancement
             return null;
         }
     }

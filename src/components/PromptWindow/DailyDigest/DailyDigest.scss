@@ -1,0 +1,84 @@
+@use '../../../styling/globals' as *;
+@use '../../../styling/mixins' as *;
+
+.daily-digest {
+    @include card-base;
+    margin-top: $space-4;
+    overflow: hidden;
+    text-align: left;
+    max-width: 500px;
+    width: 100%;
+    background-color: $neutral-lightest-gray;
+    border: $border-half solid $primary-light;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: $space-1;
+        padding: $space-2 $space-3;
+        background: $primary-lightest;
+        border-bottom: $border-half solid $primary-light;
+    }
+
+    &__title {
+        font-size: $font-xs;
+        font-weight: $font-semibold;
+        color: $primary-medium;
+        margin: 0;
+        font-family: $font-inter;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    &__content {
+        padding: $space-3;
+        font-size: $font-sm;
+        line-height: $leading-normal;
+        color: $neutral-dark-gray;
+
+        // Ensure all child elements inherit the font size
+        p, li, ul, ol, strong, em, span {
+            font-size: $font-sm;
+        }
+
+        strong {
+            font-weight: $font-semibold;
+            color: $neutral-black;
+        }
+
+        ul {
+            margin: $space-1 0;
+            padding-left: $space-4;
+            list-style-type: disc;
+        }
+
+        li {
+            margin-bottom: $space-half;
+        }
+
+        p {
+            margin: $space-1-5 0;
+            color: $neutral-dark-gray;
+            &:first-child {
+                margin-top: 0;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    // Mobile adjustments
+    @media (max-width: $mobile-breakpoint) {
+        margin-top: $space-3;
+
+        &__header {
+            padding: $space-1-5 $space-2;
+        }
+
+        &__content {
+            padding: $space-2;
+        }
+    }
+}

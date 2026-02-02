@@ -6,8 +6,17 @@ import { ChatComponentBlock } from '../../../elements/ChatComponents';
 import { StreamingState } from '../../../types/AgentChatTypes';
 import AgentTimeline from '../AgentTimeline';
 import { ChatErrorBoundary } from '../ErrorBoundary';
+import { DailyDigest } from '../DailyDigest';
 import './PromptHistory.scss';
 import { PLACEHOLDER_ASSISTANT_IMAGE, TERMINOLOGY, CHAT_SOURCE } from '../../../types';
+
+/**
+ * Data structure for daily digest
+ */
+interface DigestData {
+  title: string;
+  content: string;
+}
 
 /**
  * Props for the PromptHistory component.
@@ -16,6 +25,9 @@ interface PromptHistoryProps {
   chatHistory: ChatMessage[];
   streamingState?: StreamingState;
   isNewChat?: boolean;
+  // Daily digest props
+  digest?: DigestData | null;
+  digestLoading?: boolean;
   // Component click handlers
   onCardClick?: (cardId: string) => void;
   onCreditClick?: (cardId: string, creditId: string) => void;
@@ -27,6 +39,8 @@ function PromptHistory({
   chatHistory,
   streamingState,
   isNewChat = false,
+  digest,
+  digestLoading = false,
   onCardClick,
   onCreditClick,
   onPerkClick,
@@ -109,6 +123,18 @@ function PromptHistory({
           <div className="welcome-message">
             <p className="title">What are you looking to purchase today?</p>
             <p className="subtitle">I'll help you find the best credit card to maximize your rewards.</p>
+            {digestLoading && (
+              <InfoDisplay
+                type="loading"
+                message="Loading your daily snapshot..."
+                showTitle={false}
+                transparent={true}
+                centered={true}
+              />
+            )}
+            {!digestLoading && digest && (
+              <DailyDigest title={digest.title} content={digest.content} />
+            )}
           </div>
         ) : (
           <div className="loading-message">
