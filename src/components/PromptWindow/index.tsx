@@ -52,6 +52,10 @@ interface PromptWindowProps {
     onRefreshCredits?: () => void;
     /** Callback to refresh cards after AI updates */
     onRefreshCards?: () => void;
+    /** Daily digest data (fetched at App level to persist across chats) */
+    digest?: DigestData | null;
+    /** Whether digest is currently loading */
+    digestLoading?: boolean;
 }
 
 /**
@@ -73,6 +77,8 @@ function PromptWindow({
     onCreditClick,
     onRefreshCredits,
     onRefreshCards,
+    digest = null,
+    digestLoading = false,
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
@@ -96,11 +102,6 @@ function PromptWindow({
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
     // Error state for when loading an existing chat fails
     const [chatLoadError, setChatLoadError] = useState<string | null>(null);
-
-    // Daily digest state
-    const [digest, setDigest] = useState<DigestData | null>(null);
-    const [digestLoading, setDigestLoading] = useState<boolean>(false);
-    const digestFetchedRef = useRef<boolean>(false);
 
     // Ref to track if we're currently saving to prevent duplicate saves
     const isSavingRef = useRef<boolean>(false);
@@ -535,39 +536,6 @@ function PromptWindow({
             setIsNewChat(true);
         }
     }, [urlChatId, chatHistory.length]);
-
-    // Reset digest state when user changes
-    useEffect(() => {
-        // Reset digest fetch flag and state when user changes
-        digestFetchedRef.current = false;
-        setDigest(null);
-        setDigestLoading(false);
-    }, [user?.uid]);
-
-    // Fetch daily digest for new chats
-    useEffect(() => {
-        // Only fetch for new chats, only once, and only if user is authenticated
-        if (!isNewChat || digestFetchedRef.current || !user) return;
-
-        digestFetchedRef.current = true;
-        setDigestLoading(true);
-
-        UserService.fetchDailyDigest()
-            .then(response => {
-                if (response) {
-                    setDigest({
-                        title: response.data.title,
-                        content: response.data.content
-                    });
-                }
-            })
-            .catch(() => {
-                // Silent failure - digest is optional
-            })
-            .finally(() => {
-                setDigestLoading(false);
-            });
-    }, [isNewChat, user]);
 
     return (
         <div className='prompt-window'>

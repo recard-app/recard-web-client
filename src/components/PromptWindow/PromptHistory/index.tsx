@@ -121,7 +121,7 @@ function PromptHistory({
       {chatEntries.length === 0 && !streamingState?.isStreaming ? (
         isNewChat ? (
           <div className="welcome-message">
-            <p className="title">What are you looking to purchase today?</p>
+            <p className="title">What are you looking to purchase?</p>
             <p className="subtitle">I'll help you find the best credit card to maximize your rewards.</p>
             {digestLoading && (
               <InfoDisplay

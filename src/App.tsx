@@ -214,6 +214,10 @@ function AppContent({}: AppContentProps) {
   const [chatHistoryPreference, setChatHistoryPreference] = useState<ChatHistoryPreference>(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
   // State for managing chat mode preference (unified/orchestrated) - stored server-side
   const [chatMode, setChatMode] = useState<ChatModePreference>(DEFAULT_CHAT_MODE);
+  // State for daily digest (persists across chat sessions)
+  const [digest, setDigest] = useState<{ title: string; content: string } | null>(null);
+  const [digestLoading, setDigestLoading] = useState<boolean>(false);
+  const digestFetchedRef = useRef<boolean>(false);
   // State for tracking user's subscription plan
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
   // State for managing side panel visibility with localStorage persistence
@@ -262,6 +266,38 @@ function AppContent({}: AppContentProps) {
   // Effect to reset current chat ID when user changes
   useEffect(() => {
     setCurrentChatId(null);
+  }, [user]);
+
+  // Effect to fetch daily digest when user is authenticated
+  useEffect(() => {
+    if (!user) {
+      // Reset digest when user logs out
+      setDigest(null);
+      digestFetchedRef.current = false;
+      return;
+    }
+
+    // Only fetch once per session
+    if (digestFetchedRef.current) return;
+
+    digestFetchedRef.current = true;
+    setDigestLoading(true);
+
+    UserService.fetchDailyDigest()
+      .then(response => {
+        if (response) {
+          setDigest({
+            title: response.data.title,
+            content: response.data.content
+          });
+        }
+      })
+      .catch(() => {
+        // Silent failure - digest is optional
+      })
+      .finally(() => {
+        setDigestLoading(false);
+      });
   }, [user]);
 
   // Effect to handle navigation when on root path with active chat
@@ -886,6 +922,8 @@ function AppContent({}: AppContentProps) {
               onCreditClick={handleCreditSelect}
               onRefreshCredits={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
               onRefreshCards={() => setCardsVersion(v => v + 1)}
+              digest={digest}
+              digestLoading={digestLoading}
             />
           </div>
         </div>
