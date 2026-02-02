@@ -4,7 +4,6 @@
   // Card visuals now supplied by ContentContainer `framed` variant
   padding: $space-2 0;
 
-  h2 { margin-bottom: $space-4; }
 
   .preferences-content {
     position: relative;
@@ -27,10 +26,22 @@
       color: $neutral-medium-gray;
     }
 
-    .special-instructions-field {
+    .preference-field {
       display: flex;
       flex-direction: column;
+      gap: $space-1;
+      margin-bottom: $space-4;
 
+      .preference-description {
+        font-size: $font-xs;
+        color: $neutral-medium-gray;
+        margin: 0;
+        margin-top: $space-half;
+        font-style: italic;
+      }
+    }
+
+    .special-instructions-field {
       .character-counter {
         font-size: $font-xs;
         color: $neutral-medium-gray;
@@ -45,25 +56,6 @@
           color: $error;
           font-weight: $font-medium;
         }
-      }
-    }
-
-    .chat-history-preference,
-    .show-completed-preference,
-    .chat-mode-preference {
-      display: flex;
-      flex-direction: column;
-      gap: $space-1;
-      margin-bottom: $space-4;
-    }
-
-    .chat-mode-preference {
-      .chat-mode-description {
-        font-size: $font-xs;
-        color: $neutral-medium-gray;
-        margin: 0;
-        margin-top: $space-half;
-        font-style: italic;
       }
     }
 

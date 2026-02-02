@@ -124,7 +124,6 @@ function PreferencesModule({
 
     return (
         <div className="preferences-module">
-            <h2>Special Instructions</h2>
             {loadError ? (
                 <ErrorWithRetry
                     message={loadError}
@@ -140,8 +139,10 @@ function PreferencesModule({
                 />
             ) : null}
             <div className="preferences-content" style={{ display: loadError ? 'none' : 'block' }}>
-                <div className="special-instructions-field">
+                <div className="preference-field special-instructions-field">
+                    <label htmlFor="customInstructionsTextarea">Custom Instructions:</label>
                     <textarea
+                        id="customInstructionsTextarea"
                         value={instructions}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
                         placeholder={isLoading ? "Loading instructions..." : "Enter your special instructions for the ReCard AI assistant..."}
@@ -154,7 +155,7 @@ function PreferencesModule({
                     </div>
                 </div>
 
-                <div className="chat-history-preference">
+                <div className="preference-field chat-history-preference">
                     <label htmlFor="chatHistorySelect">Chat History Preference:</label>
                     <select
                         id="chatHistorySelect"
@@ -172,7 +173,7 @@ function PreferencesModule({
                     </select>
                 </div>
 
-                <div className="chat-mode-preference">
+                <div className="preference-field chat-mode-preference">
                     <label htmlFor="chatModeSelect">Agent Mode Preference:</label>
                     <select
                         id="chatModeSelect"
@@ -188,7 +189,7 @@ function PreferencesModule({
                             </option>
                         ))}
                     </select>
-                    <p className="chat-mode-description">
+                    <p className="preference-description">
                         {CHAT_MODE_OPTIONS.find(opt => opt.value === pendingChatMode)?.description || ''}
                     </p>
                 </div>
