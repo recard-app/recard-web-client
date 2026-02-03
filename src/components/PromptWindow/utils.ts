@@ -25,6 +25,7 @@ export const createUserMessage = (content: string): ChatMessage => ({
     id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     chatSource: CHAT_SOURCE.USER,
     chatMessage: content,
+    timestamp: new Date().toISOString(),
 });
 
 /**
