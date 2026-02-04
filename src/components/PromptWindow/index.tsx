@@ -23,6 +23,7 @@ import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTOR
 import { UserHistoryService, UserService } from '../../services';
 import { ErrorWithRetry } from '../../elements';
 import { classifyError } from '../../types/AgentChatTypes';
+import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 /**
  * Data structure for daily digest
@@ -217,6 +218,30 @@ function PromptWindow({
 
     // Handler for data changes (triggers UI refresh)
     const handleDataChanged = useCallback((dataChanged: { credits?: boolean; cards?: boolean; preferences?: boolean }) => {
+        // Invalidate caches BEFORE calling refresh callbacks
+
+        if (dataChanged.credits) {
+            // Credits changed: invalidate all component caches
+            apiCache.invalidatePattern('^components_');
+        }
+
+        if (dataChanged.cards) {
+            // Cards changed: invalidate card-related caches
+            apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS);
+            apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS_PREVIEWS);
+            apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS_DETAILS);
+            apiCache.invalidate(CACHE_KEYS.USER_CARDS);
+            apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS);
+            apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS_FULL);
+        }
+
+        if (dataChanged.preferences) {
+            // Preferences changed: invalidate tracking preferences AND component caches
+            apiCache.invalidate(CACHE_KEYS.COMPONENT_TRACKING_PREFERENCES);
+            apiCache.invalidatePattern('^components_');
+        }
+
+        // Call refresh callbacks to trigger re-fetch
         if (dataChanged.credits && onRefreshCredits) {
             onRefreshCredits();
         }
@@ -224,8 +249,6 @@ function PromptWindow({
         if (dataChanged.cards && onRefreshCards) {
             onRefreshCards();
         }
-
-        // Note: preferences refresh is handled by the preferences context if needed
     }, [onRefreshCredits, onRefreshCards]);
 
     // Use the agent chat hook for streaming
