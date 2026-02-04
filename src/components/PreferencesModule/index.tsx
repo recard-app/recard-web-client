@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { ChatHistoryPreference, InstructionsPreference, ChatModePreference } from '../../types/UserTypes';
+import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
-import { CHAT_HISTORY_OPTIONS, CHAT_MODE_OPTIONS } from './utils';
-import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH, DEFAULT_CHAT_MODE, CHAT_HISTORY_PREFERENCE } from '../../types/Constants';
+import { CHAT_HISTORY_OPTIONS } from './utils';
+import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH, CHAT_HISTORY_PREFERENCE } from '../../types/Constants';
 import './PreferencesModule.scss';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 
@@ -14,16 +14,12 @@ import { InfoDisplay, ErrorWithRetry } from '../../elements';
  * @param onInstructionsUpdate - Callback to update instructions.
  * @param chatHistoryPreference - Current chat history preference.
  * @param setChatHistoryPreference - Function to set chat history preference.
- * @param chatMode - Current chat mode preference.
- * @param setChatMode - Function to set chat mode preference.
  */
 interface PreferencesModuleProps {
     customInstructions: InstructionsPreference;
     onInstructionsUpdate: (instructions: InstructionsPreference) => void;
     chatHistoryPreference: ChatHistoryPreference;
     setChatHistoryPreference: (preference: ChatHistoryPreference) => void;
-    chatMode: ChatModePreference;
-    setChatMode: (mode: ChatModePreference) => void;
 }
 
 function PreferencesModule({
@@ -31,19 +27,11 @@ function PreferencesModule({
     onInstructionsUpdate,
     chatHistoryPreference,
     setChatHistoryPreference,
-    chatMode,
-    setChatMode
 }: PreferencesModuleProps) {
     const [instructions, setInstructions] = useState<string>(customInstructions || '');
-    const [pendingChatMode, setPendingChatMode] = useState<ChatModePreference>(chatMode);
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [loadError, setLoadError] = useState<string | null>(null);
-
-    // Sync pending chat mode when prop changes (e.g., on load)
-    useEffect(() => {
-        setPendingChatMode(chatMode);
-    }, [chatMode]);
 
     const isOverLimit = instructions.length > SPECIAL_INSTRUCTIONS_MAX_LENGTH;
 
@@ -70,12 +58,6 @@ function PreferencesModule({
             if (response.chatHistory) {
                 setChatHistoryPreference(response.chatHistory);
             }
-
-            // Update chat mode preference
-            if (response.chatMode) {
-                setChatMode(response.chatMode);
-                setPendingChatMode(response.chatMode);
-            }
         } catch (error) {
             console.error('Error loading preferences:', error);
             setLoadError('Failed to load preferences. Please try again.');
@@ -89,13 +71,6 @@ function PreferencesModule({
     }, []);
 
     /**
-     * Handles chat mode change - updates pending state only, saved on Save button click
-     */
-    const handleChatModeChange = (mode: ChatModePreference): void => {
-        setPendingChatMode(mode);
-    };
-
-    /**
      * Handles saving user preferences.
      */
     const handleSave = async (): Promise<void> => {
@@ -107,10 +82,9 @@ function PreferencesModule({
         setIsSaving(true);
 
         try {
-            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference, pendingChatMode);
+            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference);
 
             // Update app state with saved values
-            setChatMode(pendingChatMode);
             onInstructionsUpdate(instructions);
 
             toast.success('All preferences saved successfully!');
@@ -171,27 +145,6 @@ function PreferencesModule({
                             </option>
                         ))}
                     </select>
-                </div>
-
-                <div className="preference-field chat-mode-preference">
-                    <label htmlFor="chatModeSelect">Agent Mode Preference:</label>
-                    <select
-                        id="chatModeSelect"
-                        value={pendingChatMode || DEFAULT_CHAT_MODE}
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                            handleChatModeChange(e.target.value as ChatModePreference)}
-                        className={`chat-mode-select default-select ${isLoading ? 'loading' : ''}`}
-                        disabled={isLoading}
-                    >
-                        {CHAT_MODE_OPTIONS.map(option => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-                    <p className="preference-description">
-                        {CHAT_MODE_OPTIONS.find(opt => opt.value === pendingChatMode)?.description || ''}
-                    </p>
                 </div>
 
                 <button

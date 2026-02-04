@@ -100,14 +100,11 @@ import { useViewportHeight } from './hooks/useViewportHeight';
 import {
   GLOBAL_QUICK_HISTORY_SIZE,
   CHAT_HISTORY_PREFERENCE,
-  CHAT_MODE,
-  DEFAULT_CHAT_MODE,
   SUBSCRIPTION_PLAN,
   LOADING_ICON,
   LOADING_ICON_SIZE,
   Conversation,
   ChatHistoryPreference,
-  ChatModePreference,
   InstructionsPreference,
   SubscriptionPlan,
   MonthlyStatsResponse
@@ -216,8 +213,6 @@ function AppContent({}: AppContentProps) {
   const [preferencesInstructions, setPreferencesInstructions] = useState<InstructionsPreference>('');
   // State for managing chat history preference (keep/clear)
   const [chatHistoryPreference, setChatHistoryPreference] = useState<ChatHistoryPreference>(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
-  // State for managing chat mode preference (unified/orchestrated) - stored server-side
-  const [chatMode, setChatMode] = useState<ChatModePreference>(DEFAULT_CHAT_MODE);
   // State for daily digest (persists across chat sessions)
   const [digest, setDigest] = useState<{ title: string; content: string; generatedAt?: string } | null>(null);
   const [digestLoading, setDigestLoading] = useState<boolean>(false);
@@ -942,7 +937,6 @@ function AppContent({}: AppContentProps) {
               setClearChatCallback={setClearChatCallback}
               existingHistoryList={chatHistory}
               chatHistoryPreference={chatHistoryPreference}
-              chatMode={chatMode}
               isLoadingHistory={isLoadingHistory}
               onNewChat={handleClearChat}
               onCardSelect={handleCardSelectById}
@@ -1283,8 +1277,6 @@ function AppContent({}: AppContentProps) {
                         setPreferencesInstructions={setPreferencesInstructions}
                         chatHistoryPreference={chatHistoryPreference}
                         setChatHistoryPreference={(preference: ChatHistoryPreference) => setChatHistoryPreference(preference)}
-                        chatMode={chatMode}
-                        setChatMode={setChatMode}
                       />
                     </ProtectedRoute>
                   } />

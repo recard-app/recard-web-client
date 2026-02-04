@@ -1,6 +1,6 @@
 import { UserComponentTrackingPreferences } from "./CardCreditsTypes";
 import { Conversation } from "./ChatTypes";
-import { ChatHistoryPreferenceType, ChatModeType, RoleType, SubscriptionPlanType } from "./Constants";
+import { ChatHistoryPreferenceType, RoleType, SubscriptionPlanType } from "./Constants";
 
 /**
  * ------------------------------------------------------------------------------------------------
@@ -28,7 +28,6 @@ export interface UserPreferences {
 
 export type ChatHistoryPreference = ChatHistoryPreferenceType;
 export type InstructionsPreference = string;
-export type ChatModePreference = ChatModeType;
 
 export type SubscriptionPlan = SubscriptionPlanType;
 
@@ -94,13 +93,11 @@ export interface BatchedPreferencesResponse {
     error?: string;
     instructions: InstructionsPreference;
     chatHistory: ChatHistoryPreference;
-    chatMode: ChatModePreference;
 }
 
 export interface BatchedPreferencesRequest {
     instructions?: InstructionsPreference;
     chatHistory?: ChatHistoryPreference;
-    chatMode?: ChatModePreference;
 }
 
 export interface SubscriptionPlanResponse {
