@@ -231,6 +231,7 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
     return (
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DialogContent width="600px">
+          <DialogTitle className="sr-only">Loading</DialogTitle>
           {loadingContent}
         </DialogContent>
       </Dialog>
