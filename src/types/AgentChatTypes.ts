@@ -26,6 +26,7 @@ export interface AgentRequestData {
   prompt: string;
   chatHistory?: ChatMessage[];
   conversationId?: string;
+  agentMode?: string;
 }
 
 /**

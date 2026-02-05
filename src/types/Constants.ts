@@ -23,6 +23,12 @@ export const CHAT_HISTORY_PREFERENCE = {
 } as const;
 export type ChatHistoryPreferenceType = typeof CHAT_HISTORY_PREFERENCE[keyof typeof CHAT_HISTORY_PREFERENCE];
 
+export const AGENT_MODE_PREFERENCE = {
+    ORCHESTRATED: 'orchestrated',
+    SIMPLIFIED: 'simplified'
+} as const;
+export type AgentModePreferenceType = typeof AGENT_MODE_PREFERENCE[keyof typeof AGENT_MODE_PREFERENCE];
+
 export const SUBSCRIPTION_PLAN = {
     FREE: 'free',
     PREMIUM: 'premium'

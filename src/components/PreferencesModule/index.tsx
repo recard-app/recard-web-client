@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
+import { AgentModePreference, ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
-import { CHAT_HISTORY_OPTIONS } from './utils';
-import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH, CHAT_HISTORY_PREFERENCE } from '../../types/Constants';
+import { CHAT_HISTORY_OPTIONS, AGENT_MODE_OPTIONS } from './utils';
+import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH, CHAT_HISTORY_PREFERENCE, AGENT_MODE_PREFERENCE } from '../../types/Constants';
 import './PreferencesModule.scss';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 
@@ -20,6 +20,8 @@ interface PreferencesModuleProps {
     onInstructionsUpdate: (instructions: InstructionsPreference) => void;
     chatHistoryPreference: ChatHistoryPreference;
     setChatHistoryPreference: (preference: ChatHistoryPreference) => void;
+    agentModePreference: AgentModePreference;
+    setAgentModePreference: (mode: AgentModePreference) => void;
 }
 
 function PreferencesModule({
@@ -27,6 +29,8 @@ function PreferencesModule({
     onInstructionsUpdate,
     chatHistoryPreference,
     setChatHistoryPreference,
+    agentModePreference,
+    setAgentModePreference,
 }: PreferencesModuleProps) {
     const [instructions, setInstructions] = useState<string>(customInstructions || '');
     const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -58,6 +62,11 @@ function PreferencesModule({
             if (response.chatHistory) {
                 setChatHistoryPreference(response.chatHistory);
             }
+
+            // Update agent mode preference
+            if (response.agentMode) {
+                setAgentModePreference(response.agentMode);
+            }
         } catch (error) {
             console.error('Error loading preferences:', error);
             setLoadError('Failed to load preferences. Please try again.');
@@ -82,7 +91,7 @@ function PreferencesModule({
         setIsSaving(true);
 
         try {
-            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference);
+            await UserPreferencesService.savePreferences(instructions, chatHistoryPreference, agentModePreference);
 
             // Update app state with saved values
             onInstructionsUpdate(instructions);
@@ -145,6 +154,28 @@ function PreferencesModule({
                             </option>
                         ))}
                     </select>
+                </div>
+
+                <div className="preference-field agent-mode-preference">
+                    <label htmlFor="agentModeSelect">Chat Mode:</label>
+                    <select
+                        id="agentModeSelect"
+                        value={agentModePreference || AGENT_MODE_PREFERENCE.SIMPLIFIED}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                            setAgentModePreference(e.target.value as AgentModePreference)}
+                        className={`chat-mode-select default-select ${isLoading ? 'loading' : ''}`}
+                        disabled={isLoading}
+                    >
+                        {AGENT_MODE_OPTIONS.map(option => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                    <p className="preference-description">
+                        {AGENT_MODE_OPTIONS.find(o => o.value === agentModePreference)?.description
+                            || AGENT_MODE_OPTIONS[0].description}
+                    </p>
                 </div>
 
                 <button

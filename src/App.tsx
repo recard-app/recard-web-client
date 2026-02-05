@@ -100,11 +100,13 @@ import { useViewportHeight } from './hooks/useViewportHeight';
 import {
   GLOBAL_QUICK_HISTORY_SIZE,
   CHAT_HISTORY_PREFERENCE,
+  AGENT_MODE_PREFERENCE,
   SUBSCRIPTION_PLAN,
   LOADING_ICON,
   LOADING_ICON_SIZE,
   Conversation,
   ChatHistoryPreference,
+  AgentModePreference,
   InstructionsPreference,
   SubscriptionPlan,
   MonthlyStatsResponse
@@ -213,6 +215,8 @@ function AppContent({}: AppContentProps) {
   const [preferencesInstructions, setPreferencesInstructions] = useState<InstructionsPreference>('');
   // State for managing chat history preference (keep/clear)
   const [chatHistoryPreference, setChatHistoryPreference] = useState<ChatHistoryPreference>(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
+  // State for managing agent mode preference (simplified/orchestrated)
+  const [agentModePreference, setAgentModePreference] = useState<AgentModePreference>(AGENT_MODE_PREFERENCE.SIMPLIFIED);
   // State for daily digest (persists across chat sessions)
   const [digest, setDigest] = useState<{ title: string; content: string; generatedAt?: string } | null>(null);
   const [digestLoading, setDigestLoading] = useState<boolean>(false);
@@ -347,6 +351,7 @@ function AppContent({}: AppContentProps) {
         setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE);
         setPreferencesInstructions('');
         setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
+        setAgentModePreference(AGENT_MODE_PREFERENCE.SIMPLIFIED);
         setMonthlyStats(null);
         setPrioritizedCredits([]);
         setIsLoadingCreditCards(false);
@@ -390,7 +395,8 @@ function AppContent({}: AppContentProps) {
             return {
               success: false,
               instructions: '',
-              chatHistory: CHAT_HISTORY_PREFERENCE.KEEP_HISTORY
+              chatHistory: CHAT_HISTORY_PREFERENCE.KEEP_HISTORY,
+              agentMode: AGENT_MODE_PREFERENCE.SIMPLIFIED
             };
           })
         ]);
@@ -398,6 +404,7 @@ function AppContent({}: AppContentProps) {
         setComponentPreferences(componentPrefs);
         setPreferencesInstructions(allPreferences.instructions || '');
         setChatHistoryPreference(allPreferences.chatHistory);
+        setAgentModePreference(allPreferences.agentMode || AGENT_MODE_PREFERENCE.SIMPLIFIED);
 
         // Batch 3: Card details and chat history with priority loading
         const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
@@ -673,6 +680,7 @@ function AppContent({}: AppContentProps) {
     setClearChatCallback(0);
     setPreferencesInstructions('');
     setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
+    setAgentModePreference(AGENT_MODE_PREFERENCE.SIMPLIFIED);
 
     // Perform logout and navigation
     await logout();
@@ -937,6 +945,7 @@ function AppContent({}: AppContentProps) {
               setClearChatCallback={setClearChatCallback}
               existingHistoryList={chatHistory}
               chatHistoryPreference={chatHistoryPreference}
+              agentModePreference={agentModePreference}
               isLoadingHistory={isLoadingHistory}
               onNewChat={handleClearChat}
               onCardSelect={handleCardSelectById}
@@ -1277,6 +1286,8 @@ function AppContent({}: AppContentProps) {
                         setPreferencesInstructions={setPreferencesInstructions}
                         chatHistoryPreference={chatHistoryPreference}
                         setChatHistoryPreference={(preference: ChatHistoryPreference) => setChatHistoryPreference(preference)}
+                        agentModePreference={agentModePreference}
+                        setAgentModePreference={setAgentModePreference}
                       />
                     </ProtectedRoute>
                   } />

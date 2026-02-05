@@ -17,7 +17,7 @@ import {
 // Import types
 import { PAGES, TERMINOLOGY } from '../../types';
 import { ChatMessage, Conversation } from '../../types';
-import { ChatHistoryPreference } from '../../types';
+import { AgentModePreference, ChatHistoryPreference } from '../../types';
 import { MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE, CHAT_SOURCE } from '../../types';
 import { UserHistoryService, UserService } from '../../services';
@@ -45,6 +45,7 @@ interface PromptWindowProps {
     setClearChatCallback: (value: number) => void;
     existingHistoryList: Conversation[];
     chatHistoryPreference: ChatHistoryPreference;
+    agentModePreference?: AgentModePreference;
     isLoadingHistory?: boolean;
     onNewChat: () => void;
     onCardSelect?: (cardId: string) => void;
@@ -75,6 +76,7 @@ function PromptWindow({
     setClearChatCallback,
     existingHistoryList,
     chatHistoryPreference,
+    agentModePreference,
     isLoadingHistory = false,
     onNewChat,
     onCardSelect,
@@ -260,6 +262,7 @@ function PromptWindow({
     } = useAgentChat({
         userName: user?.displayName || NO_DISPLAY_NAME_PLACEHOLDER,
         conversationId: chatId || undefined,
+        agentMode: agentModePreference,
         onMessageComplete: handleMessageComplete,
         onError: handleStreamError,
         onDataChanged: handleDataChanged,

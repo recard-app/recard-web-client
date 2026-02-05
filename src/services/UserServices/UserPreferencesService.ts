@@ -5,6 +5,7 @@ import {
     BatchedPreferencesRequest,
     InstructionsPreference,
     ChatHistoryPreference,
+    AgentModePreference,
 } from '../../types';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
@@ -73,11 +74,13 @@ export const UserPreferencesService = {
      */
     async savePreferences(
         instructions: InstructionsPreference,
-        chatHistory: ChatHistoryPreference
+        chatHistory: ChatHistoryPreference,
+        agentMode: AgentModePreference
     ): Promise<BatchedPreferencesResponse> {
         return this.updatePreferences({
             instructions,
             chatHistory,
+            agentMode,
         });
     },
 

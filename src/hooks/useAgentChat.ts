@@ -104,6 +104,7 @@ function getToolResultMessage(tool: string): string {
 export interface UseAgentChatOptions {
   userName?: string;
   conversationId?: string;
+  agentMode?: string;
   onMessageComplete?: (message: ChatMessage, componentBlock?: ChatComponentBlock) => void;
   onError?: (error: string) => void;
   onDataChanged?: (dataChanged: DataChangedFlags) => void;
@@ -125,7 +126,7 @@ export type { StreamingState };
 // ============================================
 
 export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatReturn {
-  const { userName, conversationId, onMessageComplete, onError, onDataChanged } = options;
+  const { userName, conversationId, agentMode, onMessageComplete, onError, onDataChanged } = options;
 
   const [streamingState, setStreamingState] = useState<StreamingState>(initialStreamingState);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -168,6 +169,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       prompt,
       chatHistory: filterMessagesForApi(chatHistory),
       conversationId,
+      agentMode,
     };
 
     console.log('[useAgentChat] Filtered history length:', requestData.chatHistory?.length || 0);
@@ -362,7 +364,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       },
       abortControllerRef.current.signal
     );
-  }, [userName, conversationId, onMessageComplete, onError, onDataChanged]);
+  }, [userName, conversationId, agentMode, onMessageComplete, onError, onDataChanged]);
 
   const cancelStream = useCallback(() => {
     abortControllerRef.current?.abort();
