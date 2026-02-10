@@ -88,7 +88,7 @@ const ChatCardComponent: React.FC<ChatCardComponentProps> = ({
                   className="preferred-star-icon"
                 />
               )}
-              {card.CardName}
+              <span className="card-name-text">{card.CardName}</span>
             </div>
             <div className="card-network">{card.CardNetwork}</div>
           </div>

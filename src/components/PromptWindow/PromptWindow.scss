@@ -28,6 +28,7 @@
     display: flex;
     flex-direction: column;
     min-height: 0; // For nested flex scrolling
+    min-width: 0; // Allow shrinking below content's intrinsic width
     height: 100%;
     background-color: $neutral-white;
     padding-bottom: $space-4;
@@ -46,6 +47,7 @@
     .prompt-history-container {
         flex: 1;
         overflow-y: auto;
+        overflow-x: hidden;
         display: flex;
         flex-direction: column;
         min-height: 0;

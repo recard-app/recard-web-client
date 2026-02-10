@@ -29,10 +29,14 @@
       font-weight: $font-semibold;
       font-size: $font-sm;
       color: $neutral-black;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       min-width: 0;
+
+      .card-name-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+      }
 
       .frozen-icon,
       .preferred-star-icon {

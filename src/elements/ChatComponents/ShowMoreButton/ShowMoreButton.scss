@@ -4,12 +4,8 @@
   display: flex;
   justify-content: center;
   padding: $space-1 0;
-  width: 400px;
-
-  // Mobile: full width
-  @media (max-width: $mobile-breakpoint) {
-    width: 100%;
-  }
+  max-width: 400px;
+  width: 100%;
 
   .button {
     padding: $space-1 $space-2;

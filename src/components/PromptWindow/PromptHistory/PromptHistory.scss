@@ -60,6 +60,7 @@
     display: flex;
     width: 100%;
     max-width: 100%; // Ensure entries don't exceed container width
+    overflow: hidden;
     
     .entry-content {
       display: flex;
@@ -68,12 +69,13 @@
 
       .message-text {
         word-wrap: break-word;
-        word-break: normal;
+        word-break: break-word;
         overflow-wrap: break-word;
         hyphens: none;
         padding: $space-1 $space-3;
         margin: 0;
-        width: 100%;
+        flex: 1;
+        min-width: 0;
         font-size: $font-chat;
         line-height: 1.5;
 

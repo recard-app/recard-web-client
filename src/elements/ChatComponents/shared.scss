@@ -11,18 +11,14 @@
   border: $border-full solid $neutral-light-gray;
   border-radius: $radius-md;
   transition: background-color $transition-fast, border-color $transition-fast;
-  width: 400px;
+  max-width: 400px;
+  width: 100%;
   box-sizing: border-box;
 
   // Hover state (only for clickable items)
   &.clickable:hover {
     background-color: $neutral-lightest-gray;
     border-color: $neutral-gray;
-  }
-
-  // Mobile adjustments - full width, no max
-  @media (max-width: $mobile-breakpoint) {
-    width: 100%;
   }
 }
 

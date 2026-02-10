@@ -4,16 +4,13 @@
   display: flex;
   flex-direction: column;
   gap: $space-2;
-  width: 400px;
+  max-width: 400px;
+  width: 100%;
+  margin-top: $space-2;
 
   .component-list {
     display: flex;
     flex-direction: column;
     gap: $space-2;
-  }
-
-  // Mobile adjustments - full width, no max
-  @media (max-width: $mobile-breakpoint) {
-    width: 100%;
   }
 }
