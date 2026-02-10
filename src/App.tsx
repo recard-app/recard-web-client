@@ -1274,13 +1274,12 @@ function AppContent({}: AppContentProps) {
                 whiteBackground={isHelpPage}
               >
                 <Routes>
-                  <Route path={PAGES.HOME.PATH} element={
-                    user ? renderMainContent() : <LandingPage />
-                  } />
-                  <Route path={PAGES.HOME.DYNAMIC_PATH} element={
-                    <ProtectedRoute>
-                      {renderMainContent()}
-                    </ProtectedRoute>
+                  <Route path="/:chatId?" element={
+                    user ? renderMainContent() : (
+                      location.pathname === PAGES.HOME.PATH
+                        ? <LandingPage />
+                        : <ProtectedRoute>{renderMainContent()}</ProtectedRoute>
+                    )
                   } />
                   <Route path={PAGES.PREFERENCES.PATH} element={
                     <ProtectedRoute>
