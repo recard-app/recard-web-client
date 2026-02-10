@@ -59,6 +59,15 @@ export default function LandingPage() {
           .landing-features {
             grid-template-columns: 1fr;
           }
+          .landing-ctas {
+            flex-direction: column !important;
+            align-items: center !important;
+          }
+          .landing-ctas .landing-btn {
+            width: 100%;
+            max-width: 280px;
+            text-align: center;
+          }
         }
       `}</style>
 
@@ -106,21 +115,10 @@ export default function LandingPage() {
       </p>
 
       {/* CTAs */}
-      <div className="flex items-center gap-4" style={{ marginBottom: 48 }}>
-        <Link
-          to={PAGES.SIGN_IN.PATH}
-          style={{
-            ...btnBase,
-            color: '#0B0D0F',
-            backgroundColor: '#ffffff',
-            border: '1px solid rgba(0,0,0,0.12)',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-          }}
-        >
-          Sign In
-        </Link>
+      <div className="landing-ctas flex items-center gap-4" style={{ marginBottom: 48 }}>
         <Link
           to={PAGES.SIGN_UP.PATH}
+          className="landing-btn"
           style={{
             ...btnBase,
             color: '#ffffff',
@@ -130,6 +128,19 @@ export default function LandingPage() {
           }}
         >
           Get Started
+        </Link>
+        <Link
+          to={PAGES.SIGN_IN.PATH}
+          className="landing-btn"
+          style={{
+            ...btnBase,
+            color: '#0B0D0F',
+            backgroundColor: '#ffffff',
+            border: '1px solid rgba(0,0,0,0.12)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          }}
+        >
+          Sign In
         </Link>
         <span
           style={{ fontFamily: '"Inter", sans-serif', fontSize: '0.8125rem', color: '#8A8F96', marginLeft: 4 }}
