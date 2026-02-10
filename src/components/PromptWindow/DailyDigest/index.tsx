@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import showdown from 'showdown';
 import Icon from '@/icons';
 import { PRIMARY_MEDIUM, NEUTRAL_MEDIUM_GRAY } from '../../../types/Colors';
+import { sanitizeMarkdownHtml } from '../../../utils/sanitizeMarkdown';
 import './DailyDigest.scss';
 
 interface DailyDigestProps {
@@ -56,7 +57,7 @@ export const DailyDigest: React.FC<DailyDigestProps> = ({
             </div>
             <div
                 className="daily-digest__content"
-                dangerouslySetInnerHTML={{ __html: converter.makeHtml(content) }}
+                dangerouslySetInnerHTML={{ __html: sanitizeMarkdownHtml(converter, content) }}
             />
             {(generatedAt || onRegenerate) && (
                 <div className="daily-digest__footer">

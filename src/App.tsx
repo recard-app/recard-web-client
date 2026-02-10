@@ -36,6 +36,7 @@ import MyCredits from './pages/my-credits/MyCredits';
 import CreditsPortfolio from './pages/my-credits/history/CreditsPortfolio';
 import DesignSystem from './pages/design-system/DesignSystem';
 import FullComponents from './pages/design-system/components/FullComponents';
+import LandingPage from './pages/landing/LandingPage';
 import { Help } from './pages/help';
 import {
   GettingStarted,
@@ -1260,19 +1261,21 @@ function AppContent({}: AppContentProps) {
             const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH, PAGES.AUTH_ACTION.PATH]);
             const isAuthRoute = authPaths.has(location.pathname);
             const isHelpPage = location.pathname.startsWith(PAGES.HELP_CENTER.PATH);
+            const isLandingPage = !user && !isAuthRoute;
             return (
               <UniversalContentWrapper
                 isSidePanelOpen={user ? isSidePanelOpen : false}
                 fullHeight={isAuthRoute ? true : needsFullHeight}
-                className={isAuthRoute ? 'center-content auth-background' : ''}
-                disableSidebarMargin={isAuthRoute}
+                className={[
+                  isAuthRoute ? 'center-content auth-background' : '',
+                  isLandingPage ? 'auth-background' : '',
+                ].join(' ').trim()}
+                disableSidebarMargin={isAuthRoute || !user}
                 whiteBackground={isHelpPage}
               >
                 <Routes>
                   <Route path={PAGES.HOME.PATH} element={
-                    <ProtectedRoute>
-                      {renderMainContent()}
-                    </ProtectedRoute>
+                    user ? renderMainContent() : <LandingPage />
                   } />
                   <Route path={PAGES.HOME.DYNAMIC_PATH} element={
                     <ProtectedRoute>
