@@ -94,7 +94,7 @@ export const CREDIT_EXPIRATION_THRESHOLDS = {
  * ------------------------------------------------------------------------------------------------
  */
 
-export const APP_NAME = 'Outswipe';
+export const APP_NAME = 'ReCard';
 export const APP_LOGO = '/temp_logo.png';
 export const PLACEHOLDER_CARD_IMAGE = 'https://placehold.co/20x20';
 export const PLACEHOLDER_ASSISTANT_IMAGE = '/temp_avatar.png';
