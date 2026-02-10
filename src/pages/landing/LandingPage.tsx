@@ -195,7 +195,7 @@ export default function LandingPage() {
         }}
       >
         <span>
-          Questions? <a href="mailto:getrecarded@gmail.com" style={{ color: '#5A5F66', textDecoration: 'underline' }}>getrecarded@gmail.com</a>
+          Questions and feedback? <a href="mailto:getrecarded@gmail.com" style={{ color: '#5A5F66', textDecoration: 'underline' }}>getrecarded@gmail.com</a>
         </span>
         <span>&copy; {new Date().getFullYear()} {APP_NAME}</span>
       </footer>
