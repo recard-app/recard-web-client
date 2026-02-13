@@ -379,7 +379,7 @@ function PromptWindow({
                 if (urlChatId === chatId) return;
 
                 // Wait for initial history loading to complete before checking for existing chat
-                if (isLoadingHistory) {
+                if (isLoadingHistory && !existingHistoryList.find(chat => chat.chatId === urlChatId)) {
                     return;
                 }
 
@@ -408,7 +408,7 @@ function PromptWindow({
             };
             loadHistory();
         }
-    }, [urlChatId, user, isLoadingHistory]);
+    }, [urlChatId, user, isLoadingHistory, existingHistoryList]);
 
     // Separate effect to handle when chat becomes available in history
     useEffect(() => {
@@ -418,11 +418,11 @@ function PromptWindow({
         if (isClearingRef.current) return;
 
         const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
-        if (existingChat && !chatHistory.length) {
+        if (existingChat && chatId !== urlChatId) {
             // Chat just became available and we haven't loaded it yet
             setExistingChatStates(existingChat.conversation, urlChatId);
         }
-    }, [existingHistoryList, urlChatId, user, chatId, chatHistory.length]);
+    }, [existingHistoryList, urlChatId, user, chatId]);
 
     /**
      * Effect hook that handles clearing the chat when triggered externally.
