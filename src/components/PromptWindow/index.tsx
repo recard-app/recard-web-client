@@ -408,7 +408,7 @@ function PromptWindow({
             };
             loadHistory();
         }
-    }, [urlChatId, user, isLoadingHistory, existingHistoryList]);
+    }, [urlChatId, user, isLoadingHistory, existingHistoryList.length]);
 
     // Separate effect to handle when chat becomes available in history
     useEffect(() => {
