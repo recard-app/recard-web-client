@@ -1,0 +1,205 @@
+@use '../../../styling/variables' as *;
+
+// Buttons Showcase Page Styles
+.buttons-showcase {
+  min-height: 100vh;
+  background-color: $neutral-lightest-gray;
+  padding: $space-8;
+
+  @media (max-width: $mobile-breakpoint) {
+    padding: $space-4;
+  }
+}
+
+// Section wrapper
+.bs-section {
+  margin-bottom: $space-10;
+  scroll-margin-top: $space-8;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.bs-section-title {
+  font-family: $font-cal-sans;
+  font-size: $font-h4;
+  color: $neutral-black;
+  margin: 0 0 $space-1 0;
+  padding-bottom: $space-2;
+  border-bottom: 2px solid $primary-color;
+  display: inline-block;
+}
+
+.bs-section-source {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: $font-xs;
+  color: $neutral-dark-gray;
+  margin: 0 0 $space-4 0;
+  background: rgba($accent-color, 0.08);
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
+  display: inline-block;
+}
+
+// Button grid
+.bs-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-4;
+  align-items: flex-start;
+}
+
+// Individual button item
+.bs-item {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-3;
+  background: $neutral-white;
+  border-radius: $radius-lg;
+  border: 1px solid $neutral-light-gray;
+  min-width: 150px;
+}
+
+.bs-item-label {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: $font-xs;
+  color: $accent-color;
+  background: rgba($accent-color, 0.1);
+  padding: $space-1 $space-2;
+  border-radius: $radius-sm;
+  display: inline-block;
+  width: fit-content;
+}
+
+.bs-item-class {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 10px;
+  color: $neutral-dark-gray;
+  margin-top: -4px;
+}
+
+// Background variants for buttons designed against different backgrounds
+.bs-bg-white {
+  background: $neutral-white;
+  padding: $space-4;
+  border-radius: $radius-lg;
+  border: 1px solid $neutral-light-gray;
+}
+
+.bs-bg-dark {
+  background: $neutral-black;
+  padding: $space-4;
+  border-radius: $radius-lg;
+}
+
+.bs-bg-gray {
+  background: $neutral-lightest-gray;
+  padding: $space-4;
+  border-radius: $radius-lg;
+  border: 1px solid $neutral-light-gray;
+}
+
+// Inline row for showing buttons side-by-side
+.bs-inline-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+  align-items: center;
+}
+
+// Wider item for buttons that need more space
+.bs-item-wide {
+  min-width: 250px;
+}
+
+// Compact item for small icon buttons
+.bs-item-compact {
+  min-width: auto;
+}
+
+// Usage details expandable section
+.bs-usage {
+  margin-top: -$space-1;
+}
+
+.bs-usage-toggle {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 10px;
+  color: $neutral-dark-gray;
+  padding: $space-half $space-1-5;
+  border-radius: $radius-sm;
+  background: rgba($neutral-gray, 0.2);
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: rgba($neutral-gray, 0.35);
+    color: $neutral-black;
+  }
+}
+
+.bs-usage-toggle-text {
+  white-space: nowrap;
+}
+
+.bs-usage-chevron {
+  transition: transform $transition-base;
+  flex-shrink: 0;
+
+  &--expanded {
+    transform: rotate(180deg);
+  }
+}
+
+.bs-usage-content {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows $transition-base;
+
+  &--collapsed {
+    grid-template-rows: 0fr;
+  }
+}
+
+.bs-usage-content-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.bs-usage-list {
+  list-style: none;
+  margin: $space-1-5 0 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.bs-usage-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: $space-1 $space-2;
+  background: rgba($neutral-light-gray, 0.6);
+  border-radius: $radius-sm;
+}
+
+.bs-usage-component {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 10px;
+  color: $accent-color;
+  line-height: 1.3;
+}
+
+.bs-usage-page {
+  font-family: $font-inter;
+  font-size: $font-xxs;
+  color: $neutral-dark-gray;
+  line-height: 1.3;
+}

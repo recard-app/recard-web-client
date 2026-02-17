@@ -111,8 +111,8 @@ const DialogSection: React.FC = () => {
             </p>
           </DialogBody>
           <DialogFooter>
-            <button className="button outline" onClick={() => closeDialog('default')}>Cancel</button>
             <button className="button" onClick={() => closeDialog('default')}>Confirm</button>
+            <button className="button outline" onClick={() => closeDialog('default')}>Cancel</button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

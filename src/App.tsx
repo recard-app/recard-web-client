@@ -36,6 +36,7 @@ import MyCredits from './pages/my-credits/MyCredits';
 import CreditsPortfolio from './pages/my-credits/history/CreditsPortfolio';
 import DesignSystem from './pages/design-system/DesignSystem';
 import FullComponents from './pages/design-system/components/FullComponents';
+import ButtonsShowcase from './pages/design-system/buttons/ButtonsShowcase';
 import LandingPage from './pages/landing/LandingPage';
 import { Help } from './pages/help';
 import {
@@ -1255,6 +1256,7 @@ function AppContent({}: AppContentProps) {
             <Routes>
             <Route path="/design" element={<DesignSystem />} />
               <Route path="/design/components" element={<FullComponents />} />
+              <Route path="/design/buttons" element={<ButtonsShowcase />} />
             </Routes>
           ) : (
           (() => {

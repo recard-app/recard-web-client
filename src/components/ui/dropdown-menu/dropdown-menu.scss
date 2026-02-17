@@ -79,7 +79,7 @@
   
   // Sign out action styling
   &.signout-action {
-    color: $button-red !important;
+    color: $error !important;
     background-color: rgba(255, 0, 0, 0.05) !important;
     
     &:hover {

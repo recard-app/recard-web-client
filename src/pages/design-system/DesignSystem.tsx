@@ -55,7 +55,10 @@ const DesignSystem: React.FC = () => {
             </ToggleBarButton>
           </ToggleBar>
           </div>
-        <Link to="/design/components" className="ds-header-link">
+        <Link to="/design/buttons" className="ds-header-link">
+            All Buttons
+          </Link>
+          <Link to="/design/components" className="ds-header-link">
             Full Components
           </Link>
         </div>
