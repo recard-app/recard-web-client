@@ -48,10 +48,10 @@ const DeleteHistory: React.FC<DeleteHistoryProps> = ({ setChatHistory, setHistor
       </AlertDialogHeader>
       <AlertDialogFooter>
         <div className="button-group">
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction destructive onClick={handleDeleteAllChatsClick}>
             Delete All
           </AlertDialogAction>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
         </div>
       </AlertDialogFooter>
     </>

@@ -224,10 +224,10 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
           </AlertDialogHeader>
           <AlertDialogFooter>
             <div className="button-group">
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction destructive onClick={handleDeleteConfirm}>
                 Delete
               </AlertDialogAction>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
             </div>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -260,6 +260,14 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
           <DialogFooter>
             <div className="button-group">
               <button
+                type="button"
+                className={`button outline ${isRenaming ? 'disabled' : ''}`}
+                onClick={() => setIsRenameModalOpen(false)}
+                disabled={isRenaming}
+              >
+                Cancel
+              </button>
+              <button
                 type="submit"
                 className={`button ${isRenaming ? 'loading icon with-text' : ''}`}
                 disabled={isRenaming || !newChatDescription.trim()}
@@ -267,14 +275,6 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
               >
                 {isRenaming && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                 {isRenaming ? 'Saving...' : 'Save'}
-              </button>
-              <button
-                type="button"
-                className={`button outline ${isRenaming ? 'disabled' : ''}`}
-                onClick={() => setIsRenameModalOpen(false)}
-                disabled={isRenaming}
-              >
-                Cancel
               </button>
             </div>
           </DialogFooter>

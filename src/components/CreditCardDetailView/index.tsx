@@ -932,6 +932,14 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <DialogFooter>
                         <div className="button-group">
                             <button
+                                type="button"
+                                className={`button outline ${isSavingOpenDate ? 'disabled' : ''}`}
+                                onClick={() => setIsOpenDateModalOpen(false)}
+                                disabled={isSavingOpenDate}
+                            >
+                                Cancel
+                            </button>
+                            <button
                                 type="submit"
                                 className={`button ${isSavingOpenDate ? 'loading icon with-text' : ''}`}
                                 disabled={isSavingOpenDate}
@@ -939,14 +947,6 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             >
                                 {isSavingOpenDate && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                                 {isSavingOpenDate ? 'Saving...' : 'Save'}
-                            </button>
-                            <button
-                                type="button"
-                                className={`button outline ${isSavingOpenDate ? 'disabled' : ''}`}
-                                onClick={() => setIsOpenDateModalOpen(false)}
-                                disabled={isSavingOpenDate}
-                            >
-                                Cancel
                             </button>
                         </div>
                     </DialogFooter>

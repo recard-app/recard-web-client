@@ -816,10 +816,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <div className="button-group">
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction destructive onClick={handleDeleteConfirm}>
                                 Remove
                             </AlertDialogAction>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
                         </div>
                     </AlertDialogFooter>
                 </AlertDialogContent>

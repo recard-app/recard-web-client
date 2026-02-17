@@ -137,6 +137,7 @@ const DeleteAccount: React.FC = () => {
 
       <AlertDialogFooter>
         <div className="button-group">
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             destructive
             onClick={handleDeleteAccount}
@@ -144,7 +145,6 @@ const DeleteAccount: React.FC = () => {
           >
             {isDeleting ? 'Deleting...' : 'Delete Account'}
           </AlertDialogAction>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
         </div>
       </AlertDialogFooter>
     </>

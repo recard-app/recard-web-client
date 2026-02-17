@@ -1108,14 +1108,6 @@ function AppContent({}: AppContentProps) {
                     <div className="dialog-footer">
                       <div className="button-group">
                         <button
-                          className={`button ${isSavingCards ? 'loading icon with-text' : ''}`}
-                          onClick={handleSaveCardSelections}
-                          disabled={isSavingCards}
-                        >
-                          {isSavingCards && <LOADING_ICON size={LOADING_ICON_SIZE} />}
-                          {isSavingCards ? 'Saving...' : 'Save'}
-                        </button>
-                        <button
                           className={`button outline ${isSavingCards ? 'disabled' : ''}`}
                           onClick={() => {
                             resetCardSelectorUI();
@@ -1124,6 +1116,14 @@ function AppContent({}: AppContentProps) {
                           disabled={isSavingCards}
                         >
                           Cancel
+                        </button>
+                        <button
+                          className={`button ${isSavingCards ? 'loading icon with-text' : ''}`}
+                          onClick={handleSaveCardSelections}
+                          disabled={isSavingCards}
+                        >
+                          {isSavingCards && <LOADING_ICON size={LOADING_ICON_SIZE} />}
+                          {isSavingCards ? 'Saving...' : 'Save'}
                         </button>
                       </div>
                     </div>
@@ -1155,14 +1155,6 @@ function AppContent({}: AppContentProps) {
                   <DialogFooter>
                     <div className="button-group">
                       <button
-                        className={`button ${isSavingCards ? 'loading icon with-text' : ''}`}
-                        onClick={handleSaveCardSelections}
-                        disabled={isSavingCards}
-                      >
-                        {isSavingCards && <LOADING_ICON size={LOADING_ICON_SIZE} />}
-                        {isSavingCards ? 'Saving...' : 'Save'}
-                      </button>
-                      <button
                         className={`button outline ${isSavingCards ? 'disabled' : ''}`}
                         onClick={() => {
                           resetCardSelectorUI();
@@ -1171,6 +1163,14 @@ function AppContent({}: AppContentProps) {
                         disabled={isSavingCards}
                       >
                         Cancel
+                      </button>
+                      <button
+                        className={`button ${isSavingCards ? 'loading icon with-text' : ''}`}
+                        onClick={handleSaveCardSelections}
+                        disabled={isSavingCards}
+                      >
+                        {isSavingCards && <LOADING_ICON size={LOADING_ICON_SIZE} />}
+                        {isSavingCards ? 'Saving...' : 'Save'}
                       </button>
                     </div>
                   </DialogFooter>

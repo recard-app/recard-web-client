@@ -317,6 +317,14 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                   <DialogFooter>
                     <div className="button-group">
                       <button
+                        type="button"
+                        className="button outline"
+                        onClick={() => setIsNameModalOpen(false)}
+                        disabled={isUpdatingName}
+                      >
+                        Cancel
+                      </button>
+                      <button
                         type="submit"
                         className={`button ${isUpdatingName ? 'loading icon with-text' : ''}`}
                         onClick={handleNameSubmit}
@@ -324,14 +332,6 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                       >
                         {isUpdatingName && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                         {isUpdatingName ? 'Saving...' : 'Save'}
-                      </button>
-                      <button
-                        type="button"
-                        className="button outline"
-                        onClick={() => setIsNameModalOpen(false)}
-                        disabled={isUpdatingName}
-                      >
-                        Cancel
                       </button>
                     </div>
                   </DialogFooter>
@@ -386,6 +386,14 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                   <DialogFooter>
                     <div className="button-group">
                       <button
+                        type="button"
+                        className="button outline"
+                        onClick={() => setIsEmailModalOpen(false)}
+                        disabled={isUpdatingEmail}
+                      >
+                        Cancel
+                      </button>
+                      <button
                         type="submit"
                         className={`button ${isUpdatingEmail ? 'loading icon with-text' : ''}`}
                         onClick={handleEmailSubmit}
@@ -393,14 +401,6 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                       >
                         {isUpdatingEmail && <LOADING_ICON size={LOADING_ICON_SIZE} />}
                         {isUpdatingEmail ? 'Sending...' : 'Send Verification'}
-                      </button>
-                      <button
-                        type="button"
-                        className="button outline"
-                        onClick={() => setIsEmailModalOpen(false)}
-                        disabled={isUpdatingEmail}
-                      >
-                        Cancel
                       </button>
                     </div>
                   </DialogFooter>

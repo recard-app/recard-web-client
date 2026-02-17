@@ -670,8 +670,8 @@ const ButtonsShowcase: React.FC = () => {
             <span className="bs-item-label">Rename save/cancel</span>
             <UsageDetails usages={BUTTON_USAGE['rename-buttons-history']} />
             <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
-              <button className="button" type="button">Save</button>
               <button className="button outline" type="button">Cancel</button>
+              <button className="button" type="button">Save</button>
             </div>
           </div>
         </div>
@@ -786,8 +786,8 @@ const ButtonsShowcase: React.FC = () => {
 
         <div className="credit-card-manager">
           <div className="button-group" style={{ display: 'flex', gap: '8px' }}>
-            <button className="button destructive" type="button">Remove</button>
             <button className="button outline" type="button">Cancel</button>
+            <button className="button destructive" type="button">Remove</button>
           </div>
         </div>
       </section>
@@ -965,8 +965,8 @@ const ButtonsShowcase: React.FC = () => {
           <h3 className="ds-variant-label">Button Group in Footer</h3>
           <div className="dialog-footer" style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 24px' }}>
             <div className="button-group">
-              <button className="button" type="button">Confirm</button>
               <button className="button outline" type="button">Cancel</button>
+              <button className="button" type="button">Confirm</button>
             </div>
           </div>
         </div>
@@ -982,8 +982,8 @@ const ButtonsShowcase: React.FC = () => {
           <h3 className="ds-variant-label">Destructive Dialog (AlertDialogAction)</h3>
           <div className="dialog-footer" style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px 24px' }}>
             <div className="button-group">
-              <button className="button destructive" type="button">Delete</button>
               <button className="button outline" type="button">Cancel</button>
+              <button className="button destructive" type="button">Delete</button>
             </div>
           </div>
         </div>
