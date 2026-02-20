@@ -202,6 +202,13 @@ const SignUp: React.FC = () => {
                     </button>
                 </form>
 
+                <p className="auth-legal-text">
+                    By creating an account, you agree to our{' '}
+                    <Link to={PAGES.TERMS_OF_SERVICE.PATH} target="_blank" rel="noopener noreferrer">Terms of Service</Link>{' '}
+                    and{' '}
+                    <Link to={PAGES.PRIVACY_POLICY.PATH} target="_blank" rel="noopener noreferrer">Privacy Policy</Link>.
+                </p>
+
                 <div className="auth-divider">or continue with</div>
                 <button
                     onClick={handleGoogleSignIn}

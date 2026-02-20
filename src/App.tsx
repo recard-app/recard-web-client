@@ -39,6 +39,7 @@ import FullComponents from './pages/design-system/components/FullComponents';
 import ButtonsShowcase from './pages/design-system/buttons/ButtonsShowcase';
 import LandingPage from './pages/landing/LandingPage';
 import { Help } from './pages/help';
+import { TermsOfService, PrivacyPolicy } from './pages/legal';
 import {
   GettingStarted,
   AskAI,
@@ -1263,6 +1264,7 @@ function AppContent({}: AppContentProps) {
             const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH, PAGES.AUTH_ACTION.PATH]);
             const isAuthRoute = authPaths.has(location.pathname);
             const isHelpPage = location.pathname.startsWith(PAGES.HELP_CENTER.PATH);
+            const isLegalPage = location.pathname === PAGES.TERMS_OF_SERVICE.PATH || location.pathname === PAGES.PRIVACY_POLICY.PATH;
             const isLandingPage = !user && !isAuthRoute;
             return (
               <UniversalContentWrapper
@@ -1273,7 +1275,7 @@ function AppContent({}: AppContentProps) {
                   isLandingPage ? 'auth-background' : '',
                 ].join(' ').trim()}
                 disableSidebarMargin={isAuthRoute || !user}
-                whiteBackground={isHelpPage}
+                whiteBackground={isHelpPage || isLegalPage}
               >
                 <Routes>
                   <Route path="/:chatId?" element={
@@ -1411,6 +1413,8 @@ function AppContent({}: AppContentProps) {
                     <Route path="faq" element={<FAQ />} />
                     <Route path="troubleshooting" element={<Troubleshooting />} />
                   </Route>
+                  <Route path={PAGES.TERMS_OF_SERVICE.PATH} element={<TermsOfService />} />
+                  <Route path={PAGES.PRIVACY_POLICY.PATH} element={<PrivacyPolicy />} />
                 </Routes>
               </UniversalContentWrapper>
             );

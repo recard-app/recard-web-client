@@ -137,6 +137,24 @@
   }
 }
 
+.auth-legal-text {
+  font-family: $font-inter;
+  font-size: $font-xs;
+  color: $neutral-dark-gray;
+  text-align: center;
+  margin-top: $space-4;
+
+  a {
+    color: $neutral-dark-gray;
+    text-decoration: underline;
+    transition: color 150ms ease;
+
+    &:hover {
+      color: $neutral-black;
+    }
+  }
+}
+
 .auth-divider {
   display: flex;
   align-items: center;

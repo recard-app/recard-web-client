@@ -1,0 +1,54 @@
+@use '../../styling/variables' as *;
+
+.legal-page {
+  padding: $space-6 0 $space-8;
+
+  &__nav {
+    margin-bottom: $space-6;
+  }
+
+  button#{&}__back-link {
+    all: unset !important;
+    box-sizing: border-box !important;
+    font-family: $font-inter !important;
+    font-size: $font-sm !important;
+    color: $neutral-dark-gray !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    cursor: pointer !important;
+    transition: color $transition-fast !important;
+
+    &:hover,
+    &:hover:not(:disabled) {
+      color: $neutral-black !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      transform: none !important;
+    }
+
+    &:active,
+    &:active:not(:disabled) {
+      background: transparent !important;
+      background-color: transparent !important;
+      transform: none !important;
+    }
+  }
+
+  &__title {
+    font-family: $font-cal-sans;
+    font-size: $font-h3;
+    color: $neutral-black;
+    margin: 0 0 $space-2;
+
+    @media (max-width: $mobile-breakpoint) {
+      font-size: $font-h4;
+    }
+  }
+
+  &__updated {
+    font-family: $font-inter;
+    font-size: $font-xs;
+    color: $neutral-medium-gray;
+    margin: 0 0 $space-6;
+  }
+}

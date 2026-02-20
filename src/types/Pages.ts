@@ -67,6 +67,14 @@ export const PAGES = {
     PATH: '/help',
     TITLE: 'Help Center',
   },
+  TERMS_OF_SERVICE: {
+    PATH: '/terms',
+    TITLE: 'Terms of Service',
+  },
+  PRIVACY_POLICY: {
+    PATH: '/privacy',
+    TITLE: 'Privacy Policy',
+  },
 } as const;
 
 // Helper type for page keys
@@ -169,4 +177,6 @@ export const {
   DELETE_HISTORY,
   DELETE_ACCOUNT,
   HELP_CENTER,
+  TERMS_OF_SERVICE,
+  PRIVACY_POLICY,
 } = PAGES;

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { APP_NAME, PAGE_ICONS, PAGES } from '../../types';
+import { APP_NAME, CONTACT_EMAIL, PAGE_ICONS, PAGES, COLORS } from '../../types';
 import { Icon } from '../../icons';
 
 const features = [
@@ -206,7 +206,12 @@ export default function LandingPage() {
         }}
       >
         <span>
-          Questions or feedback? <a href="mailto:getrecarded@gmail.com" style={{ color: '#5A5F66', textDecoration: 'underline' }}>getrecarded@gmail.com</a>
+          Questions or feedback? <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: '#5A5F66', textDecoration: 'underline' }}>{CONTACT_EMAIL}</a>
+        </span>
+        <span>
+          <Link to={PAGES.TERMS_OF_SERVICE.PATH} style={{ color: COLORS.NEUTRAL_DARK_GRAY, textDecoration: 'underline' }}>Terms of Service</Link>
+          {' | '}
+          <Link to={PAGES.PRIVACY_POLICY.PATH} style={{ color: COLORS.NEUTRAL_DARK_GRAY, textDecoration: 'underline' }}>Privacy Policy</Link>
         </span>
         <span>&copy; {new Date().getFullYear()} {APP_NAME}</span>
       </footer>

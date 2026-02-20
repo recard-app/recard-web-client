@@ -276,6 +276,18 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                 />
               </SettingsCard>
 
+              {/* Legal */}
+              <SettingsCard title="Legal">
+                <SettingsRow
+                  label="Terms of Service"
+                  to={PAGES.TERMS_OF_SERVICE.PATH}
+                />
+                <SettingsRow
+                  label="Privacy Policy"
+                  to={PAGES.PRIVACY_POLICY.PATH}
+                />
+              </SettingsCard>
+
               {/* Danger Zone - Collapsible */}
               <SettingsCard title="Danger Zone" collapsible defaultCollapsed variant="danger">
                 <SettingsRow
