@@ -11,13 +11,13 @@ const PrivacyPolicy: React.FC = () => {
       </p>
       <ul>
         <li><strong>Account information:</strong> email address, display name (provided during registration or via Google sign-in)</li>
-        <li><strong>Account metadata:</strong> login timestamps, account creation date, and first/last chat dates</li>
+        <li><strong>Account metadata:</strong> account activity timestamps (such as account creation and login dates)</li>
         <li><strong>Chat history:</strong> your conversations with our AI assistant, including questions and recommendations</li>
         <li><strong>Card selections:</strong> the credit cards you add to your portfolio and your preferred card settings</li>
-        <li><strong>Card financial context sent to AI:</strong> card names, annual fees, earning rates, credit balances, and multiplier selections are sent to AI providers alongside your chat messages to generate personalized recommendations</li>
+        <li><strong>Card financial context:</strong> card names, annual fees, earning rates, credit balances, and category selections from your portfolio are shared with AI providers alongside your chat messages to generate personalized recommendations</li>
         <li><strong>Preferences:</strong> custom AI instructions, chat history settings, and display preferences</li>
         <li><strong>Credit tracking data:</strong> your credit usage records and benefit tracking information</li>
-        <li><strong>Server logs:</strong> API request logs containing user IDs, request metadata, and abbreviated chat content (first 100 characters). These logs are used for debugging and service monitoring.</li>
+        <li><strong>Server logs:</strong> server-side request logs containing user identifiers, request metadata, and abbreviated chat content for debugging and service monitoring</li>
         <li><strong>Rate limit violation data:</strong> IP address and user-agent string, collected only when rate limit violations occur, for security and abuse prevention purposes</li>
       </ul>
       <p>
@@ -31,7 +31,7 @@ const PrivacyPolicy: React.FC = () => {
       </p>
       <ul>
         <li>Provide personalized AI credit card recommendations based on your card portfolio</li>
-        <li>Send your chat messages, card portfolio data (card names, annual fees, earning rates, credit balances, multiplier selections), and display name to third-party AI providers for processing</li>
+        <li>Send your chat messages, card portfolio data, and display name to third-party AI providers for processing</li>
         <li>Track and manage your credit card benefits and statement credits</li>
         <li>Maintain your chat history and conversation context</li>
         <li>Improve the accuracy and relevance of our AI recommendations</li>
@@ -54,22 +54,22 @@ const PrivacyPolicy: React.FC = () => {
           </thead>
           <tbody>
             <tr>
-              <td>OpenAI</td>
+              <td><a href="https://privacy.openai.com/policies" target="_blank" rel="noopener noreferrer">OpenAI</a></td>
               <td>AI chat processing and recommendations</td>
               <td>Chat messages, card portfolio context, display name</td>
             </tr>
             <tr>
-              <td>Google Gemini</td>
+              <td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Gemini</a></td>
               <td>AI chat processing and recommendations</td>
               <td>Chat messages, card portfolio context, display name</td>
             </tr>
             <tr>
-              <td>Firebase (Google)</td>
+              <td><a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Firebase (Google)</a></td>
               <td>Authentication and data storage</td>
               <td>Account information, chat history, card selections, preferences, credit tracking data</td>
             </tr>
             <tr>
-              <td>LangSmith (LangChain)</td>
+              <td><a href="https://www.langchain.com/privacy-policy" target="_blank" rel="noopener noreferrer">LangSmith (LangChain)</a></td>
               <td>AI quality monitoring and tracing</td>
               <td>Chat interactions, AI responses</td>
             </tr>
@@ -79,6 +79,10 @@ const PrivacyPolicy: React.FC = () => {
       <p>
         Each third-party service is governed by its own privacy policy. We encourage you to review their policies
         to understand how your data is handled.
+      </p>
+      <p>
+        LangSmith tracing is used on all chat interactions for quality monitoring and cannot currently be disabled
+        on a per-user basis. If you do not want your chat interactions traced, do not use the chat feature.
       </p>
 
       <h3>4. Cookies and Local Storage</h3>
@@ -98,9 +102,8 @@ const PrivacyPolicy: React.FC = () => {
         <li><strong>Chat history:</strong> retained until you delete it through the app or delete your account</li>
         <li><strong>Account data:</strong> retained until you delete your account</li>
         <li><strong>Credit tracking data:</strong> retained until you delete your account</li>
-        <li><strong>Server logs (general):</strong> retained for 14 days, then automatically deleted</li>
-        <li><strong>Server logs (errors):</strong> retained for 30 days, then automatically deleted</li>
-        <li><strong>AI processing logs:</strong> retained by third-party AI providers according to their respective retention policies</li>
+        <li><strong>Server logs:</strong> retained for up to 30 days, then automatically deleted</li>
+        <li><strong>AI processing logs:</strong> retained by third-party AI providers according to their respective retention policies (see Section 3 for provider privacy policy links)</li>
       </ul>
 
       <h3>6. Your Rights</h3>
@@ -110,7 +113,7 @@ const PrivacyPolicy: React.FC = () => {
       <ul>
         <li><strong>Access:</strong> view your data at any time through the app (card selections, chat history, preferences, credits)</li>
         <li><strong>Deletion:</strong> delete your chat history, individual conversations, or your entire account and all associated data</li>
-        <li><strong>Export:</strong> request a copy of your data by contacting us at <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></li>
+        <li><strong>Export:</strong> request a copy of your data by contacting us at <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. We will respond to export requests within 30 days</li>
         <li><strong>Correction:</strong> update your account information and preferences at any time through the app</li>
       </ul>
 
@@ -146,7 +149,7 @@ const PrivacyPolicy: React.FC = () => {
       <h3>10. Data Breach Notification</h3>
       <p>
         In the event of a data breach that compromises your personal information, we will notify affected users via
-        email within a reasonable timeframe. The notification will describe the nature of the breach, the data
+        email within 30 days of confirming the breach. The notification will describe the nature of the breach, the data
         involved, and the steps we are taking in response.
       </p>
 

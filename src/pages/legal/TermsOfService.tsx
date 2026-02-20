@@ -105,7 +105,8 @@ const TermsOfService: React.FC = () => {
         You retain ownership of any data you provide to the Service, including your card selections, preferences,
         and chat inputs. By using the Service, you grant us a limited license to use this data to provide and improve
         the Service, including processing through third-party AI services as described in
-        our <Link to={PAGES.PRIVACY_POLICY.PATH}>Privacy Policy</Link>.
+        our <Link to={PAGES.PRIVACY_POLICY.PATH}>Privacy Policy</Link>. We will not sell your data or use it to train
+        machine learning models independent of providing the Service to you.
       </p>
 
       <h3>9. Limitation of Liability</h3>
@@ -121,14 +122,22 @@ const TermsOfService: React.FC = () => {
         or other intangible losses, arising from your use of or inability to use the Service.
       </p>
       <p>
-        These Terms are governed by the laws of the State of Delaware.
+        Our total aggregate liability to you for all claims arising from the Service shall not exceed the total fees
+        you paid us in the twelve (12) months preceding the claim, or ten dollars ($10), whichever is greater.
+      </p>
+      <p>
+        These Terms are governed by the laws of the State of Delaware. Any legal action arising from these Terms shall
+        be brought exclusively in the state or federal courts located in Delaware, and you consent to the personal
+        jurisdiction of such courts.
       </p>
 
       <h3>10. Account Termination</h3>
       <p>
-        We reserve the right to suspend or terminate your account at any time, with or without notice, for conduct
-        that we determine violates these Terms, is harmful to other users, or is otherwise inappropriate. If we
-        terminate your account, your data will be deleted in accordance with
+        We reserve the right to suspend or terminate your account at any time for conduct that we determine violates
+        these Terms, is harmful to other users, or is otherwise inappropriate. We will make reasonable efforts to
+        notify you via email before terminating your account. Where the violation is not severe (such as fraud or
+        abuse), we will provide a 14-day notice period to cure the issue before termination. If we terminate your
+        account, your data will be deleted in accordance with
         our <Link to={PAGES.PRIVACY_POLICY.PATH}>Privacy Policy</Link>.
       </p>
       <p>
@@ -140,12 +149,20 @@ const TermsOfService: React.FC = () => {
 
       <h3>11. Changes to Terms</h3>
       <p>
-        We may update these Terms from time to time. We will notify users of material changes by updating the
-        "Last updated" date at the top of this page. Your continued use of the Service after changes are posted
-        constitutes your acceptance of the revised Terms.
+        We may update these Terms from time to time. We will notify users of material changes by email and by
+        updating the "Last updated" date at the top of this page. Material changes will take effect 30 days after
+        notification. Your continued use of the Service after the 30-day notice period constitutes acceptance of the
+        revised Terms. If you do not agree to the changes, you may delete your account before they take effect.
       </p>
 
-      <h3>12. Contact Information</h3>
+      <h3>12. Indemnification</h3>
+      <p>
+        You agree to indemnify and hold harmless {APP_NAME} and its operators from any claims, damages, or expenses
+        (including reasonable attorney fees) arising from your use of the Service, your violation of these Terms, or
+        your violation of any third party's rights.
+      </p>
+
+      <h3>13. Contact Information</h3>
       <p>
         If you have questions about these Terms of Service, please contact us at{' '}
         <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
