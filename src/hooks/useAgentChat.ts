@@ -144,10 +144,6 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
   }, []);
 
   const sendMessage = useCallback(async (prompt: string, chatHistory: ChatMessage[]) => {
-    console.log('[useAgentChat] Sending message:', prompt.slice(0, 50) + '...');
-    console.log('[useAgentChat] Chat history length:', chatHistory.length);
-    const startTime = performance.now();
-
     // Cancel any existing request
     abortControllerRef.current?.abort();
     cleanupRef.current?.();
@@ -171,8 +167,6 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       conversationId,
       agentMode,
     };
-
-    console.log('[useAgentChat] Filtered history length:', requestData.chatHistory?.length || 0);
 
     // Track received data
     let receivedComponentBlock: ChatComponentBlock | null = null;
@@ -288,13 +282,6 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
         },
 
         onFinal: (textResponse, componentBlock, agentType, messageId, timestamp, dataChanged) => {
-          const totalTime = performance.now() - startTime;
-          console.log(`[useAgentChat] Done in ${(totalTime / 1000).toFixed(2)}s, messageId: ${messageId}`);
-          console.log(`[useAgentChat] Total text length: ${textResponse.length} chars`);
-          if (dataChanged) {
-            console.log(`[useAgentChat] Data changed:`, dataChanged);
-          }
-
           // Store received values
           receivedComponentBlock = componentBlock || null;
           receivedMessageId = messageId;
@@ -338,9 +325,6 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
         },
 
         onError: (message) => {
-          const totalTime = performance.now() - startTime;
-          console.error(`[useAgentChat] Error after ${(totalTime / 1000).toFixed(2)}s:`, message);
-
           setStreamingState(prev => ({
             ...prev,
             isStreaming: false,

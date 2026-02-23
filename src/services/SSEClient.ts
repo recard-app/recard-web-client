@@ -45,9 +45,6 @@ export class SSEClient {
   async connect(options: SSEClientOptions): Promise<void> {
     const { url, body, headers, onEvent, onOpen, onError, onClose, signal } = options;
 
-    console.log('[SSEClient] Connecting to:', url);
-    const startTime = performance.now();
-
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -71,14 +68,10 @@ export class SSEClient {
         throw new Error('Response body is null');
       }
 
-      const connectTime = performance.now() - startTime;
       const contentType = response.headers.get('content-type');
-      console.log(`[SSEClient] Connected in ${connectTime.toFixed(0)}ms, Content-Type: ${contentType}`);
 
       // Check if server returned JSON instead of SSE stream
       if (contentType?.includes('application/json')) {
-        console.log('[SSEClient] Server returned JSON instead of SSE, parsing as fallback...');
-
         const jsonData = await response.json();
         this.handleJsonFallback(jsonData, onEvent);
         onClose?.();
@@ -117,7 +110,6 @@ export class SSEClient {
         const { done, value } = await this.reader.read();
 
         if (done) {
-          console.log('[SSEClient] Stream done, remaining buffer:', this.buffer ? `"${this.buffer.slice(0, 200)}"` : '(empty)');
           // Process any remaining buffer
           if (this.buffer.trim()) {
             this.processLine(this.buffer, onEvent);
@@ -127,7 +119,6 @@ export class SSEClient {
 
         // Decode chunk and add to buffer
         const chunk = this.decoder.decode(value, { stream: true });
-        console.log('[SSEClient] Received chunk:', `"${chunk.slice(0, 200)}${chunk.length > 200 ? '...' : ''}"`);
         this.buffer += chunk;
 
         // Process complete lines
@@ -143,7 +134,6 @@ export class SSEClient {
         onError?.(error);
       }
     } finally {
-      console.log('[SSEClient] Stream closed');
       this.isConnected = false;
       onClose?.();
     }
@@ -164,31 +154,10 @@ export class SSEClient {
 
       try {
         const event = JSON.parse(jsonStr) as StreamEvent;
-        console.log(`[SSEClient] Event: ${event.type}`, this.getEventLogData(event));
         onEvent(event);
-      } catch (parseError) {
-        console.warn('[SSEClient] Failed to parse SSE event:', jsonStr, parseError);
+      } catch {
+        // Skip unparseable SSE events
       }
-    }
-  }
-
-  /**
-   * Get log-friendly data for an event
-   */
-  private getEventLogData(event: StreamEvent): string {
-    switch (event.type) {
-      case 'token':
-        return `"${event.data.content.slice(0, 30)}..."`;
-      case 'node_start':
-        return `node=${event.data.node}`;
-      case 'node_end':
-        return `node=${event.data.node}`;
-      case 'final':
-        return `textLen=${event.data.textResponse?.length || 0}`;
-      case 'error':
-        return `msg=${event.data.message}`;
-      default:
-        return '';
     }
   }
 

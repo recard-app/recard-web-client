@@ -149,7 +149,6 @@ function PromptWindow({
 
                 // Skip if no chatId (shouldn't happen, but safety check)
                 if (!currentChatId) {
-                    console.error('[handleMessageComplete] No chatId available');
                     setIsNewChatPending(false);
                     return;
                 }
@@ -161,16 +160,12 @@ function PromptWindow({
 
                 const componentBlocks = extractComponentBlocks(historyForStorage);
 
-                console.log('[handleMessageComplete] Saving', historyToSave.length, 'messages to chat:', currentChatId);
-
                 // Update the existing chat
                 await UserHistoryService.updateChatHistory(
                     currentChatId,
                     historyToSave,
                     componentBlocks
                 );
-
-                console.log('[handleMessageComplete] Chat updated successfully');
 
                 // Update sidebar with the new conversation
                 const existingChat = existingHistoryList.find(chat => chat.chatId === currentChatId);
@@ -187,7 +182,6 @@ function PromptWindow({
                 if (!existingChat?.chatDescription || existingChat.chatDescription === DEFAULT_CHAT_NAME_PLACEHOLDER) {
                     try {
                         const newTitle = await UserHistoryService.generateChatTitle(currentChatId);
-                        console.log('[handleMessageComplete] Generated title:', newTitle);
 
                         // Update sidebar with the new title
                         onHistoryUpdate({
