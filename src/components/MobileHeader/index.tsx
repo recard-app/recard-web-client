@@ -459,7 +459,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                               <div className="profile-info">
                                 <span className="profile-name">{user.displayName || user.email}</span>
                                 <span className="profile-plan">
-                                  {subscriptionPlan === SUBSCRIPTION_PLAN.FREE ? PLAN_DISPLAY_TEXT.FREE : PLAN_DISPLAY_TEXT.PREMIUM}
+                                  {PLAN_DISPLAY_TEXT[subscriptionPlan === SUBSCRIPTION_PLAN.PLUS ? 'PLUS' : subscriptionPlan === SUBSCRIPTION_PLAN.PRO ? 'PRO' : 'FREE']}
                                 </span>
                               </div>
                               <Icon 

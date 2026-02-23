@@ -31,7 +31,8 @@ export type AgentModePreferenceType = typeof AGENT_MODE_PREFERENCE[keyof typeof 
 
 export const SUBSCRIPTION_PLAN = {
     FREE: 'free',
-    PREMIUM: 'premium'
+    PLUS: 'plus',
+    PRO: 'pro'
 } as const;
 export type SubscriptionPlanType = typeof SUBSCRIPTION_PLAN[keyof typeof SUBSCRIPTION_PLAN];
 
@@ -41,6 +42,12 @@ export const ROLE_TYPE = {
     USER: 'user'
 } as const;
 export type RoleType = typeof ROLE_TYPE[keyof typeof ROLE_TYPE];
+
+export const ROLE_DISPLAY_TEXT = {
+    ADMIN: 'Admin',
+    WORKER: 'Worker',
+    USER: 'User'
+} as const;
 
 export interface MonthOption {
     value: number;
@@ -323,5 +330,6 @@ export const INFO_TITLES = {
 
 export const PLAN_DISPLAY_TEXT = {
     FREE: 'Free Plan',
-    PREMIUM: 'Premium Plan'
+    PLUS: 'Plus Plan',
+    PRO: 'Pro Plan'
 } as const;
