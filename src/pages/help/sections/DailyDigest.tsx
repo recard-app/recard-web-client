@@ -24,6 +24,7 @@ const DailyDigest: React.FC = () => {
           <li>Shows once per day when you open a new chat</li>
           <li>Appears below the welcome message</li>
           <li>Refreshes at midnight Eastern Time</li>
+          <li>You can also regenerate the digest manually using the refresh button</li>
         </ul>
 
         <div className="callout callout--info">

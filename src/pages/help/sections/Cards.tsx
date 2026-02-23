@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../../types/Pages';
+import { CONTACT_EMAIL } from '../../../types';
 import { HelpSection } from '../components';
 
 const Cards: React.FC = () => {
@@ -8,13 +9,13 @@ const Cards: React.FC = () => {
     <div className="help-content">
       <h2>Your Cards</h2>
       <p>
-        Manage your credit card portfolio in <Link to={PAGES.MY_CARDS.PATH} className="nav-path">My Cards</Link>.
+        Manage your credit card portfolio in <Link to={PAGES.MY_CARDS.PATH} className="nav-path">Manage Cards</Link> (accessible from the account menu).
         Add cards, customize settings, and view card details.
       </p>
 
       <HelpSection title="Adding Cards" defaultExpanded={true}>
         <ol>
-          <li>Go to <Link to={PAGES.MY_CARDS.PATH} className="nav-path">My Cards</Link></li>
+          <li>Open <Link to={PAGES.MY_CARDS.PATH} className="nav-path">Manage Cards</Link> from the account menu</li>
           <li>Click <strong>Add Card</strong></li>
           <li>Search by card name or bank</li>
           <li>Select the correct card from results</li>
@@ -24,11 +25,11 @@ const Cards: React.FC = () => {
         <h4>Common Questions</h4>
         <ul>
           <li>
-            <strong>Card not found?</strong> Contact us to add it to our database. We're building
+            <strong>Card not found?</strong> Email us at {CONTACT_EMAIL} to add it to our database. We're building
             a card request feature to make this easier in the future.
           </li>
           <li>
-            <strong>Wrong benefits showing?</strong> Contact us so we can fix it. We're working
+            <strong>Wrong benefits showing?</strong> Email us at {CONTACT_EMAIL} so we can fix it. We're working
             on an in-app feedback system.
           </li>
           <li>

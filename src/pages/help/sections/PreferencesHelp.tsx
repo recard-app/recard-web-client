@@ -96,6 +96,43 @@ const PreferencesHelp: React.FC = () => {
         </div>
       </HelpSection>
 
+      <HelpSection title="Chat Mode" defaultExpanded={true}>
+        <p>
+          Choose how the AI processes your questions. This setting affects all new conversations.
+        </p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Mode</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Quick Mode</strong></td>
+              <td>Quick, direct answers with streamlined processing. Best for everyday questions about your cards.</td>
+            </tr>
+            <tr>
+              <td><strong>Precision Mode</strong></td>
+              <td>Analyzes your question in depth using specialized agents for maximum accuracy. Best for complex queries.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>How to Change Chat Mode</h4>
+        <ol>
+          <li>Go to <Link to={PAGES.PREFERENCES.PATH} className="nav-path">Preferences</Link></li>
+          <li>Find the <strong>Chat Mode</strong> section</li>
+          <li>Select your preferred mode</li>
+        </ol>
+
+        <div className="callout callout--tip">
+          <strong>Tip:</strong> Start with Quick Mode for everyday use. Switch to Precision Mode
+          when you need detailed analysis, like comparing multiple cards or planning a rewards strategy.
+        </div>
+      </HelpSection>
+
       <HelpSection title="How Preferences Affect Recommendations" defaultExpanded={true}>
         <p>Your preferences directly influence how the AI responds:</p>
 

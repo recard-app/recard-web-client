@@ -151,6 +151,8 @@ export const PAGE_NAMES = {
     PREFERENCES: 'Preferences',
     MY_ACCOUNT: 'Account & Settings',
     HELP_CENTER: 'Help Center',
+    TERMS_OF_SERVICE: 'Terms of Service',
+    PRIVACY_POLICY: 'Privacy Policy',
     SIGN_OUT: 'Sign Out'
 } as const;
 export type PageNameType = typeof PAGE_NAMES[keyof typeof PAGE_NAMES];
@@ -227,6 +229,16 @@ export const PAGE_ICONS = {
         ACTIVE: (props: any = {}) => createIconVariant('question-mark-circle', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         INACTIVE: (props: any = {}) => createIconVariant('question-mark-circle', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('question-mark-circle', 'mini', ICON_PRIMARY, props.size)
+    },
+    TERMS_OF_SERVICE: {
+        ACTIVE: (props: any = {}) => createIconVariant('document-text', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('document-text', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('document-text', 'mini', ICON_PRIMARY, props.size)
+    },
+    PRIVACY_POLICY: {
+        ACTIVE: (props: any = {}) => createIconVariant('document-text', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
+        INACTIVE: (props: any = {}) => createIconVariant('document-text', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
+        MINI: (props: any = {}) => createIconVariant('document-text', 'mini', ICON_PRIMARY, props.size)
     },
     WELCOME: {
         ACTIVE: (props: any = {}) => createIconVariant('hand-raised', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),

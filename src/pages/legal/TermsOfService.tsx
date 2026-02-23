@@ -5,7 +5,7 @@ import LegalPageLayout from './LegalPageLayout';
 
 const TermsOfService: React.FC = () => {
   return (
-    <LegalPageLayout title="Terms of Service" lastUpdated="February 20, 2026">
+    <LegalPageLayout title="Terms of Service" lastUpdated="February 20, 2026" pageNameKey="TERMS_OF_SERVICE">
       <h3>1. Acceptance of Terms</h3>
       <p>
         By accessing or using {APP_NAME} ("the Service"), you agree to be bound by these Terms of Service ("Terms").

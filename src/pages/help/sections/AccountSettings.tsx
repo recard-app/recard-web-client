@@ -18,8 +18,8 @@ const AccountSettings: React.FC = () => {
         <ol>
           <li>Go to <Link to={PAGES.ACCOUNT.PATH} className="nav-path">Account</Link></li>
           <li>Find the <strong>Profile Information</strong> section</li>
-          <li>Click on your display name to edit</li>
-          <li>Enter your new name and save</li>
+          <li>Click the <strong>Name</strong> row</li>
+          <li>Enter your new name in the dialog and click <strong>Save</strong></li>
         </ol>
       </HelpSection>
 
@@ -93,6 +93,20 @@ const AccountSettings: React.FC = () => {
           <strong>This is permanent.</strong> Once deleted, your data cannot be recovered.
           Make sure you want to proceed before confirming.
         </div>
+      </HelpSection>
+
+      <HelpSection title="Legal" defaultExpanded={true}>
+        <p>
+          View the legal agreements that govern your use of the app:
+        </p>
+        <ul>
+          <li><Link to={PAGES.TERMS_OF_SERVICE.PATH} className="nav-path">Terms of Service</Link></li>
+          <li><Link to={PAGES.PRIVACY_POLICY.PATH} className="nav-path">Privacy Policy</Link></li>
+        </ul>
+        <p>
+          These are also accessible from the Legal card on your{' '}
+          <Link to={PAGES.ACCOUNT.PATH} className="nav-path">Account</Link> page.
+        </p>
       </HelpSection>
     </div>
   );

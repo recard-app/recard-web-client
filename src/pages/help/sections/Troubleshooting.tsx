@@ -1,4 +1,5 @@
 import React from 'react';
+import { CONTACT_EMAIL } from '../../../types';
 import { HelpSection } from '../components';
 
 const Troubleshooting: React.FC = () => {
@@ -17,7 +18,7 @@ const Troubleshooting: React.FC = () => {
           </p>
           <ol>
             <li>Verify the info with your card issuer's website</li>
-            <li>Report the issue to us so we can update our database</li>
+            <li>Email us at {CONTACT_EMAIL} so we can update our database</li>
             <li>The fix will apply to all users with that card</li>
           </ol>
         </HelpSection>
@@ -39,7 +40,7 @@ const Troubleshooting: React.FC = () => {
             <li>Try the full official card name (e.g., "Chase Sapphire Preferred" not "CSP")</li>
             <li>Try searching by the bank name</li>
             <li>Check for alternative spellings</li>
-            <li>If still not found, contact us to add it</li>
+            <li>If still not found, email us at {CONTACT_EMAIL} to add it</li>
           </ul>
         </HelpSection>
 

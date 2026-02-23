@@ -30,8 +30,8 @@ const GettingStarted: React.FC = () => {
         <li>
           <strong>Add your main card</strong> (2 minutes)
           <p>
-            Go to <Link to={PAGES.MY_CARDS.PATH} className="nav-path">My Cards</Link> and
-            click Add Card. Search by name or issuer. Benefits load automatically.
+            Open <Link to={PAGES.MY_CARDS.PATH} className="nav-path">Manage Cards</Link> from
+            the account menu and click Add Card. Search by name or issuer. Benefits load automatically.
           </p>
         </li>
         <li>
@@ -81,7 +81,7 @@ const GettingStarted: React.FC = () => {
           </tr>
           <tr>
             <td>Add or manage my cards</td>
-            <td><Link to={PAGES.MY_CARDS.PATH} className="nav-path">My Cards</Link></td>
+            <td><Link to={PAGES.MY_CARDS.PATH} className="nav-path">Manage Cards</Link> (account menu)</td>
           </tr>
           <tr>
             <td>Track my credits</td>

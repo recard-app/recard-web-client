@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../../types/Pages';
-import { APP_NAME } from '../../../types';
+import { APP_NAME, CONTACT_EMAIL } from '../../../types';
 import { HelpSection } from '../components';
 
 const FAQ: React.FC = () => {
@@ -56,14 +56,14 @@ const FAQ: React.FC = () => {
 
           <HelpSection title="How do I add a card?" defaultExpanded={false}>
             <p>
-              Go to <Link to={PAGES.MY_CARDS.PATH} className="nav-path">My Cards</Link>, click
+              Open <Link to={PAGES.MY_CARDS.PATH} className="nav-path">Manage Cards</Link> from the account menu, click
               "Add Card", search for your card by name or issuer, and select it. Benefits load automatically.
             </p>
           </HelpSection>
 
           <HelpSection title="What if my card isn't in the database?" defaultExpanded={false}>
             <p>
-              Contact us and we'll add it. We're constantly expanding our card database to include
+              Email us at {CONTACT_EMAIL} and we'll add it. We're constantly expanding our card database to include
               more issuers and cards. We're also building a card request feature to make this easier
               in the future.
             </p>
@@ -208,7 +208,7 @@ const FAQ: React.FC = () => {
           <HelpSection title="How do I delete my data?" defaultExpanded={false}>
             <p>
               Go to <Link to={PAGES.ACCOUNT.PATH} className="nav-path">Account</Link> and scroll
-              to the Danger Zone section. You can delete chat history, card data, or your entire account.
+              to the Danger Zone section. You can delete chat history or your entire account (which includes all cards and credit data).
             </p>
           </HelpSection>
 
@@ -222,7 +222,7 @@ const FAQ: React.FC = () => {
           <HelpSection title="How do I change my display name?" defaultExpanded={false}>
             <p>
               Go to <Link to={PAGES.ACCOUNT.PATH} className="nav-path">Account</Link>, find the
-              Profile Information section, and click on your display name to edit it.
+              Profile Information section, and click the <strong>Name</strong> row to edit it.
             </p>
           </HelpSection>
 

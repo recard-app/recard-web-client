@@ -1,4 +1,5 @@
 import React from 'react';
+import { CONTACT_EMAIL } from '../../../types';
 
 const CardsDetails: React.FC = () => {
   return (
@@ -102,7 +103,7 @@ const CardsDetails: React.FC = () => {
 
       <div className="callout callout--info">
         <strong>See something wrong?</strong> Card benefits change over time. If you notice
-        incorrect information, please contact us so we can update our database. We're working
+        incorrect information, please email us at {CONTACT_EMAIL} so we can update our database. We're working
         on an in-app feedback system to make this easier.
       </div>
     </div>

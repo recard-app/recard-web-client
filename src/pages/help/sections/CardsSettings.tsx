@@ -21,7 +21,7 @@ const CardsSettings: React.FC = () => {
       </ul>
       <p><strong>How to set:</strong></p>
       <ol>
-        <li>Go to My Cards</li>
+        <li>Open <strong>Manage Cards</strong> from the account menu</li>
         <li>Click on the card you want to set as preferred</li>
         <li>Click "Set as Preferred"</li>
         <li>Choose the category</li>
@@ -41,13 +41,13 @@ const CardsSettings: React.FC = () => {
       </ul>
       <p><strong>How to freeze:</strong></p>
       <ol>
-        <li>Go to My Cards</li>
+        <li>Open <strong>Manage Cards</strong> from the account menu</li>
         <li>Click on the card you want to freeze</li>
         <li>Click "Freeze Card"</li>
       </ol>
       <p><strong>How to unfreeze:</strong></p>
       <ol>
-        <li>Go to My Cards</li>
+        <li>Open <strong>Manage Cards</strong> from the account menu</li>
         <li>Click on the frozen card</li>
         <li>Click "Unfreeze Card"</li>
       </ol>
@@ -74,7 +74,7 @@ const CardsSettings: React.FC = () => {
       </ul>
       <p><strong>How to disable:</strong></p>
       <ol>
-        <li>Go to My Cards</li>
+        <li>Open <strong>Manage Cards</strong> from the account menu</li>
         <li>Click on the card</li>
         <li>Find the component you want to disable</li>
         <li>Click the hide/disable toggle</li>
@@ -99,7 +99,7 @@ const CardsSettings: React.FC = () => {
       </ul>
       <p><strong>How to set:</strong></p>
       <ol>
-        <li>Go to My Cards</li>
+        <li>Open <strong>Manage Cards</strong> from the account menu</li>
         <li>Click on the card</li>
         <li>Click "Set Anniversary Date"</li>
         <li>Enter the month and day you opened the account</li>
@@ -116,7 +116,7 @@ const CardsSettings: React.FC = () => {
       </p>
       <p><strong>How to remove:</strong></p>
       <ol>
-        <li>Go to My Cards</li>
+        <li>Open <strong>Manage Cards</strong> from the account menu</li>
         <li>Click on the card you want to remove</li>
         <li>Click "Remove Card"</li>
         <li>Confirm the removal</li>

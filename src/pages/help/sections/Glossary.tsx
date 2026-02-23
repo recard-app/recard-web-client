@@ -38,6 +38,10 @@ const Glossary: React.FC = () => {
           definition: 'A spending type that credits, perks, and multipliers apply to (e.g., dining, travel, groceries, gas, streaming).'
         },
         {
+          term: 'Chat Mode',
+          definition: 'Controls how the AI processes your questions. Quick Mode gives fast, direct answers for everyday use. Precision Mode analyzes your question in depth using specialized agents for maximum accuracy on complex queries.'
+        },
+        {
           term: 'Chat History',
           definition: 'Your past conversations with the AI assistant. Access them from the Previous Chats page to review recommendations or continue a conversation.'
         },

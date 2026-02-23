@@ -4,7 +4,7 @@ import LegalPageLayout from './LegalPageLayout';
 
 const PrivacyPolicy: React.FC = () => {
   return (
-    <LegalPageLayout title="Privacy Policy" lastUpdated="February 20, 2026">
+    <LegalPageLayout title="Privacy Policy" lastUpdated="February 20, 2026" pageNameKey="PRIVACY_POLICY">
       <h3>1. Information We Collect</h3>
       <p>
         We collect the following information when you use {APP_NAME}:
