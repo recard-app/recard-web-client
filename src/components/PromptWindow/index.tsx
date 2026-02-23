@@ -323,8 +323,8 @@ function PromptWindow({
         }
 
         // Send to agent endpoint (hook handles streaming)
-        // Note: chatHistory state may not be updated yet, but agent receives prompt directly
-        sendAgentMessage(returnPromptStr, chatHistory);
+        // Use ref for up-to-date history (React state closure is one render behind)
+        sendAgentMessage(returnPromptStr, chatHistoryRef.current);
     };
 
     /**
