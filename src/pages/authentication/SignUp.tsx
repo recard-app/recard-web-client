@@ -90,7 +90,6 @@ const SignUp: React.FC = () => {
             // Use the UserAuthService for backend registration
             await AuthService.emailSignUp(firstName, lastName);
 
-            console.log('Registration successful');
             navigate(PAGES.WELCOME.PATH);
         } catch (error: any) {
             toast.error(getAuthErrorMessage(error));
@@ -113,7 +112,6 @@ const SignUp: React.FC = () => {
             // Use the UserAuthService for Google authentication
             await AuthService.googleSignIn(isNewUser ?? false);
 
-            console.log('Authentication successful');
             if (isNewUser) {
                 navigate(PAGES.WELCOME.PATH);
             } else {

@@ -390,7 +390,6 @@ function PromptWindow({
                 }
 
                 // Fallback: Chat not in pre-loaded history, fetch individually
-                console.warn('Chat not found in pre-loaded history, fetching individually:', urlChatId);
                 try {
                     setChatLoadError(null);
                     const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
@@ -539,14 +538,12 @@ function PromptWindow({
         }
     };
 
-    const handlePerkClick = (cardId: string, perkId: string) => {
+    const handlePerkClick = (_cardId: string, _perkId: string) => {
         // TODO: Implement perk detail modal
-        console.log('Perk clicked:', cardId, perkId);
     };
 
-    const handleMultiplierClick = (cardId: string, multiplierId: string) => {
+    const handleMultiplierClick = (_cardId: string, _multiplierId: string) => {
         // TODO: Implement multiplier detail modal
-        console.log('Multiplier clicked:', cardId, multiplierId);
     };
 
     // Add effect to handle initial state

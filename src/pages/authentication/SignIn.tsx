@@ -38,7 +38,6 @@ const SignIn: React.FC = () => {
         try {
             await loginWithEmail(email, password);
             await AuthService.emailSignIn();
-            console.log('Authentication successful');
             navigate(PAGES.HOME.PATH);
         } catch (error: any) {
             toast.error(getAuthErrorMessage(error));
@@ -58,7 +57,6 @@ const SignIn: React.FC = () => {
         try {
             const { isNewUser }: AuthResponse = await login();
             await AuthService.googleSignIn(isNewUser);
-            console.log('Authentication successful');
             if (isNewUser) {
                 navigate(PAGES.WELCOME.PATH);
             } else {
