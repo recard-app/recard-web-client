@@ -18,7 +18,12 @@ const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, lastUpdated, c
   const { user } = useAuth();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const scrollContainer = document.querySelector('.universal-content-wrapper');
+    if (scrollContainer) {
+      scrollContainer.scrollTo(0, 0);
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, []);
 
   const handleBack = () => {
@@ -37,10 +42,10 @@ const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, lastUpdated, c
         </button>
       </nav>
       {!user && <h1 className="legal-page__title">{title}</h1>}
-      <p className="legal-page__updated">Last updated: {lastUpdated}</p>
       <div className="help-content">
         {children}
       </div>
+      <p className="legal-page__updated">Last updated: {lastUpdated}</p>
     </ContentContainer>
   );
 

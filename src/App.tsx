@@ -1265,7 +1265,7 @@ function AppContent({}: AppContentProps) {
             const isAuthRoute = authPaths.has(location.pathname);
             const isHelpPage = location.pathname.startsWith(PAGES.HELP_CENTER.PATH);
             const isLegalPage = location.pathname === PAGES.TERMS_OF_SERVICE.PATH || location.pathname === PAGES.PRIVACY_POLICY.PATH;
-            const isLandingPage = !user && !isAuthRoute;
+            const isLandingPage = !user && !isAuthRoute && !isLegalPage;
             return (
               <UniversalContentWrapper
                 isSidePanelOpen={user ? isSidePanelOpen : false}
