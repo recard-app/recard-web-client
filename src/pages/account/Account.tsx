@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '../../context/AuthContext';
-import { SubscriptionPlan, PAGE_NAMES, PAGE_ICONS, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY } from '../../types';
+import { SubscriptionPlan, SubscriptionStatusType, SUBSCRIPTION_STATUS, MONTH_ABBREVIATIONS, PAGE_NAMES, PAGE_ICONS, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY } from '../../types';
 import Icon from '../../icons';
 import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
 import {
@@ -30,9 +30,11 @@ import './Account.scss';
 
 interface AccountProps {
   subscriptionPlan: SubscriptionPlan;
+  subscriptionStatus: SubscriptionStatusType;
+  subscriptionExpiresAt: string | null;
 }
 
-const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
+const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus, subscriptionExpiresAt }) => {
   const { user, sendVerificationEmail, sendPasswordResetEmail, updateDisplayName, updateEmail, logout } = useAuth();
   const navigate = useNavigate();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -166,6 +168,40 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
     return subscriptionPlan.charAt(0).toUpperCase() + subscriptionPlan.slice(1);
   };
 
+  /**
+   * Format a YYYY-MM-DD date string to a human-readable format (e.g., "Mar 15, 2026")
+   */
+  const formatExpirationDate = (dateStr: string): string => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return `${MONTH_ABBREVIATIONS[month - 1]} ${day}, ${year}`;
+  };
+
+  const getSubscriptionValue = () => {
+    const planName = getPlanText();
+    const isActive = subscriptionStatus === SUBSCRIPTION_STATUS.ACTIVE;
+    const isExpired = subscriptionStatus === SUBSCRIPTION_STATUS.EXPIRED;
+
+    if (isActive && subscriptionExpiresAt) {
+      return (
+        <div className="subscription-plan-display">
+          <span>{planName}</span>
+          <span className="subscription-expiration">Expires {formatExpirationDate(subscriptionExpiresAt)}</span>
+        </div>
+      );
+    }
+
+    if (isExpired) {
+      return (
+        <div className="subscription-plan-display">
+          <span>{planName}</span>
+          <span className="subscription-expiration subscription-expiration--expired">Expired</span>
+        </div>
+      );
+    }
+
+    return planName;
+  };
+
   return (
     <div className="full-page-layout">
       <PageHeader title={PAGE_NAMES.MY_ACCOUNT} icon={PAGE_ICONS.MY_ACCOUNT.MINI} />
@@ -196,7 +232,9 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                       {user.emailVerified ? 'Email Verified' : 'Email Not Verified'}
                     </span>
                     {SHOW_SUBSCRIPTION_MENTIONS && (
-                      <span className="badge badge--sub">{subscriptionPlan}</span>
+                      <span className={`badge badge--sub${subscriptionStatus === SUBSCRIPTION_STATUS.EXPIRED ? ' badge--expired' : ''}`}>
+                        {subscriptionPlan}{subscriptionStatus === SUBSCRIPTION_STATUS.EXPIRED ? ' (expired)' : ''}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -249,7 +287,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan }) => {
                 {SHOW_SUBSCRIPTION_MENTIONS && (
                   <SettingsRow
                     label="Subscription Plan"
-                    value={getPlanText()}
+                    value={getSubscriptionValue()}
                   />
                 )}
                 <SettingsRow

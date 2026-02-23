@@ -105,6 +105,7 @@ import {
   CHAT_HISTORY_PREFERENCE,
   AGENT_MODE_PREFERENCE,
   SUBSCRIPTION_PLAN,
+  SUBSCRIPTION_STATUS,
   LOADING_ICON,
   LOADING_ICON_SIZE,
   Conversation,
@@ -112,6 +113,7 @@ import {
   AgentModePreference,
   InstructionsPreference,
   SubscriptionPlan,
+  SubscriptionStatusType,
   MonthlyStatsResponse
 } from './types';
 
@@ -225,8 +227,10 @@ function AppContent({}: AppContentProps) {
   const [digestLoading, setDigestLoading] = useState<boolean>(false);
   const [isRegeneratingDigest, setIsRegeneratingDigest] = useState<boolean>(false);
   const digestFetchedRef = useRef<boolean>(false);
-  // State for tracking user's subscription plan
+  // State for tracking user's subscription plan and status
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatusType>(SUBSCRIPTION_STATUS.NONE);
+  const [subscriptionExpiresAt, setSubscriptionExpiresAt] = useState<string | null>(null);
   // State for managing side panel visibility with localStorage persistence
   const [isSidePanelOpen, setIsSidePanelOpen] = useState<boolean>(() => {
     const stored = localStorage.getItem('sidePanelOpen');
@@ -352,6 +356,8 @@ function AppContent({}: AppContentProps) {
         setUserDetailedCardDetails([]);
         setChatHistory([]);
         setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE);
+        setSubscriptionStatus(SUBSCRIPTION_STATUS.NONE);
+        setSubscriptionExpiresAt(null);
         setPreferencesInstructions('');
         setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
         setAgentModePreference(AGENT_MODE_PREFERENCE.SIMPLIFIED);
@@ -376,16 +382,23 @@ function AppContent({}: AppContentProps) {
 
       try {
         // Batch 1: Critical data that's needed immediately (parallel)
-        const [cards, subscriptionPlan] = await Promise.all([
+        const [cards, subscriptionData] = await Promise.all([
           CardService.fetchCreditCards(true),
-          UserService.fetchUserSubscriptionPlan().catch(error => {
+          UserService.fetchUserSubscription().catch(error => {
             console.error('Error fetching subscription plan:', error);
-            return SUBSCRIPTION_PLAN.FREE; // Default to free on error
+            return {
+              subscriptionPlan: SUBSCRIPTION_PLAN.FREE as SubscriptionPlan,
+              subscriptionStatus: SUBSCRIPTION_STATUS.NONE as SubscriptionStatusType,
+              subscriptionBillingPeriod: null,
+              subscriptionExpiresAt: null,
+            };
           })
         ]);
 
         setCreditCards(cards);
-        setSubscriptionPlan(subscriptionPlan);
+        setSubscriptionPlan(subscriptionData.subscriptionPlan);
+        setSubscriptionStatus(subscriptionData.subscriptionStatus);
+        setSubscriptionExpiresAt(subscriptionData.subscriptionExpiresAt);
 
         // Batch 2: User preferences and tracking data (parallel)
         const [componentPrefs, allPreferences] = await Promise.all([
@@ -1349,7 +1362,10 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.ACCOUNT.PATH} element={
                     <ProtectedRoute>
-                      <Account subscriptionPlan={subscriptionPlan}
+                      <Account
+                        subscriptionPlan={subscriptionPlan}
+                        subscriptionStatus={subscriptionStatus}
+                        subscriptionExpiresAt={subscriptionExpiresAt}
                       />
                     </ProtectedRoute>
                   } />

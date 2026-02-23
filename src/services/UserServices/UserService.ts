@@ -1,6 +1,16 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { SUBSCRIPTION_PLAN, SubscriptionPlan, SubscriptionPlanResponse } from '../../types';
+import { SUBSCRIPTION_PLAN, SUBSCRIPTION_STATUS, SubscriptionPlan, SubscriptionPlanResponse, SubscriptionStatusType, BillingPeriodType } from '../../types';
+
+/**
+ * Full subscription info returned from the API
+ */
+export interface SubscriptionInfo {
+    subscriptionPlan: SubscriptionPlan;
+    subscriptionStatus: SubscriptionStatusType;
+    subscriptionBillingPeriod: BillingPeriodType | null;
+    subscriptionExpiresAt: string | null;
+}
 
 /**
  * Response structure for daily digest endpoint
@@ -21,10 +31,10 @@ export interface DailyDigestResponse {
 
 export const UserService = {
     /**
-     * Fetches user's subscription plan
-     * @returns Promise containing the user's subscription plan as a valid SubscriptionPlanType
+     * Fetches user's full subscription info (plan, status, expiration, billing period)
+     * @returns Promise containing the full subscription info
      */
-    async fetchUserSubscriptionPlan(): Promise<SubscriptionPlan> {
+    async fetchUserSubscription(): Promise<SubscriptionInfo> {
         const headers = await getAuthHeaders();
         const response = await axios.get<SubscriptionPlanResponse>(
             `${apiurl}/users/subscription/plan`,
@@ -34,11 +44,21 @@ export const UserService = {
         if (response.data.success && response.data.subscriptionPlan) {
             const validPlans = Object.values(SUBSCRIPTION_PLAN);
             if (validPlans.includes(response.data.subscriptionPlan as any)) {
-                return response.data.subscriptionPlan;
+                return {
+                    subscriptionPlan: response.data.subscriptionPlan,
+                    subscriptionStatus: response.data.subscriptionStatus || SUBSCRIPTION_STATUS.NONE,
+                    subscriptionBillingPeriod: response.data.subscriptionBillingPeriod ?? null,
+                    subscriptionExpiresAt: response.data.subscriptionExpiresAt ?? null,
+                };
             }
         }
 
-        return SUBSCRIPTION_PLAN.FREE;
+        return {
+            subscriptionPlan: SUBSCRIPTION_PLAN.FREE,
+            subscriptionStatus: SUBSCRIPTION_STATUS.NONE,
+            subscriptionBillingPeriod: null,
+            subscriptionExpiresAt: null,
+        };
     },
     /**
      * Fetches the authenticated user's account creation date as a Date

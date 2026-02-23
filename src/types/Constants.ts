@@ -36,6 +36,20 @@ export const SUBSCRIPTION_PLAN = {
 } as const;
 export type SubscriptionPlanType = typeof SUBSCRIPTION_PLAN[keyof typeof SUBSCRIPTION_PLAN];
 
+export const SUBSCRIPTION_STATUS = {
+    ACTIVE: 'active',
+    EXPIRED: 'expired',
+    CANCELED: 'canceled',
+    NONE: 'none'
+} as const;
+export type SubscriptionStatusType = typeof SUBSCRIPTION_STATUS[keyof typeof SUBSCRIPTION_STATUS];
+
+export const BILLING_PERIOD = {
+    MONTHLY: 'monthly',
+    YEARLY: 'yearly'
+} as const;
+export type BillingPeriodType = typeof BILLING_PERIOD[keyof typeof BILLING_PERIOD];
+
 export const ROLE_TYPE = {
     ADMIN: 'admin',
     WORKER: 'worker',

@@ -1,6 +1,6 @@
 import { UserComponentTrackingPreferences } from "./CardCreditsTypes";
 import { Conversation } from "./ChatTypes";
-import { AgentModePreferenceType, ChatHistoryPreferenceType, RoleType, SubscriptionPlanType } from "./Constants";
+import { AgentModePreferenceType, BillingPeriodType, ChatHistoryPreferenceType, RoleType, SubscriptionPlanType, SubscriptionStatusType } from "./Constants";
 
 /**
  * ------------------------------------------------------------------------------------------------
@@ -43,6 +43,11 @@ export interface User {
     preferencesInstructions?: string;
     preferencesChatHistory?: ChatHistoryPreference;
     subscriptionPlan: SubscriptionPlan;
+    subscriptionStatus?: SubscriptionStatusType;
+    subscriptionBillingPeriod?: BillingPeriodType | null;
+    subscriptionStartedAt?: string | null;
+    subscriptionExpiresAt?: string | null;
+    subscriptionCanceledAt?: string | null;
     userComponentTrackingPreferences: UserComponentTrackingPreferences;
     userWalletHistory: UserWalletHistory;
     role: RoleType;
@@ -107,6 +112,9 @@ export interface BatchedPreferencesRequest {
 export interface SubscriptionPlanResponse {
     success: boolean;
     subscriptionPlan: SubscriptionPlan;
+    subscriptionStatus: SubscriptionStatusType;
+    subscriptionBillingPeriod: BillingPeriodType | null;
+    subscriptionExpiresAt: string | null;
     message?: string;
     error?: string;
 }

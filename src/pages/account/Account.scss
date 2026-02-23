@@ -106,6 +106,12 @@
     color: $primary-medium;
     border-color: $primary-light;
   }
+
+  &--expired {
+    background: $warning-badge-background;
+    color: $warning-badge-text;
+    border-color: $warning-badge-light;
+  }
 }
 
 // Status badges for settings rows
@@ -131,6 +137,24 @@
   &.status-badge--warning {
     background: $warning-badge-background;
     color: $warning-badge-text;
+  }
+}
+
+// Subscription plan display with expiration
+.subscription-plan-display {
+  display: flex;
+  flex-direction: column;
+  gap: $space-half;
+  text-align: right;
+}
+
+.subscription-expiration {
+  font-size: $font-xs;
+  color: $neutral-medium-gray;
+
+  &--expired {
+    color: $warning-badge-text;
+    font-weight: $font-medium;
   }
 }
 
