@@ -384,7 +384,7 @@ export interface AgentError {
 
 export const ERROR_MESSAGES: Record<AgentErrorCode, string> = {
   [AGENT_ERROR_CODES.RATE_LIMIT]: 'Too many requests. Please wait a moment.',
-  [AGENT_ERROR_CODES.DAILY_LIMIT]: 'Daily request limit reached. Try again tomorrow.',
+  [AGENT_ERROR_CODES.DAILY_LIMIT]: 'You\'ve reached your daily message limit. Upgrade your plan for more messages.',
   [AGENT_ERROR_CODES.UNAUTHORIZED]: 'Please sign in to continue.',
   [AGENT_ERROR_CODES.NETWORK]: 'Connection lost. Check your internet connection.',
   [AGENT_ERROR_CODES.STREAM_INTERRUPTED]: 'Response interrupted. Please try again.',
