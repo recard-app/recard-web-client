@@ -25,11 +25,11 @@ const Cards: React.FC = () => {
         <h4>Common Questions</h4>
         <ul>
           <li>
-            <strong>Card not found?</strong> Email us at {SUPPORT_EMAIL} to add it to our database. We're building
+            <strong>Card not found?</strong> Email us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> to add it to our database. We're building
             a card request feature to make this easier in the future.
           </li>
           <li>
-            <strong>Wrong benefits showing?</strong> Email us at {SUPPORT_EMAIL} so we can fix it. We're working
+            <strong>Wrong benefits showing?</strong> Email us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> so we can fix it. We're working
             on an in-app feedback system.
           </li>
           <li>

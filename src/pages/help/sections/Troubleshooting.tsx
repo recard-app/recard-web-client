@@ -18,7 +18,7 @@ const Troubleshooting: React.FC = () => {
           </p>
           <ol>
             <li>Verify the info with your card issuer's website</li>
-            <li>Email us at {SUPPORT_EMAIL} so we can update our database</li>
+            <li>Email us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> so we can update our database</li>
             <li>The fix will apply to all users with that card</li>
           </ol>
         </HelpSection>
@@ -40,7 +40,7 @@ const Troubleshooting: React.FC = () => {
             <li>Try the full official card name (e.g., "Chase Sapphire Preferred" not "CSP")</li>
             <li>Try searching by the bank name</li>
             <li>Check for alternative spellings</li>
-            <li>If still not found, email us at {SUPPORT_EMAIL} to add it</li>
+            <li>If still not found, email us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> to add it</li>
           </ul>
         </HelpSection>
 

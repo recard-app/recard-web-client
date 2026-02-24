@@ -63,7 +63,7 @@ const FAQ: React.FC = () => {
 
           <HelpSection title="What if my card isn't in the database?" defaultExpanded={false}>
             <p>
-              Email us at {SUPPORT_EMAIL} and we'll add it. We're constantly expanding our card database to include
+              Email us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> and we'll add it. We're constantly expanding our card database to include
               more issuers and cards. We're also building a card request feature to make this easier
               in the future.
             </p>
