@@ -6,6 +6,8 @@
  * ------------------------------------------------------------------------------------------------
  */
 
+export const DAILY_ZEN_FEATURE_NAME = 'Daily Zen';
+
 export const CHAT_DESCRIPTION_MAX_LENGTH = 40;
 export const SPECIAL_INSTRUCTIONS_MAX_LENGTH = 1000;
 

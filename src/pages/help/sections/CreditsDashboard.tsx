@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../../types/Pages';
+import { DAILY_ZEN_FEATURE_NAME } from '../../../types';
 
 const CreditsDashboard: React.FC = () => {
   return (
@@ -125,7 +126,7 @@ const CreditsDashboard: React.FC = () => {
         </tbody>
       </table>
       <p>
-        The Daily Digest also surfaces expiring credits when you start a new chat, so you
+        The {DAILY_ZEN_FEATURE_NAME} also surfaces expiring credits when you start a new chat, so you
         never miss an opportunity.
       </p>
     </div>

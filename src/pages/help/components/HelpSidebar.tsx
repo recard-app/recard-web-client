@@ -1,6 +1,7 @@
 import React from 'react';
 import HelpNavSection from './HelpNavSection';
 import HelpNavItem from './HelpNavItem';
+import { DAILY_ZEN_FEATURE_NAME } from '../../../types';
 
 interface HelpSidebarProps {
   onNavClick?: () => void;
@@ -16,7 +17,7 @@ const HelpSidebar: React.FC<HelpSidebarProps> = ({ onNavClick }) => {
         <HelpNavItem label="Example Prompts" to="/help/ask-ai/prompts" indent onClick={onNavClick} />
         <HelpNavItem label="Tips for Better Answers" to="/help/ask-ai/tips" indent onClick={onNavClick} />
         <HelpNavItem label="Chat History" to="/help/chat-history" indent onClick={onNavClick} />
-        <HelpNavItem label="Daily Digest" to="/help/daily-digest" indent onClick={onNavClick} />
+        <HelpNavItem label={DAILY_ZEN_FEATURE_NAME} to="/help/daily-digest" indent onClick={onNavClick} />
       </HelpNavSection>
 
       <HelpNavSection title="Your Cards" defaultExpanded={true}>

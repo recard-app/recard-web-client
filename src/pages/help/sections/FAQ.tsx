@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../../types/Pages';
-import { APP_NAME, CONTACT_EMAIL } from '../../../types';
+import { APP_NAME, CONTACT_EMAIL, DAILY_ZEN_FEATURE_NAME } from '../../../types';
 import { HelpSection } from '../components';
 
 const FAQ: React.FC = () => {
@@ -193,11 +193,11 @@ const FAQ: React.FC = () => {
             </p>
           </HelpSection>
 
-          <HelpSection title="What is the Daily Digest?" defaultExpanded={false}>
+          <HelpSection title={`What is the ${DAILY_ZEN_FEATURE_NAME}?`} defaultExpanded={false}>
             <p>
-              The Daily Digest is an AI-generated summary that appears when you start a new chat.
+              The {DAILY_ZEN_FEATURE_NAME} is an AI-generated summary that appears when you start a new chat.
               It shows expiring credits, quick wins, and your monthly progress. Learn more in the{' '}
-              <Link to="/help/daily-digest" className="nav-path">Daily Digest</Link> help section.
+              <Link to="/help/daily-digest" className="nav-path">{DAILY_ZEN_FEATURE_NAME}</Link> help section.
             </p>
           </HelpSection>
         </div>

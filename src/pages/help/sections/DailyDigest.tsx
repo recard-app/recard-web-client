@@ -1,20 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../../types/Pages';
+import { DAILY_ZEN_FEATURE_NAME } from '../../../types';
 import { HelpSection } from '../components';
 
 const DailyDigest: React.FC = () => {
   return (
     <div className="help-content">
-      <h2>Daily Digest</h2>
+      <h2>{DAILY_ZEN_FEATURE_NAME}</h2>
       <p>
-        The Daily Digest is an AI-generated summary that helps you stay on top of your
+        The {DAILY_ZEN_FEATURE_NAME} is an AI-generated summary that helps you stay on top of your
         credit card benefits each day.
       </p>
 
-      <HelpSection title="What is the Daily Digest?" defaultExpanded={true}>
+      <HelpSection title={`What is the ${DAILY_ZEN_FEATURE_NAME}?`} defaultExpanded={true}>
         <p>
-          The Daily Digest is a personalized summary that appears when you start a new chat.
+          The {DAILY_ZEN_FEATURE_NAME} is a personalized summary that appears when you start a new chat.
           It gives you a quick overview of what's happening with your credits and highlights
           actions you should take.
         </p>
@@ -28,13 +29,13 @@ const DailyDigest: React.FC = () => {
         </ul>
 
         <div className="callout callout--info">
-          <strong>Timezone:</strong> The Daily Digest uses Eastern Time for day boundaries.
+          <strong>Timezone:</strong> The {DAILY_ZEN_FEATURE_NAME} uses Eastern Time for day boundaries.
           Your digest refreshes at 12:00 AM ET each day.
         </div>
       </HelpSection>
 
       <HelpSection title="Content Sections" defaultExpanded={true}>
-        <p>Your Daily Digest may include these sections based on your credit activity:</p>
+        <p>Your {DAILY_ZEN_FEATURE_NAME} may include these sections based on your credit activity:</p>
 
         <table>
           <thead>

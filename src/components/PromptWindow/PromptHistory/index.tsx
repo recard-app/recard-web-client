@@ -8,7 +8,7 @@ import AgentTimeline from '../AgentTimeline';
 import { ChatErrorBoundary } from '../ErrorBoundary';
 import { DailyDigest } from '../DailyDigest';
 import './PromptHistory.scss';
-import { PLACEHOLDER_ASSISTANT_IMAGE, TERMINOLOGY, CHAT_SOURCE } from '../../../types';
+import { PLACEHOLDER_ASSISTANT_IMAGE, TERMINOLOGY, CHAT_SOURCE, DAILY_ZEN_FEATURE_NAME } from '../../../types';
 import { sanitizeMarkdownHtml } from '../../../utils/sanitizeMarkdown';
 
 /**
@@ -132,7 +132,7 @@ function PromptHistory({
             {digestLoading && (
               <InfoDisplay
                 type="loading"
-                message="Loading your daily snapshot..."
+                message={`Loading your ${DAILY_ZEN_FEATURE_NAME}...`}
                 showTitle={false}
                 transparent={true}
                 centered={false}

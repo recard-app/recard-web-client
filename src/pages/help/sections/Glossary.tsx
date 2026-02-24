@@ -1,4 +1,5 @@
 import React from 'react';
+import { DAILY_ZEN_FEATURE_NAME } from '../../../types';
 
 interface GlossaryTerm {
   term: string;
@@ -50,7 +51,7 @@ const Glossary: React.FC = () => {
           definition: 'Personalized guidelines you set in Preferences that the AI follows when making recommendations. Use these to tell the AI your priorities, like preferring cashback or targeting specific airlines.'
         },
         {
-          term: 'Daily Digest',
+          term: DAILY_ZEN_FEATURE_NAME,
           definition: 'An AI-generated daily summary that appears when you start a new chat. It shows expiring credits, quick wins, monthly progress, and total value realized.'
         }
       ]

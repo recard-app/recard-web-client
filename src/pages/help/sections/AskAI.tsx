@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { HelpSection } from '../components';
+import { DAILY_ZEN_FEATURE_NAME } from '../../../types';
 
 const AskAI: React.FC = () => {
   return (
@@ -139,9 +140,9 @@ const AskAI: React.FC = () => {
         <p>Just ask naturally, and the AI will handle the action for you.</p>
       </HelpSection>
 
-      <HelpSection title="Daily Digest" defaultExpanded={true}>
+      <HelpSection title={DAILY_ZEN_FEATURE_NAME} defaultExpanded={true}>
         <p>
-          Each day when you start a new chat, you'll see a Daily Digest. This AI-generated
+          Each day when you start a new chat, you'll see a {DAILY_ZEN_FEATURE_NAME}. This AI-generated
           summary shows you:
         </p>
         <ul>
@@ -150,8 +151,8 @@ const AskAI: React.FC = () => {
           <li>Your monthly progress</li>
         </ul>
         <p>
-          Learn more about the Daily Digest in the{' '}
-          <Link to="/help/daily-digest" className="nav-path">Daily Digest</Link> help section.
+          Learn more about the {DAILY_ZEN_FEATURE_NAME} in the{' '}
+          <Link to="/help/daily-digest" className="nav-path">{DAILY_ZEN_FEATURE_NAME}</Link> help section.
         </p>
       </HelpSection>
     </div>
