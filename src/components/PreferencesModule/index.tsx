@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { AgentModePreference, ChatHistoryPreference, InstructionsPreference } from '../../types/UserTypes';
 import { UserPreferencesService } from '../../services';
 import { CHAT_HISTORY_OPTIONS, AGENT_MODE_OPTIONS } from './utils';
-import { LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH, CHAT_HISTORY_PREFERENCE, AGENT_MODE_PREFERENCE } from '../../types/Constants';
+import { APP_NAME, LOADING_ICON, LOADING_ICON_SIZE, SPECIAL_INSTRUCTIONS_MAX_LENGTH, CHAT_HISTORY_PREFERENCE, AGENT_MODE_PREFERENCE } from '../../types/Constants';
 import './PreferencesModule.scss';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 
@@ -128,7 +128,7 @@ function PreferencesModule({
                         id="customInstructionsTextarea"
                         value={instructions}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInstructions(e.target.value)}
-                        placeholder={isLoading ? "Loading instructions..." : "Enter your special instructions for the ReCard AI assistant..."}
+                        placeholder={isLoading ? "Loading instructions..." : `Enter your special instructions for the ${APP_NAME} AI assistant...`}
                         rows={6}
                         className={`preferences-textarea default-textarea ${isLoading ? 'loading' : ''}`}
                         disabled={isLoading}

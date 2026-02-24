@@ -115,7 +115,7 @@ export const CREDIT_EXPIRATION_THRESHOLDS = {
  * ------------------------------------------------------------------------------------------------
  */
 
-export const APP_NAME = 'ReCard';
+export const APP_NAME = 'Cardzen';
 export const CONTACT_EMAIL = 'getrecarded@gmail.com';
 export const APP_LOGO = '/temp_logo.png';
 export const PLACEHOLDER_CARD_IMAGE = 'https://placehold.co/20x20';
