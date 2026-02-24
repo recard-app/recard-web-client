@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { APP_NAME, CONTACT_EMAIL, PAGES } from '../../types';
+import { APP_NAME, SUPPORT_EMAIL, PAGES } from '../../types';
 import LegalPageLayout from './LegalPageLayout';
 
 const TermsOfService: React.FC = () => {
@@ -165,7 +165,7 @@ const TermsOfService: React.FC = () => {
       <h3>13. Contact Information</h3>
       <p>
         If you have questions about these Terms of Service, please contact us at{' '}
-        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
       </p>
     </LegalPageLayout>
   );

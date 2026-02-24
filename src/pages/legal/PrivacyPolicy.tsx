@@ -1,5 +1,5 @@
 import React from 'react';
-import { APP_NAME, CONTACT_EMAIL } from '../../types';
+import { APP_NAME, SUPPORT_EMAIL } from '../../types';
 import LegalPageLayout from './LegalPageLayout';
 
 const PrivacyPolicy: React.FC = () => {
@@ -113,7 +113,7 @@ const PrivacyPolicy: React.FC = () => {
       <ul>
         <li><strong>Access:</strong> view your data at any time through the app (card selections, chat history, preferences, credits)</li>
         <li><strong>Deletion:</strong> delete your chat history, individual conversations, or your entire account and all associated data</li>
-        <li><strong>Export:</strong> request a copy of your data by contacting us at <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. We will respond to export requests within 30 days</li>
+        <li><strong>Export:</strong> request a copy of your data by contacting us at <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. We will respond to export requests within 30 days</li>
         <li><strong>Correction:</strong> update your account information and preferences at any time through the app</li>
       </ul>
 
@@ -162,7 +162,7 @@ const PrivacyPolicy: React.FC = () => {
       <h3>12. Contact Us</h3>
       <p>
         If you have questions or concerns about this Privacy Policy or our data practices, please contact us at{' '}
-        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
       </p>
     </LegalPageLayout>
   );

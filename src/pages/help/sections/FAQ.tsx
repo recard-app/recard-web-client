@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PAGES } from '../../../types/Pages';
-import { APP_NAME, CONTACT_EMAIL, DAILY_ZEN_FEATURE_NAME } from '../../../types';
+import { APP_NAME, SUPPORT_EMAIL, DAILY_ZEN_FEATURE_NAME } from '../../../types';
 import { HelpSection } from '../components';
 
 const FAQ: React.FC = () => {
@@ -63,7 +63,7 @@ const FAQ: React.FC = () => {
 
           <HelpSection title="What if my card isn't in the database?" defaultExpanded={false}>
             <p>
-              Email us at {CONTACT_EMAIL} and we'll add it. We're constantly expanding our card database to include
+              Email us at {SUPPORT_EMAIL} and we'll add it. We're constantly expanding our card database to include
               more issuers and cards. We're also building a card request feature to make this easier
               in the future.
             </p>
