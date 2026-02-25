@@ -178,4 +178,31 @@
       color: $neutral-black;
     }
   }
+
+  // Frozen state -- blue/ice instead of gold accent.
+  // Component styles have 0-4-0 specificity (.card-details .card-action-buttons
+  // .freeze-button.is-frozen), so !important is needed to override from 0-3-0.
+  .freeze-button.is-frozen {
+    background-color: hsl(205, 35%, 20%) !important;
+    border-color: hsl(205, 40%, 30%) !important;
+    color: $info !important;
+
+    .freeze-icon {
+      color: $info !important;
+      fill: $info !important;
+    }
+
+    &:hover {
+      background-color: hsl(205, 35%, 25%) !important;
+      border-color: hsl(205, 40%, 35%) !important;
+    }
+  }
+
+  // Frozen snowflake icons in card lists, dropdowns, accordions, chat.
+  // Icon component sets color via inline style and fill via SVG attribute;
+  // override both to turn gold snowflakes to blue.
+  .frozen-icon {
+    color: $info !important;
+    fill: $info !important;
+  }
 }
