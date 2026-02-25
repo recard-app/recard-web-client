@@ -511,6 +511,13 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               {getCreditTitle()}
             </div>
           </div>
+          <Icon
+            name="chevron-right"
+            variant="mini"
+            size={16}
+            color={COLORS.NEUTRAL_MEDIUM_GRAY}
+            className="sidebar-chevron"
+          />
         </div>
 
         {/* Modal for sidebar variant - uses shared modal function (same as default) */}
