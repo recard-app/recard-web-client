@@ -6,6 +6,8 @@
  * ------------------------------------------------------------------------------------------------
  */
 
+export const DEFAULT_THEME_ID = 'cardzen';
+
 export const DAILY_ZEN_FEATURE_NAME = 'Daily Zen';
 
 export const CHAT_DESCRIPTION_MAX_LENGTH = 40;

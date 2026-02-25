@@ -40,8 +40,9 @@
     border-color: $border-medium-gray;
   }
 
-  // User message text -- gold for contrast on dark gold bg
-  .entry-user .entry-content {
+  // User message bubble -- bright gold text on dark gold bg.
+  // Needs .prompt-history to beat component specificity (0-4-0 vs 0-3-0).
+  .prompt-history .entry-user .entry-content {
     color: $primary-color;
   }
 
@@ -53,5 +54,26 @@
   // Drawer handle -- visible against card surface
   [data-slot="drawer-handle"] {
     background: $neutral-gray;
+  }
+
+  // Credit modal bottom-row button -- override light tint that mixes toward white.
+  // In dark mode, mix toward the dark surface color instead.
+  .credit-modal-bottom-row button.outline {
+    background-color: color-mix(in srgb, currentColor 15%, $neutral-white) !important;
+
+    &:hover:not(:disabled) {
+      background-color: color-mix(in srgb, currentColor 25%, $neutral-white) !important;
+    }
+  }
+
+  // Sidebar profile plan text -- $neutral-medium-gray (#5C5650) fails WCAG AA
+  // on dark surface. Brighten to $text-subtle-gray (#908A82) = 4.99:1.
+  .app-sidebar .profile-trigger .profile-plan {
+    color: $text-subtle-gray;
+  }
+
+  // Daily digest timestamp -- same $neutral-medium-gray issue.
+  .daily-digest__timestamp {
+    color: $text-subtle-gray;
   }
 }
