@@ -6,7 +6,7 @@
  * ------------------------------------------------------------------------------------------------
  */
 
-export const DEFAULT_THEME_ID = 'cardzen';
+export const DEFAULT_THEME_ID = 'default';
 
 export const DAILY_ZEN_FEATURE_NAME = 'Daily Zen';
 
