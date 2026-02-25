@@ -50,11 +50,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
-    // Mobile adjustment
-    @media (max-width: $mobile-breakpoint) {
-      font-weight: $font-medium;
-    }
   }
 
   .period-expiring-text {

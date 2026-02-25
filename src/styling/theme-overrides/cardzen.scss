@@ -89,4 +89,161 @@
   .amount-display .amount-text {
     color: $neutral-black;
   }
+
+  // Card detail meta icons (issuer/network) -- $neutral-gray (#484848) is a
+  // border color, far too dark for icons on dark surfaces.
+  // SVG fill/stroke are set as attributes, so we need !important on each.
+  .meta-item .meta-icon {
+    color: $neutral-dark-gray !important;
+    stroke: $neutral-dark-gray !important;
+    fill: $neutral-dark-gray !important;
+  }
+
+  // Navigation icons (inactive/gray) -- brighten for visibility on dark sidebar.
+  // Only targets non-active icons; gold active icons are left alone.
+  // Outline icons use stroke; solid icons use fill. Override both selectively.
+  .mini-nav-icon:not(.active) svg {
+    stroke: $neutral-dark-gray !important;
+
+    &[fill]:not([fill="none"]) {
+      fill: $neutral-dark-gray !important;
+    }
+  }
+
+  // Sidebar item icons (expanded sidebar) -- SVG has .sidebar-item-icon class directly.
+  svg.sidebar-item-icon {
+    stroke: $neutral-dark-gray !important;
+
+    &[fill]:not([fill="none"]) {
+      fill: $neutral-dark-gray !important;
+    }
+  }
+
+  // Card selector items -- elevate above drawer/container surface for contrast.
+  // neutralWhite (#1C1C1C) matches the drawer bg, so bump to neutralLightestGray (#272727)
+  // and use a visible border (borderLightGray #484848 vs neutralLightGray #0D0D0D).
+  .credit-card-selector .card,
+  .single-card-selector .cards-container .selectable-card {
+    background-color: $neutral-lightest-gray;
+    border-color: $border-light-gray;
+  }
+
+  // --- Brighter gold text ---
+  // On dark backgrounds, muted gold ($primary-medium / $primary-dark) lacks contrast.
+  // Bump to $primary-color for vibrancy.
+
+  // Dialog and drawer header titles
+  .dialog-header h2,
+  .drawer-sticky-header h2,
+  .alert-dialog-header h2 {
+    color: $primary-color;
+  }
+
+  // Section titles (settings, welcome, daily digest)
+  .settings-card__title,
+  .step-card__title,
+  .tips__title,
+  .help-section__title,
+  .daily-digest__title {
+    color: $primary-color;
+  }
+
+  // Help page nav path and group headers
+  .nav-path,
+  .glossary__letter-group h3,
+  .faq__group h3 {
+    color: $primary-color;
+  }
+
+  // Account page -- avatar placeholder, badges
+  .profile-card__avatar--placeholder {
+    color: $primary-color;
+  }
+
+  .account-badge--success,
+  .account-badge--sub {
+    color: $primary-color;
+  }
+
+  .account-wrapper .status-badge--success {
+    color: $primary-color;
+  }
+
+  // Credit card detail -- preferred tab text
+  .credit-tab-bar .tab-item.is-preferred {
+    color: $primary-color;
+  }
+
+  // Status badges and multiplier badges
+  .status-badge.frozen,
+  .multiplier-badge {
+    color: $primary-color;
+  }
+
+  // Prompt history welcome title
+  .prompt-history .welcome-message .title {
+    color: $primary-color;
+  }
+
+  // Prompt window inline button
+  .below-prompt-field-text .inline-button {
+    color: $primary-color;
+  }
+
+  // History panel pagination links
+  .history-pagination [data-slot="pagination-link"] {
+    color: $primary-color !important;
+  }
+
+  // Credit card selector -- tags, preferred chips, selected card text
+  .default-tag,
+  .selection-chip--preferred {
+    color: $primary-color;
+  }
+
+  .selected-card .card-name,
+  .selected-card .card-type {
+    color: $primary-color;
+  }
+
+  // Mobile header -- new chat button
+  .nav-item-new-chat button {
+    color: $primary-color;
+
+    svg {
+      color: $primary-color;
+    }
+  }
+
+  // Toggle bar active state
+  .toggle-bar-button.active,
+  .toggle-bar-button[data-pressed='true'] {
+    color: $primary-color;
+  }
+
+  // Sidebar credit names -- match card name brightness ($neutral-black)
+  // instead of the default $neutral-dark-gray which is too muted on dark bg.
+  .credit-entry-sidebar .credit-title-row .credit-name {
+    color: $neutral-black;
+  }
+
+  // Credit summary hero -- bump each text element up one brightness notch.
+  // hero-value "$32": $neutral-dark-gray -> $neutral-black (match credit-name)
+  // hero-label "of monthly credits used": $neutral-medium-gray -> $neutral-dark-gray
+  // supporting-row: $neutral-dark-gray -> $neutral-black
+  .credit-summary-hero .hero-value-row .hero-value {
+    color: $neutral-black;
+  }
+
+  .credit-summary-hero .hero-value-row .hero-label {
+    color: $neutral-dark-gray;
+  }
+
+  .credit-summary-hero .supporting-row {
+    color: $neutral-dark-gray;
+
+    .supporting-value {
+      color: $neutral-black;
+    }
+  }
 }
