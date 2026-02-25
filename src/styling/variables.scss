@@ -19,64 +19,63 @@ COLORS
 ------------- */
 
 // Primary Color Palette
-$primary-lightest: #EBF6EE;
-$primary-light: #D9EDDF;
-$primary-color: #22CC9D;
-$primary-medium: #007B53;
-$primary-dark: #003E29;
-$primary-darkest: #003212;
+$primary-lightest: var(--color-primary-lightest);
+$primary-light: var(--color-primary-light);
+$primary-color: var(--color-primary-color);
+$primary-medium: var(--color-primary-medium);
+$primary-dark: var(--color-primary-dark);
+$primary-darkest: var(--color-primary-darkest);
 
 // Accent Color Palette
-$accent-lightest: #4E81F2;
-$accent-color: #2563EB;
-$accent-medium: #005DCF;
-$accent-dark: #0047B3;
+$accent-lightest: var(--color-accent-lightest);
+$accent-color: var(--color-accent-color);
+$accent-medium: var(--color-accent-medium);
+$accent-dark: var(--color-accent-dark);
 
 // Neutral Color Palette
-$neutral-white: #FFFFFF;
-$neutral-lightest-gray: #fbfbfb;
-$neutral-light-gray: #F2F4F6;
-$neutral-gray: #C9CED3;
-$neutral-medium-gray: #B5BBC2;
-$neutral-dark-gray: #5A5F66;
-$neutral-black: #0B0D0F;
+$neutral-white: var(--color-neutral-white);
+$neutral-lightest-gray: var(--color-neutral-lightest-gray);
+$neutral-light-gray: var(--color-neutral-light-gray);
+$neutral-gray: var(--color-neutral-gray);
+$neutral-medium-gray: var(--color-neutral-medium-gray);
+$neutral-dark-gray: var(--color-neutral-dark-gray);
+$neutral-black: var(--color-neutral-black);
 
 // Semantic Colors
-$success: $primary-color;
-$warning-yellow: #EAB308;
-$warning: #F59E0B;
-$error: #EF4444;
-$info: $accent-color;
+$success: var(--color-success);
+$warning-yellow: var(--color-warning-yellow);
+$warning: var(--color-warning);
+$error: var(--color-error);
+$info: var(--color-info);
 
 // Misc Colors
-// Additional grays and neutral colors found in components
-$border-light-gray: #ddd; // Used in dropdown borders, form elements, and component separators
-$background-lighter-gray: #f5f5f5; // Used in background overlays and disabled states
-$text-medium-gray: #999; // Used for secondary text and placeholder content
-$text-dark-gray: #555; // Used for muted text content
-$border-lighter-gray: #eee; // Used in light borders and dividers
-$text-subtle-gray: #888; // Used for subtle text elements
-$text-muted-gray: #666; // Used for muted secondary text
-$border-medium-gray: #ccc; // Used for form borders and dividers
-$disabled-gray: #9CA3AF; // Used for disabled form elements and inactive states
+$border-light-gray: var(--color-border-light-gray);
+$background-lighter-gray: var(--color-background-lighter-gray);
+$text-medium-gray: var(--color-text-medium-gray);
+$text-dark-gray: var(--color-text-dark-gray);
+$border-lighter-gray: var(--color-border-lighter-gray);
+$text-subtle-gray: var(--color-text-subtle-gray);
+$text-muted-gray: var(--color-text-muted-gray);
+$border-medium-gray: var(--color-border-medium-gray);
+$disabled-gray: var(--color-disabled-gray);
 
 // Warning and status colors
-$warning-badge-background: $warning-yellow; // Used in warning badges and notifications
-$warning-badge-text: #8a6d3b; // Used for warning badge text
-$warning-badge-light: $warning-yellow; // Used for light warning backgrounds
-$alert-red-background: $error; // Used for critical error backgrounds
+$warning-badge-background: var(--color-warning-badge-background);
+$warning-badge-text: var(--color-warning-badge-text);
+$warning-badge-light: var(--color-warning-badge-light);
+$alert-red-background: var(--color-alert-red-background);
 
 // Info component colors
-$info-error-red: $error; // Used in info displays for error states
-$info-blue: $info; // Used in info displays for informational content
-$info-warning-orange: $warning; // Used in info displays for warning states
-$info-success-green: #4caf50; // Used in info displays for success states
-$info-loading-gray: $neutral-dark-gray; // Used in info displays for loading states
+$info-error-red: var(--color-info-error-red);
+$info-blue: var(--color-info-blue);
+$info-warning-orange: var(--color-info-warning-orange);
+$info-success-green: var(--color-info-success-green);
+$info-loading-gray: var(--color-info-loading-gray);
 
 // Component-specific colors
-$credit-entry-border: #e5e7eb; // Used in credit entry components for borders
-$credit-entry-background: #f3f4f6; // Used in credit entry components for backgrounds
-$dropdown-white: $neutral-white; // Used specifically for dropdown backgrounds (exact white)
+$credit-entry-border: var(--color-credit-entry-border);
+$credit-entry-background: var(--color-credit-entry-background);
+$dropdown-white: var(--color-dropdown-white);
 
 /* -------------
 

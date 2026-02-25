@@ -1,4 +1,3 @@
-@use 'sass:color';
 @use '../../styling/variables' as *;
 
 // Help layout - Desktop
@@ -578,7 +577,7 @@ button.help-section__header {
     }
 
     &--info {
-      background: color.adjust($accent-color, $lightness: 45%);
+      background: color-mix(in srgb, $accent-color 10%, white);
       border-left: 3px solid $accent-color;
     }
 
@@ -588,7 +587,7 @@ button.help-section__header {
     }
 
     &--warning {
-      background: color.adjust($warning, $lightness: 40%);
+      background: color-mix(in srgb, $warning 15%, white);
       border-left: 3px solid $warning;
     }
   }

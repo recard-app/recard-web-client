@@ -120,32 +120,13 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
     [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_ICON_NAMES.DISABLED,
   };
 
-  // Tinting functions
-  const parseHexToRgb = (hex: string | undefined): { r: number; g: number; b: number } => {
-    // Default to gray if hex is undefined/null
-    if (!hex) {
-      return { r: 156, g: 163, b: 175 }; // #9CA3AF
-    }
-    const normalized = hex.replace('#', '');
-    const value = normalized.length === 3 ? normalized.split('').map((c) => c + c).join('') : normalized;
-    const r = parseInt(value.substring(0, 2), 16);
-    const g = parseInt(value.substring(2, 4), 16);
-    const b = parseInt(value.substring(4, 6), 16);
-    return { r, g, b };
-  };
+  // Tinting via CSS color-mix (works with CSS custom property values)
+  const tintColor = (color: string, tintFactor: number): string =>
+    `color-mix(in srgb, ${color} ${Math.round((1 - tintFactor) * 100)}%, white)`;
 
-  const tintHexColor = (hex: string, tintFactor: number): string => {
-    const { r, g, b } = parseHexToRgb(hex);
-    const mix = (channel: number) => Math.round(channel + (255 - channel) * tintFactor);
-    const nr = mix(r);
-    const ng = mix(g);
-    const nb = mix(b);
-    return `#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`;
-  };
-
-  const lineTintBackground = tintHexColor(usageColor, 0.95);
-  const lineTintHover = tintHexColor(usageColor, 0.85);
-  const buttonBackgroundColor = tintHexColor(usageColor, 0.9);
+  const lineTintBackground = tintColor(usageColor, 0.95);
+  const lineTintHover = tintColor(usageColor, 0.85);
+  const buttonBackgroundColor = tintColor(usageColor, 0.9);
 
   const persistUpdate = async (newUsage: CreditUsageType, val: number) => {
     if (!onUpdateHistoryEntry) return;

@@ -78,21 +78,12 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
   const displayColor = color || defaultColor;
   const displayIcon = icon || defaultIcon;
   
-  // Create background color with 0.1 opacity
-  const getBackgroundColor = (hexColor: string) => {
-    // If transparent is true, return transparent background
+  // Create background color with 10% opacity tint
+  const getBackgroundColor = (colorValue: string) => {
     if (transparent) {
       return 'transparent';
     }
-    
-    // Convert hex to rgba with 0.1 opacity
-    if (hexColor.startsWith('#')) {
-      const r = parseInt(hexColor.slice(1, 3), 16);
-      const g = parseInt(hexColor.slice(3, 5), 16);
-      const b = parseInt(hexColor.slice(5, 7), 16);
-      return `rgba(${r}, ${g}, ${b}, 0.1)`;
-    }
-    return hexColor; // Fallback if not hex
+    return `color-mix(in srgb, ${colorValue} 10%, transparent)`;
   };
 
   return (

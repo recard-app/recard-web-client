@@ -138,7 +138,7 @@ $collapse-transition-duration: 0.15s;
       font-size: $font-xs;
       opacity: 0.6;
       padding-left: $space-1;
-      border-left: $border-full solid rgba($neutral-black, 0.1);
+      border-left: $border-full solid color-mix(in srgb, $neutral-black 10%, transparent);
       transition: opacity $transition-base;
     }
   }

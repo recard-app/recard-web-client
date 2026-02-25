@@ -476,7 +476,7 @@
               .multiplier-no-schedule {
                 font-size: $font-xs;
                 color: $warning-badge-text;
-                background-color: rgba($warning-yellow, 0.15);
+                background-color: color-mix(in srgb, $warning-yellow 15%, transparent);
                 padding: $space-2 $space-3;
                 border-radius: $radius-sm;
                 margin-bottom: $space-2;

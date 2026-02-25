@@ -308,11 +308,11 @@ button, .button {
 // Credit slider color variables driven by SCSS design tokens
 :root {
   // Base palette mapped from SCSS vars so you can change colors in variables.scss
-  --credit-bar-untracked: #{$neutral-gray};
-  --credit-bar-inactive: #{$neutral-medium-gray};
-  --credit-bar-unused: #{$neutral-dark-gray};
-  --credit-bar-partial: #{$primary-color};
-  --credit-bar-used: #{$primary-medium};
+  --credit-bar-untracked: $neutral-gray;
+  --credit-bar-inactive: $neutral-medium-gray;
+  --credit-bar-unused: $neutral-dark-gray;
+  --credit-bar-partial: $primary-color;
+  --credit-bar-used: $primary-medium;
 
   // Slider-specific aliases, so components can target stable names
   --slider-range-color-used: var(--credit-bar-used);

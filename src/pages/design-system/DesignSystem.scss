@@ -40,7 +40,7 @@
   font-size: $font-sm;
   font-weight: $font-semibold;
   color: $primary-color;
-  background: rgba($primary-color, 0.1);
+  background: color-mix(in srgb, $primary-color 10%, transparent);
   padding: $space-2 $space-3;
   border-radius: $radius-md;
   text-decoration: none;
@@ -213,7 +213,7 @@
   font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: $font-xs;
   color: $accent-color;
-  background: rgba($accent-color, 0.1);
+  background: color-mix(in srgb, $accent-color 10%, transparent);
   padding: $space-1 $space-2;
   border-radius: $radius-sm;
   display: inline-block;

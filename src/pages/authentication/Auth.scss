@@ -73,7 +73,7 @@
 
     &:focus {
       border-color: $primary-color;
-      box-shadow: 0 0 0 3px rgba($primary-color, 0.15);
+      box-shadow: 0 0 0 3px color-mix(in srgb, $primary-color 15%, transparent);
     }
   }
 }

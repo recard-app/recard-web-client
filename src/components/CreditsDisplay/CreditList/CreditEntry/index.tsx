@@ -240,28 +240,6 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
 
   const usageColor = USAGE_COLOR_BY_STATE[usage] || CREDIT_USAGE_DISPLAY_COLORS.INACTIVE;
 
-  // Tinting functions for card styling
-  const parseHexToRgb = (hex: string): { r: number; g: number; b: number } => {
-    const normalized = hex.replace('#', '');
-    const value = normalized.length === 3 ? normalized.split('').map((c) => c + c).join('') : normalized;
-    const r = parseInt(value.substring(0, 2), 16);
-    const g = parseInt(value.substring(2, 4), 16);
-    const b = parseInt(value.substring(4, 6), 16);
-    return { r, g, b };
-  };
-
-  const tintHexColor = (hex: string, tintFactor: number): string => {
-    const { r, g, b } = parseHexToRgb(hex);
-    const mix = (channel: number) => Math.round(channel + (255 - channel) * tintFactor);
-    const nr = mix(r);
-    const ng = mix(g);
-    const nb = mix(b);
-    return `#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`;
-  };
-
-  const buttonBackgroundColor = tintHexColor(usageColor, 0.9);
-  const buttonHoverColor = tintHexColor(usageColor, 0.85);
-
   // Shared modal rendering function to ensure consistency between variants
   const renderModal = () => {
     return isMobile ? (

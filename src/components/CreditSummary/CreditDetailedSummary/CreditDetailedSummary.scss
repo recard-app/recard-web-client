@@ -11,7 +11,7 @@
   .updating-overlay {
     position: absolute;
     inset: 0;
-    background: rgba($neutral-white, 0.8);
+    background: color-mix(in srgb, $neutral-white 80%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;

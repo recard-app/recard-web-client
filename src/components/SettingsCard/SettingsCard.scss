@@ -1,6 +1,5 @@
 @use '../../styling/globals' as *;
 @use '../../styling/mixins' as *;
-@use 'sass:color';
 
 // Settings Card Container
 .settings-card {
@@ -22,7 +21,7 @@
       user-select: none;
 
       &:hover {
-        background: color.adjust($primary-lightest, $lightness: -3%);
+        background: color-mix(in srgb, $primary-lightest 94%, black);
       }
 
       &:focus-visible {
@@ -68,14 +67,14 @@
 
   // Danger variant - must come after base styles
   &--danger {
-    border-color: color.adjust($error, $lightness: 25%);
+    border-color: color-mix(in srgb, $error 30%, white);
 
     .settings-card__header {
-      background: color.adjust($error, $lightness: 40%);
-      border-bottom-color: color.adjust($error, $lightness: 25%);
+      background: color-mix(in srgb, $error 15%, white);
+      border-bottom-color: color-mix(in srgb, $error 30%, white);
 
       &--clickable:hover {
-        background: color.adjust($error, $lightness: 35%);
+        background: color-mix(in srgb, $error 20%, white);
       }
 
       &--clickable:focus-visible {
@@ -122,7 +121,7 @@
     }
 
     &:hover:not(.settings-row--disabled) {
-      background: rgba($error, 0.05);
+      background: color-mix(in srgb, $error 5%, transparent);
     }
   }
 

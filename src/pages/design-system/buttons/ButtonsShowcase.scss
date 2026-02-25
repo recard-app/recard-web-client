@@ -36,7 +36,7 @@
   font-size: $font-xs;
   color: $neutral-dark-gray;
   margin: 0 0 $space-4 0;
-  background: rgba($accent-color, 0.08);
+  background: color-mix(in srgb, $accent-color 8%, transparent);
   padding: $space-1 $space-2;
   border-radius: $radius-sm;
   display: inline-block;
@@ -66,7 +66,7 @@
   font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: $font-xs;
   color: $accent-color;
-  background: rgba($accent-color, 0.1);
+  background: color-mix(in srgb, $accent-color 10%, transparent);
   padding: $space-1 $space-2;
   border-radius: $radius-sm;
   display: inline-block;
@@ -135,11 +135,11 @@
   color: $neutral-dark-gray;
   padding: $space-half $space-1-5;
   border-radius: $radius-sm;
-  background: rgba($neutral-gray, 0.2);
+  background: color-mix(in srgb, $neutral-gray 20%, transparent);
   transition: background $transition-fast, color $transition-fast;
 
   &:hover {
-    background: rgba($neutral-gray, 0.35);
+    background: color-mix(in srgb, $neutral-gray 35%, transparent);
     color: $neutral-black;
   }
 }
@@ -186,7 +186,7 @@
   flex-direction: column;
   gap: 1px;
   padding: $space-1 $space-2;
-  background: rgba($neutral-light-gray, 0.6);
+  background: color-mix(in srgb, $neutral-light-gray 60%, transparent);
   border-radius: $radius-sm;
 }
 

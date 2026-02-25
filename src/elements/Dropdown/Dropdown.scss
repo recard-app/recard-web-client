@@ -104,7 +104,7 @@
     // Add styling for sign out action
     &.signout-action {
       color: $error;
-      background-color: rgba($error, 0.2);
+      background-color: color-mix(in srgb, $error 20%, transparent);
     }
   }
   

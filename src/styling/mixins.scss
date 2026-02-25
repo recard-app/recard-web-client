@@ -323,7 +323,7 @@
   &:focus {
     outline: none;
     border-color: $primary-color;
-    box-shadow: 0 0 0 3px rgba($primary-color, 0.2);
+    box-shadow: 0 0 0 3px color-mix(in srgb, $primary-color 20%, transparent);
   }
 
   &::placeholder {
@@ -579,13 +579,13 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba($neutral-dark-gray, 0.3);
+    background-color: color-mix(in srgb, $neutral-dark-gray 30%, transparent);
     border-radius: $radius-base;
   }
 
   // Modern scrollbar styling for all browsers (moved after nested rules)
   scrollbar-width: thin;
-  scrollbar-color: rgba($neutral-dark-gray, 0.3) transparent;
+  scrollbar-color: color-mix(in srgb, $neutral-dark-gray 30%, transparent) transparent;
 }
 
 // === UPDATING STATE ANIMATION ===
