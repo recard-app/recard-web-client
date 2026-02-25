@@ -7,6 +7,7 @@
     // Sidebar variant uses borderless, full-page variant uses bordered
     @include card-base-borderless;
     padding: $space-1-5;
+    padding-left: $space-2;
     margin-bottom: 1px;
     position: relative;
     display: flex;
@@ -93,6 +94,9 @@
 
     // SIDEBAR VARIANT - More compact styling
     &.sidebar-variant {
+      @media (max-width: $mobile-breakpoint) {
+        padding-left: $space-1-5;
+      }
         &:hover { }
 
         &.has-selected-card { }
