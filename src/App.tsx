@@ -124,7 +124,8 @@ import {
 import { UserComponentTrackingPreferences, PrioritizedCredit } from './types/CardCreditsTypes';
 import { FullHeightContext } from './hooks/useFullHeight';
 import { ScrollHeightContext } from './hooks/useScrollHeight';
-import { Toaster, toast } from 'sonner';
+import { toast } from 'sonner';
+import { Toaster } from './components/ui/sonner';
 
 const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 
