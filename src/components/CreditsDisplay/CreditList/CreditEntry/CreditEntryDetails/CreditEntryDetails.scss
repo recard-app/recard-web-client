@@ -8,6 +8,10 @@
   flex-direction: column;
   gap: $space-3;
   margin-top: $space-3;
+
+  .category-badge {
+    margin-top: $space-2;
+  }
 }
 
 .credit-detail-field {

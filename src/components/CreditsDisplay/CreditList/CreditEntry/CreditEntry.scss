@@ -75,7 +75,7 @@
       align-items: center;
       gap: $space-1;
       color: $neutral-medium-gray;
-      font-weight: $font-bold;
+      font-weight: $font-medium;
     }
   }
   
@@ -135,7 +135,7 @@
       align-items: center;
       gap: $space-1;
       color: $warning;
-      font-weight: $font-bold;
+      font-weight: $font-medium;
       white-space: nowrap;
     }
   }
@@ -507,17 +507,6 @@ body:has(.mobile-credit-details-drawer, .credit-edit-modal-drawer) [data-radix-p
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-  }
-
-  .expiring-text {
-    display: flex;
-    align-items: center;
-    gap: $space-1;
-    font-size: $font-xxs;
-    color: $warning;
-    font-weight: $font-bold;
-    line-height: 1.1;
-    margin-left: calc(16px + #{$space-1-5}); // Align with credit name (icon width + gap)
   }
 }
 

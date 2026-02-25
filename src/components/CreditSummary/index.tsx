@@ -196,7 +196,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
               onClick={onDetailedSummaryClick}
               aria-label="Expand to view full report"
             >
-              <Icon name="expand-arrows" variant="mini" size={20} />
+              <Icon name="chart-bar" variant="mini" size={20} />
             </button>
           </div>
         )}

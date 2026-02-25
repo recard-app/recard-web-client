@@ -305,6 +305,19 @@ button, .button {
   }
 }
 
+// Universal category pill/badge style
+.category-badge {
+  display: inline-block;
+  padding: $space-half $space-2;
+  font-size: $font-xxs;
+  font-weight: $font-medium;
+  color: $neutral-dark-gray;
+  background-color: $neutral-light-gray;
+  border-radius: $radius-full;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 // Credit slider color variables driven by SCSS design tokens
 :root {
   // Base palette mapped from SCSS vars so you can change colors in variables.scss

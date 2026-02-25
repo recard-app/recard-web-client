@@ -113,15 +113,27 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
   // Generate selected period name for display
   const getSelectedPeriodName = () => getPeriodName(effectivePeriodNumber);
 
-
-
   return (
     <div className="credit-detail-content">
-      {/* Description with stacked label */}
+      {/* Description with stacked label and category pill */}
       {cardCredit?.Description && (
         <div className="credit-detail-item">
           <span className="credit-detail-label">Description</span>
           <div className="credit-detail-value">{cardCredit.Description}</div>
+          {(cardCredit?.Category || cardCredit?.SubCategory) && (
+            <span className="category-badge">
+              {cardCredit.Category}{cardCredit.SubCategory ? ` > ${cardCredit.SubCategory}` : ''}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Category pill fallback when no description exists */}
+      {!cardCredit?.Description && (cardCredit?.Category || cardCredit?.SubCategory) && (
+        <div className="credit-detail-item">
+          <span className="category-badge">
+            {cardCredit.Category}{cardCredit.SubCategory ? ` > ${cardCredit.SubCategory}` : ''}
+          </span>
         </div>
       )}
 
@@ -143,37 +155,23 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
         </div>
       )}
 
-      {/* Time Period and Category side-by-side */}
-      {(cardCredit?.TimePeriod || cardCredit?.Category || cardCredit?.SubCategory) && (
-        <div className="credit-details-section">
-          <div className="credit-detail-group">
-            {cardCredit?.TimePeriod && (
-              <div className="credit-detail-item">
-                <span className="credit-detail-label">Time Period</span>
-                <div className="credit-detail-value">{cardCredit.TimePeriod}</div>
-              </div>
-            )}
-          </div>
-          
-          <div className="credit-detail-group">
-            {(cardCredit?.Category || cardCredit?.SubCategory) && (
-              <div className="credit-detail-item">
-                <span className="credit-detail-label">Category</span>
-                <div className="credit-detail-value">
-                  {cardCredit.Category}{cardCredit.SubCategory ? ` › ${cardCredit.SubCategory}` : ''}
-                </div>
-              </div>
-            )}
-          </div>
+      {/* Time Period and Usage side-by-side */}
+      <div className="credit-details-section">
+        <div className="credit-detail-group">
+          {cardCredit?.TimePeriod && (
+            <div className="credit-detail-item">
+              <span className="credit-detail-label">Time Period</span>
+              <div className="credit-detail-value">{cardCredit.TimePeriod}</div>
+            </div>
+          )}
         </div>
-      )}
 
-      {/* Usage Statistics */}
-      <div className="usage-stats-section">
-        <div className="credit-detail-item">
-          <span className="credit-detail-label">Usage for {currentYear}</span>
-          <div className="credit-detail-value">
-            ${userCredit.History.reduce((total: any, entry: any) => total + (entry.ValueUsed || 0), 0)} / ${(Number(cardCredit?.Value) || 0) * userCredit.History.length} used
+        <div className="credit-detail-group">
+          <div className="credit-detail-item">
+            <span className="credit-detail-label">Usage for {currentYear}</span>
+            <div className="credit-detail-value">
+              ${userCredit.History.reduce((total: any, entry: any) => total + (entry.ValueUsed || 0), 0)} / ${(Number(cardCredit?.Value) || 0) * userCredit.History.length} used
+            </div>
           </div>
         </div>
       </div>
