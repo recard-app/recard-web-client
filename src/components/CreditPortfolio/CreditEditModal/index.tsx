@@ -243,30 +243,31 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
   // Use localUserCredit for display to reflect optimistic updates
   const displayCredit = localUserCredit ?? userCredit;
 
-  const modalContent = displayCredit ? (
-    <>
-      <CreditEntryDetails
-        userCredit={displayCredit}
-        now={now}
-        card={card}
-        cardCredit={cardCredit}
-        creditMaxValue={creditMaxValue}
-        currentYear={year}
-        onUpdateHistoryEntry={handleUpdateHistoryEntry}
-        hideControls={false}
-        selectedPeriodNumber={selectedPeriodNumber}
-        onPeriodSelect={setSelectedPeriodNumber}
-      />
-      <CreditUsageTracker
-        userCredit={displayCredit}
-        currentYear={year}
-        selectedPeriodNumber={selectedPeriodNumber}
-        onPeriodSelect={setSelectedPeriodNumber}
-        creditMaxValue={creditMaxValue}
-        currentUsage={liveUsage}
-        currentValueUsed={liveValueUsed}
-      />
-    </>
+  const detailsContent = displayCredit ? (
+    <CreditEntryDetails
+      userCredit={displayCredit}
+      now={now}
+      card={card}
+      cardCredit={cardCredit}
+      creditMaxValue={creditMaxValue}
+      currentYear={year}
+      onUpdateHistoryEntry={handleUpdateHistoryEntry}
+      hideControls={false}
+      selectedPeriodNumber={selectedPeriodNumber}
+      onPeriodSelect={setSelectedPeriodNumber}
+    />
+  ) : null;
+
+  const usageTracker = displayCredit ? (
+    <CreditUsageTracker
+      userCredit={displayCredit}
+      currentYear={year}
+      selectedPeriodNumber={selectedPeriodNumber}
+      onPeriodSelect={setSelectedPeriodNumber}
+      creditMaxValue={creditMaxValue}
+      currentUsage={liveUsage}
+      currentValueUsed={liveValueUsed}
+    />
   ) : null;
 
   const modalControls = localUserCredit ? (
@@ -306,9 +307,10 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
             {cardBubble}
           </div>
           <div className="drawer-content-scroll">
-            {modalContent}
+            {detailsContent}
           </div>
           <DrawerFooter>
+            {usageTracker}
             {modalControls}
           </DrawerFooter>
         </DrawerContent>
@@ -324,7 +326,8 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
           {cardBubble}
         </DialogHeader>
         <div className="dialog-content-scroll">
-          {modalContent}
+          {detailsContent}
+          {usageTracker}
         </div>
         <DialogFooter>
           {modalControls}
