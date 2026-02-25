@@ -38,6 +38,12 @@
   .chat-component-item {
     background-color: $background-lighter-gray;
     border-color: $border-medium-gray;
+
+    // Action row footer -- lighter than card body for visual distinction.
+    .action-row {
+      background-color: $border-lighter-gray;
+      border-top-color: $neutral-gray;
+    }
   }
 
   // User message bubble -- bright gold text on dark gold bg.
@@ -75,6 +81,12 @@
   // Credit detail values -- brighten to primary text so they stand out from
   // the muted labels ($neutral-medium-gray).
   .credit-detail-value {
+    color: $neutral-black;
+  }
+
+  // Credit period row -- brighten period name and dollar amount.
+  .credit-period-row .period-name,
+  .amount-display .amount-text {
     color: $neutral-black;
   }
 }
