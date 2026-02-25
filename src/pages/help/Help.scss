@@ -577,7 +577,7 @@ button.help-section__header {
     }
 
     &--info {
-      background: color-mix(in srgb, $accent-color 10%, white);
+      background: color-mix(in srgb, $accent-color 10%, $neutral-white);
       border-left: 3px solid $accent-color;
     }
 
@@ -587,7 +587,7 @@ button.help-section__header {
     }
 
     &--warning {
-      background: color-mix(in srgb, $warning 15%, white);
+      background: color-mix(in srgb, $warning 15%, $neutral-white);
       border-left: 3px solid $warning;
     }
   }

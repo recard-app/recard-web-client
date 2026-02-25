@@ -1,38 +1,29 @@
 import React from 'react';
+import { useTheme } from '../../../context/ThemeContext';
+import type { ThemeColors } from '../../../styling/themes';
 
-// Color definitions matching variables.scss
-const colors = {
-  primary: [
-    { name: 'primary-lightest', value: '#EBF6EE' },
-    { name: 'primary-light', value: '#D9EDDF' },
-    { name: 'primary-color', value: '#22CC9D' },
-    { name: 'primary-medium', value: '#007B53' },
-    { name: 'primary-dark', value: '#003E29' },
-    { name: 'primary-darkest', value: '#003212' },
-  ],
-  accent: [
-    { name: 'accent-lightest', value: '#4E81F2' },
-    { name: 'accent-color', value: '#2563EB' },
-    { name: 'accent-medium', value: '#005DCF' },
-    { name: 'accent-dark', value: '#0047B3' },
-  ],
-  neutral: [
-    { name: 'neutral-white', value: '#FFFFFF' },
-    { name: 'neutral-lightest-gray', value: '#fbfbfb' },
-    { name: 'neutral-light-gray', value: '#F2F4F6' },
-    { name: 'neutral-gray', value: '#C9CED3' },
-    { name: 'neutral-medium-gray', value: '#B5BBC2' },
-    { name: 'neutral-dark-gray', value: '#5A5F66' },
-    { name: 'neutral-black', value: '#0B0D0F' },
-  ],
-  semantic: [
-    { name: 'success', value: '#22CC9D' },
-    { name: 'warning-yellow', value: '#EAB308' },
-    { name: 'warning', value: '#F59E0B' },
-    { name: 'error', value: '#EF4444' },
-    { name: 'info', value: '#2563EB' },
-  ],
-};
+function camelToKebab(key: string): string {
+  return key.replace(/([A-Z])/g, '-$1').toLowerCase();
+}
+
+const colorGroups: { label: string; keys: (keyof ThemeColors)[] }[] = [
+  {
+    label: 'Primary Colors',
+    keys: ['primaryLightest', 'primaryLight', 'primaryColor', 'primaryMedium', 'primaryDark', 'primaryDarkest'],
+  },
+  {
+    label: 'Accent Colors',
+    keys: ['accentLightest', 'accentColor', 'accentMedium', 'accentDark'],
+  },
+  {
+    label: 'Neutral Colors',
+    keys: ['neutralWhite', 'neutralLightestGray', 'neutralLightGray', 'neutralGray', 'neutralMediumGray', 'neutralDarkGray', 'neutralBlack'],
+  },
+  {
+    label: 'Semantic Colors',
+    keys: ['success', 'warningYellow', 'warning', 'error', 'info'],
+  },
+];
 
 const typography = [
   { name: '$font-h1', size: '3rem', sample: 'Heading 1' },
@@ -85,6 +76,8 @@ const radii = [
 ];
 
 const DesignTokens: React.FC = () => {
+  const { colors } = useTheme();
+
   return (
     <>
       <h2 className="ds-section-title">Design Tokens</h2>
@@ -92,75 +85,26 @@ const DesignTokens: React.FC = () => {
         Core design variables that define the visual language of the application
       </p>
 
-      {/* Colors - Primary */}
-      <div className="ds-variant-group">
-        <h3 className="ds-variant-label">Primary Colors</h3>
-        <div className="ds-color-grid">
-          {colors.primary.map((color) => (
-            <div key={color.name} className="ds-color-swatch">
-              <div className="ds-color-preview" style={{ backgroundColor: color.value }} />
-              <div className="ds-color-info">
-                <span className="ds-color-name">{color.name}</span>
-                <span className="ds-color-value">{color.value}</span>
-              </div>
-            </div>
-          ))}
+      {colorGroups.map((group) => (
+        <div key={group.label} className="ds-variant-group">
+          <h3 className="ds-variant-label">{group.label}</h3>
+          <div className="ds-color-grid">
+            {group.keys.map((key) => {
+              const value = colors[key];
+              const name = camelToKebab(key);
+              return (
+                <div key={key} className="ds-color-swatch">
+                  <div className="ds-color-preview" style={{ backgroundColor: value }} />
+                  <div className="ds-color-info">
+                    <span className="ds-color-name">{name}</span>
+                    <span className="ds-color-value">{value}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
-
-      {/* Colors - Accent */}
-      <div className="ds-variant-group">
-        <h3 className="ds-variant-label">Accent Colors</h3>
-        <div className="ds-color-grid">
-          {colors.accent.map((color) => (
-            <div key={color.name} className="ds-color-swatch">
-              <div className="ds-color-preview" style={{ backgroundColor: color.value }} />
-              <div className="ds-color-info">
-                <span className="ds-color-name">{color.name}</span>
-                <span className="ds-color-value">{color.value}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Colors - Neutral */}
-      <div className="ds-variant-group">
-        <h3 className="ds-variant-label">Neutral Colors</h3>
-        <div className="ds-color-grid">
-          {colors.neutral.map((color) => (
-            <div key={color.name} className="ds-color-swatch">
-              <div 
-                className="ds-color-preview" 
-                style={{ 
-                  backgroundColor: color.value,
-                  border: color.value === '#FFFFFF' ? '1px solid #ddd' : undefined
-                }} 
-              />
-              <div className="ds-color-info">
-                <span className="ds-color-name">{color.name}</span>
-                <span className="ds-color-value">{color.value}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Colors - Semantic */}
-      <div className="ds-variant-group">
-        <h3 className="ds-variant-label">Semantic Colors</h3>
-        <div className="ds-color-grid">
-          {colors.semantic.map((color) => (
-            <div key={color.name} className="ds-color-swatch">
-              <div className="ds-color-preview" style={{ backgroundColor: color.value }} />
-              <div className="ds-color-info">
-                <span className="ds-color-name">{color.name}</span>
-                <span className="ds-color-value">{color.value}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      ))}
 
       {/* Typography - Font Families */}
       <div className="ds-variant-group">

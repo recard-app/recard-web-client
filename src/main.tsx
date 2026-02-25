@@ -1,5 +1,6 @@
 import ReactDOM from 'react-dom/client';
 import './main.css';
+import './styling/theme-overrides/cardzen.scss';
 import App from './App';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';

@@ -23,6 +23,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useLayoutEffect(() => {
     applyThemeToDocument(theme);
+    document.documentElement.dataset.theme = theme.id;
   }, [theme]);
 
   useEffect(() => {

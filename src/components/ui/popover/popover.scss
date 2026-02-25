@@ -1,9 +1,11 @@
+@use '../../../styling/globals' as *;
+
 .popover-content {
   z-index: 50;
   min-width: 8rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--border-color, #e5e7eb);
-  background-color: var(--background-color, #ffffff);
+  border: 1px solid $border-light-gray;
+  background-color: $dropdown-white;
   padding: 0.25rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   outline: none;

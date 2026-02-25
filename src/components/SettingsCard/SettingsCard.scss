@@ -67,14 +67,14 @@
 
   // Danger variant - must come after base styles
   &--danger {
-    border-color: color-mix(in srgb, $error 30%, white);
+    border-color: color-mix(in srgb, $error 30%, $neutral-white);
 
     .settings-card__header {
-      background: color-mix(in srgb, $error 15%, white);
-      border-bottom-color: color-mix(in srgb, $error 30%, white);
+      background: color-mix(in srgb, $error 15%, $neutral-white);
+      border-bottom-color: color-mix(in srgb, $error 30%, $neutral-white);
 
       &--clickable:hover {
-        background: color-mix(in srgb, $error 20%, white);
+        background: color-mix(in srgb, $error 20%, $neutral-white);
       }
 
       &--clickable:focus-visible {

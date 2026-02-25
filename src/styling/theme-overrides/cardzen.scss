@@ -1,0 +1,57 @@
+@use '../globals' as *;
+
+// =============================================================================
+// CARDZEN THEME OVERRIDES
+// Scoped under [data-theme="cardzen"] -- cannot affect Default theme.
+// All values use SCSS variables (-> CSS custom properties) from ThemeColors,
+// so if the Cardzen palette changes, these overrides adapt automatically.
+// =============================================================================
+
+// --- shadcn/ui CSS variable overrides ---
+// Override the oklch defaults in main.css :root with Cardzen dark values.
+// :root[data-theme] gives specificity 0-2-0, beating :root (0-1-0).
+:root[data-theme="cardzen"] {
+  --background: #{$neutral-light-gray};
+  --foreground: #{$neutral-black};
+  --card: #{$neutral-white};
+  --card-foreground: #{$neutral-black};
+  --popover: #{$dropdown-white};
+  --popover-foreground: #{$neutral-black};
+  --primary: #{$primary-color};
+  --primary-foreground: #{$neutral-white};
+  --secondary: #{$neutral-lightest-gray};
+  --secondary-foreground: #{$neutral-black};
+  --muted: #{$neutral-lightest-gray};
+  --muted-foreground: #{$neutral-dark-gray};
+  --accent: #{$primary-light};
+  --accent-foreground: #{$neutral-black};
+  --destructive: #{$error};
+  --border: #{$neutral-gray};
+  --input: #{$neutral-gray};
+  --ring: #{$primary-color};
+}
+
+// --- Component-specific overrides ---
+
+[data-theme="cardzen"] {
+  // Chat component cards -- pop against dark container background
+  .chat-component-item {
+    background-color: $background-lighter-gray;
+    border-color: $border-medium-gray;
+  }
+
+  // User message text -- gold for contrast on dark gold bg
+  .entry-user .entry-content {
+    color: $primary-color;
+  }
+
+  // Drawer content -- use card surface, not page canvas
+  [data-slot="drawer-content"] {
+    background-color: $neutral-white !important;
+  }
+
+  // Drawer handle -- visible against card surface
+  [data-slot="drawer-handle"] {
+    background: $neutral-gray;
+  }
+}

@@ -73,6 +73,7 @@ export class COLORS {
   static readonly CREDIT_ENTRY_BORDER = 'var(--color-credit-entry-border)';
   static readonly CREDIT_ENTRY_BACKGROUND = 'var(--color-credit-entry-background)';
   static readonly DROPDOWN_WHITE = 'var(--color-dropdown-white)';
+
 }
 
 // Alternative export for individual colors if preferred

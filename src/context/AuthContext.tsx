@@ -16,7 +16,7 @@ import {
   reauthenticateWithCredential,
   verifyBeforeUpdateEmail
 } from 'firebase/auth';
-import { PLACEHOLDER_PROFILE_IMAGE, APP_NAME, PAGE_ICONS, LOADING_ICON } from '../types';
+import { PLACEHOLDER_PROFILE_IMAGE, APP_NAME, PAGE_ICONS, LOADING_ICON, COLORS } from '../types';
 import { logError } from '../utils/logger';
 
 interface AuthContextType {
@@ -265,10 +265,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           alignItems: 'center',
           justifyContent: 'center',
           background: `
-            radial-gradient(ellipse at 20% 20%, rgba(217, 237, 223, 0.5) 0%, transparent 50%),
-            radial-gradient(ellipse at 80% 80%, rgba(34, 204, 157, 0.3) 0%, transparent 50%),
-            radial-gradient(ellipse at 60% 10%, rgba(217, 237, 223, 0.25) 0%, transparent 40%),
-            #FFFFFF
+            radial-gradient(ellipse at 20% 20%, ${COLORS.PRIMARY_LIGHTEST} 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 80%, ${COLORS.PRIMARY_LIGHTEST} 0%, transparent 50%),
+            radial-gradient(ellipse at 60% 10%, ${COLORS.PRIMARY_LIGHTEST} 0%, transparent 40%),
+            ${COLORS.NEUTRAL_LIGHT_GRAY}
           `,
         }}
       >
