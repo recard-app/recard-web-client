@@ -34,7 +34,7 @@ export default function LandingPage() {
           padding: 0 24px;
           min-height: 100dvh;
           overflow-y: auto;
-          background-color: var(--color-neutral-light-gray);
+
         }
         .landing-main {
           flex: 1;

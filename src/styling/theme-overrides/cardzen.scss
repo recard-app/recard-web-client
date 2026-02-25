@@ -76,4 +76,11 @@
   .daily-digest__timestamp {
     color: $text-subtle-gray;
   }
+
+  // Landing page -- $neutral-medium-gray inline styles fail WCAG AA on dark
+  // page canvas. Override with !important to beat inline style specificity.
+  .landing-ctas span,
+  .landing-page > footer {
+    color: $text-subtle-gray !important;
+  }
 }
