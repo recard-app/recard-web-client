@@ -24,7 +24,7 @@ export const cardzenTheme: Theme = {
     neutralLightestGray: '#272727',
     neutralLightGray: '#0D0D0D',
     neutralGray: '#484848',
-    neutralMediumGray: '#5C5650',
+    neutralMediumGray: '#9E9890',
     neutralDarkGray: '#BDB7B0',
     neutralBlack: '#F2EFEB',
 
@@ -38,7 +38,7 @@ export const cardzenTheme: Theme = {
     // Misc Colors
     borderLightGray: '#484848',
     backgroundLighterGray: '#262626',
-    textMediumGray: '#807A72',
+    textMediumGray: '#908A82',
     textDarkGray: '#BDB7B0',
     borderLighterGray: '#383838',
     textSubtleGray: '#908A82',

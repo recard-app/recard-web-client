@@ -416,7 +416,7 @@
 
 // Target the dropdown content for mobile drawer - make it full width to match button
 // Only apply when the drawer is open (more specific selector)
-body:has(.mobile-credit-details-drawer) [data-radix-popper-content-wrapper] .usage-dropdown-content {
+body:has(.mobile-credit-details-drawer, .credit-edit-modal-drawer) [data-radix-popper-content-wrapper] .usage-dropdown-content {
   width: var(--radix-popper-anchor-width) !important;
   min-width: var(--radix-popper-anchor-width) !important;
   max-width: var(--radix-popper-anchor-width) !important;

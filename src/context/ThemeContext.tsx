@@ -1,9 +1,7 @@
-import React, { createContext, useState, useContext, useLayoutEffect, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useContext, useLayoutEffect, ReactNode } from 'react';
 import type { Theme, ThemeColors } from '../styling/themes';
 import { THEME_REGISTRY, defaultTheme, applyThemeToDocument } from '../styling/themes';
 import { DEFAULT_THEME_ID } from '../types/Constants';
-
-const STORAGE_KEY = 'recard-theme';
 
 interface ThemeContextType {
   theme: Theme;
@@ -15,10 +13,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [themeId, setThemeId] = useState<string>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored && THEME_REGISTRY[stored] ? stored : DEFAULT_THEME_ID;
-  });
+  const [themeId, setThemeId] = useState<string>(DEFAULT_THEME_ID);
 
   const theme = THEME_REGISTRY[themeId] ?? defaultTheme;
 
@@ -26,10 +21,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     applyThemeToDocument(theme);
     document.documentElement.dataset.theme = theme.id;
   }, [theme]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, themeId);
-  }, [themeId]);
 
   return (
     <ThemeContext.Provider value={{ theme, themeId, setThemeId, colors: theme.colors }}>

@@ -66,21 +66,15 @@
     }
   }
 
-  // Sidebar profile plan text -- $neutral-medium-gray (#5C5650) fails WCAG AA
-  // on dark surface. Brighten to $text-subtle-gray (#908A82) = 4.99:1.
-  .app-sidebar .profile-trigger .profile-plan {
-    color: $text-subtle-gray;
+  // History panel section titles (time period labels) -- brighten for dark bg.
+  // $neutral-dark-gray is readable but user wants these labels to pop more.
+  .history-panel .section-title {
+    color: $neutral-black;
   }
 
-  // Daily digest timestamp -- same $neutral-medium-gray issue.
-  .daily-digest__timestamp {
-    color: $text-subtle-gray;
-  }
-
-  // Landing page -- $neutral-medium-gray inline styles fail WCAG AA on dark
-  // page canvas. Override with !important to beat inline style specificity.
-  .landing-ctas span,
-  .landing-page > footer {
-    color: $text-subtle-gray !important;
+  // Credit detail values -- brighten to primary text so they stand out from
+  // the muted labels ($neutral-medium-gray).
+  .credit-detail-value {
+    color: $neutral-black;
   }
 }
