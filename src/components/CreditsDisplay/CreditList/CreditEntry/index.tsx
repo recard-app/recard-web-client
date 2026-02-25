@@ -504,11 +504,13 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               size={18}
               style={{ color: USAGE_COLOR_BY_STATE[cardUsage] }}
             />
-            {isExpiring && (
-              <Icon name="clock" variant="micro" size={14} style={{ color: COLORS.WARNING, flexShrink: 0 }} />
-            )}
-            <div className="credit-name">
-              {getCreditTitle()}
+            <div className="credit-name-group">
+              {isExpiring && (
+                <Icon name="clock" variant="micro" size={12} style={{ color: COLORS.WARNING, flexShrink: 0 }} />
+              )}
+              <div className="credit-name">
+                {getCreditTitle()}
+              </div>
             </div>
           </div>
           <Icon

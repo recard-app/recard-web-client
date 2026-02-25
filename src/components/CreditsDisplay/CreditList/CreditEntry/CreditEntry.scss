@@ -508,6 +508,14 @@ body:has(.mobile-credit-details-drawer, .credit-edit-modal-drawer) [data-radix-p
     align-items: center;
     gap: $space-1-5;
 
+    .credit-name-group {
+      display: flex;
+      align-items: center;
+      gap: $space-1;
+      flex: 1;
+      min-width: 0;
+    }
+
     .credit-name {
       font-weight: $font-semibold;
       color: $neutral-dark-gray;
