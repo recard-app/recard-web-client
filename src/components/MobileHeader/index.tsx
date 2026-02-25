@@ -149,6 +149,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         return PAGE_NAMES.MY_CREDITS;
       case PAGES.DELETE_HISTORY.PATH:
         return 'Delete History';
+      case PAGES.DELETE_ACCOUNT.PATH:
+        return 'Delete Account';
       case PAGES.WELCOME.PATH:
         return 'Welcome';
       case PAGES.TERMS_OF_SERVICE.PATH:
@@ -188,6 +190,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       case PAGES.MY_CREDITS_HISTORY.PATH:
         return <Icon name="banknotes" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       case PAGES.DELETE_HISTORY.PATH:
+        return <Icon name="delete" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
+      case PAGES.DELETE_ACCOUNT.PATH:
         return <Icon name="delete" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
       case PAGES.WELCOME.PATH:
         return <Icon name="hand-raised" variant="solid" size={18} color={ICON_PRIMARY} className="title-icon" />;
