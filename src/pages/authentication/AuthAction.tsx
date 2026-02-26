@@ -6,7 +6,8 @@ import {
     applyActionCode,
 } from 'firebase/auth';
 import { auth } from '../../config/firebase';
-import { PAGES, APP_NAME, APP_LOGO } from '../../types';
+import { PAGES, APP_NAME, COLORS } from '../../types';
+import Icon from '../../icons';
 import { ButtonSpinner, InfoDisplay } from '../../elements';
 import './Auth.scss';
 import './AuthAction.scss';
@@ -257,7 +258,7 @@ const AuthAction: React.FC = () => {
     return (
         <div className="auth-page">
             <div className="auth-brand">
-                <img src={APP_LOGO} alt={`${APP_NAME} logo`} className="brand-logo" />
+                <Icon name="cardzen-logo" variant="solid" size={36} color={COLORS.PRIMARY_COLOR} className="brand-logo" />
                 <span className="brand-name">{APP_NAME}</span>
             </div>
             <div className="auth-card">

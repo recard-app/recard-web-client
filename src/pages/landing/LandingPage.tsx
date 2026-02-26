@@ -75,7 +75,7 @@ export default function LandingPage() {
       <div className="landing-main">
       {/* Brand */}
       <div className="flex items-center gap-3" style={{ marginBottom: 32 }}>
-        <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} className="w-10 h-10" />
+        <Icon name="cardzen-logo" variant="solid" size={40} color={COLORS.PRIMARY_COLOR} />
         <span
           className="text-2xl tracking-tight"
           style={{ fontFamily: '"Cal Sans", sans-serif', color: COLORS.NEUTRAL_BLACK, fontWeight: 600 }}

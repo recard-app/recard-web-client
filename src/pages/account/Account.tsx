@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useAuth } from '../../context/AuthContext';
-import { SubscriptionPlan, SubscriptionStatusType, SUBSCRIPTION_STATUS, MONTH_ABBREVIATIONS, PAGE_NAMES, PAGE_ICONS, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY } from '../../types';
+import { SubscriptionPlan, SubscriptionStatusType, SUBSCRIPTION_STATUS, MONTH_ABBREVIATIONS, PAGE_NAMES, PAGE_ICONS, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, PLACEHOLDER_PROFILE_IMAGE, COLORS } from '../../types';
 import Icon from '../../icons';
 import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
 import {
@@ -211,7 +211,11 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
             <div className="account-wrapper">
               {/* Profile Card */}
               <div className="profile-card">
-                {user.photoURL ? (
+                {user.photoURL === PLACEHOLDER_PROFILE_IMAGE || !user.photoURL ? (
+                  <div className="profile-card__avatar profile-card__avatar--placeholder">
+                    <Icon name="sakura" variant="solid" size={32} color={COLORS.PRIMARY_MEDIUM} />
+                  </div>
+                ) : (
                   <img
                     src={user.photoURL}
                     alt="Profile"
@@ -219,10 +223,6 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
                     referrerPolicy="no-referrer"
                     className="profile-card__avatar"
                   />
-                ) : (
-                  <div className="profile-card__avatar profile-card__avatar--placeholder">
-                    {user.displayName?.charAt(0) || user.email?.charAt(0) || '?'}
-                  </div>
                 )}
                 <div className="profile-card__info">
                   <h2 className="profile-card__name">{user.displayName || 'Account'}</h2>

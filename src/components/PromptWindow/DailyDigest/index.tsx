@@ -52,7 +52,7 @@ export const DailyDigest: React.FC<DailyDigestProps> = ({
     return (
         <div className="daily-digest">
             <div className="daily-digest__header">
-                <Icon name="calendar-days" variant="micro" size={12} color={PRIMARY_MEDIUM} />
+                <Icon name="lotus" variant="solid" height={11} width={16} viewBox="0 80 512 345" color={PRIMARY_MEDIUM} />
                 <h3 className="daily-digest__title">{title}</h3>
             </div>
             <div

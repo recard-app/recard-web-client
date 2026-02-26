@@ -30,7 +30,8 @@ import {
   MY_CARDS_IN_ACCOUNT_MENU,
   MY_CARDS_DROPDOWN_LABEL,
   SUBSCRIPTION_PLAN,
-  COLORS
+  COLORS,
+  PLACEHOLDER_PROFILE_IMAGE
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { MonthlyStatsResponse, PrioritizedCredit } from '../../types/CardCreditsTypes';
@@ -233,7 +234,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         {isOpen && (
           <h1 className="app-name">
             <Link to={PAGES.HOME.PATH}>
-              <img src={PAGE_ICONS.LOGO} alt="Logo" />
+              <Icon name="cardzen-logo" variant="solid" size={28} color={COLORS.PRIMARY_COLOR} />
               {APP_NAME}
             </Link>
           </h1>
@@ -245,7 +246,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               className="logo-icon"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              <img src={PAGE_ICONS.LOGO} alt="Logo" />
+              <Icon name="cardzen-logo" variant="solid" size={28} color={COLORS.PRIMARY_COLOR} />
             </Link>
           </div>
         )}
@@ -422,15 +423,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 <DropdownMenuTrigger asChild>
                   <button className="profile-trigger-button">
                     <div className="profile-trigger">
-                      {user.photoURL && (
-                        <img 
-                          src={user.photoURL} 
-                          alt="Profile" 
+                      {user.photoURL === PLACEHOLDER_PROFILE_IMAGE ? (
+                        <Icon name="sakura" variant="solid" size={28} color={COLORS.PRIMARY_MEDIUM} className="profile-image" />
+                      ) : user.photoURL ? (
+                        <img
+                          src={user.photoURL}
+                          alt="Profile"
                           crossOrigin="anonymous"
                           referrerPolicy="no-referrer"
                           className="profile-image"
                         />
-                      )}
+                      ) : null}
                       <div className="profile-info">
                         <span className="profile-name">{user.displayName || user.email}</span>
                         <span className="profile-plan">
@@ -492,13 +495,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="mini-nav-icon mini-profile-trigger" title={user.displayName || user.email || 'Profile'}>
-                        <img 
-                          src={user.photoURL} 
-                          alt="Profile" 
-                          crossOrigin="anonymous"
-                          referrerPolicy="no-referrer"
-                          className="mini-profile-image"
-                        />
+                        {user.photoURL === PLACEHOLDER_PROFILE_IMAGE ? (
+                          <Icon name="sakura" variant="solid" size={24} color={COLORS.PRIMARY_MEDIUM} className="mini-profile-image" />
+                        ) : (
+                          <img
+                            src={user.photoURL}
+                            alt="Profile"
+                            crossOrigin="anonymous"
+                            referrerPolicy="no-referrer"
+                            className="mini-profile-image"
+                          />
+                        )}
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" side="right" sideOffset={16} className="mini-profile-dropdown">

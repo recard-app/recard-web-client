@@ -122,7 +122,7 @@ export const CREDIT_EXPIRATION_THRESHOLDS = {
 export const APP_NAME = 'Cardzen';
 export const SUPPORT_EMAIL = 'support@cardzen.ai';
 export const GENERAL_EMAIL = 'hello@cardzen.ai';
-export const APP_LOGO = '/temp_logo.png';
+export const APP_LOGO = '/cardzen_logo.svg';
 export const PLACEHOLDER_CARD_IMAGE = 'https://placehold.co/20x20';
 export const PLACEHOLDER_ASSISTANT_IMAGE = '/lotus.svg';
 export const HISTORY_PAGE_SIZE = 20;
@@ -132,7 +132,7 @@ export const CHAT_MAX_FIELD_HEIGHT = 250;
 export const MOBILE_BREAKPOINT = 780;
 
 export const NO_DISPLAY_NAME_PLACEHOLDER = 'Guest';
-export const PLACEHOLDER_PROFILE_IMAGE = '/temp_account.png';
+export const PLACEHOLDER_PROFILE_IMAGE = 'sakura-icon';
 // Terminology toggle: set to 'chat' for Chat-centric wording, or 'transaction' for Transaction-centric wording
 export type TerminologyMode = 'chat' | 'transaction';
 export const TERMINOLOGY_MODE: TerminologyMode = 'chat';
@@ -246,7 +246,7 @@ export const PAGE_ICONS = {
         INACTIVE: (props: any = {}) => createIconVariant('delete', 'outline', SIDEBAR_INACTIVE_ICON_COLOR, props.size),
         MINI: (props: any = {}) => createIconVariant('delete', 'mini', ICON_PRIMARY, props.size)
     },
-    LOGO: APP_LOGO,
+    LOGO: (props: any = {}) => createIconVariant('cardzen-logo', 'solid', ICON_PRIMARY, props.size),
     NEW_CHAT_PLUS: {
         NORMAL: (props: any = {}) => createIconVariant('plus-circle', 'solid', SIDEBAR_ACTIVE_ICON_COLOR, props.size),
         HOVERED: (props: any = {}) => createIconVariant('plus-circle', 'solid', ICON_PRIMARY_MEDIUM, props.size)

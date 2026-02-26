@@ -17,6 +17,7 @@ import {
   verifyBeforeUpdateEmail
 } from 'firebase/auth';
 import { PLACEHOLDER_PROFILE_IMAGE, APP_NAME, PAGE_ICONS, LOADING_ICON, COLORS } from '../types';
+import Icon from '../icons';
 import { logError } from '../utils/logger';
 
 interface AuthContextType {
@@ -273,7 +274,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} style={{ width: 48, height: 48 }} />
+          <Icon name="cardzen-logo" variant="solid" size={48} color={COLORS.PRIMARY_COLOR} />
           <LOADING_ICON size={24} className="spinning" aria-label="Loading" />
         </div>
       </div>

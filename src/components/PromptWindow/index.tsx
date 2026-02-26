@@ -572,6 +572,7 @@ function PromptWindow({
                         chatHistory={chatHistory}
                         streamingState={streamingState}
                         isNewChat={isNewChat}
+                        chatId={chatId}
                         digest={digest}
                         digestLoading={digestLoading}
                         onRegenerateDigest={onRegenerateDigest}

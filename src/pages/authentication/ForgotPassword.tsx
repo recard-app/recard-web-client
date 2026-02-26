@@ -2,7 +2,8 @@ import React, { useState, FormEvent } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
-import { PAGES, APP_NAME, APP_LOGO } from '../../types';
+import { PAGES, APP_NAME, COLORS } from '../../types';
+import Icon from '../../icons';
 import { ButtonSpinner } from '../../elements';
 import './Auth.scss';
 
@@ -47,7 +48,7 @@ const ForgotPassword: React.FC = () => {
     return (
         <div className="auth-page">
             <div className="auth-brand">
-                <img src={APP_LOGO} alt={`${APP_NAME} logo`} className="brand-logo" />
+                <Icon name="cardzen-logo" variant="solid" size={36} color={COLORS.PRIMARY_COLOR} className="brand-logo" />
                 <span className="brand-name">{APP_NAME}</span>
             </div>
             <div className="auth-card">

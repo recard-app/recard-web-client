@@ -13,6 +13,20 @@ import { COLORS } from '../../../types/Colors';
 import { Icon } from '../../../icons';
 import { sanitizeMarkdownHtml } from '../../../utils/sanitizeMarkdown';
 
+const ASSISTANT_ICONS = ['assistant', 'assistant-2', 'assistant-3', 'assistant-4'] as const;
+
+function hashString(str: string): number {
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash + str.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}
+
+function getAssistantIcon(chatId: string): typeof ASSISTANT_ICONS[number] {
+  return ASSISTANT_ICONS[hashString(chatId) % ASSISTANT_ICONS.length];
+}
+
 /**
  * Data structure for daily digest
  */
@@ -34,6 +48,7 @@ interface PromptHistoryProps {
   digestLoading?: boolean;
   onRegenerateDigest?: () => void;
   isRegeneratingDigest?: boolean;
+  chatId?: string;
   // Component click handlers
   onCardClick?: (cardId: string) => void;
   onCreditClick?: (cardId: string, creditId: string) => void;
@@ -49,12 +64,15 @@ function PromptHistory({
   digestLoading = false,
   onRegenerateDigest,
   isRegeneratingDigest = false,
+  chatId = '',
   onCardClick,
   onCreditClick,
   onPerkClick,
   onMultiplierClick,
 }: PromptHistoryProps): React.ReactElement {
   const chatEntries = chatHistory;
+
+  const assistantIconName = useMemo(() => getAssistantIcon(chatId), [chatId]);
 
   // Initialize the showdown converter for markdown to HTML conversion
   // Only supports: bold, italic, bullet lists, numbered lists, paragraphs
@@ -95,7 +113,7 @@ function PromptHistory({
         {streamedText && (
           <div className="entry entry-assistant streaming">
             <div className="entry-content">
-              <Icon name="lotus" variant="solid" color={COLORS.PRIMARY_COLOR} className="assistant-avatar" />
+              <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className="assistant-avatar" />
               <div className="message-text">
                 <div
                   dangerouslySetInnerHTML={{ __html: sanitizeMarkdownHtml(converter, streamedText) }}
@@ -181,7 +199,7 @@ function PromptHistory({
               <div key={chatEntry.id} className={`${(chatEntry.chatSource === CHAT_SOURCE.USER) ? 'entry entry-user' : 'entry entry-assistant'}`}>
                 <div className="entry-content">
                   {chatEntry.chatSource === CHAT_SOURCE.ASSISTANT && (
-                    <Icon name="lotus" variant="solid" color={COLORS.PRIMARY_COLOR} className="assistant-avatar" />
+                    <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className="assistant-avatar" />
                   )}
                   <div className="message-text">
                     {chatEntry.chatMessage && (

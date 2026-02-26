@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, SUBSCRIPTION_PLAN } from '../../types';
+import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, SUBSCRIPTION_PLAN, COLORS, PLACEHOLDER_PROFILE_IMAGE } from '../../types';
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -237,7 +237,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             </Drawer.Trigger>
             {isHomeOrChatRoute(location.pathname) ? (
               <div className="mobile-header__brand" aria-label={APP_NAME}>
-                <img src={PAGE_ICONS.LOGO} alt={`${APP_NAME} logo`} />
+                <Icon name="cardzen-logo" variant="solid" size={28} color={COLORS.PRIMARY_COLOR} />
               </div>
             ) : null}
           </div>
@@ -311,7 +311,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 </Drawer.Close>
                 <Drawer.Close asChild>
                   <Link to={PAGES.HOME.PATH} className="mobile-drawer-brand" aria-label={APP_NAME}>
-                    <img src={PAGE_ICONS.LOGO} alt="Logo" />
+                    <Icon name="cardzen-logo" variant="solid" size={28} color={COLORS.PRIMARY_COLOR} />
                     <span className="brand-name">{APP_NAME}</span>
                   </Link>
                 </Drawer.Close>
@@ -451,15 +451,17 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                         <DropdownMenuTrigger asChild>
                           <button className="profile-trigger-button">
                             <div className="profile-trigger">
-                              {user.photoURL && (
-                                <img 
-                                  src={user.photoURL} 
-                                  alt="Profile" 
+                              {user.photoURL === PLACEHOLDER_PROFILE_IMAGE ? (
+                                <Icon name="sakura" variant="solid" size={28} color={COLORS.PRIMARY_MEDIUM} className="profile-image" />
+                              ) : user.photoURL ? (
+                                <img
+                                  src={user.photoURL}
+                                  alt="Profile"
                                   crossOrigin="anonymous"
                                   referrerPolicy="no-referrer"
                                   className="profile-image"
                                 />
-                              )}
+                              ) : null}
                               <div className="profile-info">
                                 <span className="profile-name">{user.displayName || user.email}</span>
                                 <span className="profile-plan">
