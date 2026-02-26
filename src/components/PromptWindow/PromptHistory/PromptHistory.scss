@@ -169,14 +169,14 @@
     width: 100%;
 
     .entry-content {
+      flex-direction: column;
       color: $neutral-black;
     }
 
     .assistant-avatar {
-      width: $icon-medium;
-      height: $icon-medium;
-      flex-shrink: 0;
-      margin-top: $space-1;
+      width: $icon-main-logo;
+      height: $icon-main-logo;
+      margin: 0 $space-3;
     }
   }
 
@@ -185,25 +185,12 @@
     display: flex;
     flex-direction: column;
     gap: $space-2;
-  }
 
-  // Blinking cursor for streaming text
-  .cursor-blink {
-    display: inline-block;
-    width: 2px;
-    height: 1em;
-    background-color: $primary-medium;
-    margin-left: 2px;
-    vertical-align: text-bottom;
-    animation: blink 1s step-end infinite;
-  }
-
-  @keyframes blink {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0;
+    > .assistant-avatar {
+      width: $icon-main-logo;
+      height: $icon-main-logo;
+      margin: 0 $space-3;
     }
   }
+
 }

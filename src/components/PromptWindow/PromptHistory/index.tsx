@@ -113,13 +113,10 @@ function PromptHistory({
         {streamedText && (
           <div className="entry entry-assistant streaming">
             <div className="entry-content">
-              <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className="assistant-avatar" />
               <div className="message-text">
                 <div
                   dangerouslySetInnerHTML={{ __html: sanitizeMarkdownHtml(converter, streamedText) }}
                 />
-                {/* Blinking cursor while streaming */}
-                {isStreaming && <span className="cursor-blink" />}
               </div>
             </div>
           </div>
@@ -138,6 +135,9 @@ function PromptHistory({
             />
           </ChatErrorBoundary>
         )}
+
+        {/* Avatar always at the bottom, moves down as content streams */}
+        <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className="assistant-avatar" />
       </div>
     );
   };
@@ -198,9 +198,6 @@ function PromptHistory({
             return (
               <div key={chatEntry.id} className={`${(chatEntry.chatSource === CHAT_SOURCE.USER) ? 'entry entry-user' : 'entry entry-assistant'}`}>
                 <div className="entry-content">
-                  {chatEntry.chatSource === CHAT_SOURCE.ASSISTANT && (
-                    <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className="assistant-avatar" />
-                  )}
                   <div className="message-text">
                     {chatEntry.chatMessage && (
                       <div
@@ -223,6 +220,9 @@ function PromptHistory({
                       </ChatErrorBoundary>
                     )}
                   </div>
+                  {chatEntry.chatSource === CHAT_SOURCE.ASSISTANT && (
+                    <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className="assistant-avatar" />
+                  )}
                 </div>
               </div>
             );
