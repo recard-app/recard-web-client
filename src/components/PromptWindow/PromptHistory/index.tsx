@@ -8,7 +8,9 @@ import AgentTimeline from '../AgentTimeline';
 import { ChatErrorBoundary } from '../ErrorBoundary';
 import { DailyDigest } from '../DailyDigest';
 import './PromptHistory.scss';
-import { PLACEHOLDER_ASSISTANT_IMAGE, TERMINOLOGY, CHAT_SOURCE, DAILY_ZEN_FEATURE_NAME } from '../../../types';
+import { TERMINOLOGY, CHAT_SOURCE, DAILY_ZEN_FEATURE_NAME } from '../../../types';
+import { COLORS } from '../../../types/Colors';
+import { Icon } from '../../../icons';
 import { sanitizeMarkdownHtml } from '../../../utils/sanitizeMarkdown';
 
 /**
@@ -93,7 +95,7 @@ function PromptHistory({
         {streamedText && (
           <div className="entry entry-assistant streaming">
             <div className="entry-content">
-              <img src={PLACEHOLDER_ASSISTANT_IMAGE} alt="AI Assistant" className="assistant-avatar" />
+              <Icon name="lotus" variant="solid" color={COLORS.PRIMARY_COLOR} className="assistant-avatar" />
               <div className="message-text">
                 <div
                   dangerouslySetInnerHTML={{ __html: sanitizeMarkdownHtml(converter, streamedText) }}
@@ -179,7 +181,7 @@ function PromptHistory({
               <div key={chatEntry.id} className={`${(chatEntry.chatSource === CHAT_SOURCE.USER) ? 'entry entry-user' : 'entry entry-assistant'}`}>
                 <div className="entry-content">
                   {chatEntry.chatSource === CHAT_SOURCE.ASSISTANT && (
-                    <img src={PLACEHOLDER_ASSISTANT_IMAGE} alt="AI Assistant" className="assistant-avatar" />
+                    <Icon name="lotus" variant="solid" color={COLORS.PRIMARY_COLOR} className="assistant-avatar" />
                   )}
                   <div className="message-text">
                     {chatEntry.chatMessage && (
