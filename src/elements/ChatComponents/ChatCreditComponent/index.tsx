@@ -7,6 +7,7 @@ import {
   CREDIT_PERIODS,
 } from '../../../types/CardCreditsTypes';
 import { CardIcon, Icon } from '../../../icons';
+import UsagePieIcon from '../../../icons/UsagePieIcon';
 import ActionDisplay from '../ActionDisplay';
 import './ChatCreditComponent.scss';
 
@@ -151,7 +152,15 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
             <div className="credit-usage" style={{ color: usageInfo.color }}>
               <div className="usage-amount">${currentValueUsed} / ${creditMaxValue}</div>
               <div className="usage-status">
-                <Icon name={usageInfo.iconName} variant="micro" size={12} color={usageInfo.color} />
+                {currentValueUsed < creditMaxValue ? (
+                  <UsagePieIcon
+                    percentage={creditMaxValue > 0 ? (currentValueUsed / creditMaxValue) * 100 : 0}
+                    size={12}
+                    color={usageInfo.color}
+                  />
+                ) : (
+                  <Icon name={usageInfo.iconName} variant="micro" size={12} color={usageInfo.color} />
+                )}
                 <span>{usageInfo.status}</span>
               </div>
             </div>

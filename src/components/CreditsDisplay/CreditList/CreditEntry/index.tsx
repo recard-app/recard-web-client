@@ -16,6 +16,7 @@ import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
 import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
+import UsagePieIcon from '@/icons/UsagePieIcon';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './utils';
@@ -498,12 +499,20 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           style={{ cursor: 'pointer' }}
         >
           <div className="credit-title-row">
-            <Icon
-              name={USAGE_ICON_NAME[cardUsage]}
-              variant="mini"
-              size={18}
-              style={{ color: USAGE_COLOR_BY_STATE[cardUsage] }}
-            />
+            {(cardUsage === CREDIT_USAGE.NOT_USED || cardUsage === CREDIT_USAGE.PARTIALLY_USED) ? (
+              <UsagePieIcon
+                percentage={maxValue > 0 ? (valueUsed / maxValue) * 100 : 0}
+                size={18}
+                color={USAGE_COLOR_BY_STATE[cardUsage]}
+              />
+            ) : (
+              <Icon
+                name={USAGE_ICON_NAME[cardUsage]}
+                variant="mini"
+                size={18}
+                style={{ color: USAGE_COLOR_BY_STATE[cardUsage] }}
+              />
+            )}
             <div className="credit-name-group">
               {isExpiring && (
                 <Icon name="clock" variant="micro" size={12} style={{ color: COLORS.WARNING, flexShrink: 0 }} />
@@ -608,7 +617,15 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 >
                   <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
                   <div className="credit-usage-label">
-                    <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usageColor }} />
+                    {(usage === CREDIT_USAGE.NOT_USED || usage === CREDIT_USAGE.PARTIALLY_USED) ? (
+                      <UsagePieIcon
+                        percentage={maxValue > 0 ? (valueUsed / maxValue) * 100 : 0}
+                        size={14}
+                        color={usageColor}
+                      />
+                    ) : (
+                      <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usageColor }} />
+                    )}
                     <span>
                       {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
                       {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
@@ -630,7 +647,15 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                     >
                       <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
                       <div className="credit-usage-label">
-                        <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usageColor }} />
+                        {(usage === CREDIT_USAGE.NOT_USED || usage === CREDIT_USAGE.PARTIALLY_USED) ? (
+                          <UsagePieIcon
+                            percentage={maxValue > 0 ? (valueUsed / maxValue) * 100 : 0}
+                            size={14}
+                            color={usageColor}
+                          />
+                        ) : (
+                          <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usageColor }} />
+                        )}
                         <span>
                           {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
                           {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
