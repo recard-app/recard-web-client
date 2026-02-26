@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './AppHeader.scss';
 import { User as FirebaseUser } from 'firebase/auth';
-import { APP_NAME, TEMP_ICON, PAGES, PLACEHOLDER_PROFILE_IMAGE, COLORS } from '../../types';
-import Icon from '../../icons';
+import { APP_NAME, TEMP_ICON, PAGES } from '../../types';
+import ProfileAvatar from '../ProfileAvatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,17 +50,13 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onLogout, isSidePanelOpen, 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="profile-dropdown-trigger">
-                {user.photoURL === PLACEHOLDER_PROFILE_IMAGE ? (
-                  <Icon name="sakura" variant="solid" size={28} color={COLORS.PRIMARY_MEDIUM} className="profile-image" />
-                ) : user.photoURL ? (
-                  <img
-                    src={user.photoURL}
-                    alt="Profile"
-                    crossOrigin="anonymous"
-                    referrerPolicy="no-referrer"
-                    className="profile-image"
-                  />
-                ) : null}
+                <ProfileAvatar
+                  photoURL={user.photoURL}
+                  displayName={user.displayName}
+                  email={user.email}
+                  size={32}
+                  className="profile-image"
+                />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="profile-dropdown">

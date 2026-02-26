@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, SUBSCRIPTION_PLAN, COLORS, PLACEHOLDER_PROFILE_IMAGE } from '../../types';
+import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, SUBSCRIPTION_PLAN, COLORS } from '../../types';
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -19,6 +19,7 @@ import { Conversation, SubscriptionPlan } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { MonthlyStatsResponse, PrioritizedCredit } from '../../types/CardCreditsTypes';
 import { User as FirebaseUser } from 'firebase/auth';
+import ProfileAvatar from '../ProfileAvatar';
 import './MobileHeader.scss';
 
 interface MobileHeaderProps {
@@ -451,17 +452,13 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                         <DropdownMenuTrigger asChild>
                           <button className="profile-trigger-button">
                             <div className="profile-trigger">
-                              {user.photoURL === PLACEHOLDER_PROFILE_IMAGE ? (
-                                <Icon name="sakura" variant="solid" size={28} color={COLORS.PRIMARY_MEDIUM} className="profile-image" />
-                              ) : user.photoURL ? (
-                                <img
-                                  src={user.photoURL}
-                                  alt="Profile"
-                                  crossOrigin="anonymous"
-                                  referrerPolicy="no-referrer"
-                                  className="profile-image"
-                                />
-                              ) : null}
+                              <ProfileAvatar
+                                photoURL={user.photoURL}
+                                displayName={user.displayName}
+                                email={user.email}
+                                size={40}
+                                className="profile-image"
+                              />
                               <div className="profile-info">
                                 <span className="profile-name">{user.displayName || user.email}</span>
                                 <span className="profile-plan">

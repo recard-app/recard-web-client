@@ -30,12 +30,12 @@ import {
   MY_CARDS_IN_ACCOUNT_MENU,
   MY_CARDS_DROPDOWN_LABEL,
   SUBSCRIPTION_PLAN,
-  COLORS,
-  PLACEHOLDER_PROFILE_IMAGE
+  COLORS
 } from '../../types';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { MonthlyStatsResponse, PrioritizedCredit } from '../../types/CardCreditsTypes';
 import Icon from '../../icons';
+import ProfileAvatar from '../ProfileAvatar';
 import './AppSidebar.scss';
 
 interface AppSidebarProps {
@@ -423,17 +423,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 <DropdownMenuTrigger asChild>
                   <button className="profile-trigger-button">
                     <div className="profile-trigger">
-                      {user.photoURL === PLACEHOLDER_PROFILE_IMAGE ? (
-                        <Icon name="sakura" variant="solid" size={28} color={COLORS.PRIMARY_MEDIUM} className="profile-image" />
-                      ) : user.photoURL ? (
-                        <img
-                          src={user.photoURL}
-                          alt="Profile"
-                          crossOrigin="anonymous"
-                          referrerPolicy="no-referrer"
-                          className="profile-image"
-                        />
-                      ) : null}
+                      <ProfileAvatar
+                        photoURL={user.photoURL}
+                        displayName={user.displayName}
+                        email={user.email}
+                        size={40}
+                        className="profile-image"
+                      />
                       <div className="profile-info">
                         <span className="profile-name">{user.displayName || user.email}</span>
                         <span className="profile-plan">
@@ -481,58 +477,50 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             </div>
           ) : (
             <div className="mini-nav-profile">
-              {user.photoURL && (
-                <>
-                  <Link 
-                    to={PAGES.PREFERENCES.PATH} 
-                    className={`mini-nav-icon ${location.pathname === PAGES.PREFERENCES.PATH ? 'active' : ''}`}
-                    onMouseEnter={(e) => handleMiniNavHover(e, PAGE_NAMES.PREFERENCES)}
-                    onMouseLeave={() => hideTooltip()}
-                    style={{ textDecoration: 'none', color: 'inherit'}}
-                  >
-                    {getIconVariant(PAGE_ICONS.PREFERENCES, PAGES.PREFERENCES.PATH)({ size: 20 })}
+              <Link
+                to={PAGES.PREFERENCES.PATH}
+                className={`mini-nav-icon ${location.pathname === PAGES.PREFERENCES.PATH ? 'active' : ''}`}
+                onMouseEnter={(e) => handleMiniNavHover(e, PAGE_NAMES.PREFERENCES)}
+                onMouseLeave={() => hideTooltip()}
+                style={{ textDecoration: 'none', color: 'inherit'}}
+              >
+                {getIconVariant(PAGE_ICONS.PREFERENCES, PAGES.PREFERENCES.PATH)({ size: 20 })}
+              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="mini-nav-icon mini-profile-trigger" title={user.displayName || user.email || 'Profile'}>
+                    <ProfileAvatar
+                      photoURL={user.photoURL}
+                      displayName={user.displayName}
+                      email={user.email}
+                      size={32}
+                      className="mini-profile-image"
+                    />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" side="right" sideOffset={16} className="mini-profile-dropdown">
+                  <Link to={PAGES.ACCOUNT.PATH}>
+                    <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
+                      {PAGE_NAMES.MY_ACCOUNT}
+                    </DropdownMenuItem>
                   </Link>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button className="mini-nav-icon mini-profile-trigger" title={user.displayName || user.email || 'Profile'}>
-                        {user.photoURL === PLACEHOLDER_PROFILE_IMAGE ? (
-                          <Icon name="sakura" variant="solid" size={24} color={COLORS.PRIMARY_MEDIUM} className="mini-profile-image" />
-                        ) : (
-                          <img
-                            src={user.photoURL}
-                            alt="Profile"
-                            crossOrigin="anonymous"
-                            referrerPolicy="no-referrer"
-                            className="mini-profile-image"
-                          />
-                        )}
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" side="right" sideOffset={16} className="mini-profile-dropdown">
-                      <Link to={PAGES.ACCOUNT.PATH}>
-                        <DropdownMenuItem icon={DROPDOWN_ICONS.MY_ACCOUNT.NORMAL}>
-                          {PAGE_NAMES.MY_ACCOUNT}
-                        </DropdownMenuItem>
-                      </Link>
-                      {MY_CARDS_IN_ACCOUNT_MENU && (
-                        <Link to={PAGES.MY_CARDS.PATH}>
-                          <DropdownMenuItem icon={DROPDOWN_ICONS.MY_CARDS.NORMAL}>
-                            Manage Cards
-                          </DropdownMenuItem>
-                        </Link>
-                      )}
-                      <Link to={PAGES.HELP_CENTER.PATH}>
-                        <DropdownMenuItem icon={DROPDOWN_ICONS.HELP_CENTER.NORMAL}>
-                          {PAGE_NAMES.HELP_CENTER}
-                        </DropdownMenuItem>
-                      </Link>
-                      <DropdownMenuItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICONS.SIGN_OUT.RED}>
-                        {PAGE_NAMES.SIGN_OUT}
+                  {MY_CARDS_IN_ACCOUNT_MENU && (
+                    <Link to={PAGES.MY_CARDS.PATH}>
+                      <DropdownMenuItem icon={DROPDOWN_ICONS.MY_CARDS.NORMAL}>
+                        Manage Cards
                       </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </>
-              )}
+                    </Link>
+                  )}
+                  <Link to={PAGES.HELP_CENTER.PATH}>
+                    <DropdownMenuItem icon={DROPDOWN_ICONS.HELP_CENTER.NORMAL}>
+                      {PAGE_NAMES.HELP_CENTER}
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuItem onClick={onLogout} className="signout-action" icon={DROPDOWN_ICONS.SIGN_OUT.RED}>
+                    {PAGE_NAMES.SIGN_OUT}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )}
         </div>

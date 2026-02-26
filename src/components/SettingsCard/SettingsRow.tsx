@@ -12,6 +12,7 @@ interface SettingsRowProps {
   disabled?: boolean;
   loading?: boolean;
   icon?: React.ReactNode;
+  showChevron?: boolean;
 }
 
 const SettingsRow: React.FC<SettingsRowProps> = ({
@@ -22,9 +23,12 @@ const SettingsRow: React.FC<SettingsRowProps> = ({
   variant = 'default',
   disabled = false,
   loading = false,
-  icon
+  icon,
+  showChevron
 }) => {
   const isDisabled = disabled || loading;
+  const isInteractive = !isDisabled && (!!to || !!onClick);
+  const shouldShowChevron = showChevron ?? isInteractive;
 
   const content = (
     <>
@@ -37,17 +41,19 @@ const SettingsRow: React.FC<SettingsRowProps> = ({
           </span>
         )}
       </div>
-      <Icon
-        name="chevron-right"
-        variant="mini"
-        size={16}
-        color={ICON_GRAY}
-        className={`settings-row__chevron ${loading ? 'settings-row__chevron--loading' : ''}`}
-      />
+      {shouldShowChevron && (
+        <Icon
+          name="chevron-right"
+          variant="mini"
+          size={16}
+          color={ICON_GRAY}
+          className={`settings-row__chevron ${loading ? 'settings-row__chevron--loading' : ''}`}
+        />
+      )}
     </>
   );
 
-  const className = `settings-row settings-row--${variant} ${isDisabled ? 'settings-row--disabled' : ''} ${loading ? 'settings-row--loading' : ''}`;
+  const className = `settings-row settings-row--${variant} ${isDisabled ? 'settings-row--disabled' : ''} ${!isInteractive ? 'settings-row--static' : ''} ${loading ? 'settings-row--loading' : ''}`;
 
   if (to && !isDisabled) {
     return (

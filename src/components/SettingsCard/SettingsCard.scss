@@ -99,6 +99,7 @@
   border: none;
   width: 100%;
   text-align: left;
+  font-weight: $font-semibold;
   cursor: pointer;
   transition: background-color 0.15s ease;
 
@@ -106,7 +107,7 @@
     border-bottom: $border-full solid $neutral-light-gray;
   }
 
-  &:hover:not(.settings-row--disabled) {
+  &:hover:not(.settings-row--disabled):not(.settings-row--static) {
     background: $neutral-lightest-gray;
   }
 
@@ -120,8 +121,16 @@
       color: $error;
     }
 
-    &:hover:not(.settings-row--disabled) {
+    &:hover:not(.settings-row--disabled):not(.settings-row--static) {
       background: color-mix(in srgb, $error 5%, transparent);
+    }
+  }
+
+  &--static {
+    cursor: default;
+
+    &:hover {
+      background: $neutral-white;
     }
   }
 

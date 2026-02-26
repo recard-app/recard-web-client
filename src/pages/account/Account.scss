@@ -30,18 +30,6 @@
     border: $border-full solid $primary-light;
     object-fit: cover;
     flex-shrink: 0;
-
-    &--placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: $primary-lightest;
-      color: $primary-medium;
-      font-size: $font-h4;
-      font-weight: $font-bold;
-      text-transform: uppercase;
-      border-color: $primary-light;
-    }
   }
 
   &__info {
@@ -160,6 +148,7 @@
 
 // Disabled hint text for settings rows
 .disabled-hint {
+  display: block;
   font-size: $font-xs;
   color: $neutral-medium-gray;
   font-style: italic;
@@ -206,15 +195,6 @@
   .profile-card {
     padding: $space-3 $space-4;
     gap: $space-3;
-
-    &__avatar {
-      width: $space-12;
-      height: $space-12;
-
-      &--placeholder {
-        font-size: $font-base;
-      }
-    }
 
     &__name {
       font-size: $font-base;

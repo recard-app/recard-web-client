@@ -1,0 +1,25 @@
+@use '../../styling/globals' as *;
+
+.profile-avatar {
+  border-radius: $radius-full;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  &--image {
+    object-fit: cover;
+    display: block;
+  }
+
+  &--initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $primary-lightest;
+    color: $primary-dark;
+    border: $border-full solid $primary-light;
+    font-family: $font-inter;
+    font-weight: $font-semibold;
+    text-transform: uppercase;
+    user-select: none;
+  }
+}
