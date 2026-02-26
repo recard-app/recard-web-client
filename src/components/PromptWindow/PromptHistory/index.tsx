@@ -166,7 +166,7 @@ function PromptHistory({
         )}
 
         {/* Avatar always at the bottom, moves down as content streams */}
-        <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className={`assistant-avatar avatar-anim-${streamingAnimationRef.current}`} />
+        <Icon name={assistantIconName} variant="solid" className={`assistant-avatar avatar-anim-${streamingAnimationRef.current}`} />
       </div>
     );
   };

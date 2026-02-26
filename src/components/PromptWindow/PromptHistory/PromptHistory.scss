@@ -211,15 +211,24 @@
     50% { transform: scale(0.75); }
   }
 
+  // Smooth color glint — holds primary-medium 70%, brief gleam to primary-color
+  @keyframes avatar-color-glint {
+    0%, 70% { color: $primary-medium; }
+    85% { color: $primary-color; }
+    100% { color: $primary-medium; }
+  }
+
   .assistant-avatar {
+    color: $primary-medium;
+
     &.avatar-anim-rock {
-      animation: avatar-rock 3s steps(3) infinite;
+      animation: avatar-rock 3s steps(3) infinite, avatar-color-glint 2.5s ease-in-out infinite;
     }
     &.avatar-anim-spin {
-      animation: avatar-spin 4s steps(4) infinite;
+      animation: avatar-spin 4s steps(4) infinite, avatar-color-glint 2.5s ease-in-out infinite;
     }
     &.avatar-anim-pulse {
-      animation: avatar-pulse 3s steps(3) infinite;
+      animation: avatar-pulse 3s steps(3) infinite, avatar-color-glint 2.5s ease-in-out infinite;
     }
   }
 
