@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import showdown from 'showdown';
 import { ChatMessage } from '../../../types/ChatTypes';
 import { InfoDisplay } from '../../../elements';
@@ -14,6 +14,20 @@ import { Icon } from '../../../icons';
 import { sanitizeMarkdownHtml } from '../../../utils/sanitizeMarkdown';
 
 const ASSISTANT_ICONS = ['assistant', 'assistant-2', 'assistant-3', 'assistant-4'] as const;
+
+type AvatarAnimation = 'rock' | 'spin' | 'pulse';
+
+const AVATAR_ANIMATIONS: Record<typeof ASSISTANT_ICONS[number], AvatarAnimation[]> = {
+  'assistant':   ['rock', 'pulse'],
+  'assistant-2': ['rock', 'spin', 'pulse'],
+  'assistant-3': ['rock', 'spin', 'pulse'],
+  'assistant-4': ['rock', 'spin', 'pulse'],
+};
+
+function getRandomAnimation(iconName: typeof ASSISTANT_ICONS[number]): AvatarAnimation {
+  const options = AVATAR_ANIMATIONS[iconName];
+  return options[Math.floor(Math.random() * options.length)];
+}
 
 function hashString(str: string): number {
   let hash = 5381;
@@ -73,6 +87,21 @@ function PromptHistory({
   const chatEntries = chatHistory;
 
   const assistantIconName = useMemo(() => getAssistantIcon(chatId), [chatId]);
+
+  const lastAssistantIndex = useMemo(() => {
+    for (let i = chatEntries.length - 1; i >= 0; i--) {
+      if (chatEntries[i].chatSource === CHAT_SOURCE.ASSISTANT) return i;
+    }
+    return -1;
+  }, [chatEntries]);
+
+  const streamingAnimationRef = useRef<AvatarAnimation>('rock');
+
+  useEffect(() => {
+    if (streamingState?.isStreaming) {
+      streamingAnimationRef.current = getRandomAnimation(assistantIconName);
+    }
+  }, [streamingState?.isStreaming, assistantIconName]);
 
   // Initialize the showdown converter for markdown to HTML conversion
   // Only supports: bold, italic, bullet lists, numbered lists, paragraphs
@@ -137,7 +166,7 @@ function PromptHistory({
         )}
 
         {/* Avatar always at the bottom, moves down as content streams */}
-        <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className="assistant-avatar" />
+        <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className={`assistant-avatar avatar-anim-${streamingAnimationRef.current}`} />
       </div>
     );
   };
@@ -180,7 +209,7 @@ function PromptHistory({
         )
       ) : (
         <>
-          {chatEntries.map((chatEntry) => {
+          {chatEntries.map((chatEntry, index) => {
             // Handle error entries with InfoDisplay
             if (chatEntry.chatSource === CHAT_SOURCE.ERROR) {
               return (
@@ -220,7 +249,7 @@ function PromptHistory({
                       </ChatErrorBoundary>
                     )}
                   </div>
-                  {chatEntry.chatSource === CHAT_SOURCE.ASSISTANT && (
+                  {chatEntry.chatSource === CHAT_SOURCE.ASSISTANT && index === lastAssistantIndex && !streamingState?.isStreaming && (
                     <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className="assistant-avatar" />
                   )}
                 </div>

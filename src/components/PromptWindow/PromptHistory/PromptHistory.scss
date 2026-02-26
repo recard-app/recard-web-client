@@ -193,4 +193,34 @@
     }
   }
 
+  // Stuttery avatar loading animations (~1fps feel)
+  @keyframes avatar-rock {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-20deg); }
+    50% { transform: rotate(0deg); }
+    75% { transform: rotate(20deg); }
+  }
+
+  @keyframes avatar-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes avatar-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.75); }
+  }
+
+  .assistant-avatar {
+    &.avatar-anim-rock {
+      animation: avatar-rock 3s steps(3) infinite;
+    }
+    &.avatar-anim-spin {
+      animation: avatar-spin 4s steps(4) infinite;
+    }
+    &.avatar-anim-pulse {
+      animation: avatar-pulse 3s steps(3) infinite;
+    }
+  }
+
 }
