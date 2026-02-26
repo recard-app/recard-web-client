@@ -11,9 +11,10 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
-import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, MOBILE_BREAKPOINT, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS } from '../../../../types';
+import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, MOBILE_BREAKPOINT, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS, ICON_GRAY } from '../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
+import { MONTH_ABBREVIATIONS } from '../../../../types/Constants';
 import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
 import UsagePieIcon from '@/icons/UsagePieIcon';
@@ -67,6 +68,8 @@ const useIsMobile = () => {
 
   return isMobile;
 };
+
+const SHOW_DATE_RANGE = true; // Toggle: true = date range ("Jan - Mar"), false = period type ("Quarterly")
 
 const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCredit, creditMaxValue, hideSlider = true, disableDropdown = false, displayPeriod = true, variant = 'default', onUpdateHistoryEntry, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
   const isMobile = useIsMobile();
@@ -139,8 +142,49 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     }
   };
 
+  // Get the date range text for the current period (e.g., "Jan - Mar", "Feb", "Jan - Dec")
+  const getDateRangeText = (): string => {
+    if (isAnniversaryBased && anniversaryDate) {
+      // Parse anniversary date MM-DD format to get start month
+      try {
+        const [month] = anniversaryDate.includes('-')
+          ? anniversaryDate.split('-').map(Number)
+          : anniversaryDate.split('/').map(Number);
+        if (!isNaN(month) && month >= 1 && month <= 12) {
+          const startMonthIndex = month - 1;
+          const endMonthIndex = (startMonthIndex + 11) % 12; // month before start, wrapping around
+          return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
+        }
+      } catch {
+        // Fall through to default
+      }
+      return 'Annual';
+    }
+
+    // Calendar-based credits
+    const periodKey = (Object.keys(CREDIT_PERIODS) as Array<keyof typeof CREDIT_PERIODS>).find(
+      (k) => CREDIT_PERIODS[k] === userCredit.AssociatedPeriod
+    ) as keyof typeof CREDIT_INTERVALS | undefined;
+
+    if (!periodKey) return userCredit.AssociatedPeriod;
+
+    const intervals = CREDIT_INTERVALS[periodKey] ?? 1;
+    const monthsPerPeriod = 12 / intervals;
+    const startMonthIndex = (currentPeriodNumber - 1) * monthsPerPeriod;
+    const endMonthIndex = startMonthIndex + monthsPerPeriod - 1;
+
+    if (startMonthIndex === endMonthIndex) {
+      return MONTH_ABBREVIATIONS[startMonthIndex];
+    }
+    return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
+  };
+
   // Get the display text for the credit period (anniversary-aware)
   const getPeriodDisplayText = (): string => {
+    if (SHOW_DATE_RANGE) {
+      return getDateRangeText();
+    }
+
     if (isAnniversaryBased) {
       // For anniversary credits, calculate expiration date dynamically
       const endDate = calculateAnniversaryEndDate();
@@ -544,7 +588,16 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         {/* Left side: Credit info */}
         <div className="credit-info">
           <div className="credit-name">
-            {getCreditTitle()}
+            {card && !SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
+              <CardIcon
+                title={card.CardName}
+                size={16}
+                primary={card.CardPrimaryColor}
+                secondary={card.CardSecondaryColor}
+                className="card-thumbnail"
+              />
+            )}
+            <span className="credit-name-text">{getCreditTitle()}</span>
           </div>
           {card && SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
             <>
@@ -578,13 +631,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           {card && !SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
             <div className="card-info-inline">
               <div className="card-period-group">
-                <CardIcon
-                  title={card.CardName}
-                  size={16}
-                  primary={card.CardPrimaryColor}
-                  secondary={card.CardSecondaryColor}
-                  className="card-thumbnail"
-                />
+                <Icon name="calendar" variant="micro" size={14} color={ICON_GRAY} />
                 {displayPeriod && (
                   <span className="period-text-inline">
                     {getPeriodDisplayText()}

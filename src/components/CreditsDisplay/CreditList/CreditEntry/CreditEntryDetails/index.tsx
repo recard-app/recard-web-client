@@ -95,7 +95,7 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
       const endMonth = startMonth + monthsPerQuarter - 1;
       const startMonthName = MONTH_ABBREVIATIONS[startMonth];
       const endMonthName = MONTH_ABBREVIATIONS[endMonth];
-      return `${startMonthName} - ${endMonthName} (Q${periodNumber})`;
+      return `${startMonthName} \u2192 ${endMonthName} (Q${periodNumber})`;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
       // Calculate month range for this half (6 months per half)
       const monthsPerHalf = 12 / CREDIT_INTERVALS.Semiannually;
@@ -103,7 +103,7 @@ const CreditEntryDetails: React.FC<CreditEntryDetailsProps> = ({
       const endMonth = startMonth + monthsPerHalf - 1;
       const startMonthName = MONTH_ABBREVIATIONS[startMonth];
       const endMonthName = MONTH_ABBREVIATIONS[endMonth];
-      return `${startMonthName} - ${endMonthName} (H${periodNumber})`;
+      return `${startMonthName} \u2192 ${endMonthName} (H${periodNumber})`;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Annually) {
       return now.getFullYear().toString();
     }

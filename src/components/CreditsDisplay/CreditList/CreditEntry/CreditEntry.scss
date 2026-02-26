@@ -43,13 +43,25 @@
   overflow: hidden; // Prevent content from overflowing
   
   .credit-name {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
     font-weight: $font-semibold;
     font-size: $font-sm;
     color: $neutral-black;
     line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    min-width: 0;
+
+    .card-thumbnail {
+      flex-shrink: 0;
+    }
+
+    .credit-name-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
   }
 
   .period-expiring-text {
@@ -118,16 +130,12 @@
       gap: $space-1;
     }
 
-    .card-thumbnail {
-      width: auto;
-      height: $icon-micro;
-      flex-shrink: 0;
-    }
-
     .period-text-inline {
-      font-weight: $font-medium;
-      text-transform: capitalize;
+      font-weight: $font-bold;
+      font-size: $font-xxs;
+      text-transform: uppercase;
       white-space: nowrap;
+      color: $neutral-medium-gray;
     }
 
     .expiring-text-inline {
@@ -135,7 +143,9 @@
       align-items: center;
       gap: $space-1;
       color: $warning;
-      font-weight: $font-medium;
+      font-weight: $font-bold;
+      font-size: $font-xxs;
+      text-transform: uppercase;
       white-space: nowrap;
     }
   }
