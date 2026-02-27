@@ -26,7 +26,6 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
       <img
         src={photoURL}
         alt="Profile"
-        crossOrigin="anonymous"
         referrerPolicy="no-referrer"
         className={`profile-avatar profile-avatar--image ${className || ''}`}
         style={{ width: size, height: size }}

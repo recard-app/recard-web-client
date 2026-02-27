@@ -1,5 +1,6 @@
 @use '../../styling/variables' as *;
 @use '../../styling/mixins' as *;
+@use '../../styling/pwa' as *;
 
 .credit-card-manager {
   display: flex;
@@ -57,6 +58,10 @@
       flex-direction: column;
       gap: $space-2;
       padding: $space-2 $space-4 $space-4 $space-4;
+
+      @media (display-mode: standalone) {
+        padding-bottom: $pwa-bottom-padding-sm;
+      }
 
       .view-card-select {
         @include default-select;
