@@ -61,9 +61,8 @@ html {
     padding: $space-2;
   }
 
-  // Add safe-area bottom padding for iOS standalone mode on mobile
-  @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
-    //padding-bottom: calc($space-2 + env(safe-area-inset-bottom));
+  @media (max-width: $mobile-breakpoint) {
+    padding-bottom: calc($space-2 + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -86,8 +85,7 @@ html {
   @extend .standard-page-content;
   padding: 0;
 
-  // Add safe-area bottom padding for iOS standalone mode on mobile
-  @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
-    //padding-bottom: env(safe-area-inset-bottom);
+  @media (max-width: $mobile-breakpoint) {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 }

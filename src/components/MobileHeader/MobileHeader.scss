@@ -155,6 +155,9 @@
 @media (max-width: $mobile-breakpoint) {
   .mobile-header {
     display: flex; // show on mobile
+    padding-top: env(safe-area-inset-top, 0px);
+    height: calc(56px + env(safe-area-inset-top, 0px));
+    min-height: calc(56px + env(safe-area-inset-top, 0px));
   }
 }
 
@@ -342,6 +345,7 @@
   .mobile-drawer-bottom {
     border-top: $border-half solid $neutral-light-gray;
     padding: $space-1;
+    padding-bottom: calc($space-1 + env(safe-area-inset-bottom, 0px));
     background: $neutral-white;
     box-shadow: $container-shadow-top-bigger;
     .user-profile-section {

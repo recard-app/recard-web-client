@@ -10,6 +10,10 @@
   width: 100%;
   display: flex;
   justify-content: center;
+
+  @media (max-width: $mobile-breakpoint) {
+    padding-bottom: calc($space-2 + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 

@@ -33,7 +33,7 @@
     background-color: $neutral-white;
     padding-bottom: $space-4;
     @media (max-width: $mobile-breakpoint) {
-      padding-bottom: $space-2;
+      padding-bottom: calc($space-2 + env(safe-area-inset-bottom, 0px));
     }
 }
 
