@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import showdown from 'showdown';
 import Icon from '@/icons';
 import { PRIMARY_MEDIUM, NEUTRAL_MEDIUM_GRAY } from '../../../types/Colors';
@@ -36,6 +36,25 @@ export const DailyDigest: React.FC<DailyDigestProps> = ({
     onRegenerate,
     isRegenerating = false
 }) => {
+    const contentRef = useRef<HTMLDivElement>(null);
+    const [isOverflowing, setIsOverflowing] = useState(false);
+
+    const checkOverflow = useCallback(() => {
+        const el = contentRef.current;
+        if (el) {
+            setIsOverflowing(el.scrollHeight > el.clientHeight);
+        }
+    }, []);
+
+    useEffect(() => {
+        const el = contentRef.current;
+        if (!el) return;
+        checkOverflow();
+        const observer = new ResizeObserver(checkOverflow);
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [checkOverflow]);
+
     const converter = useMemo(() => {
         return new showdown.Converter({
             simpleLineBreaks: false,
@@ -56,11 +75,12 @@ export const DailyDigest: React.FC<DailyDigestProps> = ({
                 <h3 className="daily-digest__title">{title}</h3>
             </div>
             <div
+                ref={contentRef}
                 className="daily-digest__content"
                 dangerouslySetInnerHTML={{ __html: sanitizeMarkdownHtml(converter, content) }}
             />
             {(generatedAt || onRegenerate) && (
-                <div className="daily-digest__footer">
+                <div className={`daily-digest__footer${isOverflowing ? ' daily-digest__footer--shadow' : ''}`}>
                     {generatedAt && (
                         <span className="daily-digest__timestamp">
                             Generated {formatGeneratedTime(generatedAt)}

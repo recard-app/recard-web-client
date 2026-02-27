@@ -560,7 +560,7 @@ function PromptWindow({
 
     return (
         <div className='prompt-window'>
-            <div ref={promptHistoryRef} className="prompt-history-container">
+            <div ref={promptHistoryRef} className={`prompt-history-container${isNewChat && chatHistory.length === 0 && !streamingState?.isStreaming && !chatLoadError ? ' welcome-active' : ''}`}>
                 {chatLoadError ? (
                     <ErrorWithRetry
                         message={chatLoadError}

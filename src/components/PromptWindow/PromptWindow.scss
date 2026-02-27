@@ -54,9 +54,17 @@
         scroll-behavior: smooth;
         -webkit-overflow-scrolling: touch; // For better iOS scrolling
         width: 100%; // Full width for scrollbar positioning
-        
+
         // Universal scrollbar styling
         @include universal-scrollbar;
+
+        // On mobile welcome screen, prevent this container from scrolling
+        // so flex sizing passes through to daily-digest content
+        &.welcome-active {
+            @media (max-width: $mobile-breakpoint) {
+                overflow: hidden;
+            }
+        }
         
         .prompt-history {
             padding: $space-2 $space-1;
