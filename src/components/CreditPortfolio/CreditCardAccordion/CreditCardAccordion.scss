@@ -3,8 +3,11 @@
 
 .credit-card-accordion {
   @include interactive-card;
-  overflow: hidden;
-  background-color: $neutral-white;
+
+  & {
+    overflow: hidden;
+    background-color: $neutral-white;
+  }
 
   &.expanded {
     border-color: $neutral-gray;
@@ -30,9 +33,16 @@
     font-weight: inherit;
 
     // Override global button hover/active states
-    &:hover,
+    @media (hover: hover) {
+      &:hover,
+      &:hover:not(:disabled) {
+        background: transparent;
+        background-color: transparent;
+        transform: none;
+      }
+    }
+
     &:active,
-    &:hover:not(:disabled),
     &:active:not(:disabled) {
       background: transparent;
       background-color: transparent;

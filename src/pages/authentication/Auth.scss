@@ -67,8 +67,10 @@
     color: $neutral-black;
     transition: border-color $transition-base, box-shadow $transition-base;
 
-    &:hover:not(:focus) {
-      border-color: $neutral-medium-gray;
+    @media (hover: hover) {
+      &:hover:not(:focus) {
+        border-color: $neutral-medium-gray;
+      }
     }
 
     &:focus {
@@ -99,8 +101,10 @@
   font-size: $font-sm;
   transition: background-color 150ms ease, transform 100ms ease, opacity 150ms ease;
 
-  &:hover:not(:disabled) {
-    background-color: $primary-medium;
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: $primary-medium;
+    }
   }
 
   &:active:not(:disabled) {
@@ -149,7 +153,7 @@
     text-decoration: underline;
     transition: color 150ms ease;
 
-    &:hover {
+    @include hover {
       color: $neutral-black;
     }
   }
@@ -191,9 +195,11 @@
     flex-shrink: 0;
   }
 
-  &:hover:not(:disabled) {
-    background-color: $neutral-lightest-gray;
-    border-color: $neutral-medium-gray;
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: $neutral-lightest-gray;
+      border-color: $neutral-medium-gray;
+    }
   }
 
   &:active:not(:disabled) {
@@ -218,8 +224,11 @@
 
 .aux-link {
   @include link-subtle;
-  font-size: $font-sm;
-  transition: color 150ms ease;
+
+  & {
+    font-size: $font-sm;
+    transition: color 150ms ease;
+  }
 }
 
 // Compact copy in forgot password

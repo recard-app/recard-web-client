@@ -29,9 +29,11 @@
       flex-shrink: 0;
     }
 
-    &:hover:not(.active) {
-      background-color: $neutral-white;
-      color: $neutral-black;
+    @media (hover: hover) {
+      &:hover:not(.active) {
+        background-color: $neutral-white;
+        color: $neutral-black;
+      }
     }
 
     &.active {

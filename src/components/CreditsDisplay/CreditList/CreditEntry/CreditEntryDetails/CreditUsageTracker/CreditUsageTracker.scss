@@ -40,7 +40,7 @@
     &.clickable {
       cursor: pointer;
 
-      &:hover {
+      @include hover {
         background-color: $neutral-light-gray;
         //border: 0.5px solid $neutral-light-gray;
       }

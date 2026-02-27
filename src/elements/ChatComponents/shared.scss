@@ -16,9 +16,11 @@
   box-sizing: border-box;
 
   // Hover state (only for clickable items)
-  &.clickable:hover {
-    background-color: $neutral-lightest-gray;
-    border-color: $neutral-gray;
+  @media (hover: hover) {
+    &.clickable:hover {
+      background-color: $neutral-lightest-gray;
+      border-color: $neutral-gray;
+    }
   }
 }
 
@@ -114,8 +116,10 @@
 }
 
 // Match action row border to component border on hover
-.chat-component-item.clickable:hover .action-row {
-  border-top-color: $neutral-gray;
+@media (hover: hover) {
+  .chat-component-item.clickable:hover .action-row {
+    border-top-color: $neutral-gray;
+  }
 }
 
 // =============================================================================

@@ -121,7 +121,7 @@
       height: $icon-mini;
     }
 
-    &:hover {
+    @include hover {
       background-color: $neutral-light-gray;
       color: $neutral-black;
     }

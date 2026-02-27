@@ -41,7 +41,7 @@
             align-items: center;
             justify-content: center;
             
-            &:hover {
+            @include hover {
                 opacity: 0.8;
             }
             

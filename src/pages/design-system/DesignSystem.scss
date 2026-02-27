@@ -46,8 +46,10 @@
   text-decoration: none;
   transition: $transition-fast;
 
-  &:hover {
-    background: $primary-lightest;
+  @media (hover: hover) {
+    &:hover {
+      background: $primary-lightest;
+    }
   }
 }
 
@@ -82,9 +84,11 @@
     border-radius: $radius-md;
     transition: $transition-fast;
 
-    &:hover {
-      background: $neutral-light-gray;
-      color: $primary-color;
+    @media (hover: hover) {
+      &:hover {
+        background: $neutral-light-gray;
+        color: $primary-color;
+      }
     }
   }
 
@@ -95,9 +99,11 @@
     color: $primary-color;
     font-weight: $font-medium;
 
-    &:hover {
-      background: $primary-light;
-      color: $primary-dark;
+    @media (hover: hover) {
+      &:hover {
+        background: $primary-light;
+        color: $primary-dark;
+      }
     }
   }
 }

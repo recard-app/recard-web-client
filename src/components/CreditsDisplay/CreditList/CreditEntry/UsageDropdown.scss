@@ -32,8 +32,10 @@
   }
   
   // Ensure hover state works
-  &:hover {
-    background-color: $neutral-lightest-gray !important;
+  @media (hover: hover) {
+    &:hover {
+      background-color: $neutral-lightest-gray !important;
+    }
   }
   
   // Selected state styling - removed bold font weight

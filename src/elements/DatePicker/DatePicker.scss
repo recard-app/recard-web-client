@@ -20,7 +20,10 @@
 
   .date-picker-input {
     @include default-input-base;
-    padding-right: $space-12; // Room for buttons
+
+    & {
+      padding-right: $space-12; // Room for buttons
+    }
 
     // Hide native date picker calendar icon
     &::-webkit-calendar-picker-indicator {
@@ -67,8 +70,10 @@
     cursor: pointer;
     transition: background-color $transition-fast;
 
-    &:hover:not(:disabled) {
-      background-color: $neutral-light-gray;
+    @media (hover: hover) {
+      &:hover:not(:disabled) {
+        background-color: $neutral-light-gray;
+      }
     }
 
     &:disabled {

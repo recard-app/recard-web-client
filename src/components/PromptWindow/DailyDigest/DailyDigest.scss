@@ -104,8 +104,10 @@
         cursor: pointer;
         transition: background-color 0.15s ease;
 
-        &:hover:not(:disabled) {
-            background-color: $neutral-light-gray;
+        @media (hover: hover) {
+            &:hover:not(:disabled) {
+                background-color: $neutral-light-gray;
+            }
         }
 
         &:disabled {

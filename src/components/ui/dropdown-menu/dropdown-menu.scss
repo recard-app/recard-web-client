@@ -33,10 +33,12 @@
   // Remove default Tailwind styling
   @apply bg-transparent text-inherit;
   
-  &:hover {
-    background-color: $background-lighter-gray !important;
+  @media (hover: hover) {
+    &:hover {
+      background-color: $background-lighter-gray !important;
+    }
   }
-  
+
   &:focus {
     background-color: $background-lighter-gray !important;
     outline: none !important;
@@ -68,8 +70,10 @@
   &.delete-action {
     color: $info-error-red !important;
 
-    &:hover {
-      background-color: color-mix(in srgb, $error 10%, transparent) !important;
+    @media (hover: hover) {
+      &:hover {
+        background-color: color-mix(in srgb, $error 10%, transparent) !important;
+      }
     }
 
     &:focus {
@@ -82,8 +86,10 @@
     color: $error !important;
     background-color: color-mix(in srgb, $error 5%, transparent) !important;
 
-    &:hover {
-      background-color: color-mix(in srgb, $error 10%, transparent) !important;
+    @media (hover: hover) {
+      &:hover {
+        background-color: color-mix(in srgb, $error 10%, transparent) !important;
+      }
     }
 
     &:focus {
@@ -105,8 +111,10 @@
     align-items: center;
     justify-content: center;
     
-    &:hover {
-      opacity: 0.7;
+    @media (hover: hover) {
+      &:hover {
+        opacity: 0.7;
+      }
     }
   }
 }
@@ -118,8 +126,10 @@
     color: inherit;
     
     // Reset link-specific hover behavior
-    &:hover {
-      background-color: transparent !important;
+    @media (hover: hover) {
+      &:hover {
+        background-color: transparent !important;
+      }
     }
   }
 }

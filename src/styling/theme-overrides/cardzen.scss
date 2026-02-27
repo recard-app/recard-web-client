@@ -67,8 +67,10 @@
   .credit-modal-bottom-row button.outline {
     background-color: color-mix(in srgb, currentColor 15%, $neutral-white) !important;
 
-    &:hover:not(:disabled) {
-      background-color: color-mix(in srgb, currentColor 25%, $neutral-white) !important;
+    @media (hover: hover) {
+      &:hover:not(:disabled) {
+        background-color: color-mix(in srgb, currentColor 25%, $neutral-white) !important;
+      }
     }
   }
 
@@ -192,9 +194,11 @@
       fill: $info !important;
     }
 
-    &:hover {
-      background-color: hsl(205, 35%, 25%) !important;
-      border-color: hsl(205, 40%, 35%) !important;
+    @media (hover: hover) {
+      &:hover {
+        background-color: hsl(205, 35%, 25%) !important;
+        border-color: hsl(205, 40%, 35%) !important;
+      }
     }
   }
 

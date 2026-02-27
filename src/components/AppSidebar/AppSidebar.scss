@@ -49,7 +49,7 @@
         color: $neutral-black;
         text-decoration: none;
         
-        &:hover {
+        @include hover {
           color: $primary-color;
           transition: color $transition-base;
         }
@@ -241,7 +241,7 @@
     cursor: pointer;
     color: inherit;
 
-    &:hover {
+    @include hover {
       background-color: $neutral-light-gray;
     }
 
@@ -252,14 +252,14 @@
     &.new-chat-plus {
       background-color: rgba(34, 204, 157, 0.1); // Light green background to help visibility
       border: 1px solid rgba(34, 204, 157, 0.3); // Light border
-      
+
       svg {
         fill: $primary-color !important; // Force the icon color
       }
-      
-      &:hover {
+
+      @include hover {
         background-color: $neutral-light-gray;
-        
+
         // Change icon color on hover
         svg {
           fill: $primary-medium !important;
@@ -289,7 +289,7 @@
     align-items: center !important;
     justify-content: center !important;
     
-    &:hover {
+    @include hover {
       svg {
         color: $primary-medium;
       }
@@ -316,13 +316,13 @@
       text-decoration: none;
       cursor: pointer;
 
-      &:hover {
+      @include hover {
         background-color: $neutral-light-gray;
       }
 
       &.active {
         background-color: $primary-light;
-        
+
         img {
           filter: brightness(0) invert(1); // Make icon white
         }
@@ -350,11 +350,11 @@
     text-align: left;
     display: flex;
     
-    &:hover {
+    @include hover {
       background: none !important;
       background-color: transparent !important;
       transform: none !important;
-      
+
       .profile-trigger {
         background-color: $neutral-light-gray;
       }
@@ -389,10 +389,10 @@
     transition: background-color 0.2s ease;
     width: 100%;
 
-    &:hover {
+    @include hover {
       background-color: $neutral-light-gray;
     }
-    
+
     &:focus {
       outline: none;
     }
@@ -444,7 +444,7 @@
     padding: 0;
     cursor: pointer;
     
-    &:hover {
+    @include hover {
       opacity: 0.8;
       background-color: transparent !important;
     }

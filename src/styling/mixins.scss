@@ -102,6 +102,18 @@
   line-height: $leading-normal;
 }
 
+// === HOVER MIXIN ===
+// Wraps :hover styles in @media (hover: hover) so they only apply on
+// devices with a real pointer (mouse / trackpad). Touch-only devices
+// won't get "sticky" hover states.
+@mixin hover {
+  @media (hover: hover) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
 // === BUTTON MIXINS ===
 
 // Base button styles
@@ -134,13 +146,18 @@
 // Primary button
 @mixin button-primary {
   @include button-base;
-  background-color: $primary-color;
-  color: $neutral-white;
-  
-  &:hover:not(:disabled) {
-    background-color: $primary-medium;
+
+  & {
+    background-color: $primary-color;
+    color: $neutral-white;
   }
-  
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: $primary-medium;
+    }
+  }
+
   &:active:not(:disabled) {
     background-color: $primary-dark;
     transform: translateY(1px);
@@ -150,10 +167,15 @@
 // Destructive button (like primary but with red colors)
 @mixin button-destructive {
   @include button-primary;
-  background-color: $alert-red-background;
 
-  &:hover:not(:disabled) {
-    background-color: rgba(231, 0, 11, 0.9);
+  & {
+    background-color: $alert-red-background;
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: rgba(231, 0, 11, 0.9);
+    }
   }
 
   &:active:not(:disabled) {
@@ -165,12 +187,15 @@
 // Loading button (disabled with gray background)
 @mixin button-loading {
   @include button-base;
-  background-color: $neutral-medium-gray;
-  color: $neutral-white;
-  opacity: 1; // Override the base disabled opacity
-  cursor: not-allowed;
-  pointer-events: none;
-  
+
+  & {
+    background-color: $neutral-medium-gray;
+    color: $neutral-white;
+    opacity: 1; // Override the base disabled opacity
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   // Spin icons in loading buttons
   &.icon {
     img, svg {
@@ -182,14 +207,26 @@
 // Disabled button
 @mixin button-disabled {
   @include button-base;
-  background-color: $neutral-light-gray;
-  color: $neutral-medium-gray;
-  border-color: $neutral-gray;
-  opacity: 0.6;
-  cursor: not-allowed;
-  pointer-events: none;
-  
-  &:hover, &:active {
+
+  & {
+    background-color: $neutral-light-gray;
+    color: $neutral-medium-gray;
+    border-color: $neutral-gray;
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: $neutral-light-gray;
+      color: $neutral-medium-gray;
+      border-color: $neutral-gray;
+      transform: none;
+    }
+  }
+
+  &:active {
     background-color: $neutral-light-gray;
     color: $neutral-medium-gray;
     border-color: $neutral-gray;
@@ -200,16 +237,21 @@
 // Secondary button
 @mixin button-secondary {
   @include button-base;
-  background-color: $primary-lightest;
-  color: $primary-color;
-  border: $border-half solid $primary-light;
-  
-  &:hover:not(:disabled) {
-    background-color: $primary-light;
-    border-color: $primary-medium;
-    color: $primary-medium;
+
+  & {
+    background-color: $primary-lightest;
+    color: $primary-color;
+    border: $border-half solid $primary-light;
   }
-  
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: $primary-light;
+      border-color: $primary-medium;
+      color: $primary-medium;
+    }
+  }
+
   &:active:not(:disabled) {
     background-color: $primary-lightest;
     border-color: $primary-medium;
@@ -221,12 +263,17 @@
 // Outline button
 @mixin button-outline {
   @include button-base;
-  background-color: transparent;
-  border: $border-half solid $primary-light;
-  color: $primary-medium;
 
-  &:hover:not(:disabled) {
-    background-color: $primary-lightest;
+  & {
+    background-color: transparent;
+    border: $border-half solid $primary-light;
+    color: $primary-medium;
+  }
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: $primary-lightest;
+    }
   }
 
   &:active:not(:disabled) {
@@ -238,19 +285,27 @@
 // Ghost button (like outline but no border)
 @mixin button-ghost {
   @include button-outline;
-  border: none;
+
+  & {
+    border: none;
+  }
 }
 
 // Ghost-destructive (transparent background, red border/text, subtle hover bg)
 @mixin button-ghost-destructive {
   @include button-outline;
-  border-color: $error;
-  color: $error;
-  
-  &:hover:not(:disabled) {
-    background-color: $neutral-light-gray;
+
+  & {
+    border-color: $error;
+    color: $error;
   }
-  
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: $neutral-light-gray;
+    }
+  }
+
   img, svg {
     color: $error;
     stroke: $error;
@@ -261,19 +316,24 @@
 // No-outline button (completely transparent with no background or border)
 @mixin button-no-outline {
   @include button-base;
-  background-color: transparent;
-  border: none;
-  color: inherit;
-  
-  &:hover:not(:disabled) {
+
+  & {
     background-color: transparent;
+    border: none;
+    color: inherit;
   }
-  
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: transparent;
+    }
+  }
+
   &:active:not(:disabled) {
     background-color: transparent;
     transform: none;
   }
-  
+
   &:focus-visible {
     box-shadow: none;
     outline: none;
@@ -316,7 +376,7 @@
   width: 100%;
   transition: all $transition-fast;
 
-  &:hover {
+  @include hover {
     border-color: $neutral-medium-gray;
   }
 
@@ -368,7 +428,7 @@
   outline: none !important;
   margin: 0;
 
-  &:hover {
+  @include hover {
     border-color: $neutral-medium-gray;
   }
 
@@ -401,9 +461,12 @@
 // Default textarea styling based on PromptField design
 @mixin default-textarea {
   @include default-input-base;
-  min-height: 80px;
-  resize: vertical;
-  padding: $space-1-5;
+
+  & {
+    min-height: 80px;
+    resize: vertical;
+    padding: $space-1-5;
+  }
 
   &:focus {
     border-color: $neutral-medium-gray;
@@ -419,15 +482,18 @@
 // Default select styling based on PromptField design
 @mixin default-select {
   @include default-input-base;
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B5BBC2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right $space-2 center;
-  background-size: 16px;
-  padding-right: $space-8; // Extra padding for the dropdown arrow
 
-  &:hover {
+  & {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B5BBC2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right $space-2 center;
+    background-size: 16px;
+    padding-right: $space-8; // Extra padding for the dropdown arrow
+  }
+
+  @include hover {
     border-color: $neutral-medium-gray;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235A5F66' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
   }
@@ -500,12 +566,12 @@
   text-underline-offset: 2px;
   transition: all $transition-fast;
   cursor: pointer;
-  
-  &:hover {
+
+  @include hover {
     color: $primary-medium;
     text-decoration-color: currentColor;
   }
-  
+
   &:active {
     color: $primary-dark;
   }
@@ -520,8 +586,11 @@
 // Text link (default link styling)
 @mixin link-text {
   @include link-base;
-  font-weight: $font-medium;
-  
+
+  & {
+    font-weight: $font-medium;
+  }
+
   &:visited {
     color: $primary-medium;
   }
@@ -530,14 +599,17 @@
 // Subtle link (less prominent)
 @mixin link-subtle {
   @include link-base;
-  color: $neutral-dark-gray;
-  text-decoration: none;
-  
-  &:hover {
+
+  & {
+    color: $neutral-dark-gray;
+    text-decoration: none;
+  }
+
+  @include hover {
     color: $primary-color;
     text-decoration: underline;
   }
-  
+
   &:visited {
     color: $neutral-dark-gray;
   }
@@ -634,7 +706,7 @@
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 
-  &:hover {
+  @include hover {
     background-color: $neutral-lightest-gray;
     border-color: $neutral-gray;
   }
@@ -652,7 +724,7 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 
-  &:hover {
+  @include hover {
     background-color: $neutral-lightest-gray;
   }
 

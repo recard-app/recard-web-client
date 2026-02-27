@@ -138,9 +138,11 @@
   background: color-mix(in srgb, $neutral-gray 20%, transparent);
   transition: background $transition-fast, color $transition-fast;
 
-  &:hover {
-    background: color-mix(in srgb, $neutral-gray 35%, transparent);
-    color: $neutral-black;
+  @media (hover: hover) {
+    &:hover {
+      background: color-mix(in srgb, $neutral-gray 35%, transparent);
+      color: $neutral-black;
+    }
   }
 }
 

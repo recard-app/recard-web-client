@@ -56,7 +56,7 @@
       text-overflow: ellipsis;
       max-width: 100%;
 
-      &:hover {
+      @include hover {
         color: inherit;
       }
 
@@ -106,8 +106,8 @@
       align-items: center;
       justify-content: center;
 
-      &:hover { 
-        background-color: $neutral-light-gray; 
+      @include hover {
+        background-color: $neutral-light-gray;
       }
     }
   }
@@ -220,7 +220,7 @@
     padding: $space-3 !important;
     border-radius: $radius-base;
     cursor: pointer;
-    &:hover { background-color: $neutral-light-gray; }
+    @include hover { background-color: $neutral-light-gray; }
   }
 
   .mobile-drawer-nav {
@@ -243,7 +243,7 @@
         border: none;
         text-decoration: none;
         cursor: pointer;
-        &:hover { background-color: $neutral-light-gray; }
+        @include hover { background-color: $neutral-light-gray; }
         img { width: 18px; height: 18px; }
         svg { width: 18px; height: 18px; }
         span { font-size: $font-chat; }
@@ -260,6 +260,14 @@
       button {
         color: $primary-medium;
         svg { color: $primary-medium; }
+
+        // Override global button-primary active/hover states that flash green on tap
+        &:hover,
+        &:active,
+        &:active:not(:disabled) {
+          background: none !important;
+          transform: none !important;
+        }
       }
     }
   }
@@ -291,7 +299,7 @@
         font-weight: $font-medium;
       }
 
-      &:hover {
+      @include hover {
         background-color: $neutral-light-gray !important;
       }
     }
@@ -310,7 +318,7 @@
     padding: $space-3 !important;
     border-radius: $radius-base;
     cursor: pointer;
-    &:hover { background-color: $neutral-light-gray; }
+    @include hover { background-color: $neutral-light-gray; }
   }
 
   .mobile-drawer-section {
@@ -357,7 +365,7 @@
         text-align: left;
         display: flex;
 
-        &:hover {
+        @include hover {
           background: none !important;
           background-color: transparent !important;
           transform: none !important;
@@ -396,7 +404,7 @@
         transition: background-color 0.2s ease;
         width: 100%;
 
-        &:hover {
+        @include hover {
           background-color: $neutral-light-gray;
         }
 

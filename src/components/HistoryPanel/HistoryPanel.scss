@@ -93,7 +93,7 @@
           .history-pagination {
               [data-slot="pagination-link"] {
                   color: $primary-medium !important;
-                  &:hover {
+                  @include hover {
                       color: $primary-medium !important;
                   }
                   svg {
@@ -163,17 +163,23 @@
 
   button {
     @include button-outline;
-    min-width: 36px;
-    padding: $space-2 $space-3 !important;
-    font-size: $font-sm;
-    border-width: $border-full !important;
-    box-sizing: border-box;
+
+    & {
+      min-width: 36px;
+      padding: $space-2 $space-3 !important;
+      font-size: $font-sm;
+      border-width: $border-full !important;
+      box-sizing: border-box;
+    }
     
     &.pagination-number {
       &.active {
         @include button-primary;
-        padding: $space-2 $space-3 !important;
-        border-width: $border-full !important;
+
+        & {
+          padding: $space-2 $space-3 !important;
+          border-width: $border-full !important;
+        }
       }
     }
 

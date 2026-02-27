@@ -24,7 +24,7 @@
     // Base states that apply to all variants
 
     // Base hover state
-    &:hover {
+    @include hover {
       background-color: $neutral-lightest-gray;
 
       .entry-content .selected-card-display {

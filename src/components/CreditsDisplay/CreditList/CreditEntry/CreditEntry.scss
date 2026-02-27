@@ -5,22 +5,27 @@
 // New row-based layout - matches history entry pattern
 .credit-entry-row {
   @include interactive-card;
-  padding: $space-2;
-  margin-bottom: 1px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: $space-3;
-  min-height: 42px;
+
+  & {
+    padding: $space-2;
+    margin-bottom: 1px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-3;
+    min-height: 42px;
+  }
 
   &:not(.updating) {
     transition: all 0.2s ease;
   }
 
-  &:hover:not(.updating) {
-    background-color: $neutral-lightest-gray;
-    border-color: $neutral-gray;
+  @media (hover: hover) {
+    &:hover:not(.updating) {
+      background-color: $neutral-lightest-gray;
+      border-color: $neutral-gray;
+    }
   }
 
   // Apply updating state animation to list view entries
@@ -186,7 +191,7 @@
       background: none;
       text-align: right;
       
-      &:hover {
+      @include hover {
         outline: none;
         background-color: var(--button-hover-bg) !important;
       }
@@ -224,8 +229,8 @@
       // Static version when dropdown is disabled (mobile)
       &.static {
         cursor: default;
-        
-        &:hover {
+
+        @include hover {
           background: none !important;
         }
       }
@@ -329,8 +334,13 @@
   // Ensure border persists on slider thumb in all states
   [data-slot="slider-thumb"] {
     border: 1px solid currentColor !important;
-    
-    &:hover,
+
+    @media (hover: hover) {
+      &:hover {
+        border: 1px solid currentColor !important;
+      }
+    }
+
     &:focus,
     &:active,
     &:focus-visible,
@@ -393,8 +403,13 @@
   // Ensure button borders persist in all states
   button.outline {
     border: 1px solid currentColor !important;
-    
-    &:hover,
+
+    @media (hover: hover) {
+      &:hover {
+        border: 1px solid currentColor !important;
+      }
+    }
+
     &:focus,
     &:active,
     &:focus-visible,
@@ -415,8 +430,10 @@
 }
 
 // Custom hover for modal dropdown buttons to use tinted colors instead of global button styles
-.credit-modal-controls button:hover {
-  background-color: var(--button-hover-bg) !important;
+@media (hover: hover) {
+  .credit-modal-controls button:hover {
+    background-color: var(--button-hover-bg) !important;
+  }
 }
 
 // Target the dropdown content for mobile drawer - make it full width to match button
@@ -481,23 +498,28 @@ body:has(.mobile-credit-details-drawer, .credit-edit-modal-drawer) [data-radix-p
 // Sidebar variant styling
 .credit-entry-sidebar {
   @include interactive-card-borderless;
-  display: flex;
-  flex-direction: column;
-  gap: $space-1;
-  padding: $space-2 $space-1;
-  padding-right: 32px;
-  font-size: $font-xs;
-  line-height: 1.2;
-  position: relative;
-  min-height: 42px;
-  justify-content: center;
+
+  & {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    padding: $space-2 $space-1;
+    padding-right: 32px;
+    font-size: $font-xs;
+    line-height: 1.2;
+    position: relative;
+    min-height: 42px;
+    justify-content: center;
+  }
 
   &:not(.updating) {
     transition: background-color 0.2s ease;
   }
 
-  &:hover:not(.updating) {
-    background-color: $neutral-lightest-gray;
+  @media (hover: hover) {
+    &:hover:not(.updating) {
+      background-color: $neutral-lightest-gray;
+    }
   }
 
   // Apply updating state animation to individual sidebar entries

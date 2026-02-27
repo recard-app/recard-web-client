@@ -115,7 +115,7 @@
         font-size: $font-xs;
         margin: 0;
         
-        &:hover {
+        @include hover {
             background-color: $primary-lightest;
             color: $primary-dark;
             border-color: $primary-medium;

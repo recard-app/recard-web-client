@@ -12,9 +12,11 @@
   cursor: pointer;
   transition: border-color $transition-base, background-color $transition-base;
 
-  &:hover:not(.disabled) {
-    border-color: $neutral-medium-gray;
-    background-color: $neutral-lightest-gray;
+  @media (hover: hover) {
+    &:hover:not(.disabled) {
+      border-color: $neutral-medium-gray;
+      background-color: $neutral-lightest-gray;
+    }
   }
 
   &:focus {
@@ -118,8 +120,10 @@
     transition: background-color 0.2s;
     outline: none;
 
-    &:hover {
-      background-color: $neutral-lightest-gray;
+    @media (hover: hover) {
+      &:hover {
+        background-color: $neutral-lightest-gray;
+      }
     }
 
     &.selected {

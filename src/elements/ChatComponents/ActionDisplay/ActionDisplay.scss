@@ -60,8 +60,12 @@
       transition: none;
 
       // Override any active/hover states
-      &:active,
-      &:hover {
+      &:active {
+        background-color: transparent;
+        transform: none;
+      }
+
+      @include hover {
         background-color: transparent;
         transform: none;
       }

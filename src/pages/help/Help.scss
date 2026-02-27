@@ -83,12 +83,14 @@ button.help-layout__mobile-toggle {
     display: flex !important;
   }
 
-  &:hover,
-  &:hover:not(:disabled) {
-    background: $neutral-lightest-gray !important;
-    background-color: $neutral-lightest-gray !important;
-    color: $neutral-dark-gray !important;
-    transform: none !important;
+  @media (hover: hover) {
+    &:hover,
+    &:hover:not(:disabled) {
+      background: $neutral-lightest-gray !important;
+      background-color: $neutral-lightest-gray !important;
+      color: $neutral-dark-gray !important;
+      transform: none !important;
+    }
   }
 
   &:focus,
@@ -149,12 +151,14 @@ button.help-nav-section__header {
   cursor: pointer !important;
   transition: background-color $transition-fast !important;
 
-  &:hover,
-  &:hover:not(:disabled) {
-    background: $neutral-lightest-gray !important;
-    background-color: $neutral-lightest-gray !important;
-    color: $neutral-dark-gray !important;
-    transform: none !important;
+  @media (hover: hover) {
+    &:hover,
+    &:hover:not(:disabled) {
+      background: $neutral-lightest-gray !important;
+      background-color: $neutral-lightest-gray !important;
+      color: $neutral-dark-gray !important;
+      transform: none !important;
+    }
   }
 
   &:focus,
@@ -231,9 +235,11 @@ button.help-nav-section__header {
     color: $neutral-dark-gray;
   }
 
-  &:hover {
-    background: $neutral-lightest-gray;
-    color: $neutral-black;
+  @media (hover: hover) {
+    &:hover {
+      background: $neutral-lightest-gray;
+      color: $neutral-black;
+    }
   }
 
   &:focus,
@@ -294,12 +300,14 @@ button.help-section__header {
     padding: $space-3 !important;
   }
 
-  &:hover,
-  &:hover:not(:disabled) {
-    background: $neutral-lightest-gray !important;
-    background-color: $neutral-lightest-gray !important;
-    color: $neutral-black !important;
-    transform: none !important;
+  @media (hover: hover) {
+    &:hover,
+    &:hover:not(:disabled) {
+      background: $neutral-lightest-gray !important;
+      background-color: $neutral-lightest-gray !important;
+      color: $neutral-black !important;
+      transform: none !important;
+    }
   }
 
   &:focus,

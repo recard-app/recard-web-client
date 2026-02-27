@@ -31,11 +31,14 @@
   .credit-card-preview {
     // Base styles - use interactive card with border
     @include interactive-card;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: $space-1-5;
-    min-height: 48px;
+
+    & {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: $space-1-5;
+      min-height: 48px;
+    }
 
     // Base states that apply to all variants
     &.selected {

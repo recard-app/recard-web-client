@@ -20,7 +20,7 @@
       cursor: pointer;
       user-select: none;
 
-      &:hover {
+      @include hover {
         background: color-mix(in srgb, $primary-lightest 94%, black);
       }
 
@@ -73,8 +73,10 @@
       background: color-mix(in srgb, $error 15%, $neutral-white);
       border-bottom-color: color-mix(in srgb, $error 30%, $neutral-white);
 
-      &--clickable:hover {
-        background: color-mix(in srgb, $error 20%, $neutral-white);
+      @media (hover: hover) {
+        &--clickable:hover {
+          background: color-mix(in srgb, $error 20%, $neutral-white);
+        }
       }
 
       &--clickable:focus-visible {
@@ -107,8 +109,10 @@
     border-bottom: $border-full solid $neutral-light-gray;
   }
 
-  &:hover:not(.settings-row--disabled):not(.settings-row--static) {
-    background: $neutral-lightest-gray;
+  @media (hover: hover) {
+    &:hover:not(.settings-row--disabled):not(.settings-row--static) {
+      background: $neutral-lightest-gray;
+    }
   }
 
   &:focus-visible {
@@ -121,15 +125,17 @@
       color: $error;
     }
 
-    &:hover:not(.settings-row--disabled):not(.settings-row--static) {
-      background: color-mix(in srgb, $error 5%, transparent);
+    @media (hover: hover) {
+      &:hover:not(.settings-row--disabled):not(.settings-row--static) {
+        background: color-mix(in srgb, $error 5%, transparent);
+      }
     }
   }
 
   &--static {
     cursor: default;
 
-    &:hover {
+    @include hover {
       background: $neutral-white;
     }
   }

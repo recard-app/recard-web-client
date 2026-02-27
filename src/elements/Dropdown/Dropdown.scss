@@ -48,18 +48,22 @@
     text-decoration: none;
     cursor: pointer;
     width: 100%;
-    
-    &:hover {
-      background-color: $background-lighter-gray;
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: $background-lighter-gray;
+      }
     }
   }
-  
+
   // Link wrapping a dropdown item should inherit styling
   > a {
     padding: 0;
-    
-    &:hover {
-      background-color: transparent;
+
+    @media (hover: hover) {
+      &:hover {
+        background-color: transparent;
+      }
     }
   }
   
@@ -93,10 +97,12 @@
       flex-grow: 1;
     }
     
-    &:hover {
-      background-color: $background-lighter-gray;
+    @media (hover: hover) {
+      &:hover {
+        background-color: $background-lighter-gray;
+      }
     }
-    
+
     &.delete-action {
       color: $info-error-red;
     }

@@ -101,7 +101,7 @@
         opacity: 0.9;
       }
 
-      &:hover {
+      @include hover {
         background-color: $neutral-light-gray;
         border-color: $neutral-medium-gray;
       }
@@ -111,7 +111,7 @@
         color: $primary-medium;
         border-color: $primary-light;
 
-        &:hover {
+        @include hover {
           background-color: $primary-light;
           border-color: $primary-medium;
         }
@@ -124,8 +124,10 @@
         }
       }
 
-      &:hover .preferred-icon {
-        opacity: 1;
+      @media (hover: hover) {
+        &:hover .preferred-icon {
+          opacity: 1;
+        }
       }
 
       // Loading state
@@ -164,7 +166,7 @@
         flex-shrink: 0;
       }
 
-      &:hover {
+      @include hover {
         background-color: $neutral-light-gray;
         border-color: $neutral-medium-gray;
 
@@ -178,7 +180,7 @@
         color: $neutral-white;
         border-color: $accent-color;
 
-        &:hover {
+        @include hover {
           background-color: $accent-medium;
           border-color: $accent-medium;
         }
@@ -269,7 +271,7 @@
       opacity: 0.6;
       transition: opacity $transition-base;
 
-      &:hover {
+      @include hover {
         opacity: 1;
         background-color: $neutral-light-gray;
       }
@@ -318,9 +320,11 @@
         text-align: center;
       }
 
-      &:hover:not(.active) {
-        background-color: $neutral-white;
-        color: $neutral-black;
+      @media (hover: hover) {
+        &:hover:not(.active) {
+          background-color: $neutral-white;
+          color: $neutral-black;
+        }
       }
 
       &.active {
@@ -441,12 +445,14 @@
                 grid-template-columns: auto 1fr 2fr auto;
                 cursor: pointer;
 
-                &:hover {
+                @include hover {
                   background-color: $neutral-lightest-gray;
                 }
 
-                &:hover ~ .multiplier-expanded-content {
-                  background-color: $neutral-lightest-gray;
+                @media (hover: hover) {
+                  &:hover ~ .multiplier-expanded-content {
+                    background-color: $neutral-lightest-gray;
+                  }
                 }
               }
             }
@@ -856,7 +862,7 @@
     overflow: hidden;
     transition: box-shadow $transition-base;
 
-    &:hover {
+    @include hover {
       box-shadow: $shadow-sm;
     }
 
@@ -877,12 +883,14 @@
       transition: background-color $transition-base;
       outline: none;
 
-      &:hover {
+      @include hover {
         background-color: $neutral-lightest-gray;
       }
 
-      &:hover ~ .component-details-section {
-        background-color: $neutral-lightest-gray;
+      @media (hover: hover) {
+        &:hover ~ .component-details-section {
+          background-color: $neutral-lightest-gray;
+        }
       }
     }
 

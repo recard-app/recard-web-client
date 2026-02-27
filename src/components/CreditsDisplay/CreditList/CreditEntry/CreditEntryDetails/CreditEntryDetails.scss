@@ -104,8 +104,10 @@
   justify-content: flex-end;
 }
 
-.credit-modal-controls .credit-usage button:hover:not(:disabled) {
-  background-color: var(--usage-tint-hover, $neutral-light-gray) !important;
+@media (hover: hover) {
+  .credit-modal-controls .credit-usage button:hover:not(:disabled) {
+    background-color: var(--usage-tint-hover, $neutral-light-gray) !important;
+  }
 }
 
 .credit-modal-controls .credit-usage button:active:not(:disabled) {

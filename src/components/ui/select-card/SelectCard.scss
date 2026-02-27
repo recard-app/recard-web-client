@@ -68,9 +68,11 @@ $collapse-transition-duration: 0.15s;
       }
     }
     
-    &:hover {
-      background-color: $neutral-light-gray;
-      border-color: $neutral-medium-gray;
+    @media (hover: hover) {
+      &:hover {
+        background-color: $neutral-light-gray;
+        border-color: $neutral-medium-gray;
+      }
     }
     
     &:disabled {
@@ -100,12 +102,14 @@ $collapse-transition-duration: 0.15s;
     gap: $space-1;
     font-family: $font-inter;
     
-    &:hover {
-      background-color: $neutral-light-gray;
-      border-color: $neutral-medium-gray;
+    @media (hover: hover) {
+      &:hover {
+        background-color: $neutral-light-gray;
+        border-color: $neutral-medium-gray;
 
-      .deselect-x {
-        opacity: 1;
+        .deselect-x {
+          opacity: 1;
+        }
       }
     }
     
@@ -187,10 +191,12 @@ $collapse-transition-duration: 0.15s;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
 
-        &:hover {
-            background-color: $neutral-black;
-            border-color: $neutral-black;
-            color: $neutral-white;
+        @media (hover: hover) {
+          &:hover {
+              background-color: $neutral-black;
+              border-color: $neutral-black;
+              color: $neutral-white;
+          }
         }
 
         &:disabled {

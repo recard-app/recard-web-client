@@ -44,7 +44,7 @@
         color: $neutral-dark-gray;
         z-index: 1;
         
-        &:hover {
+        @include hover {
           background-color: $neutral-light-gray;
           color: $neutral-black;
         }
