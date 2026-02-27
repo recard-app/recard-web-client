@@ -1,9 +1,11 @@
 @forward './variables';
 @forward './mixins';
+@forward './pwa';
 
 // Import variables and mixins for use in this file
 @use './variables' as *;
 @use './mixins' as *;
+@use './pwa' as *;
 
 // Reset some basic elements
 * {

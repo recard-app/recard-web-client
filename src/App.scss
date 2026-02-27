@@ -61,8 +61,8 @@ html {
     padding: $space-2;
   }
 
-  @media (max-width: $mobile-breakpoint) {
-    padding-bottom: calc($space-2 + env(safe-area-inset-bottom, 0px));
+  @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
+    padding-bottom: $pwa-bottom-padding-sm;
   }
 }
 
@@ -84,8 +84,4 @@ html {
 .standard-page-content--no-padding {
   @extend .standard-page-content;
   padding: 0;
-
-  @media (max-width: $mobile-breakpoint) {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
 }

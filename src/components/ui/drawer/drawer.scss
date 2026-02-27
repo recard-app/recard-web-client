@@ -67,6 +67,13 @@
 .mobile-credit-details-drawer {
   min-height: 300px;
   transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Extra bottom padding for PWA mode on iOS (home indicator + rounded corners)
+  @media (display-mode: standalone) {
+    [data-slot="drawer-footer"] {
+      padding-bottom: $drawer-bottom-buffer-pwa;
+    }
+  }
 }
 
 // Ensure smooth opacity transitions when content appears
@@ -91,6 +98,23 @@
       $neutral-white 100%
     );
     border-radius: $radius-lg $radius-lg 0 0;
+
+    // Extra bottom padding for PWA mode on iOS (home indicator + rounded corners)
+    @media (display-mode: standalone) {
+      padding-bottom: $drawer-bottom-buffer-pwa;
+    }
+  }
+}
+
+// PWA: add bottom buffer to drawer footers and body (home indicator + rounded corners)
+@media (display-mode: standalone) {
+  [data-slot="drawer-content"] .dialog-footer {
+    padding-bottom: $drawer-bottom-buffer-pwa !important;
+  }
+
+  // When dialog-body is the last child (no footer), buffer the body instead
+  [data-slot="drawer-content"] .dialog-body:last-child {
+    padding-bottom: $drawer-bottom-buffer-pwa !important;
   }
 }
 

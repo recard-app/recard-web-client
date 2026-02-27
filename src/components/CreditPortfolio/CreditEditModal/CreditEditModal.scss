@@ -1,4 +1,5 @@
 @use '../../../styling/variables' as *;
+@use '../../../styling/pwa' as *;
 
 .credit-edit-modal-drawer {
   .drawer-content-scroll {
@@ -16,6 +17,11 @@
   [data-slot="drawer-footer"] {
     box-shadow: $container-shadow-top;
     background-color: $neutral-lightest-gray;
+
+    // Extra bottom padding for PWA mode on iOS (home indicator + rounded corners)
+    @media (display-mode: standalone) {
+      padding-bottom: $drawer-bottom-buffer-pwa;
+    }
   }
 }
 

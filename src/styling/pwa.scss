@@ -1,0 +1,17 @@
+// PWA-specific variables
+// These are used for styling adjustments when the app runs as a standalone PWA
+// (Add to Home Screen) on iOS devices with notch/Dynamic Island and home indicator.
+
+@use './variables' as *;
+
+// Safe area insets (provided by the browser based on device hardware)
+$pwa-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+// Bottom padding for page-level content and footers (small buffer + safe area)
+$pwa-bottom-padding-sm: calc($space-2 + $pwa-safe-area-bottom);
+
+// Bottom padding for tab footers (medium buffer + safe area)
+$pwa-bottom-padding-md: calc($space-2 + $pwa-safe-area-bottom);
+
+// Bottom buffer for drawers (static value, no safe area calc needed)
+$drawer-bottom-buffer-pwa: $space-10;

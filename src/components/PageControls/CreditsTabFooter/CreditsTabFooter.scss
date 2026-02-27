@@ -7,9 +7,9 @@
   padding: $space-3 $space-4;
 }
 
-// Mobile: add safe area padding
-@media (max-width: $mobile-breakpoint) {
+// Mobile PWA: add safe area padding
+@media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
   .credits-tab-footer {
-    padding-bottom: calc($space-3 + env(safe-area-inset-bottom, 0px));
+    padding-bottom: $pwa-bottom-padding-md;
   }
 }
