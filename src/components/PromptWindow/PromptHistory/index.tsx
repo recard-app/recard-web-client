@@ -19,9 +19,9 @@ type AvatarAnimation = 'rock' | 'spin' | 'pulse';
 
 const AVATAR_ANIMATIONS: Record<typeof ASSISTANT_ICONS[number], AvatarAnimation> = {
   'assistant':   'rock',
-  'assistant-2': 'spin',
-  'assistant-3': 'spin',
-  'assistant-4': 'spin',
+  'assistant-2': 'rock',
+  'assistant-3': 'rock',
+  'assistant-4': 'rock',
 };
 
 function hashString(str: string): number {
