@@ -17,17 +17,12 @@ const ASSISTANT_ICONS = ['assistant', 'assistant-2', 'assistant-3', 'assistant-4
 
 type AvatarAnimation = 'rock' | 'spin' | 'pulse';
 
-const AVATAR_ANIMATIONS: Record<typeof ASSISTANT_ICONS[number], AvatarAnimation[]> = {
-  'assistant':   ['rock', 'pulse'],
-  'assistant-2': ['rock', 'spin', 'pulse'],
-  'assistant-3': ['rock', 'spin', 'pulse'],
-  'assistant-4': ['rock', 'spin', 'pulse'],
+const AVATAR_ANIMATIONS: Record<typeof ASSISTANT_ICONS[number], AvatarAnimation> = {
+  'assistant':   'rock',
+  'assistant-2': 'spin',
+  'assistant-3': 'spin',
+  'assistant-4': 'spin',
 };
-
-function getRandomAnimation(iconName: typeof ASSISTANT_ICONS[number]): AvatarAnimation {
-  const options = AVATAR_ANIMATIONS[iconName];
-  return options[Math.floor(Math.random() * options.length)];
-}
 
 function hashString(str: string): number {
   let hash = 5381;
@@ -99,7 +94,7 @@ function PromptHistory({
 
   useEffect(() => {
     if (streamingState?.isStreaming) {
-      streamingAnimationRef.current = getRandomAnimation(assistantIconName);
+      streamingAnimationRef.current = AVATAR_ANIMATIONS[assistantIconName];
     }
   }, [streamingState?.isStreaming, assistantIconName]);
 
