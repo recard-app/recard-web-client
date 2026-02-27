@@ -58,9 +58,11 @@
         // Universal scrollbar styling
         @include universal-scrollbar;
 
-        // On mobile welcome screen, prevent this container from scrolling
-        // so flex sizing passes through to daily-digest content
+        // On welcome screen, allow flex children to shrink for daily-digest sizing
         &.welcome-active {
+            .prompt-history {
+                min-height: 0;
+            }
             @media (max-width: $mobile-breakpoint) {
                 overflow: hidden;
             }
