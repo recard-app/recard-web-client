@@ -10,6 +10,10 @@ $pwa-safe-area-bottom: env(safe-area-inset-bottom, 0px);
 // Equivalent to calc($space-2 + safe-area-bottom)
 $pwa-bottom-padding-sm: calc(0.5rem + $pwa-safe-area-bottom);
 
+// Chat-specific bottom padding (more breathing room above home indicator)
+// Equivalent to calc($space-3 + safe-area-bottom)
+$pwa-bottom-padding-chat: calc(1.5rem + $pwa-safe-area-bottom);
+
 // Bottom buffer for drawers (static value, no safe area calc needed)
 // Equivalent to $space-10
 $drawer-bottom-buffer-pwa: 2.5rem;
