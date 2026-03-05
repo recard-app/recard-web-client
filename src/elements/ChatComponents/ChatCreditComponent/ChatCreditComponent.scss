@@ -46,6 +46,16 @@
       font-weight: $font-medium;
       text-transform: capitalize;
     }
+
+    .period-date-range {
+      display: flex;
+      align-items: center;
+      gap: $space-half;
+      font-weight: $font-bold;
+      font-size: $font-xxs;
+      text-transform: uppercase;
+      color: $neutral-medium-gray;
+    }
   }
 
   .credit-usage {

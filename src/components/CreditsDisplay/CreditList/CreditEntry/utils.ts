@@ -1,4 +1,5 @@
-import { CREDIT_USAGE, CREDIT_INTERVALS, type CreditUsageType, type CreditPeriodType } from '../../../../types';
+import { CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, type CreditUsageType, type CreditPeriodType } from '../../../../types';
+import { MONTH_ABBREVIATIONS } from '../../../../types/Constants';
 export function parseCreditValue(raw: string | number | null | undefined): number | undefined {
   if (raw == null) return undefined;
   if (typeof raw === 'number' && isFinite(raw) && raw > 0) return Math.floor(raw);
@@ -90,4 +91,62 @@ export function isPeriodFuture(periodNumber: number, periodType: CreditPeriodTyp
   return periodNumber > currentIndex;
 }
 
+/**
+ * Display-friendly period type names (e.g., for tracking actions)
+ */
+export const PERIOD_DISPLAY_NAMES: Record<string, string> = {
+  [CREDIT_PERIODS.Monthly]: 'Monthly',
+  [CREDIT_PERIODS.Quarterly]: 'Quarterly',
+  [CREDIT_PERIODS.Semiannually]: 'Semiannual',
+  [CREDIT_PERIODS.Annually]: 'Annual',
+};
 
+/**
+ * Gets the date range text for the current period (e.g., "MAR", "JAN -> MAR", "MAR -> FEB")
+ * @param associatedPeriod The credit's AssociatedPeriod value (e.g., 'monthly', 'annually')
+ * @param isAnniversaryBased Whether this is an anniversary-based credit
+ * @param anniversaryDate Optional MM-DD format date for anniversary credits
+ * @param now Optional date to use as reference (defaults to current date)
+ */
+export function getDateRangeText(
+  associatedPeriod: string,
+  isAnniversaryBased: boolean,
+  anniversaryDate?: string,
+  now: Date = new Date()
+): string {
+  if (isAnniversaryBased && anniversaryDate) {
+    try {
+      const [month] = anniversaryDate.includes('-')
+        ? anniversaryDate.split('-').map(Number)
+        : anniversaryDate.split('/').map(Number);
+      if (!isNaN(month) && month >= 1 && month <= 12) {
+        const startMonthIndex = month - 1;
+        const endMonthIndex = (startMonthIndex + 11) % 12;
+        return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
+      }
+    } catch {
+      // Fall through to default
+    }
+    return 'Annual';
+  }
+
+  // Normalize to lowercase to handle mixed casing from database TimePeriod values
+  const normalizedPeriod = associatedPeriod.toLowerCase();
+
+  const periodKey = (Object.keys(CREDIT_PERIODS) as Array<keyof typeof CREDIT_PERIODS>).find(
+    (k) => CREDIT_PERIODS[k] === normalizedPeriod
+  ) as keyof typeof CREDIT_INTERVALS | undefined;
+
+  if (!periodKey) return associatedPeriod;
+
+  const intervals = CREDIT_INTERVALS[periodKey] ?? 1;
+  const monthsPerPeriod = 12 / intervals;
+  const currentPeriodNumber = getCurrentPeriodIndex(normalizedPeriod as CreditPeriodType, now);
+  const startMonthIndex = (currentPeriodNumber - 1) * monthsPerPeriod;
+  const endMonthIndex = startMonthIndex + monthsPerPeriod - 1;
+
+  if (startMonthIndex === endMonthIndex) {
+    return MONTH_ABBREVIATIONS[startMonthIndex];
+  }
+  return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
+}

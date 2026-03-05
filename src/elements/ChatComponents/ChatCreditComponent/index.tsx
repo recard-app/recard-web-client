@@ -4,10 +4,11 @@ import {
   CREDIT_USAGE_DISPLAY_NAMES,
   CREDIT_USAGE_DISPLAY_COLORS,
   CREDIT_USAGE_ICON_NAMES,
-  CREDIT_PERIODS,
 } from '../../../types/CardCreditsTypes';
+import { ICON_GRAY } from '../../../types/Constants';
 import { CardIcon, Icon } from '../../../icons';
 import UsagePieIcon from '../../../icons/UsagePieIcon';
+import { getDateRangeText, PERIOD_DISPLAY_NAMES } from '../../../components/CreditsDisplay/CreditList/CreditEntry/utils';
 import ActionDisplay from '../ActionDisplay';
 import './ChatCreditComponent.scss';
 
@@ -18,16 +19,6 @@ interface ChatCreditComponentProps {
   canUndo: boolean;
   isUndoPending?: boolean;
 }
-
-/**
- * Period display names mapping
- */
-const PERIOD_DISPLAY_NAMES: Record<string, string> = {
-  [CREDIT_PERIODS.Monthly]: 'Monthly',
-  [CREDIT_PERIODS.Quarterly]: 'Quarterly',
-  [CREDIT_PERIODS.Semiannually]: 'Semiannual',
-  [CREDIT_PERIODS.Annually]: 'Annual',
-};
 
 /**
  * Get usage status and styling info using the defined types
@@ -90,16 +81,22 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
 
   const usageInfo = getUsageInfo(currentValueUsed, creditMaxValue);
 
-  // Get period display text
-  const periodText = userCredit.isAnniversaryBased
-    ? 'Anniversary'
-    : PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod;
-
   // Check if this is a tracking action (track/untrack) - only show total value, not usage
   const isTrackingAction = action && (
     action.actionType === CREDIT_ACTION_TYPES.TRACK ||
     action.actionType === CREDIT_ACTION_TYPES.UNTRACK
   );
+
+  // Get period display text: date range for usage credits, type name for tracking actions
+  const periodText = isTrackingAction
+    ? (userCredit.isAnniversaryBased
+      ? 'Anniversary'
+      : PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod)
+    : getDateRangeText(
+        userCredit.AssociatedPeriod,
+        userCredit.isAnniversaryBased ?? false,
+        userCredit.anniversaryDate
+      );
 
   const className = [
     'chat-credit-component',
@@ -140,7 +137,14 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
               />
               <span className="credit-name">{cardCredit.Title}</span>
             </div>
-            <span className="period-text">{periodText}</span>
+            {isTrackingAction ? (
+              <span className="period-text">{periodText}</span>
+            ) : (
+              <span className="period-date-range">
+                <Icon name="calendar" variant="micro" size={12} color={ICON_GRAY} />
+                {periodText}
+              </span>
+            )}
           </div>
 
           {/* Right side: Value display - simplified for tracking actions */}
@@ -161,7 +165,6 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
                 ) : (
                   <Icon name={usageInfo.iconName} variant="micro" size={12} color={usageInfo.color} />
                 )}
-                <span>{usageInfo.status}</span>
               </div>
             </div>
           )}

@@ -80,6 +80,7 @@ function toChatComponentUserCredit(userCredit: UserCredit): ChatComponentUserCre
   return {
     isAnniversaryBased: userCredit.isAnniversaryBased,
     AssociatedPeriod: userCredit.AssociatedPeriod,
+    anniversaryDate: userCredit.anniversaryDate,
   };
 }
 

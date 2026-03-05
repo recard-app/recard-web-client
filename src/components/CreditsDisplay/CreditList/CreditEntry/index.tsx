@@ -11,16 +11,15 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
-import { CREDIT_INTERVALS, CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, MOBILE_BREAKPOINT, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS, ICON_GRAY } from '../../../../types';
+import { CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, CreditPeriodType, MOBILE_BREAKPOINT, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS, ICON_GRAY } from '../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
-import { MONTH_ABBREVIATIONS } from '../../../../types/Constants';
 import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
 import UsagePieIcon from '@/icons/UsagePieIcon';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
-import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './utils';
+import { getMaxValue, clampValue, getUsageForValue, getValueForUsage, getDateRangeText, getCurrentPeriodIndex, PERIOD_DISPLAY_NAMES } from './utils';
 import { UserCreditService } from '../../../../services/UserServices/UserCreditService';
 import CreditEntryDetails from './CreditEntryDetails';
 import CreditModalControls from './CreditModalControls';
@@ -103,14 +102,6 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_ICON_NAMES.DISABLED,
   };
 
-  // Mapping for display-friendly period names
-  const PERIOD_DISPLAY_NAMES: Record<string, string> = {
-    [CREDIT_PERIODS.Monthly]: 'Monthly',
-    [CREDIT_PERIODS.Quarterly]: 'Quarterly',
-    [CREDIT_PERIODS.Semiannually]: 'Semiannually',
-    [CREDIT_PERIODS.Annually]: 'Annually'
-  };
-
   // Check if this is an anniversary-based credit
   const isAnniversaryBased = userCredit.isAnniversaryBased ?? false;
   const anniversaryYear = userCredit.anniversaryYear;
@@ -143,46 +134,17 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   };
 
   // Get the date range text for the current period (e.g., "Jan - Mar", "Feb", "Jan - Dec")
-  const getDateRangeText = (): string => {
-    if (isAnniversaryBased && anniversaryDate) {
-      // Parse anniversary date MM-DD format to get start month
-      try {
-        const [month] = anniversaryDate.includes('-')
-          ? anniversaryDate.split('-').map(Number)
-          : anniversaryDate.split('/').map(Number);
-        if (!isNaN(month) && month >= 1 && month <= 12) {
-          const startMonthIndex = month - 1;
-          const endMonthIndex = (startMonthIndex + 11) % 12; // month before start, wrapping around
-          return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
-        }
-      } catch {
-        // Fall through to default
-      }
-      return 'Annual';
-    }
-
-    // Calendar-based credits
-    const periodKey = (Object.keys(CREDIT_PERIODS) as Array<keyof typeof CREDIT_PERIODS>).find(
-      (k) => CREDIT_PERIODS[k] === userCredit.AssociatedPeriod
-    ) as keyof typeof CREDIT_INTERVALS | undefined;
-
-    if (!periodKey) return userCredit.AssociatedPeriod;
-
-    const intervals = CREDIT_INTERVALS[periodKey] ?? 1;
-    const monthsPerPeriod = 12 / intervals;
-    const startMonthIndex = (currentPeriodNumber - 1) * monthsPerPeriod;
-    const endMonthIndex = startMonthIndex + monthsPerPeriod - 1;
-
-    if (startMonthIndex === endMonthIndex) {
-      return MONTH_ABBREVIATIONS[startMonthIndex];
-    }
-    return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
-  };
+  const dateRangeText = getDateRangeText(
+    userCredit.AssociatedPeriod,
+    isAnniversaryBased,
+    anniversaryDate,
+    now
+  );
 
   // Get the display text for the credit period (anniversary-aware)
   const getPeriodDisplayText = (): string => {
     if (SHOW_DATE_RANGE) {
-      return getDateRangeText();
+      return dateRangeText;
     }
 
     if (isAnniversaryBased) {
@@ -210,19 +172,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     if (userCredit.isAnniversaryBased) {
       return 1;
     }
-
-    // Calendar-based calculation (existing logic for non-anniversary credits)
-    const periodKey = (Object.keys(CREDIT_PERIODS) as Array<keyof typeof CREDIT_PERIODS>).find(
-      (k) => CREDIT_PERIODS[k] === userCredit.AssociatedPeriod
-    ) as keyof typeof CREDIT_INTERVALS | undefined;
-
-    if (!periodKey) return 1;
-
-    const intervals = CREDIT_INTERVALS[periodKey] ?? 1;
-    if (intervals <= 1) return 1;
-    const monthZeroBased = now.getMonth();
-    const segmentLength = 12 / intervals;
-    return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
+    return getCurrentPeriodIndex(userCredit.AssociatedPeriod as CreditPeriodType, now);
   }, [now, userCredit.AssociatedPeriod, userCredit.isAnniversaryBased]);
 
   // Shared selected period state for modal editing

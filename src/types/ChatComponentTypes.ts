@@ -49,6 +49,7 @@ export interface ChatComponentCredit {
 export interface ChatComponentUserCredit {
   isAnniversaryBased?: boolean;
   AssociatedPeriod: string;
+  anniversaryDate?: string;
 }
 
 /**
