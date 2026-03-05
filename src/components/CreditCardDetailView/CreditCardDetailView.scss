@@ -18,7 +18,7 @@
   // Compact Header with card icon, name/badges, and action dropdown
   .card-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: $space-3;
     margin-bottom: $space-3;
 
@@ -26,6 +26,7 @@
       width: 48px;
       height: auto;
       flex-shrink: 0;
+      margin-top: $space-1;
     }
 
     .card-header-info {
@@ -114,6 +115,39 @@
     }
     .meta-value {
       color: $accent-color;
+    }
+  }
+
+  // Issuer & Network meta (standalone, outside header)
+  .card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    margin-bottom: $space-3;
+
+    .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
+      line-height: 1;
+
+      .meta-icon {
+        width: $icon-micro;
+        height: $icon-micro;
+        flex-shrink: 0;
+      }
+
+      .meta-label {
+        font-size: $font-sm;
+        color: $neutral-dark-gray;
+        font-weight: $font-medium;
+      }
+
+      .meta-value {
+        font-size: $font-sm;
+        color: $neutral-black;
+        font-weight: $font-semibold;
+      }
     }
   }
 

@@ -319,30 +319,22 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 />
                 <div className="card-header-info">
                     <h2>{cardDetails.CardName}</h2>
-                    <div className="header-meta">
-                        <div className="meta-item">
-                            <Icon name="bank" variant="micro" color={COLORS.NEUTRAL_GRAY} className="meta-icon" aria-hidden="true" />
-                            <span className="meta-label">Issuer:</span>
-                            <span className="meta-value">{cardDetails.CardIssuer}</span>
+                    {(cardDetails.isDefaultCard || isFrozen) && (
+                        <div className="header-meta">
+                            {cardDetails.isDefaultCard && (
+                                <div className="meta-item status-preferred">
+                                    <Icon name="star" variant="solid" size={14} className="meta-icon" aria-hidden="true" />
+                                    <span className="meta-value">Preferred</span>
+                                </div>
+                            )}
+                            {isFrozen && (
+                                <div className="meta-item status-frozen">
+                                    <Icon name="snowflake" variant="solid" size={14} className="meta-icon" aria-hidden="true" />
+                                    <span className="meta-value">Frozen</span>
+                                </div>
+                            )}
                         </div>
-                        <div className="meta-item">
-                            <Icon name="card" variant="micro" color={COLORS.NEUTRAL_GRAY} className="meta-icon" aria-hidden="true" />
-                            <span className="meta-label">Network:</span>
-                            <span className="meta-value">{cardDetails.CardNetwork}</span>
-                        </div>
-                        {cardDetails.isDefaultCard && (
-                            <div className="meta-item status-preferred">
-                                <Icon name="star" variant="solid" size={14} className="meta-icon" aria-hidden="true" />
-                                <span className="meta-value">Preferred</span>
-                            </div>
-                        )}
-                        {isFrozen && (
-                            <div className="meta-item status-frozen">
-                                <Icon name="snowflake" variant="solid" size={14} className="meta-icon" aria-hidden="true" />
-                                <span className="meta-value">Frozen</span>
-                            </div>
-                        )}
-                    </div>
+                    )}
                 </div>
 
                 {/* Card Actions Dropdown -- only render when at least one action is available */}
@@ -395,6 +387,20 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     </DropdownMenuContent>
                 </DropdownMenu>
                 )}
+            </div>
+
+            {/* Issuer & Network */}
+            <div className="card-meta">
+                <div className="meta-item">
+                    <Icon name="bank" variant="micro" color={COLORS.NEUTRAL_GRAY} className="meta-icon" aria-hidden="true" />
+                    <span className="meta-label">Issuer:</span>
+                    <span className="meta-value">{cardDetails.CardIssuer}</span>
+                </div>
+                <div className="meta-item">
+                    <Icon name="card" variant="micro" color={COLORS.NEUTRAL_GRAY} className="meta-icon" aria-hidden="true" />
+                    <span className="meta-label">Network:</span>
+                    <span className="meta-value">{cardDetails.CardNetwork}</span>
+                </div>
             </div>
 
             {/* Card Description (if available) */}
