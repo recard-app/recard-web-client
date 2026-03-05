@@ -7,6 +7,7 @@
   & {
     overflow: hidden;
     background-color: $neutral-white;
+    box-shadow: $shadow-sm;
   }
 
   &.expanded {
