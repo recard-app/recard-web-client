@@ -6,7 +6,7 @@ import { ICON_RED, ICON_GRAY, ICON_PRIMARY, LOADING_ICON, LOADING_ICON_SIZE } fr
 import { COLORS } from '../../types/Colors';
 import { CardIcon } from '../../icons';
 import { InfoDisplay, DatePicker } from '../../elements';
-import { Icon } from '../../icons';
+import { Icon, createIconVariant } from '../../icons';
 import { UserComponentService } from '../../services/UserServices';
 import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId, useComponents } from '../../contexts/ComponentsContext';
 import { MultiplierBadge, CurrentCategoryDisplay, CategorySelector } from '../multipliers';
@@ -18,8 +18,23 @@ import {
     DialogTitle,
     DialogBody,
 } from '../ui/dialog/dialog';
+import {
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+} from '../ui/dropdown-menu/dropdown-menu';
 
-export type TabType = 'multipliers' | 'credits' | 'perks';
+export type TabType = 'overview' | 'multipliers' | 'credits' | 'perks';
+
+// Dropdown menu icon factories
+const CARD_ACTION_ICONS = {
+    PREFERRED: (props: any = {}) => createIconVariant('star', 'solid', ICON_GRAY, props.size),
+    FREEZE: (props: any = {}) => createIconVariant('snowflake', 'solid', ICON_GRAY, props.size),
+    CALENDAR: (props: any = {}) => createIconVariant('calendar-days', 'micro', ICON_GRAY, props.size),
+    DELETE: (props: any = {}) => createIconVariant('delete', 'mini', ICON_RED, props.size),
+};
 
 interface CreditCardDetailViewProps {
     cardDetails: CreditCardDetails | null;
@@ -39,6 +54,8 @@ interface CreditCardDetailViewProps {
     isFrozen?: boolean; // Whether the card is frozen (excluded from LLM context)
     onFreezeToggle?: () => void; // Called when freeze state is toggled
     initialTab?: TabType; // Initial tab to display when opening the view
+    hideInlineTabs?: boolean; // When true, hides the inline pill tab toggle (mobile)
+    externalActiveTab?: TabType; // Controlled tab from parent (mobile)
 }
 
 const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
@@ -58,7 +75,9 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     onOpenDateChange,
     isFrozen = false,
     onFreezeToggle,
-    initialTab = 'multipliers'
+    initialTab = 'multipliers',
+    hideInlineTabs = false,
+    externalActiveTab,
 }) => {
     // Get component data from ComponentsContext using the card ID
     const cardCredits = useCreditsByCardId(cardDetails?.id || '');
@@ -71,6 +90,9 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
 
     // Tab state for switching between multipliers, credits, and perks
     const [activeTab, setActiveTab] = useState<TabType>(initialTab);
+
+    // Derive effective tab: external (mobile) takes priority over internal state
+    const effectiveTab: TabType = externalActiveTab ?? activeTab;
 
     // Update tab when initialTab prop changes (e.g., opening from different contexts)
     useEffect(() => {
@@ -277,6 +299,8 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
 
     return (
         <div className="card-details">
+            {/* Overview sections: header, description, stats - hidden on mobile when non-overview tab active */}
+            {(!hideInlineTabs || effectiveTab === 'overview') && (<>
             {/* Compact Header: CardIcon, Name/Meta, Action Buttons */}
             <div className="card-header">
                 <CardIcon
@@ -299,71 +323,69 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             <span className="meta-label">Network:</span>
                             <span className="meta-value">{cardDetails.CardNetwork}</span>
                         </div>
+                        {cardDetails.isDefaultCard && (
+                            <div className="meta-item status-preferred">
+                                <Icon name="star" variant="solid" size={14} className="meta-icon" aria-hidden="true" />
+                                <span className="meta-value">Preferred</span>
+                            </div>
+                        )}
+                        {isFrozen && (
+                            <div className="meta-item status-frozen">
+                                <Icon name="snowflake" variant="solid" size={14} className="meta-icon" aria-hidden="true" />
+                                <span className="meta-value">Frozen</span>
+                            </div>
+                        )}
                     </div>
                 </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="card-action-buttons">
-                {onSetPreferred && (
-                    <button
-                        className={`preferred-button ${cardDetails.isDefaultCard ? 'is-preferred' : ''} ${isSettingPreferred ? 'is-loading' : ''}`}
-                        onClick={onSetPreferred}
-                        type="button"
-                        disabled={isSettingPreferred}
-                    >
-                        {isSettingPreferred ? (
-                            <Icon
-                                name="spinner"
-                                variant="default"
-                                size={16}
-                                className="loading-spinner"
-                            />
-                        ) : (
-                            <Icon
-                                name="star"
-                                variant={cardDetails.isDefaultCard ? 'solid' : 'outline'}
-                                size={16}
-                                className="preferred-icon"
-                            />
+                {/* Card Actions Dropdown */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <button className="card-actions-trigger" aria-label="Card actions" type="button">
+                            <Icon name="ellipsis-vertical" variant="mini" size={20} color={ICON_GRAY} aria-hidden="true" />
+                            <span className="card-actions-trigger-text">Edit Card</span>
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {onSetPreferred && (
+                            <DropdownMenuItem
+                                onClick={onSetPreferred}
+                                disabled={isSettingPreferred}
+                                icon={CARD_ACTION_ICONS.PREFERRED}
+                            >
+                                {cardDetails.isDefaultCard ? 'Remove Preferred' : 'Set Preferred'}
+                            </DropdownMenuItem>
                         )}
-                        {cardDetails.isDefaultCard ? 'Preferred Card' : 'Set Preferred'}
-                    </button>
-                )}
-                {onFreezeToggle && (
-                    <button
-                        className={`freeze-button ${isFrozen ? 'is-frozen' : ''}`}
-                        onClick={onFreezeToggle}
-                        type="button"
-                    >
-                        <Icon
-                            name="snowflake"
-                            variant="solid"
-                            size={16}
-                            color={isFrozen ? COLORS.NEUTRAL_WHITE : ICON_GRAY}
-                            className="freeze-icon"
-                        />
-                        {isFrozen ? 'Card Frozen' : 'Freeze Card'}
-                    </button>
-                )}
-                {onRemoveCard && (
-                    <button
-                        className="button ghost destructive icon small square"
-                        onClick={onRemoveCard}
-                        aria-label="Remove Card"
-                        title="Remove Card"
-                        type="button"
-                    >
-                        <Icon
-                            name="delete"
-                            variant="mini"
-                            size={20}
-                            color={ICON_RED}
-                            className="delete-icon"
-                            aria-hidden="true"
-                        />
-                    </button>
-                )}
+                        {onFreezeToggle && (
+                            <DropdownMenuItem
+                                onClick={onFreezeToggle}
+                                icon={CARD_ACTION_ICONS.FREEZE}
+                            >
+                                {isFrozen ? 'Unfreeze Card' : 'Freeze Card'}
+                            </DropdownMenuItem>
+                        )}
+                        {onOpenDateChange && (
+                            <DropdownMenuItem
+                                onClick={handleOpenDateModal}
+                                icon={CARD_ACTION_ICONS.CALENDAR}
+                            >
+                                {openDate ? 'Edit Open Date' : 'Set Open Date'}
+                            </DropdownMenuItem>
+                        )}
+                        {onRemoveCard && (
+                            <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={onRemoveCard}
+                                    variant="destructive"
+                                    icon={CARD_ACTION_ICONS.DELETE}
+                                >
+                                    Remove Card
+                                </DropdownMenuItem>
+                            </>
+                        )}
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             {/* Card Description (if available) */}
@@ -406,35 +428,19 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 )}
                                 {openDate || 'Not set'}
                             </span>
-                            <span className="stat-label">
-                                Open Date
-                                {onOpenDateChange && (
-                                    <button
-                                        className="edit-date-inline-button"
-                                        onClick={handleOpenDateModal}
-                                        aria-label="Edit opening date"
-                                        title="Edit opening date"
-                                        type="button"
-                                    >
-                                        <Icon
-                                            name="pencil"
-                                            variant="mini"
-                                            size={16}
-                                            color={!openDate ? ICON_RED : ICON_GRAY}
-                                            aria-hidden="true"
-                                        />
-                                    </button>
-                                )}
-                            </span>
+                            <span className="stat-label">Open Date</span>
                         </div>
                     </>
                 )}
             </div>
 
+            </>)}
+
             {/* Tabs for switching between Multipliers, Credits, and Perks */}
+            {!hideInlineTabs && (
             <div className="component-tabs">
                 <button
-                    className={`tab-button ${activeTab === 'multipliers' ? 'active' : ''}`}
+                    className={`tab-button ${effectiveTab === 'multipliers' ? 'active' : ''}`}
                     onClick={() => setActiveTab('multipliers')}
                     type="button"
                 >
@@ -442,7 +448,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <span className="tab-count">{cardMultipliers?.length || 0}</span>
                 </button>
                 <button
-                    className={`tab-button ${activeTab === 'credits' ? 'active' : ''}`}
+                    className={`tab-button ${effectiveTab === 'credits' ? 'active' : ''}`}
                     onClick={() => setActiveTab('credits')}
                     type="button"
                 >
@@ -450,7 +456,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <span className="tab-count">{cardCredits?.length || 0}</span>
                 </button>
                 <button
-                    className={`tab-button ${activeTab === 'perks' ? 'active' : ''}`}
+                    className={`tab-button ${effectiveTab === 'perks' ? 'active' : ''}`}
                     onClick={() => setActiveTab('perks')}
                     type="button"
                 >
@@ -458,11 +464,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <span className="tab-count">{cardPerks?.length || 0}</span>
                 </button>
             </div>
+            )}
 
             {/* Tab Content */}
             <div className="tab-content">
                 {/* Multipliers Tab */}
-                {activeTab === 'multipliers' && (
+                {effectiveTab === 'multipliers' && (
                     cardMultipliers && cardMultipliers.length > 0 ? (
                         <div className="multipliers-content">
                             <div className="multipliers-table">
@@ -725,7 +732,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 )}
 
                 {/* Credits Tab */}
-                {activeTab === 'credits' && (
+                {effectiveTab === 'credits' && (
                     cardCredits && cardCredits.length > 0 ? (
                         <div className="credits-grid">
                             {cardCredits.map((credit) => {
@@ -823,7 +830,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 )}
 
                 {/* Perks Tab */}
-                {activeTab === 'perks' && (
+                {effectiveTab === 'perks' && (
                     cardPerks && cardPerks.length > 0 ? (
                         <div className="perks-grid">
                             {cardPerks.map((perk) => {

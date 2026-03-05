@@ -53,6 +53,69 @@
       background-color: $neutral-lightest-gray;
     }
 
+    /* Shared styles for card selector row (used in both sub-header and potentially elsewhere) */
+    .view-card-select {
+      @include default-select;
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      background-color: $neutral-lightest-gray;
+      -webkit-tap-highlight-color: transparent;
+
+      &:active:not(:disabled) {
+        background-color: $neutral-lightest-gray;
+        transform: none;
+      }
+
+      .select-card-icon {
+        flex-shrink: 0;
+      }
+
+      .label-text {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .footer-row {
+      display: flex;
+      gap: $space-2;
+
+      .view-card-select {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .add-card-button {
+        flex-shrink: 0;
+        --footer-btn-size: 36px;
+        width: var(--footer-btn-size);
+        height: var(--footer-btn-size);
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    /* Mobile sticky sub-header: card selector + add button (extends HeaderControls) */
+    .mobile-card-selector-header {
+      padding: $space-2 $space-4;
+      gap: $space-2;
+
+      .footer-row {
+        width: 100%;
+      }
+
+      .view-card-select {
+        background-color: $neutral-white;
+      }
+    }
+
     /* Footer uses FooterControls - only add specific overrides */
     .card-manager-footer {
       flex-direction: column;
@@ -63,50 +126,8 @@
         padding-bottom: $pwa-bottom-padding-sm;
       }
 
-      .view-card-select {
-        @include default-select;
+      .card-tab-select {
         width: 100%;
-        text-align: left;
-        display: flex;
-        align-items: center;
-        gap: $space-2;
-        background-color: $neutral-lightest-gray;
-
-        .select-card-icon {
-          flex-shrink: 0;
-        }
-
-        .label-text {
-          flex: 1;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      }
-
-      .footer-row {
-        display: flex;
-        margin-top: $space-2;
-        gap: $space-2;
-
-        .view-card-select {
-          flex: 1;
-          min-width: 0;
-        }
-
-        .add-card-button {
-          flex-shrink: 0;
-          // Match the select height and use it as width for a square button.
-          // align-items:stretch + aspect-ratio breaks on iOS Safari,
-          // so we set both dimensions explicitly from the same variable.
-          --footer-btn-size: 36px;
-          width: var(--footer-btn-size);
-          height: var(--footer-btn-size);
-          padding: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
       }
     }
   }

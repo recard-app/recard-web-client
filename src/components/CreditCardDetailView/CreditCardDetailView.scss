@@ -15,7 +15,7 @@
 .card-details {
   text-align: left;
 
-  // Compact Header with action buttons on right
+  // Compact Header with card icon, name/badges, and action dropdown
   .card-header {
     display: flex;
     align-items: center;
@@ -72,123 +72,48 @@
     }
   }
 
-  // Action buttons (below header)
-  .card-action-buttons {
+  // Card actions dropdown trigger
+  .card-actions-trigger {
     display: flex;
     align-items: center;
-    gap: $space-2;
-    margin-bottom: $space-3;
+    gap: $space-1-5;
+    align-self: flex-start;
+    padding: $space-1-5 $space-2;
+    background: none;
+    border: $border-full solid transparent;
+    border-radius: $radius-base;
+    cursor: pointer;
+    color: $neutral-dark-gray;
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    transition: all $transition-base;
+    flex-shrink: 0;
 
-    .preferred-button {
-      min-width: 130px; // Prevent size shift during loading
-      background-color: $neutral-lightest-gray;
+    @include hover {
+      background-color: $neutral-light-gray;
+      border-color: $neutral-gray;
       color: $neutral-black;
-      border: $border-full solid $neutral-gray;
-      border-radius: $radius-base;
-      font-size: $font-sm;
-      font-weight: $font-medium;
-      cursor: pointer;
-      transition: all $transition-base;
-      display: flex;
-      align-items: center;
-      gap: $space-1-5;
-      padding: $space-2 $space-3;
-
-      .preferred-icon {
-        color: $neutral-medium-gray;
-        stroke: $neutral-medium-gray;
-        fill: $neutral-medium-gray;
-        opacity: 0.9;
-      }
-
-      @include hover {
-        background-color: $neutral-light-gray;
-        border-color: $neutral-medium-gray;
-      }
-
-      &.is-preferred {
-        background-color: $primary-lightest;
-        color: $primary-medium;
-        border-color: $primary-light;
-
-        @include hover {
-          background-color: $primary-light;
-          border-color: $primary-medium;
-        }
-
-        .preferred-icon {
-          color: currentColor;
-          stroke: currentColor;
-          fill: currentColor;
-          opacity: 1;
-        }
-      }
-
-      @media (hover: hover) {
-        &:hover .preferred-icon {
-          opacity: 1;
-        }
-      }
-
-      // Loading state
-      &:disabled,
-      &.is-loading {
-        cursor: not-allowed;
-        opacity: 0.7;
-      }
-
-      .loading-spinner {
-        stroke: $neutral-medium-gray;
-        fill: none;
-      }
-
-      &.is-preferred .loading-spinner {
-        stroke: $primary-dark;
-      }
     }
+  }
 
-    .freeze-button {
-      background-color: $neutral-lightest-gray;
-      color: $neutral-black;
-      border: $border-full solid $neutral-gray;
-      border-radius: $radius-base;
-      font-size: $font-sm;
-      font-weight: $font-medium;
-      cursor: pointer;
-      transition: all $transition-base;
-      display: flex;
-      align-items: center;
-      gap: $space-1-5;
-      padding: $space-2 $space-3;
+  // Status indicators (stacked with other meta items)
+  .status-preferred {
+    .meta-icon {
+      color: $primary-color !important;
+      fill: $primary-color !important;
+    }
+    .meta-value {
+      color: $primary-color;
+    }
+  }
 
-      .freeze-icon {
-        opacity: 0.7;
-        flex-shrink: 0;
-      }
-
-      @include hover {
-        background-color: $neutral-light-gray;
-        border-color: $neutral-medium-gray;
-
-        .freeze-icon {
-          opacity: 1;
-        }
-      }
-
-      &.is-frozen {
-        background-color: $accent-lightest;
-        color: $neutral-white;
-        border-color: $accent-color;
-
-        @include hover {
-          background-color: $accent-medium;
-          border-color: $accent-medium;
-        }
-
-        .freeze-icon {
-          opacity: 1;
-        }
-      }
+  .status-frozen {
+    .meta-icon {
+      color: $accent-color !important;
+      fill: $accent-color !important;
+    }
+    .meta-value {
+      color: $accent-color;
     }
   }
 
@@ -259,23 +184,6 @@
       align-self: stretch;
     }
 
-    .edit-date-inline-button {
-      background: none;
-      border: none;
-      padding: $space-half;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: $radius-sm;
-      opacity: 0.6;
-      transition: opacity $transition-base;
-
-      @include hover {
-        opacity: 1;
-        background-color: $neutral-light-gray;
-      }
-    }
   }
 
   // Full-width Tabs
@@ -1015,15 +923,14 @@
 /* Mobile responsiveness */
 @media (max-width: $mobile-breakpoint) {
   .card-details {
-    // Action buttons wrap on mobile
-    .card-action-buttons {
-      flex-wrap: wrap;
-
-      .preferred-button,
-      .freeze-button {
-        flex: 1;
-        justify-content: center;
+    // Hide trigger text on mobile, icon-only with touch target
+    .card-actions-trigger {
+      .card-actions-trigger-text {
+        display: none;
       }
+      min-width: 44px;
+      min-height: 44px;
+      justify-content: center;
     }
 
     // Make stats bar wrap on mobile

@@ -6,7 +6,7 @@ import { UserCreditCard } from '../../types/UserTypes';
 import { MOBILE_BREAKPOINT, COLORS } from '../../types';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService, UserCreditService } from '../../services';
-import CreditCardDetailView from '../CreditCardDetailView';
+import CreditCardDetailView, { type TabType } from '../CreditCardDetailView';
 import { InfoDisplay, SearchField, ErrorWithRetry } from '../../elements';
 import {
   Dialog,
@@ -66,6 +66,9 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
         if (typeof window === 'undefined') return false;
         return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
     });
+    // Mobile tab state for the footer tab selector
+    const [mobileActiveTab, setMobileActiveTab] = useState<TabType>('overview');
+
     // Local feature flags for Add Card selector (drawer vs dialog)
     const USE_DRAWER_FOR_ADD_CARD_DESKTOP = false;
     const USE_DRAWER_FOR_ADD_CARD_MOBILE = true;
@@ -602,6 +605,36 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                 </HeaderControls>
             )}
 
+            {/* Mobile sticky sub-header: card selector + add button */}
+            {isMobileViewport && !isLoading && selectedCards.length > 0 && (
+                <HeaderControls className="mobile-card-selector-header">
+                    <div className="footer-row">
+                        <button className="view-card-select" onClick={handleOpenViewSelector} aria-haspopup="dialog">
+                            {selectedCard ? (
+                                <>
+                                    <CardIcon
+                                        title={`${selectedCard.CardName} card`}
+                                        size={24}
+                                        primary={selectedCard.CardPrimaryColor}
+                                        secondary={selectedCard.CardSecondaryColor}
+                                        className="select-card-icon"
+                                    />
+                                    <span className="label-text">{selectedCard.CardName}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Icon name="card" variant="mini" color={COLORS.NEUTRAL_GRAY} />
+                                    <span className="label-text">Select a card to view</span>
+                                </>
+                            )}
+                        </button>
+                        <button className="button icon add-card-button" onClick={handleAddCard} aria-haspopup="dialog" aria-label="Add card">
+                            <Icon name="big-plain-plus" variant="solid" size={20} color={COLORS.NEUTRAL_WHITE} />
+                        </button>
+                    </div>
+                </HeaderControls>
+            )}
+
             {/* Main content area for card details */}
             <div className="card-details-panel">
                 {loadError ? (
@@ -628,6 +661,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                         onOpenDateChange={selectedCard ? (date) => handleOpenDateChange(selectedCard.id, date) : undefined}
                         isFrozen={selectedCard ? userCardsMetadata.get(selectedCard.id)?.isFrozen ?? false : false}
                         onFreezeToggle={selectedCard ? () => handleFreezeToggle(selectedCard.id, userCardsMetadata.get(selectedCard.id)?.isFrozen ?? false) : undefined}
+                        hideInlineTabs={isMobileViewport}
+                        externalActiveTab={isMobileViewport ? mobileActiveTab : undefined}
                     />
                 )}
             </div>
@@ -643,32 +678,17 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                             </button>
                         </>
                     ) : (
-                        <>
-                            <div className="footer-row">
-                                <button className="view-card-select" onClick={handleOpenViewSelector} aria-haspopup="dialog">
-                                    {selectedCard ? (
-                                        <>
-                                            <CardIcon
-                                                title={`${selectedCard.CardName} card`}
-                                                size={24}
-                                                primary={selectedCard.CardPrimaryColor}
-                                                secondary={selectedCard.CardSecondaryColor}
-                                                className="select-card-icon"
-                                            />
-                                            <span className="label-text">{selectedCard.CardName}</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Icon name="card" variant="mini" color={COLORS.NEUTRAL_GRAY} />
-                                            <span className="label-text">Select a card to view</span>
-                                        </>
-                                    )}
-                                </button>
-                                <button className="button icon add-card-button" onClick={handleAddCard} aria-haspopup="dialog" aria-label="Add card">
-                                    <Icon name="big-plain-plus" variant="solid" size={20} color={COLORS.NEUTRAL_WHITE} />
-                                </button>
-                            </div>
-                        </>
+                        <select
+                            className="card-tab-select default-select"
+                            value={mobileActiveTab}
+                            onChange={(e) => setMobileActiveTab(e.target.value as TabType)}
+                            aria-label="Select card section"
+                        >
+                            <option value="overview">Overview</option>
+                            <option value="multipliers">Multipliers</option>
+                            <option value="credits">Credits</option>
+                            <option value="perks">Perks</option>
+                        </select>
                     )}
                 </FooterControls>
             )}

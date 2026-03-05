@@ -181,24 +181,14 @@
     }
   }
 
-  // Frozen state -- blue/ice instead of gold accent.
-  // Component styles have 0-4-0 specificity (.card-details .card-action-buttons
-  // .freeze-button.is-frozen), so !important is needed to override from 0-3-0.
-  .freeze-button.is-frozen {
-    background-color: hsl(205, 35%, 20%) !important;
-    border-color: hsl(205, 40%, 30%) !important;
-    color: $info !important;
-
-    .freeze-icon {
+  // Frozen status indicator -- blue/ice instead of gold accent.
+  .status-frozen {
+    .meta-icon {
       color: $info !important;
       fill: $info !important;
     }
-
-    @media (hover: hover) {
-      &:hover {
-        background-color: hsl(205, 35%, 25%) !important;
-        border-color: hsl(205, 40%, 35%) !important;
-      }
+    .meta-value {
+      color: $info;
     }
   }
 
