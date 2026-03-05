@@ -139,9 +139,6 @@ const BUTTON_USAGE: Record<string, Usage[]> = {
   'help-nav-section__header': [
     { component: 'pages/help/components/HelpNavSection.tsx', page: 'Help Center sidebar' },
   ],
-  'help-section__header': [
-    { component: 'pages/help/components/HelpSection.tsx', page: 'Help Center content sections' },
-  ],
   'dialog-footer-buttons': [
     { component: 'components/ui/dialog/dialog.tsx', page: 'All dialogs with footer actions' },
   ],

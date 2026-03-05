@@ -266,110 +266,6 @@ button.help-nav-section__header {
   }
 }
 
-// Help content section (expandable)
-.help-section {
-  margin-bottom: $space-4;
-  border: $border-full solid $neutral-gray;
-  border-radius: $radius-lg;
-  background: $neutral-white;
-  overflow: hidden;
-
-  @media (max-width: $mobile-breakpoint) {
-    margin-bottom: $space-3;
-    border-radius: $radius-base;
-  }
-}
-
-// Override global button styles for help section header
-button.help-section__header {
-  // Reset all inherited/global button styles
-  all: unset !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  align-items: center !important;
-  width: 100% !important;
-  padding: $space-4 !important;
-  background: $neutral-light-gray !important;
-  background-color: $neutral-light-gray !important;
-  border: none !important;
-  border-bottom: $border-full solid $neutral-gray !important;
-  cursor: pointer !important;
-  transition: background-color $transition-fast !important;
-
-  @media (max-width: $mobile-breakpoint) {
-    padding: $space-3 !important;
-  }
-
-  @media (hover: hover) {
-    &:hover,
-    &:hover:not(:disabled) {
-      background: $neutral-lightest-gray !important;
-      background-color: $neutral-lightest-gray !important;
-      color: $neutral-black !important;
-      transform: none !important;
-    }
-  }
-
-  &:focus,
-  &:active,
-  &:active:not(:disabled) {
-    background: $neutral-lightest-gray !important;
-    background-color: $neutral-lightest-gray !important;
-    color: $neutral-black !important;
-    outline: none !important;
-    transform: none !important;
-  }
-
-  &:focus-visible {
-    outline: 2px solid $neutral-medium-gray !important;
-    outline-offset: -2px !important;
-  }
-}
-
-.help-section__title {
-  flex: 1;
-  text-align: left;
-  font-family: $font-cal-sans;
-  font-size: $font-base;
-  color: $neutral-black;
-  margin: 0 !important;
-
-  @media (max-width: $mobile-breakpoint) {
-    font-size: $font-sm;
-  }
-}
-
-.help-section__chevron {
-  transition: transform $transition-fast;
-  flex-shrink: 0;
-
-  &--expanded {
-    transform: rotate(180deg);
-  }
-}
-
-.help-section__content {
-  display: grid;
-  transition: grid-template-rows $transition-base;
-  grid-template-rows: 1fr;
-
-  &--collapsed {
-    grid-template-rows: 0fr;
-  }
-}
-
-.help-section__content-inner {
-  min-height: 0;
-  overflow: hidden;
-}
-
-.help-section__content-padding {
-  padding: $space-4;
-
-  @media (max-width: $mobile-breakpoint) {
-    padding: $space-3;
-  }
-}
 
 // Help content typography
 .help-content {
@@ -607,6 +503,134 @@ button.help-section__header {
     gap: $space-1;
     vertical-align: middle;
   }
+
+  // Collapsible details/summary (replaces HelpSection component)
+  details {
+    margin-bottom: $space-4;
+    border: $border-full solid $neutral-gray;
+    border-radius: $radius-lg;
+    background: $neutral-white;
+    overflow: hidden;
+
+    @media (max-width: $mobile-breakpoint) {
+      margin-bottom: $space-3;
+      border-radius: $radius-base;
+    }
+
+    &[open] > summary {
+      border-bottom: $border-full solid $neutral-gray;
+    }
+
+    &[open] > summary::after {
+      transform: rotate(180deg);
+    }
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    padding: $space-4;
+    background: $neutral-light-gray;
+    font-family: $font-cal-sans;
+    font-size: $font-base;
+    color: $neutral-black;
+    cursor: pointer;
+    transition: background-color $transition-fast;
+    list-style: none;
+
+    // Hide the default disclosure triangle
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    // Custom chevron indicator
+    &::after {
+      content: '';
+      flex-shrink: 0;
+      margin-left: auto;
+      width: 16px;
+      height: 16px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239CA3AF'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+      background-size: contain;
+      transition: transform $transition-fast;
+    }
+
+    @media (max-width: $mobile-breakpoint) {
+      padding: $space-3;
+      font-size: $font-sm;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        background: $neutral-lightest-gray;
+      }
+    }
+  }
+
+  // Content inside details (after summary)
+  details > :not(summary) {
+    padding-left: $space-4;
+    padding-right: $space-4;
+
+    &:first-of-type {
+      padding-top: $space-4;
+    }
+
+    &:last-child {
+      padding-bottom: $space-4;
+    }
+
+    @media (max-width: $mobile-breakpoint) {
+      padding-left: $space-3;
+      padding-right: $space-3;
+
+      &:first-of-type {
+        padding-top: $space-3;
+      }
+
+      &:last-child {
+        padding-bottom: $space-3;
+      }
+    }
+  }
+}
+
+// Article loading skeleton
+.help-article-loading {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  padding: $space-4 0;
+
+  &__bar {
+    height: 16px;
+    background: $neutral-light-gray;
+    border-radius: $radius-base;
+    animation: help-loading-pulse 1.5s ease-in-out infinite;
+    width: 100%;
+
+    &--short {
+      width: 60%;
+    }
+
+    &--medium {
+      width: 80%;
+    }
+  }
+}
+
+@keyframes help-loading-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+// Sidebar loading state
+.help-sidebar__loading {
+  padding: $space-3;
+  font-family: $font-inter;
+  font-size: $font-xs;
+  color: $neutral-medium-gray;
+  text-align: center;
 }
 
 // Glossary specific styles

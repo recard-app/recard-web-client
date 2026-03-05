@@ -39,29 +39,8 @@ import FullComponents from './pages/design-system/components/FullComponents';
 import ButtonsShowcase from './pages/design-system/buttons/ButtonsShowcase';
 import LandingPage from './pages/landing/LandingPage';
 import { Help } from './pages/help';
+import { HelpArticleRenderer } from './pages/help/components';
 import { TermsOfService, PrivacyPolicy } from './pages/legal';
-import {
-  GettingStarted,
-  AskAI,
-  AskAIPrompts,
-  AskAITips,
-  ChatHistory,
-  DailyDigest,
-  Cards,
-  CardsSettings,
-  CardsDetails,
-  Credits,
-  CreditsDashboard,
-  CreditsUpdating,
-  CreditsHistory as CreditsHistoryHelp,
-  AccountSettings,
-  PreferencesHelp,
-  ReferenceColors,
-  ReferenceFrequencies,
-  Glossary,
-  FAQ,
-  Troubleshooting
-} from './pages/help/sections';
 // Components
 
 import AppSidebar from './components/AppSidebar';
@@ -1409,26 +1388,8 @@ function AppContent({}: AppContentProps) {
                       <Help />
                     </ProtectedRoute>
                   }>
-                    <Route index element={<GettingStarted />} />
-                    <Route path="ask-ai" element={<AskAI />} />
-                    <Route path="ask-ai/prompts" element={<AskAIPrompts />} />
-                    <Route path="ask-ai/tips" element={<AskAITips />} />
-                    <Route path="chat-history" element={<ChatHistory />} />
-                    <Route path="daily-digest" element={<DailyDigest />} />
-                    <Route path="cards" element={<Cards />} />
-                    <Route path="cards/settings" element={<CardsSettings />} />
-                    <Route path="cards/details" element={<CardsDetails />} />
-                    <Route path="credits" element={<Credits />} />
-                    <Route path="credits/dashboard" element={<CreditsDashboard />} />
-                    <Route path="credits/updating" element={<CreditsUpdating />} />
-                    <Route path="credits/history" element={<CreditsHistoryHelp />} />
-                    <Route path="account" element={<AccountSettings />} />
-                    <Route path="preferences" element={<PreferencesHelp />} />
-                    <Route path="reference/colors" element={<ReferenceColors />} />
-                    <Route path="reference/frequencies" element={<ReferenceFrequencies />} />
-                    <Route path="glossary" element={<Glossary />} />
-                    <Route path="faq" element={<FAQ />} />
-                    <Route path="troubleshooting" element={<Troubleshooting />} />
+                    <Route index element={<HelpArticleRenderer articleId="getting-started" />} />
+                    <Route path="*" element={<HelpArticleRenderer />} />
                   </Route>
                   <Route path={PAGES.TERMS_OF_SERVICE.PATH} element={<TermsOfService />} />
                   <Route path={PAGES.PRIVACY_POLICY.PATH} element={<PrivacyPolicy />} />
