@@ -637,7 +637,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                 <FooterControls className="card-manager-footer">
                     {!isLoading && selectedCards.length === 0 ? (
                         <>
-                            <p className="caps-label">Add your credit cards</p>
                             <button className="button icon with-text add-card-button" onClick={handleAddCard} aria-haspopup="dialog">
                                 <Icon name="card" variant="solid" />
                                 Add Cards
