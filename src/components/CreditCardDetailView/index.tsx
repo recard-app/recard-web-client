@@ -315,7 +315,6 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 style={cardDetails.CardPrimaryColor ? {
                     '--showcase-solid': `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 8%, white)`,
                     '--showcase-gradient': `linear-gradient(to bottom, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, white), white)`,
-                    '--showcase-border': `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, white)`,
                 } as React.CSSProperties : undefined}
             >
                 {/* Card Actions Dropdown -- top-right of showcase */}
@@ -400,12 +399,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     </div>
                 </div>
             </div>
-            <div
-                className="card-footer"
-                style={cardDetails.CardPrimaryColor ? {
-                    borderTopColor: `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, white)`,
-                } : undefined}
-            >
+            <div className="card-footer">
                 <div className="meta-item">
                     <span className="meta-label">Issuer</span>
                     <span className="meta-value">{cardDetails.CardIssuer}</span>
