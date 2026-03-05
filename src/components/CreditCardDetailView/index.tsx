@@ -313,9 +313,10 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
             <div
                 className="card-showcase"
                 style={cardDetails.CardPrimaryColor ? {
-                    background: `linear-gradient(to bottom, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, white), white)`,
-                    borderColor: `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, white)`,
-                } : undefined}
+                    '--showcase-solid': `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 8%, white)`,
+                    '--showcase-gradient': `linear-gradient(to bottom, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, white), white)`,
+                    '--showcase-border': `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, white)`,
+                } as React.CSSProperties : undefined}
             >
                 {/* Card Actions Dropdown -- top-right of showcase */}
                 {(onSetPreferred || onFreezeToggle || onOpenDateChange || onRemoveCard) && (
