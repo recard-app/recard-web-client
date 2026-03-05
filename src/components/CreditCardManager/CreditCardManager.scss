@@ -83,6 +83,23 @@
           text-overflow: ellipsis;
         }
       }
+
+      .footer-row {
+        display: flex;
+        margin-top: $space-2;
+        gap: $space-2;
+        align-items: stretch;
+
+        .view-card-select {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .add-card-button {
+          flex-shrink: 0;
+          aspect-ratio: 1;
+        }
+      }
     }
   }
 }

@@ -18,10 +18,6 @@ import {
 } from '../ui/dialog/dialog';
 import {
   Drawer,
-  DrawerNestedRoot,
-  DrawerPortal,
-  DrawerOverlay,
-  DrawerTrigger,
   DrawerContent,
   DrawerTitle,
 } from '../ui/drawer';
@@ -64,7 +60,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     const [showSelector, setShowSelector] = useState(false);
     const [selectorMode, setSelectorMode] = useState<'add' | 'view'>('add');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [addCardSearchTerm, setAddCardSearchTerm] = useState<string>('');
     // View selector does not use search currently (hidden in UI)
     // Keeping state omitted to avoid unused warnings
     const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() => {
@@ -78,7 +73,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     // Add card loading state
     const [isAddingCard, setIsAddingCard] = useState(false);
     const [selectedCardForAdding, setSelectedCardForAdding] = useState<CreditCard | null>(null);
-    const [showAddNested, setShowAddNested] = useState(false);
+    const [showAddDrawer, setShowAddDrawer] = useState(false);
+    const [addCardSearchTerm, setAddCardSearchTerm] = useState<string>('');
 
     // Remove card loading state
     const [isRemovingCard, setIsRemovingCard] = useState(false);
@@ -446,15 +442,16 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
 
     // Handle adding a new card via the CreditCardSelector
     const handleAddCard = () => {
+        if (isMobileViewport) {
+            setShowAddDrawer(true);
+            return;
+        }
         if (onOpenCardSelector) {
             onOpenCardSelector();
             return;
         }
         setSelectorMode('add');
         setShowSelector(true);
-        if (isMobileViewport) {
-            setShowAddNested(true);
-        }
     };
 
     // Open selector to choose a card to view (mobile-only footer control)
@@ -463,12 +460,21 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
         setShowSelector(true);
     };
 
+    // Handle add drawer close - clear search and loading state
+    const handleAddDrawerChange = (open: boolean) => {
+        if (!open) {
+            setAddCardSearchTerm('');
+            setIsAddingCard(false);
+            setSelectedCardForAdding(null);
+        }
+        setShowAddDrawer(open);
+    };
+
     // Handle dialog close - clear loading state
     const handleSelectorDialogChange = (open: boolean) => {
         if (!open) {
             setIsAddingCard(false);
             setSelectedCardForAdding(null);
-            setAddCardSearchTerm('');
         }
         setShowSelector(open);
     };
@@ -478,8 +484,8 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
         // Set loading state
         setIsAddingCard(true);
         setSelectedCardForAdding(card);
-        // Immediately close BOTH drawers for snappy UX while work continues
-        setShowAddNested(false);
+        // Immediately close drawer for snappy UX while work continues
+        setShowAddDrawer(false);
         setShowSelector(false);
 
         // Add the card to user's cards if not already present
@@ -639,26 +645,30 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                         </>
                     ) : (
                         <>
-                            <p className="caps-label">View or Manage Cards</p>
-                            <button className="view-card-select" onClick={handleOpenViewSelector} aria-haspopup="dialog">
-                                {selectedCard ? (
-                                    <>
-                                        <CardIcon
-                                            title={`${selectedCard.CardName} card`}
-                                            size={24}
-                                            primary={selectedCard.CardPrimaryColor}
-                                            secondary={selectedCard.CardSecondaryColor}
-                                            className="select-card-icon"
-                                        />
-                                        <span className="label-text">{selectedCard.CardName}</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Icon name="card" variant="mini" color={COLORS.NEUTRAL_GRAY} />
-                                        <span className="label-text">Select a card to view</span>
-                                    </>
-                                )}
-                            </button>
+                            <div className="footer-row">
+                                <button className="view-card-select" onClick={handleOpenViewSelector} aria-haspopup="dialog">
+                                    {selectedCard ? (
+                                        <>
+                                            <CardIcon
+                                                title={`${selectedCard.CardName} card`}
+                                                size={24}
+                                                primary={selectedCard.CardPrimaryColor}
+                                                secondary={selectedCard.CardSecondaryColor}
+                                                className="select-card-icon"
+                                            />
+                                            <span className="label-text">{selectedCard.CardName}</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Icon name="card" variant="mini" color={COLORS.NEUTRAL_GRAY} />
+                                            <span className="label-text">Select a card to view</span>
+                                        </>
+                                    )}
+                                </button>
+                                <button className="button icon add-card-button" onClick={handleAddCard} aria-haspopup="dialog" aria-label="Add card">
+                                    <Icon name="big-plain-plus" variant="solid" size={20} color={COLORS.NEUTRAL_WHITE} />
+                                </button>
+                            </div>
                         </>
                     )}
                 </FooterControls>
@@ -689,67 +699,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                                         hideInternalSearch={true}
                                         onlyShowUserCards={true}
                                     />
-                                </div>
-                                <div className="dialog-footer">
-                                    <DrawerNestedRoot
-                                        open={showAddNested}
-                                        onOpenChange={(open) => {
-                                            setShowAddNested(open);
-                                            if (!open) {
-                                                // When nested closes (swipe down or programmatic), restore focus
-                                                setTimeout(() => parentDrawerHeaderRef.current?.focus(), 0);
-                                            }
-                                        }}
-                                    >
-                                        <DrawerTrigger asChild>
-                                            <button className="button icon with-text add-card-button">
-                                                <Icon name="card" variant="solid" />
-                                                Add Card
-                                            </button>
-                                        </DrawerTrigger>
-                                        <DrawerPortal>
-                                            <DrawerOverlay />
-                                            <DrawerContent>
-                                                <DrawerTitle className="sr-only">Add Card</DrawerTitle>
-                                                <div className="dialog-header drawer-sticky-header">
-                                                    <h2>Add Card</h2>
-                                                    <div className="search-container" style={{ marginTop: 6 }}>
-                                                        <SearchField
-                                                            type="text"
-                                                            placeholder="Search cards..."
-                                                            value={addCardSearchTerm}
-                                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddCardSearchTerm(e.target.value)}
-                                                            disabled={isAddingCard}
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="dialog-body" style={{ overflowY: 'auto' }}>
-                                                    <SingleCardSelector 
-                                                        creditCards={userCards.filter(card => !card.selected)}
-                                                        onSelectCard={(card) => {
-                                                            handleSelectorCardSelect(card);
-                                                            setShowAddNested(false);
-                                                        }}
-                                                        selectedCardId={undefined}
-                                                        showOnlyUnselectedCards={true}
-                                                        disabled={isAddingCard}
-                                                        hideInternalSearch={true}
-                                                        externalSearchTerm={addCardSearchTerm}
-                                                        onExternalSearchTermChange={setAddCardSearchTerm}
-                                                    />
-                                                </div>
-                                                {isAddingCard && selectedCardForAdding && (
-                                                    <div className="dialog-footer">
-                                                        <InfoDisplay
-                                                            type="loading"
-                                                            message={`Adding ${selectedCardForAdding.CardName}...`}
-                                                            showTitle={false}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </DrawerContent>
-                                        </DrawerPortal>
-                                    </DrawerNestedRoot>
                                 </div>
                             </DrawerContent>
                         </Drawer>
@@ -804,6 +753,48 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                 );
             })()}
             
+            {/* Add card drawer (mobile) */}
+            {isMobileViewport && (
+                <Drawer open={showAddDrawer} onOpenChange={handleAddDrawerChange} direction="bottom">
+                    <DrawerContent fitContent maxHeight="80vh">
+                        <DrawerTitle className="sr-only">Add Card</DrawerTitle>
+                        <div className="dialog-header drawer-sticky-header">
+                            <h2>Add Card</h2>
+                            <div className="search-container" style={{ marginTop: 6 }}>
+                                <SearchField
+                                    type="text"
+                                    placeholder="Search cards..."
+                                    value={addCardSearchTerm}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAddCardSearchTerm(e.target.value)}
+                                    disabled={isAddingCard}
+                                />
+                            </div>
+                        </div>
+                        <div className="dialog-body" style={{ overflowY: 'auto' }}>
+                            <SingleCardSelector
+                                creditCards={userCards.filter(card => !card.selected)}
+                                onSelectCard={handleSelectorCardSelect}
+                                selectedCardId={undefined}
+                                showOnlyUnselectedCards={true}
+                                disabled={isAddingCard}
+                                hideInternalSearch={true}
+                                externalSearchTerm={addCardSearchTerm}
+                                onExternalSearchTermChange={setAddCardSearchTerm}
+                            />
+                        </div>
+                        {isAddingCard && selectedCardForAdding && (
+                            <div className="dialog-footer">
+                                <InfoDisplay
+                                    type="loading"
+                                    message={`Adding ${selectedCardForAdding.CardName}...`}
+                                    showTitle={false}
+                                />
+                            </div>
+                        )}
+                    </DrawerContent>
+                </Drawer>
+            )}
+
             {/* Delete confirmation modal */}
             <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
                 <AlertDialogContent>

@@ -907,6 +907,14 @@ export const iconRegistry: IconDefinition = {
       ]
     }
   },
+  'big-plain-plus': {
+    solid: {
+      viewBox: '0 -960 960 960',
+      paths: [
+        <path key="1" d="M420-144v-276H144v-120h276v-276h120v276h276v120H540v276H420Z" />
+      ]
+    }
+  },
   'search': {
     outline: {
       viewBox: VIEWBOX.DEFAULT,
