@@ -56,12 +56,22 @@ const DatePicker: React.FC<DatePickerProps> = ({
   };
 
   const handleClear = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
     onChange(null);
+    // Directly clear native input to prevent stale value on iOS
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
   };
 
   const handleCalendarClick = () => {
-    inputRef.current?.showPicker();
+    try {
+      inputRef.current?.showPicker();
+    } catch {
+      // showPicker() not supported (e.g. some iOS Safari versions) - focus to trigger native picker
+      inputRef.current?.focus();
+    }
   };
 
   const showClearButton = clearable && value && !disabled;
@@ -84,6 +94,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
             <button
               type="button"
               onClick={handleClear}
+              onPointerDown={(e) => e.preventDefault()}
               className="date-picker-clear"
               aria-label="Clear date"
             >
