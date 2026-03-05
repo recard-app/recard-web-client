@@ -98,6 +98,11 @@ const MyCredits: React.FC<MyCreditsProps> = ({
     }
   }, [prioritizedCredits, showRedeemed, isLoadingPrioritizedCredits, hasInitiallyLoaded]);
 
+  const hasRedeemedCredits = prioritizedCredits.some(credit => {
+    const creditUsage = getCurrentPeriodCreditUsage(credit);
+    return creditUsage === CREDIT_USAGE.USED;
+  });
+
   // Convert prioritized credits to CalendarUserCredits format for CreditsDisplay
   const calendarUserCredits: CalendarUserCredits | null = stableFilteredCredits.length > 0 ? {
     Credits: stableFilteredCredits.map(credit => ({
@@ -188,25 +193,27 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                   onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
                   isCreditUpdating={isCreditUpdating}
                 >
-                  <div className="redeemed-credits-toggle-container">
-                    {!showRedeemed ? (
-                      <button
-                        className="button ghost icon with-text"
-                        onClick={() => handleToggleRedeemed(true)}
-                      >
-                        <Icon name="visibility-on" variant="micro" size={14} />
-                        Show redeemed credits
-                      </button>
-                    ) : (
-                      <button
-                        className="button ghost icon with-text"
-                        onClick={() => handleToggleRedeemed(false)}
-                      >
-                        <Icon name="visibility-off" variant="micro" size={14} />
-                        Hide redeemed credits
-                      </button>
-                    )}
-                  </div>
+                  {hasRedeemedCredits && (
+                    <div className="redeemed-credits-toggle-container">
+                      {!showRedeemed ? (
+                        <button
+                          className="button ghost icon with-text"
+                          onClick={() => handleToggleRedeemed(true)}
+                        >
+                          <Icon name="visibility-on" variant="micro" size={14} />
+                          Show redeemed credits
+                        </button>
+                      ) : (
+                        <button
+                          className="button ghost icon with-text"
+                          onClick={() => handleToggleRedeemed(false)}
+                        >
+                          <Icon name="visibility-off" variant="micro" size={14} />
+                          Hide redeemed credits
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </CreditsDisplay>
               </>
             )}
