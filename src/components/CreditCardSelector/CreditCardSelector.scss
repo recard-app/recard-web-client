@@ -421,23 +421,22 @@
               font-family: $font-inter;
               font-weight: $font-medium;
               color: $neutral-black;
-              display: flex;
-              align-items: center;
-              flex-wrap: wrap;
-              gap: $space-1-5;
-              
-              .default-tag {
-                background-color: $primary-light;
-                color: $primary-medium;
-                font-size: $font-xxs;
-                font-family: $font-inter;
-                font-weight: $font-medium;
-                padding: $space-half $space-2;
-                border-radius: $radius-full;
-                white-space: nowrap;
+
+              .preferred-star-icon {
+                display: inline;
+                margin-right: 2px;
+                margin-top: 0;
+                vertical-align: text-top;
+              }
+
+              .frozen-icon {
+                display: inline;
+                margin-right: 2px;
+                margin-top: 0;
+                vertical-align: text-top;
               }
             }
-            
+
             .card-type {
               margin: 0;
               font-size: $font-xs;

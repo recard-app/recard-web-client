@@ -79,8 +79,8 @@
     gap: $space-1-5;
     align-self: flex-start;
     padding: $space-1-5 $space-2;
-    background: none;
-    border: $border-full solid transparent;
+    background-color: $neutral-white;
+    border: $border-full solid $neutral-light-gray;
     border-radius: $radius-base;
     cursor: pointer;
     color: $neutral-dark-gray;
@@ -1021,4 +1021,15 @@
       }
     }
   }
+}
+
+.clear-date-link {
+  background: none;
+  border: none;
+  color: $info-error-red;
+  font-size: $font-sm;
+  padding: 0;
+  margin-top: $space-2;
+  margin-left: $space-half;
+  cursor: pointer;
 }

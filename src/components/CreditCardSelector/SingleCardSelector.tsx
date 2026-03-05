@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './CreditCardSelector.scss';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, sortCards } from './utils';
-import { CardIcon } from '../../icons';
+import { CardIcon, Icon } from '../../icons';
 import { InfoDisplay, SearchField, ErrorWithRetry } from '../../elements';
+import { ICON_PRIMARY, ICON_BLUE } from '../../types';
 
 /**
  * Props interface for the SingleCardSelector component
@@ -120,8 +121,9 @@ const SingleCardSelector: React.FC<SingleCardSelectorProps> = ({
         />
         <div className='card-desc'>
           <p className='card-name'>
+            {card.isFrozen && <Icon name="snowflake" variant="mini" size={16} color={ICON_BLUE} className="frozen-icon" />}
+            {card.isDefaultCard && <Icon name="star" variant="mini" size={16} color={ICON_PRIMARY} className="preferred-star-icon" />}
             {card.CardName}
-            {card.isDefaultCard && <span className="default-tag">Preferred Card</span>}
           </p>
           <p className='card-type'>{card.CardIssuer}</p>
         </div>

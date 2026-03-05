@@ -350,7 +350,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button className="card-actions-trigger" aria-label="Card actions" type="button">
-                            <Icon name="ellipsis-vertical" variant="mini" size={20} color={ICON_GRAY} aria-hidden="true" />
+                            <Icon name="pencil" variant="solid" size={16} color={ICON_GRAY} aria-hidden="true" />
                             <span className="card-actions-trigger-text">Edit Card</span>
                         </button>
                     </DropdownMenuTrigger>
@@ -943,6 +943,15 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 clearable={true}
                                 disabled={false}
                             />
+                            {editingOpenDateValue && (
+                                <button
+                                    type="button"
+                                    className="clear-date-link"
+                                    onClick={() => setEditingOpenDateValue(null)}
+                                >
+                                    Clear date
+                                </button>
+                            )}
                         </form>
                     </DialogBody>
                     <DialogFooter>
