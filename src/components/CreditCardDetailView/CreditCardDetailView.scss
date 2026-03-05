@@ -943,6 +943,11 @@
       justify-content: center;
     }
 
+    // Taller inline tabs on mobile
+    .component-tabs .tab-button {
+      padding: $space-3 $space-3;
+    }
+
     // Make stats bar wrap on mobile
     .card-stats-bar {
       flex-wrap: wrap;

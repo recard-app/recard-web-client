@@ -62,7 +62,20 @@
   .tab-bar-button:has(.tab-label-hideable) {
     @media (max-width: 600px) {
       flex: 0 0 auto;
-      padding: $space-2;
+      padding: $space-3;
+      aspect-ratio: 1;
+    }
+  }
+
+  // Mobile: taller tabs with larger icons
+  @media (max-width: $mobile-breakpoint) {
+    .tab-bar-button {
+      padding: $space-3 $space-3;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
     }
   }
 
