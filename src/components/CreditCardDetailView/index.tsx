@@ -345,7 +345,8 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     </div>
                 </div>
 
-                {/* Card Actions Dropdown */}
+                {/* Card Actions Dropdown -- only render when at least one action is available */}
+                {(onSetPreferred || onFreezeToggle || onOpenDateChange || onRemoveCard) && (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button className="card-actions-trigger" aria-label="Card actions" type="button">
@@ -393,6 +394,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                         )}
                     </DropdownMenuContent>
                 </DropdownMenu>
+                )}
             </div>
 
             {/* Card Description (if available) */}
