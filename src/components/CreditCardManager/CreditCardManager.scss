@@ -88,7 +88,6 @@
         display: flex;
         margin-top: $space-2;
         gap: $space-2;
-        align-items: stretch;
 
         .view-card-select {
           flex: 1;
@@ -97,7 +96,16 @@
 
         .add-card-button {
           flex-shrink: 0;
-          aspect-ratio: 1;
+          // Match the select height and use it as width for a square button.
+          // align-items:stretch + aspect-ratio breaks on iOS Safari,
+          // so we set both dimensions explicitly from the same variable.
+          --footer-btn-size: 36px;
+          width: var(--footer-btn-size);
+          height: var(--footer-btn-size);
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       }
     }
