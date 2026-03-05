@@ -74,6 +74,7 @@
       }
     }
     button {
+      aspect-ratio: 1;
         @media (max-width: $mobile-breakpoint) {
         height: 33px;
       }
