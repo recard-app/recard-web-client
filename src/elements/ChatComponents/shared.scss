@@ -10,6 +10,7 @@
   background-color: $neutral-white;
   border: $border-full solid $neutral-light-gray;
   border-radius: $radius-md;
+  box-shadow: $shadow-xs;
   transition: background-color $transition-fast, border-color $transition-fast;
   max-width: 400px;
   width: 100%;
