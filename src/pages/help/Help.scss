@@ -274,7 +274,7 @@ button.help-nav-section__header {
   line-height: $leading-relaxed;
   color: $neutral-dark-gray;
 
-  h2 {
+  &__title {
     font-family: $font-cal-sans;
     font-size: $font-h5;
     color: $neutral-black;
@@ -295,6 +295,21 @@ button.help-nav-section__header {
       font-size: $font-h6;
       margin: 0 0 $space-3;
       padding: $space-3 $space-4;
+    }
+  }
+
+  h2:not(.help-content__title) {
+    font-family: $font-cal-sans;
+    font-size: $font-base;
+    color: $neutral-black;
+    margin: $space-6 0 $space-3;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    @media (max-width: $mobile-breakpoint) {
+      margin: $space-4 0 $space-2;
     }
   }
 

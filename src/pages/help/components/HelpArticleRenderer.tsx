@@ -109,6 +109,7 @@ const HelpArticleRenderer: React.FC<HelpArticleRendererProps> = ({ articleId: pr
 
   return (
     <div className="help-content">
+      <h2 className="help-content__title">{article.title}</h2>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}

@@ -1,4 +1,5 @@
 @use '../../styling/variables' as *;
+@use '../../styling/mixins' as *;
 
 // Card Switcher Dropdown Trigger
 .card-switcher-trigger {
@@ -124,10 +125,8 @@
     transition: background-color 0.2s;
     outline: none;
 
-    @media (hover: hover) {
-      &:hover {
-        background-color: $neutral-lightest-gray;
-      }
+    @include hover {
+      background-color: $neutral-lightest-gray;
     }
 
     &.selected {

@@ -6,7 +6,7 @@ import { UserCreditCard } from '../../types/UserTypes';
 import { MOBILE_BREAKPOINT, COLORS } from '../../types';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService, UserCreditService } from '../../services';
-import CreditCardDetailView, { type TabType } from '../CreditCardDetailView';
+import CreditCardDetailView, { type TabType, CARD_TABS } from '../CreditCardDetailView';
 import { InfoDisplay, SearchField, ErrorWithRetry, TabBar } from '../../elements';
 import {
   Dialog,
@@ -36,15 +36,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../ui/dialog/alert-dialog';
-
-
-
-const CARD_TABS = [
-    { id: 'overview', label: 'Overview', icon: 'home' as const, hideLabel: true },
-    { id: 'multipliers', label: 'Multipliers', icon: 'chart-bar' as const },
-    { id: 'credits', label: 'Credits', icon: 'banknotes' as const },
-    { id: 'perks', label: 'Perks', icon: 'gift' as const },
-];
 
 interface CreditCardManagerProps {
     onCardsUpdate?: (cards: CreditCard[]) => void;

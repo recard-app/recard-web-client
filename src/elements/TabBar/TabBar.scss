@@ -36,10 +36,20 @@
       }
     }
 
+    &:active:not(.active) {
+      background-color: transparent;
+      transform: none;
+    }
+
     &.active {
       background-color: $neutral-white;
       color: $primary-color;
       box-shadow: $shadow-sm;
+
+      &:active {
+        background-color: $neutral-white;
+        transform: none;
+      }
     }
   }
 

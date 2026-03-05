@@ -57,7 +57,7 @@ import {
 import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 import { ComponentsProvider, useComponents } from './contexts/ComponentsContext';
-import CreditCardDetailView from './components/CreditCardDetailView';
+import CreditCardDetailView, { type TabType, CARD_TABS } from './components/CreditCardDetailView';
 import CreditEditModal from './components/CreditPortfolio/CreditEditModal';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
 import CreditDetailedSummary from './components/CreditSummary/CreditDetailedSummary';
@@ -69,7 +69,7 @@ import {
 } from './components/ui/drawer';
 import PageHeader from './components/PageHeader';
 import MobileHeader from './components/MobileHeader';
-import { InfoDisplay, SearchField } from './elements';
+import { InfoDisplay, SearchField, TabBar } from './elements';
 
 // Context
 import { useAuth } from './context/AuthContext';
@@ -223,6 +223,7 @@ function AppContent({}: AppContentProps) {
 
   const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
   const [isCardDetailsOpen, setIsCardDetailsOpen] = useState(false);
+  const [cardDetailActiveTab, setCardDetailActiveTab] = useState<TabType>('overview');
   const [isDetailedSummaryOpen, setIsDetailedSummaryOpen] = useState(false);
   // State for credit detail modal (opened from chat component clicks)
   const [isCreditModalOpen, setIsCreditModalOpen] = useState(false);
@@ -751,6 +752,7 @@ function AppContent({}: AppContentProps) {
       const details = userDetailedCardDetails.find(detail => detail.id === card.id);
       if (details) {
         setSelectedCardDetails(details);
+        setCardDetailActiveTab('overview');
         setIsCardDetailsOpen(true);
       }
     } catch (error) {
@@ -765,6 +767,7 @@ function AppContent({}: AppContentProps) {
     const details = userDetailedCardDetails.find(detail => detail.id === cardId);
     if (details) {
       setSelectedCardDetails(details);
+      setCardDetailActiveTab('overview');
       setIsCardDetailsOpen(true);
     }
   };
@@ -1191,6 +1194,15 @@ function AppContent({}: AppContentProps) {
                         cardDetails={selectedCardDetails}
                         isLoading={isLoadingCardDetails}
                         openDate={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.openDate ?? null : null}
+                        hideInlineTabs={true}
+                        externalActiveTab={cardDetailActiveTab}
+                      />
+                    </div>
+                    <div className="dialog-footer card-detail-tab-footer">
+                      <TabBar
+                        options={CARD_TABS}
+                        activeId={cardDetailActiveTab}
+                        onChange={(id) => setCardDetailActiveTab(id as TabType)}
                       />
                     </div>
                   </DrawerContent>
@@ -1210,8 +1222,17 @@ function AppContent({}: AppContentProps) {
                       cardDetails={selectedCardDetails}
                       isLoading={isLoadingCardDetails}
                       openDate={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.openDate ?? null : null}
+                      hideInlineTabs={true}
+                      externalActiveTab={cardDetailActiveTab}
                     />
                   </DialogBody>
+                  <DialogFooter className="card-detail-tab-footer">
+                    <TabBar
+                      options={CARD_TABS}
+                      activeId={cardDetailActiveTab}
+                      onChange={(id) => setCardDetailActiveTab(id as TabType)}
+                    />
+                  </DialogFooter>
                 </DialogContent>
               </Dialog>
             );
