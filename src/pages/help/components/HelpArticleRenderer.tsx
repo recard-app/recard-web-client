@@ -30,7 +30,7 @@ function pathToArticleId(path: string): string {
 function preprocessMarkdown(md: string): string {
   // Convert :::type fences to HTML divs
   let result = md.replace(
-    /^:::(tip|info|warning)\s*\n([\s\S]*?)^:::\s*$/gm,
+    /^:::(tip|info|warning)[ \t]*\n([\s\S]*?)^:::[ \t]*$/gm,
     (_match, type: string, content: string) =>
       `<div class="callout callout--${type}">\n\n${content.trim()}\n\n</div>`
   );
