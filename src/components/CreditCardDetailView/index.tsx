@@ -306,39 +306,19 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
 
     return (
         <div className="card-details">
-            {/* Overview sections: header, description, stats - hidden on mobile when non-overview tab active */}
+            {/* Overview sections: showcase, description, stats - hidden on mobile when non-overview tab active */}
             {(!hideInlineTabs || effectiveTab === 'overview') && (<>
-            {/* Compact Header: CardIcon, Name/Meta, Action Buttons */}
-            <div className="card-header">
-                <CardIcon
-                    title={`${cardDetails.CardName} card`}
-                    size={36}
-                    primary={cardDetails.CardPrimaryColor}
-                    secondary={cardDetails.CardSecondaryColor}
-                    className="card-image"
-                />
-                <div className="card-header-info">
-                    <h2>{cardDetails.CardName}</h2>
-                    {(cardDetails.isDefaultCard || isFrozen) && (
-                        <div className="header-meta">
-                            {cardDetails.isDefaultCard && (
-                                <div className="meta-item status-preferred">
-                                    <Icon name="star" variant="solid" size={14} className="meta-icon" aria-hidden="true" />
-                                    <span className="meta-value">Preferred</span>
-                                </div>
-                            )}
-                            {isFrozen && (
-                                <div className="meta-item status-frozen">
-                                    <Icon name="snowflake" variant="solid" size={14} className="meta-icon" aria-hidden="true" />
-                                    <span className="meta-value">Frozen</span>
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-
-                {/* Card Actions Dropdown -- only render when at least one action is available */}
+            {/* Card Showcase Header */}
+            <div
+                className="card-showcase"
+                style={cardDetails.CardPrimaryColor ? {
+                    background: `linear-gradient(to bottom, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, white), white)`,
+                    borderColor: `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, white)`,
+                } : undefined}
+            >
+                {/* Card Actions Dropdown -- top-right of showcase */}
                 {(onSetPreferred || onFreezeToggle || onOpenDateChange || onRemoveCard) && (
+                <div className="showcase-actions">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <button className="card-actions-trigger" aria-label="Card actions" type="button">
@@ -386,7 +366,37 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                         )}
                     </DropdownMenuContent>
                 </DropdownMenu>
+                </div>
                 )}
+
+                <div className="showcase-identity">
+                    <CardIcon
+                        title={`${cardDetails.CardName} card`}
+                        size={64}
+                        primary={cardDetails.CardPrimaryColor}
+                        secondary={cardDetails.CardSecondaryColor}
+                        className="card-image"
+                    />
+                    <div className="showcase-info">
+                        <h2>{cardDetails.CardName}</h2>
+                        {(cardDetails.isDefaultCard || isFrozen) && (
+                            <div className="showcase-badges">
+                                {cardDetails.isDefaultCard && (
+                                    <span className="badge badge-preferred">
+                                        <Icon name="star" variant="solid" size={12} aria-hidden="true" />
+                                        Preferred
+                                    </span>
+                                )}
+                                {isFrozen && (
+                                    <span className="badge badge-frozen">
+                                        <Icon name="snowflake" variant="solid" size={12} aria-hidden="true" />
+                                        Frozen
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
             {/* Issuer & Network */}
@@ -405,47 +415,54 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
 
             {/* Card Description (if available) */}
             {cardDetails.CardDetails && cardDetails.CardDetails.trim() !== '' && (
-                <p className="card-description">{cardDetails.CardDetails}</p>
+                <p className="card-description">
+                    {cardDetails.CardDetails}
+                </p>
             )}
 
-            {/* Horizontal Stats Bar */}
-            <div className="card-stats-bar">
-                <div className="stat-item">
+            {/* Stats Grid */}
+            <div className="card-stats-grid">
+                <div className="stat-tile">
+                    <div className="stat-icon-wrap">
+                        <Icon name="banknotes" variant="mini" size={16} color={ICON_GRAY} aria-hidden="true" />
+                    </div>
                     <span className="stat-value">{cardDetails.AnnualFee !== null ? `$${cardDetails.AnnualFee}` : '$0'}</span>
                     <span className="stat-label">Annual Fee</span>
                 </div>
-                <div className="stat-divider" />
-                <div className="stat-item">
+                <div className="stat-tile">
+                    <div className="stat-icon-wrap">
+                        <Icon name="globe-alt" variant="mini" size={16} color={ICON_GRAY} aria-hidden="true" />
+                    </div>
                     <span className="stat-value">{cardDetails.ForeignExchangeFee || 'None'}</span>
                     <span className="stat-label">FX Fee</span>
                 </div>
-                <div className="stat-divider" />
-                <div className="stat-item">
-                    <span className="stat-value">
-                        {cardDetails.RewardsCurrency || 'N/A'}
-                    </span>
+                <div className="stat-tile">
+                    <div className="stat-icon-wrap">
+                        <Icon name="arrow-trending-up" variant="mini" size={16} color={ICON_GRAY} aria-hidden="true" />
+                    </div>
+                    <span className="stat-value">{cardDetails.RewardsCurrency || 'N/A'}</span>
                     <span className="stat-label">Rewards</span>
                 </div>
                 {(onOpenDateChange || openDate !== undefined) && (
-                    <>
-                        <div className="stat-divider" />
-                        <div className="stat-item">
-                            <span className={`stat-value ${!openDate ? 'not-set' : ''}`}>
-                                {!openDate && (
-                                    <Icon
-                                        name="exclamation-triangle"
-                                        variant="mini"
-                                        size={16}
-                                        color={ICON_RED}
-                                        className="not-set-icon"
-                                        aria-hidden="true"
-                                    />
-                                )}
-                                {openDate || 'Not set'}
-                            </span>
-                            <span className="stat-label">Open Date</span>
+                    <div className="stat-tile">
+                        <div className="stat-icon-wrap">
+                            <Icon name="calendar" variant="mini" size={16} color={ICON_GRAY} aria-hidden="true" />
                         </div>
-                    </>
+                        <span className={`stat-value${!openDate ? ' not-set' : ''}`}>
+                            {!openDate && (
+                                <Icon
+                                    name="exclamation-triangle"
+                                    variant="mini"
+                                    size={16}
+                                    color={ICON_RED}
+                                    className="not-set-icon"
+                                    aria-hidden="true"
+                                />
+                            )}
+                            {openDate || 'Not set'}
+                        </span>
+                        <span className="stat-label">Open Date</span>
+                    </div>
                 )}
             </div>
 

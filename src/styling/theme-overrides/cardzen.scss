@@ -181,17 +181,6 @@
     }
   }
 
-  // Frozen status indicator -- blue/ice instead of gold accent.
-  .status-frozen {
-    .meta-icon {
-      color: $info !important;
-      fill: $info !important;
-    }
-    .meta-value {
-      color: $info;
-    }
-  }
-
   // Frozen snowflake icons in card lists, dropdowns, accordions, chat.
   // Icon component sets color via inline style and fill via SVG attribute;
   // override both to turn gold snowflakes to blue.

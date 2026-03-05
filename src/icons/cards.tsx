@@ -3,7 +3,7 @@ import React from 'react';
 // ===================== TYPES =====================
 export interface CardIconProps extends Omit<React.SVGProps<SVGSVGElement>, 'color' | 'fill'> {
   title: string;
-  size: 12 | 16 | 20 | 24 | 32 | 36;
+  size: 12 | 16 | 20 | 24 | 32 | 36 | 64;
   primary?: string;   // Hex color for card background (default: #5A5F66)
   secondary?: string; // Hex color for chip and stripe (default: #F2F4F6)
   className?: string;
@@ -80,6 +80,16 @@ const cardIconRegistry: { [size: number]: CardIconData } = {
       card: <rect key="card" width="32" height="20" rx="3" />,
       chip: <rect key="chip" x="3" y="7" width="7" height="5" rx="1.2" />,
       stripe: <rect key="stripe" x="3" y="16" width="21" height="1" rx="0.5" />
+    }
+  },
+  64: {
+    width: 58,
+    height: 36,
+    viewBox: '0 0 58 36',
+    elements: {
+      card: <rect key="card" width="58" height="36" rx="5" />,
+      chip: <rect key="chip" x="6" y="13" width="12" height="9" rx="2" />,
+      stripe: <rect key="stripe" x="6" y="29" width="38" height="2" rx="1" />
     }
   }
 };

@@ -1194,6 +1194,7 @@ function AppContent({}: AppContentProps) {
                         cardDetails={selectedCardDetails}
                         isLoading={isLoadingCardDetails}
                         openDate={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.openDate ?? null : null}
+                        isFrozen={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.isFrozen ?? false : false}
                         hideInlineTabs={true}
                         externalActiveTab={cardDetailActiveTab}
                       />
@@ -1222,6 +1223,7 @@ function AppContent({}: AppContentProps) {
                       cardDetails={selectedCardDetails}
                       isLoading={isLoadingCardDetails}
                       openDate={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.openDate ?? null : null}
+                      isFrozen={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.isFrozen ?? false : false}
                       hideInlineTabs={true}
                       externalActiveTab={cardDetailActiveTab}
                     />

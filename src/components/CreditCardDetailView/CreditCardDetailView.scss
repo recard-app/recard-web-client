@@ -15,118 +15,86 @@
 .card-details {
   text-align: left;
 
-  // Compact Header with card icon, name/badges, and action dropdown
-  .card-header {
-    display: flex;
-    align-items: flex-start;
-    gap: $space-3;
+  // Card Showcase Header
+  .card-showcase {
+    position: relative;
+    border-radius: $radius-lg;
+    padding: $space-4;
     margin-bottom: $space-3;
+    background-color: $neutral-lightest-gray;
+    border: $border-full solid $neutral-light-gray;
+    box-shadow: $shadow-sm;
 
-    .card-image {
-      width: 48px;
-      height: auto;
-      flex-shrink: 0;
-      margin-top: $space-1;
+    .showcase-actions {
+      position: absolute;
+      top: $space-3;
+      right: $space-3;
     }
 
-    .card-header-info {
+    .showcase-identity {
+      display: flex;
+      align-items: flex-start;
+      gap: $space-4;
+
+      .card-image {
+        width: 64px;
+        height: auto;
+        flex-shrink: 0;
+      }
+    }
+
+    .showcase-info {
       flex: 1;
       min-width: 0;
 
       h2 {
-        margin: 0 0 $space-1 0;
-        font-size: $font-h5;
+        margin: 0 0 $space-2 0;
+        font-size: $font-h4;
         color: $neutral-black;
         line-height: 1.2;
       }
+    }
 
-      .header-meta {
-        display: flex;
-        flex-direction: column;
+    .showcase-badges {
+      display: flex;
+      flex-direction: row;
+      gap: $space-1-5;
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
         gap: $space-1;
+        padding: $space-half $space-2;
+        border-radius: $radius-full;
+        font-size: $font-xxs;
+        font-weight: $font-semibold;
+        line-height: 1;
+        white-space: nowrap;
+      }
 
-        .meta-item {
-          display: inline-flex;
-          align-items: center;
-          gap: $space-1;
-          line-height: 1;
+      .badge-preferred {
+        background-color: $neutral-white;
+        color: $primary-color;
+      }
 
-          .meta-icon {
-            width: $icon-micro;
-            height: $icon-micro;
-            flex-shrink: 0;
-          }
-
-          .meta-label {
-            font-size: $font-sm;
-            color: $neutral-dark-gray;
-            font-weight: $font-medium;
-          }
-
-          .meta-value {
-            font-size: $font-sm;
-            color: $neutral-black;
-            font-weight: $font-semibold;
-          }
-        }
+      .badge-frozen {
+        background-color: $neutral-white;
+        color: $accent-color;
       }
     }
+
   }
 
-  // Card actions dropdown trigger
-  .card-actions-trigger {
-    display: flex;
-    align-items: center;
-    gap: $space-1-5;
-    align-self: flex-start;
-    padding: $space-1-5 $space-2;
-    background-color: $neutral-white;
-    border: $border-full solid $neutral-light-gray;
-    border-radius: $radius-base;
-    cursor: pointer;
-    color: $neutral-dark-gray;
-    font-size: $font-sm;
-    font-weight: $font-medium;
-    transition: all $transition-base;
-    flex-shrink: 0;
-
-    @include hover {
-      background-color: $neutral-light-gray;
-      border-color: $neutral-gray;
-      color: $neutral-black;
-    }
-  }
-
-  // Status indicators (stacked with other meta items)
-  .status-preferred {
-    .meta-icon {
-      color: $primary-color !important;
-      fill: $primary-color !important;
-    }
-    .meta-value {
-      color: $primary-color;
-    }
-  }
-
-  .status-frozen {
-    .meta-icon {
-      color: $accent-color !important;
-      fill: $accent-color !important;
-    }
-    .meta-value {
-      color: $accent-color;
-    }
-  }
-
-  // Issuer & Network meta (standalone, outside header)
+  // Issuer & Network meta (standalone, outside showcase)
   .card-meta {
     display: flex;
     flex-direction: column;
     gap: $space-1;
     margin-bottom: $space-3;
+    padding: $space-3 $space-3 0;
 
     .meta-item {
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: $space-1;
       line-height: 1;
@@ -151,44 +119,73 @@
     }
   }
 
-  // Card description (standalone)
+  .card-actions-trigger {
+    display: flex;
+    align-items: center;
+    gap: $space-1-5;
+    align-self: flex-start;
+    padding: $space-1-5 $space-2;
+    background-color: $neutral-white;
+    border: $border-full solid $neutral-light-gray;
+    border-radius: $radius-base;
+    cursor: pointer;
+    color: $neutral-dark-gray;
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    transition: all $transition-base;
+    flex-shrink: 0;
+
+    @include hover {
+      background-color: $neutral-light-gray;
+      border-color: $neutral-gray;
+      color: $neutral-black;
+    }
+  }
+
+  // Card description
   .card-description {
-    margin: 0 0 $space-3 0;
+    margin: 0;
     font-size: $font-sm;
     line-height: $leading-relaxed;
     color: $neutral-dark-gray;
+    background-color: $neutral-lightest-gray;
+    border-radius: $radius-base;
+    padding: $space-1-5 $space-3 $space-3;
   }
 
-  // Horizontal Stats Bar
-  .card-stats-bar {
-    display: flex;
-    align-items: stretch;
-    gap: 0;
-    background-color: $neutral-white;
-    border: $border-half solid $neutral-light-gray;
-    border-radius: $radius-base;
-    padding: $space-2 0;
+  // Stats Grid (2x2)
+  .card-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-3;
     margin-bottom: $space-5;
 
-    .stat-item {
-      flex: 1;
+    .stat-tile {
+      background-color: $neutral-lightest-gray;
+      border-radius: $radius-base;
+      padding: $space-3;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0 $space-2;
+      gap: $space-1;
+
+      .stat-icon-wrap {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: $neutral-light-gray;
+        margin-bottom: $space-half;
+      }
 
       .stat-value {
         font-size: $font-base;
         font-weight: $font-semibold;
         color: $neutral-black;
-        margin-bottom: $space-half;
-        white-space: nowrap;
         text-transform: capitalize;
         display: flex;
         align-items: center;
-        justify-content: center;
         gap: $space-1;
 
         &.not-set {
@@ -206,18 +203,8 @@
         color: $neutral-dark-gray;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        display: flex;
-        align-items: center;
-        gap: $space-1;
       }
     }
-
-    .stat-divider {
-      width: 1px;
-      background-color: $neutral-light-gray;
-      align-self: stretch;
-    }
-
   }
 
   // Full-width Tabs
@@ -982,20 +969,20 @@
       padding: $space-3 $space-3;
     }
 
-    // Make stats bar wrap on mobile
-    .card-stats-bar {
-      flex-wrap: wrap;
-      padding: $space-2;
-      gap: $space-2;
-
-      .stat-item {
-        flex: 1 1 45%;
-        min-width: 80px;
-        padding: $space-1;
+    // Showcase stacks vertically on mobile
+    .card-showcase {
+      .showcase-identity {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
       }
 
-      .stat-divider {
-        display: none;
+      .showcase-info h2 {
+        text-align: center;
+      }
+
+      .showcase-badges {
+        justify-content: center;
       }
     }
 
