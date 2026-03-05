@@ -116,20 +116,17 @@
       }
     }
 
-    /* Footer uses FooterControls - only add specific overrides */
-    .card-manager-footer {
-      flex-direction: column;
-      gap: $space-2;
-      padding: $space-2 $space-4 $space-4 $space-4;
+  }
+}
 
-      @media (display-mode: standalone) {
-        padding-bottom: $pwa-bottom-padding-sm;
-      }
+/* Tab bar footer -- matches CreditsTabFooter pattern */
+.credit-card-manager .card-manager-footer {
+  padding: $space-3 $space-4;
+}
 
-      .card-tab-select {
-        width: 100%;
-      }
-    }
+@media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
+  .credit-card-manager .card-manager-footer {
+    padding-bottom: $pwa-bottom-padding-sm;
   }
 }
 

@@ -43,6 +43,19 @@
     }
   }
 
+  .tab-label-hideable {
+    @media (max-width: 600px) {
+      display: none;
+    }
+  }
+
+  .tab-bar-button:has(.tab-label-hideable) {
+    @media (max-width: 600px) {
+      flex: 0 0 auto;
+      padding: $space-2;
+    }
+  }
+
   // Small size variant
   &.small {
     padding: $space-half;

@@ -6,6 +6,7 @@ export interface TabBarOption {
   id: string;
   label: string;
   icon?: IconName;
+  hideLabel?: boolean;
 }
 
 export interface TabBarProps {
@@ -33,7 +34,10 @@ export const TabBar: React.FC<TabBarProps> = ({
           onClick={() => onChange(option.id)}
         >
           {option.icon && <Icon name={option.icon} variant="micro" size={14} />}
-          {option.label}
+          {option.hideLabel
+            ? <span className="tab-label-hideable">{option.label}</span>
+            : option.label
+          }
         </button>
       ))}
     </div>

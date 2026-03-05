@@ -7,7 +7,7 @@ import { MOBILE_BREAKPOINT, COLORS } from '../../types';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService, UserCreditService } from '../../services';
 import CreditCardDetailView, { type TabType } from '../CreditCardDetailView';
-import { InfoDisplay, SearchField, ErrorWithRetry } from '../../elements';
+import { InfoDisplay, SearchField, ErrorWithRetry, TabBar } from '../../elements';
 import {
   Dialog,
   DialogContent,
@@ -38,6 +38,13 @@ import {
 } from '../ui/dialog/alert-dialog';
 
 
+
+const CARD_TABS = [
+    { id: 'overview', label: 'Overview', icon: 'home' as const, hideLabel: true },
+    { id: 'multipliers', label: 'Multipliers', icon: 'chart-bar' as const },
+    { id: 'credits', label: 'Credits', icon: 'banknotes' as const },
+    { id: 'perks', label: 'Perks', icon: 'gift' as const },
+];
 
 interface CreditCardManagerProps {
     onCardsUpdate?: (cards: CreditCard[]) => void;
@@ -661,35 +668,30 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                         onOpenDateChange={selectedCard ? (date) => handleOpenDateChange(selectedCard.id, date) : undefined}
                         isFrozen={selectedCard ? userCardsMetadata.get(selectedCard.id)?.isFrozen ?? false : false}
                         onFreezeToggle={selectedCard ? () => handleFreezeToggle(selectedCard.id, userCardsMetadata.get(selectedCard.id)?.isFrozen ?? false) : undefined}
-                        hideInlineTabs={isMobileViewport}
-                        externalActiveTab={isMobileViewport ? mobileActiveTab : undefined}
+                        hideInlineTabs={true}
+                        externalActiveTab={mobileActiveTab}
                     />
                 )}
             </div>
 
-            {/* Mobile-only sticky footer controls */}
-            {isMobileViewport && (
+            {/* Tab bar footer -- visible on all viewports when cards exist */}
+            {!isLoading && selectedCards.length > 0 && (
                 <FooterControls className="card-manager-footer">
-                    {!isLoading && selectedCards.length === 0 ? (
-                        <>
-                            <button className="button icon with-text add-card-button" onClick={handleAddCard} aria-haspopup="dialog">
-                                <Icon name="card" variant="solid" />
-                                Add Cards
-                            </button>
-                        </>
-                    ) : (
-                        <select
-                            className="card-tab-select default-select"
-                            value={mobileActiveTab}
-                            onChange={(e) => setMobileActiveTab(e.target.value as TabType)}
-                            aria-label="Select card section"
-                        >
-                            <option value="overview">Overview</option>
-                            <option value="multipliers">Multipliers</option>
-                            <option value="credits">Credits</option>
-                            <option value="perks">Perks</option>
-                        </select>
-                    )}
+                    <TabBar
+                        options={CARD_TABS}
+                        activeId={mobileActiveTab}
+                        onChange={(id) => setMobileActiveTab(id as TabType)}
+                    />
+                </FooterControls>
+            )}
+
+            {/* No-cards footer -- mobile only */}
+            {isMobileViewport && !isLoading && selectedCards.length === 0 && (
+                <FooterControls className="card-manager-footer">
+                    <button className="button icon with-text add-card-button" onClick={handleAddCard} aria-haspopup="dialog">
+                        <Icon name="card" variant="solid" />
+                        Add Cards
+                    </button>
                 </FooterControls>
             )}
             
