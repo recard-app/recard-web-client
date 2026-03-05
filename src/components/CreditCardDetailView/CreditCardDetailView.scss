@@ -21,6 +21,10 @@
     border-radius: $radius-lg;
     box-shadow: $shadow-sm;
     overflow: hidden;
+
+    @media (max-width: $mobile-breakpoint) {
+      box-shadow: $shadow-base;
+    }
   }
 
   // Card Showcase Header
