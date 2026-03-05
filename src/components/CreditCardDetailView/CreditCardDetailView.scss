@@ -15,15 +15,22 @@
 .card-details {
   text-align: left;
 
+  // Card Showcase Wrapper (showcase + footer)
+  .card-showcase-wrapper {
+    margin-bottom: $space-3;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+  }
+
   // Card Showcase Header
   .card-showcase {
     position: relative;
-    border-radius: $radius-lg;
-    padding: $space-4;
-    margin-bottom: $space-3;
+    border-radius: $radius-lg $radius-lg 0 0;
+    padding: $space-5 $space-4;
     background-color: $neutral-lightest-gray;
     border: $border-full solid $neutral-light-gray;
-    box-shadow: $shadow-sm;
+    border-bottom: none;
 
     .showcase-actions {
       position: absolute;
@@ -82,33 +89,29 @@
         color: $accent-color;
       }
     }
-
   }
 
-  // Issuer & Network meta (standalone, outside showcase)
-  .card-meta {
+  // Card Footer (Issuer & Network)
+  .card-footer {
     display: flex;
-    flex-direction: column;
-    gap: $space-1;
-    margin-bottom: $space-3;
-    padding: $space-3 $space-3 0;
+    gap: $space-5;
+    padding: $space-1-5 $space-4;
+    background-color: $neutral-lightest-gray;
+    border: $border-full solid $neutral-light-gray;
+    border-top: $border-full solid $neutral-light-gray;
+    border-radius: 0 0 $radius-lg $radius-lg;
 
     .meta-item {
       display: flex;
-      align-items: center;
-      gap: $space-1;
-      line-height: 1;
-
-      .meta-icon {
-        width: $icon-micro;
-        height: $icon-micro;
-        flex-shrink: 0;
-      }
+      flex-direction: column;
+      flex: 1;
 
       .meta-label {
-        font-size: $font-sm;
+        font-size: $font-xs;
         color: $neutral-dark-gray;
         font-weight: $font-medium;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
       .meta-value {
@@ -157,8 +160,8 @@
   .card-stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: $space-3;
-    margin-bottom: $space-5;
+    gap: $space-1;
+    margin-bottom: $space-3;
 
     .stat-tile {
       background-color: $neutral-lightest-gray;
@@ -983,6 +986,12 @@
 
       .showcase-badges {
         justify-content: center;
+      }
+    }
+
+    .card-footer {
+      .meta-item {
+        align-items: flex-start;
       }
     }
 

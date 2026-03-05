@@ -309,6 +309,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
             {/* Overview sections: showcase, description, stats - hidden on mobile when non-overview tab active */}
             {(!hideInlineTabs || effectiveTab === 'overview') && (<>
             {/* Card Showcase Header */}
+            <div className="card-showcase-wrapper">
             <div
                 className="card-showcase"
                 style={cardDetails.CardPrimaryColor ? {
@@ -398,19 +399,21 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     </div>
                 </div>
             </div>
-
-            {/* Issuer & Network */}
-            <div className="card-meta">
+            <div
+                className="card-footer"
+                style={cardDetails.CardPrimaryColor ? {
+                    borderTopColor: `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, white)`,
+                } : undefined}
+            >
                 <div className="meta-item">
-                    <Icon name="bank" variant="micro" color={COLORS.NEUTRAL_GRAY} className="meta-icon" aria-hidden="true" />
-                    <span className="meta-label">Issuer:</span>
+                    <span className="meta-label">Issuer</span>
                     <span className="meta-value">{cardDetails.CardIssuer}</span>
                 </div>
                 <div className="meta-item">
-                    <Icon name="card" variant="micro" color={COLORS.NEUTRAL_GRAY} className="meta-icon" aria-hidden="true" />
-                    <span className="meta-label">Network:</span>
+                    <span className="meta-label">Network</span>
                     <span className="meta-value">{cardDetails.CardNetwork}</span>
                 </div>
+            </div>
             </div>
 
             {/* Card Description (if available) */}
