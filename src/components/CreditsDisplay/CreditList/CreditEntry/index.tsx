@@ -155,7 +155,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         return `Expires ${endDate.toLocaleDateString('en-US', options)}`;
       }
     }
-    return PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod;
+    return PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod.toLowerCase()] || userCredit.AssociatedPeriod;
   };
 
   // Get the credit title (use generated Title for anniversary credits if available)

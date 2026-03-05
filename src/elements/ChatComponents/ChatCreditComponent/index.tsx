@@ -1,7 +1,6 @@
 import React from 'react';
 import { CreditComponentItem, CreditAction, CREDIT_ACTION_TYPES } from '../../../types/ChatComponentTypes';
 import {
-  CREDIT_USAGE_DISPLAY_NAMES,
   CREDIT_USAGE_DISPLAY_COLORS,
   CREDIT_USAGE_ICON_NAMES,
 } from '../../../types/CardCreditsTypes';
@@ -24,26 +23,22 @@ interface ChatCreditComponentProps {
  * Get usage status and styling info using the defined types
  */
 function getUsageInfo(valueUsed: number, maxValue: number): {
-  status: string;
   color: string;
   iconName: string;
 } {
   if (valueUsed >= maxValue) {
     return {
-      status: CREDIT_USAGE_DISPLAY_NAMES.USED,
       color: CREDIT_USAGE_DISPLAY_COLORS.USED,
       iconName: CREDIT_USAGE_ICON_NAMES.USED,
     };
   }
   if (valueUsed > 0) {
     return {
-      status: CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED,
       color: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
       iconName: CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED,
     };
   }
   return {
-    status: CREDIT_USAGE_DISPLAY_NAMES.NOT_USED,
     color: CREDIT_USAGE_DISPLAY_COLORS.NOT_USED,
     iconName: CREDIT_USAGE_ICON_NAMES.NOT_USED,
   };
@@ -91,7 +86,7 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
   const periodText = isTrackingAction
     ? (userCredit.isAnniversaryBased
       ? 'Anniversary'
-      : PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod] || userCredit.AssociatedPeriod)
+      : PERIOD_DISPLAY_NAMES[userCredit.AssociatedPeriod.toLowerCase()] || userCredit.AssociatedPeriod)
     : getDateRangeText(
         userCredit.AssociatedPeriod,
         userCredit.isAnniversaryBased ?? false,
