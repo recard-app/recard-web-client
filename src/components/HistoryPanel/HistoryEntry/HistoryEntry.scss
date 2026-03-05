@@ -118,6 +118,7 @@
 
     // FULL-PAGE VARIANT - More detailed styling with interactive card pattern
     &.full-page-variant {
+      box-shadow: $shadow-xs;
       @include interactive-card;
 
       // Override mobile border color to be more subtle
