@@ -336,6 +336,7 @@
         @include card-base;
         background-color: $neutral-lightest-gray;
         overflow: hidden;
+        box-shadow: $shadow-sm;
 
         .category-title {
           display: flex;
@@ -813,10 +814,11 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    box-shadow: $shadow-sm;
     transition: box-shadow $transition-base;
 
     @include hover {
-      box-shadow: $shadow-sm;
+      box-shadow: $shadow-base;
     }
 
     &.disabled {

@@ -247,10 +247,6 @@ function AppContent({}: AppContentProps) {
     if (typeof window === 'undefined') return false;
     return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
   });
-  // Local feature flags controlling drawer vs dialog
-  const USE_DRAWER_FOR_CARD_DETAILS_DESKTOP = true;
-  const USE_DRAWER_FOR_CARD_DETAILS_MOBILE = true;
-  
   const creditCardSelectorRef = useRef<CreditCardSelectorRef>(null);
   // Ref to track if we're intentionally clearing the chat (prevents sync effect from redirecting)
   const isClearingChatRef = useRef<boolean>(false);
@@ -1176,69 +1172,32 @@ function AppContent({}: AppContentProps) {
             );
           })()}
 
-          {(() => {
-            const useDrawerForCardDetails = isMobileViewport
-              ? USE_DRAWER_FOR_CARD_DETAILS_MOBILE
-              : USE_DRAWER_FOR_CARD_DETAILS_DESKTOP;
-            if (useDrawerForCardDetails) {
-              return (
-                <Drawer open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen} direction="bottom">
-                  <DrawerContent className="card-detail-drawer">
-                    <DrawerHeader>
-                      <DrawerTitle className="sr-only">
-                        {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
-                      </DrawerTitle>
-                    </DrawerHeader>
-                    <div className="dialog-body">
-                      <CreditCardDetailView
-                        cardDetails={selectedCardDetails}
-                        isLoading={isLoadingCardDetails}
-                        openDate={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.openDate ?? null : null}
-                        isFrozen={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.isFrozen ?? false : false}
-                        hideInlineTabs={true}
-                        externalActiveTab={cardDetailActiveTab}
-                      />
-                    </div>
-                    <div className="dialog-footer card-detail-tab-footer">
-                      <TabBar
-                        options={CARD_TABS}
-                        activeId={cardDetailActiveTab}
-                        onChange={(id) => setCardDetailActiveTab(id as TabType)}
-                      />
-                    </div>
-                  </DrawerContent>
-                </Drawer>
-              );
-            }
-            return (
-              <Dialog open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen}>
-                <DialogContent fullScreen className="card-detail-dialog">
-                  <DialogHeader>
-                    <DialogTitle className="sr-only">
-                      {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
-                    </DialogTitle>
-                  </DialogHeader>
-                  <DialogBody>
-                    <CreditCardDetailView
-                      cardDetails={selectedCardDetails}
-                      isLoading={isLoadingCardDetails}
-                      openDate={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.openDate ?? null : null}
-                      isFrozen={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.isFrozen ?? false : false}
-                      hideInlineTabs={true}
-                      externalActiveTab={cardDetailActiveTab}
-                    />
-                  </DialogBody>
-                  <DialogFooter className="card-detail-tab-footer">
-                    <TabBar
-                      options={CARD_TABS}
-                      activeId={cardDetailActiveTab}
-                      onChange={(id) => setCardDetailActiveTab(id as TabType)}
-                    />
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            );
-          })()}
+          <Drawer open={isCardDetailsOpen} onOpenChange={setIsCardDetailsOpen} direction="bottom">
+            <DrawerContent className="card-detail-drawer">
+              <DrawerHeader>
+                <DrawerTitle className="sr-only">
+                  {selectedCardDetails ? selectedCardDetails.CardName : 'Card Details'}
+                </DrawerTitle>
+              </DrawerHeader>
+              <div className="dialog-body">
+                <CreditCardDetailView
+                  cardDetails={selectedCardDetails}
+                  isLoading={isLoadingCardDetails}
+                  openDate={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.openDate ?? null : null}
+                  isFrozen={selectedCardDetails ? userCardsMetadata.get(selectedCardDetails.id)?.isFrozen ?? false : false}
+                  hideInlineTabs={true}
+                  externalActiveTab={cardDetailActiveTab}
+                />
+              </div>
+              <div className="dialog-footer card-detail-tab-footer">
+                <TabBar
+                  options={CARD_TABS}
+                  activeId={cardDetailActiveTab}
+                  onChange={(id) => setCardDetailActiveTab(id as TabType)}
+                />
+              </div>
+            </DrawerContent>
+          </Drawer>
 
           {/* Credits Report Modal */}
           <Dialog open={isDetailedSummaryOpen} onOpenChange={setIsDetailedSummaryOpen}>
