@@ -1,0 +1,97 @@
+@use '../../../styling/variables' as *;
+@use '../../../styling/mixins' as *;
+
+.annual-credit-report {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  .summary-section {
+    @include card-panel;
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    margin-bottom: $space-3;
+    padding-bottom: $space-2;
+    border-bottom: $border-half solid $neutral-light-gray;
+
+    .section-title {
+      font-family: $font-cal-sans;
+      font-size: $font-base;
+      color: $neutral-black;
+      margin: 0;
+      padding: 0;
+      border: none;
+    }
+  }
+
+  .metric-group {
+    display: flex;
+    flex-direction: column;
+    gap: $space-4;
+  }
+
+  .metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+
+    .metric-label {
+      @include sub-label;
+      color: $neutral-dark-gray;
+      display: flex;
+      align-items: center;
+      gap: $space-1;
+    }
+  }
+
+  .report-usage-bar {
+    margin-top: $space-1;
+  }
+
+  .period-bars {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  .period-bar-item {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+
+    .period-label {
+      @include sub-label;
+      color: $neutral-dark-gray;
+    }
+  }
+
+  // Mobile optimizations
+  @media (max-width: $mobile-breakpoint) {
+    gap: $space-3;
+
+    .summary-section {
+      padding: $space-3;
+    }
+
+    .section-header {
+      margin-bottom: $space-2;
+
+      .section-title {
+        font-size: $font-sm;
+      }
+    }
+
+    .metric-group {
+      gap: $space-3;
+    }
+
+    .metric-item .metric-label {
+      font-size: $font-xs;
+    }
+  }
+}

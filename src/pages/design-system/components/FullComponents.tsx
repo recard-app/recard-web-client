@@ -287,7 +287,6 @@ const FullComponents: React.FC = () => {
                 variant="header"
                 monthlyStats={mockMonthlyStats}
                 loading={false}
-                onDetailedSummaryClick={() => console.log('Detailed summary clicked')}
               />
             </div>
           </div>

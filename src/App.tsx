@@ -59,8 +59,8 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 import { ComponentsProvider, useComponents } from './contexts/ComponentsContext';
 import CreditCardDetailView, { type TabType, CARD_TABS } from './components/CreditCardDetailView';
 import CreditEditModal from './components/CreditPortfolio/CreditEditModal';
-import UniversalContentWrapper from './components/UniversalContentWrapper';
 import CreditDetailedSummary from './components/CreditSummary/CreditDetailedSummary';
+import UniversalContentWrapper from './components/UniversalContentWrapper';
 import {
   Drawer,
   DrawerContent,
@@ -223,8 +223,8 @@ function AppContent({}: AppContentProps) {
 
   const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
   const [isCardDetailsOpen, setIsCardDetailsOpen] = useState(false);
-  const [cardDetailActiveTab, setCardDetailActiveTab] = useState<TabType>('overview');
   const [isDetailedSummaryOpen, setIsDetailedSummaryOpen] = useState(false);
+  const [cardDetailActiveTab, setCardDetailActiveTab] = useState<TabType>('overview');
   // State for credit detail modal (opened from chat component clicks)
   const [isCreditModalOpen, setIsCreditModalOpen] = useState(false);
   const [isCreditModalLoading, setIsCreditModalLoading] = useState(false);
@@ -1202,15 +1202,9 @@ function AppContent({}: AppContentProps) {
           {/* Credits Report Modal */}
           <Dialog open={isDetailedSummaryOpen} onOpenChange={setIsDetailedSummaryOpen}>
             <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Credits Report</DialogTitle>
-              </DialogHeader>
+              <DialogHeader><DialogTitle>Credits Report</DialogTitle></DialogHeader>
               <DialogBody>
-                <CreditDetailedSummary
-                  monthlyStats={monthlyStats}
-                  loading={isLoadingMonthlyStats}
-                  isUpdating={isUpdatingMonthlyStats}
-                />
+                <CreditDetailedSummary monthlyStats={monthlyStats} loading={isLoadingMonthlyStats} isUpdating={isUpdatingMonthlyStats} />
               </DialogBody>
             </DialogContent>
           </Dialog>

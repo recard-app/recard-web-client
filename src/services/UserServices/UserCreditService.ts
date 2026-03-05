@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiurl, getAuthHeaders } from '../index';
-import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType, MonthlyStatsResponse, GetMonthlySummaryParams, MonthlySummaryResponse, HistoricalMonthlySummaryResponse } from '../../types';
+import { CalendarUserCredits, CreditHistory, CreditUsageType, UserCreditWithExpiration, PrioritizedCredit, GetPrioritizedCreditsListParams, GetPrioritizedCreditsListResponse, CreditPeriodType, MonthlyStatsResponse, GetMonthlySummaryParams, MonthlySummaryResponse, HistoricalMonthlySummaryResponse, AnnualStats } from '../../types';
 
 let syncTimeout: NodeJS.Timeout | null = null;
 let pendingSyncResolvers: ((value: CalendarUserCredits) => void)[] = [];
@@ -432,6 +432,25 @@ export const UserCreditService = {
 
         const response = await axios.get<HistoricalMonthlySummaryResponse>(url, { headers });
         return response.data;
+    },
+
+    /**
+     * Fetches annual credit statistics with period-by-period breakdowns
+     * Uses the v1 API which wraps responses in { data: result }
+     */
+    async fetchAnnualStats(year?: number): Promise<AnnualStats> {
+        const headers = await getAuthHeaders();
+
+        const params = new URLSearchParams();
+        if (year !== undefined) {
+            params.set('year', year.toString());
+        }
+
+        const queryString = params.toString();
+        const url = `${apiurl}/api/v1/users/credits/stats/annual${queryString ? `?${queryString}` : ''}`;
+
+        const response = await axios.get<{ data: AnnualStats }>(url, { headers });
+        return response.data.data;
     },
 
 };

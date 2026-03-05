@@ -9,11 +9,12 @@
   min-height: 0; // Critical for nested flex scroll containment
 }
 
-// Sticky header with year dropdown
+// Sticky header with year dropdown and report button
 .portfolio-header-controls {
   // HeaderControls provides sticky, border, shadow
-  // Just adjust alignment
-  justify-content: flex-end;
+  // Report button left, year dropdown right
+  justify-content: space-between;
+  align-items: center;
 }
 
 // Scrollable content area - KEY for edge-aligned scroll

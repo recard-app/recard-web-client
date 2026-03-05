@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { UserCreditService } from '@/services/UserServices/UserCreditService';
 import { UserService } from '@/services/UserServices/UserService';
-import { CalendarUserCredits, UserCredit, CREDIT_PERIODS } from '@/types/CardCreditsTypes';
+import { CalendarUserCredits, UserCredit, CREDIT_PERIODS, AnnualStats } from '@/types/CardCreditsTypes';
+import { ICON_PRIMARY_MEDIUM } from '@/types/Constants';
 import { CardCredit, CreditCardDetails } from '@/types/CreditCardTypes';
 import { useCredits } from '@/contexts/ComponentsContext';
 import { InfoDisplay, ErrorWithRetry } from '@/elements';
@@ -10,6 +11,15 @@ import HeaderControls from '@/components/PageControls/HeaderControls';
 import YearDropdown from '../YearDropdown';
 import CreditCardAccordion from '../CreditCardAccordion';
 import CreditEditModal from '../CreditEditModal';
+import AnnualCreditReport from '@/components/CreditSummary/AnnualCreditReport';
+import Icon from '@/icons';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+} from '@/components/ui/dialog/dialog';
 import { CreditPortfolioViewProps, SelectedCreditState } from '../types';
 import './CreditPortfolioView.scss';
 
@@ -108,6 +118,12 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   // Modal state
   const [selectedCredit, setSelectedCredit] = useState<SelectedCreditState | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Annual report dialog state
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [annualStats, setAnnualStats] = useState<AnnualStats | null>(null);
+  const [isLoadingAnnualStats, setIsLoadingAnnualStats] = useState(false);
+  const [annualStatsError, setAnnualStatsError] = useState<string | null>(null);
 
   // AbortController ref for cancelling in-flight requests on rapid year switching
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -254,6 +270,28 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     }
   }, [isYearLoading]);
 
+  // Fetch annual stats when report dialog is opened (or year changes while open)
+  useEffect(() => {
+    if (!isReportDialogOpen) return;
+
+    const fetchStats = async () => {
+      setAnnualStats(null);
+      setIsLoadingAnnualStats(true);
+      setAnnualStatsError(null);
+      try {
+        const stats = await UserCreditService.fetchAnnualStats(selectedYear);
+        setAnnualStats(stats);
+      } catch (err) {
+        console.error('Failed to fetch annual stats:', err);
+        setAnnualStatsError('Failed to load annual stats. Please try again.');
+      } finally {
+        setIsLoadingAnnualStats(false);
+      }
+    };
+
+    fetchStats();
+  }, [isReportDialogOpen, selectedYear]);
+
   // Handle year change - preserve expanded state and show pulse animation
   const handleYearChange = useCallback((year: number) => {
     // Save scroll position before year change
@@ -370,6 +408,10 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     return (
       <div className="credit-portfolio-panel">
         <HeaderControls className="portfolio-header-controls">
+          <button className="button ghost small icon with-text" onClick={() => setIsReportDialogOpen(true)}>
+            <Icon name="chart-bar" variant="micro" size={16} color={ICON_PRIMARY_MEDIUM} />
+            <span>Annual Report</span>
+          </button>
           <YearDropdown
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
@@ -389,6 +431,17 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
             />
           </div>
         </div>
+
+        <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{selectedYear} Credits Report</DialogTitle>
+            </DialogHeader>
+            <DialogBody>
+              <AnnualCreditReport annualStats={annualStats} loading={isLoadingAnnualStats} error={annualStatsError} year={selectedYear} />
+            </DialogBody>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -396,6 +449,10 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   return (
     <div className="credit-portfolio-panel">
       <HeaderControls className="portfolio-header-controls">
+        <button className="button ghost small icon with-text" onClick={() => setIsReportDialogOpen(true)}>
+          <Icon name="chart-bar" variant="micro" size={16} color={ICON_PRIMARY_MEDIUM} />
+          <span>Annual Report</span>
+        </button>
         <YearDropdown
           selectedYear={selectedYear}
           onYearChange={handleYearChange}
@@ -442,6 +499,18 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
         onAddUpdatingCreditId={onAddUpdatingCreditId}
         onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
       />
+
+      {/* Annual Credits Report Dialog */}
+      <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedYear} Credits Report</DialogTitle>
+          </DialogHeader>
+          <DialogBody>
+            <AnnualCreditReport annualStats={annualStats} loading={isLoadingAnnualStats} error={annualStatsError} year={selectedYear} />
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

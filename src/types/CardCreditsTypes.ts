@@ -516,3 +516,36 @@ export const CREDIT_SUMMARY_SECTIONS = {
 } as const;
 
 export type CreditSummarySectionType = keyof typeof CREDIT_SUMMARY_SECTIONS;
+
+/**
+ * Annual Stats types (mirrors Server/services/v1/stats.service.ts)
+ * Used by the AnnualCreditReport component
+ */
+export interface PeriodEntry {
+  periodNumber: number;
+  periodLabel: string;
+  totalValue: number;
+  used: number;
+}
+
+export interface PeriodTypeBreakdown {
+  totalValue: number;
+  totalUsed: number;
+  utilizationRate: number;
+  periods: PeriodEntry[];
+}
+
+export interface AnnualStatsSummary {
+  totalValue: number;
+  totalUsed: number;
+  utilizationRate: number;
+}
+
+export interface AnnualStats {
+  year: number;
+  summary: AnnualStatsSummary;
+  monthly?: PeriodTypeBreakdown;
+  quarterly?: PeriodTypeBreakdown;
+  semiannually?: PeriodTypeBreakdown;
+  annually?: PeriodTypeBreakdown;
+}

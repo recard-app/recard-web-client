@@ -191,12 +191,8 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
         </div>
         {onDetailedSummaryClick && (
           <div className="credit-summary-buttons">
-            <button
-              className="button ghost icon no-padding"
-              onClick={onDetailedSummaryClick}
-              aria-label="Expand to view full report"
-            >
-              <Icon name="chart-bar" variant="mini" size={20} />
+            <button className="button ghost icon no-padding" onClick={onDetailedSummaryClick} aria-label="Expand to view full report">
+              <Icon name="arrow-trending-up" variant="mini" size={20} />
             </button>
           </div>
         )}
