@@ -25,6 +25,13 @@
     @media (max-width: $mobile-breakpoint) {
       box-shadow: $shadow-base;
     }
+
+    @media (max-width: $mobile-breakpoint) {
+      .card-detail-drawer & {
+        margin-left: $space-1-5;
+        margin-right: $space-1-5;
+      }
+    }
   }
 
   // Card Showcase Header
