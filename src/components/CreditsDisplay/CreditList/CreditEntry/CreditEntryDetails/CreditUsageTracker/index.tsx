@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useRef } from 'react';
 import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, MONTH_ABBREVIATIONS } from '../../../../../../types';
-import { CREDIT_USAGE_DISPLAY_NAMES, CREDIT_USAGE_ICON_NAMES } from '../../../../../../types/CardCreditsTypes';
+import { CREDIT_USAGE_DISPLAY_NAMES, CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../../../types/CardCreditsTypes';
 import { COLORS } from '../../../../../../types/Colors';
 import { isPeriodFuture, parseAnniversaryMonth, getPeriodMonthRange } from '../../utils';
 import Icon from '@/icons';
@@ -31,7 +31,7 @@ type PillState = 'used' | 'partially_used' | 'not_used' | 'inactive' | 'disabled
 
 const PILL_BG_COLORS: Record<PillState, string> = {
   used: `color-mix(in srgb, ${COLORS.PRIMARY_MEDIUM} 12%, ${COLORS.NEUTRAL_WHITE})`,
-  partially_used: `color-mix(in srgb, ${COLORS.WARNING} 12%, ${COLORS.NEUTRAL_WHITE})`,
+  partially_used: `color-mix(in srgb, ${COLORS.NEUTRAL_MEDIUM_GRAY} 15%, ${COLORS.NEUTRAL_WHITE})`,
   not_used: `color-mix(in srgb, ${COLORS.NEUTRAL_MEDIUM_GRAY} 15%, ${COLORS.NEUTRAL_WHITE})`,
   inactive: COLORS.NEUTRAL_LIGHTEST_GRAY,
   disabled: COLORS.NEUTRAL_LIGHTEST_GRAY,
@@ -39,17 +39,17 @@ const PILL_BG_COLORS: Record<PillState, string> = {
 };
 
 const PILL_TEXT_COLORS: Record<PillState, string> = {
-  used: COLORS.PRIMARY_MEDIUM,
-  partially_used: COLORS.WARNING_BADGE_TEXT,
-  not_used: COLORS.NEUTRAL_DARK_GRAY,
-  inactive: COLORS.NEUTRAL_MEDIUM_GRAY,
-  disabled: COLORS.DISABLED_GRAY,
-  future: COLORS.NEUTRAL_MEDIUM_GRAY
+  used: CREDIT_USAGE_DISPLAY_COLORS.USED,
+  partially_used: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
+  not_used: CREDIT_USAGE_DISPLAY_COLORS.NOT_USED,
+  inactive: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE,
+  disabled: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
+  future: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE
 };
 
 const PILL_BORDER_COLORS: Record<PillState, string> = {
   used: `color-mix(in srgb, ${COLORS.PRIMARY_MEDIUM} 35%, transparent)`,
-  partially_used: `color-mix(in srgb, ${COLORS.WARNING_BADGE_TEXT} 35%, transparent)`,
+  partially_used: `color-mix(in srgb, ${COLORS.NEUTRAL_DARK_GRAY} 25%, transparent)`,
   not_used: `color-mix(in srgb, ${COLORS.NEUTRAL_DARK_GRAY} 25%, transparent)`,
   inactive: COLORS.BORDER_LIGHT_GRAY,
   disabled: COLORS.BORDER_LIGHT_GRAY,

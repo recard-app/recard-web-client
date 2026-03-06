@@ -485,14 +485,14 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               <UsagePieIcon
                 percentage={maxValue > 0 ? (valueUsed / maxValue) * 100 : 0}
                 size={18}
-                color={USAGE_COLOR_BY_STATE[cardUsage]}
+                color={COLORS.NEUTRAL_BLACK}
               />
             ) : (
               <Icon
                 name={USAGE_ICON_NAME[cardUsage]}
                 variant="mini"
                 size={18}
-                style={{ color: USAGE_COLOR_BY_STATE[cardUsage] }}
+                style={{ color: COLORS.NEUTRAL_BLACK }}
               />
             )}
             <div className="credit-name-group">
@@ -606,10 +606,10 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                       <UsagePieIcon
                         percentage={maxValue > 0 ? (valueUsed / maxValue) * 100 : 0}
                         size={14}
-                        color={usageColor}
+                        color={COLORS.NEUTRAL_BLACK}
                       />
                     ) : (
-                      <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usageColor }} />
+                      <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: COLORS.NEUTRAL_BLACK }} />
                     )}
                     <span>
                       {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
@@ -636,10 +636,10 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                           <UsagePieIcon
                             percentage={maxValue > 0 ? (valueUsed / maxValue) * 100 : 0}
                             size={14}
-                            color={usageColor}
+                            color={COLORS.NEUTRAL_BLACK}
                           />
                         ) : (
-                          <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usageColor }} />
+                          <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: COLORS.NEUTRAL_BLACK }} />
                         )}
                         <span>
                           {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}

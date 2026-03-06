@@ -301,10 +301,16 @@
 
 .credit-modal-slider {
   width: 100%;
-  
+
+  // Add shadow to the slider track
+  [data-slot="slider-track"] {
+    box-shadow: $shadow-sm;
+  }
+
   // Ensure border persists on slider thumb in all states
   [data-slot="slider-thumb"] {
     border: 1px solid currentColor !important;
+    box-shadow: $shadow-sm !important;
 
     @media (hover: hover) {
       &:hover {
@@ -370,10 +376,15 @@
   align-items: center;
   gap: $space-3;
   margin-top: $space-3;
+
+  @media (min-width: $mobile-breakpoint) {
+    justify-content: flex-end;
+  }
   
   // Ensure button borders persist in all states
   button.outline {
     border: 1px solid currentColor !important;
+    box-shadow: $shadow-base;
 
     @media (hover: hover) {
       &:hover {

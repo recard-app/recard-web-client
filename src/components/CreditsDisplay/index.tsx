@@ -87,6 +87,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
           transparent={true}
           centered={true}
         />
+        {children}
       </div>
     );
   }
