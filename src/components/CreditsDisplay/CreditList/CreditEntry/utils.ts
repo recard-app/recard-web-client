@@ -118,6 +118,44 @@ export function parseAnniversaryDate(anniversaryDate: string): { month: number; 
   return null;
 }
 
+export interface AnniversaryPeriodRange {
+  start: { month: number; day: number; year: number; monthAbbr: string };
+  end: { month: number; day: number; year: number; monthAbbr: string };
+}
+
+/**
+ * Computes the start and end dates of an anniversary credit cycle.
+ * Start = anniversaryDate in anniversaryYear.
+ * End = the day before the same date in anniversaryYear + 1.
+ * Handles leap years and month boundaries correctly via Date arithmetic.
+ */
+export function getAnniversaryPeriodRange(
+  anniversaryDate: string,
+  anniversaryYear: number
+): AnniversaryPeriodRange | null {
+  const parsed = parseAnniversaryDate(anniversaryDate);
+  if (!parsed) return null;
+
+  const startDate = new Date(anniversaryYear, parsed.month - 1, parsed.day);
+  const endDate = new Date(anniversaryYear + 1, parsed.month - 1, parsed.day);
+  endDate.setDate(endDate.getDate() - 1);
+
+  return {
+    start: {
+      month: startDate.getMonth() + 1,
+      day: startDate.getDate(),
+      year: startDate.getFullYear(),
+      monthAbbr: MONTH_ABBREVIATIONS[startDate.getMonth()]
+    },
+    end: {
+      month: endDate.getMonth() + 1,
+      day: endDate.getDate(),
+      year: endDate.getFullYear(),
+      monthAbbr: MONTH_ABBREVIATIONS[endDate.getMonth()]
+    }
+  };
+}
+
 /**
  * Returns a month-range label for a given period number within totalPeriods.
  * e.g. periodNumber=1, totalPeriods=4 => "Jan → Mar"
@@ -157,11 +195,10 @@ export function getDateRangeText(
   now: Date = new Date()
 ): string {
   if (isAnniversaryBased && anniversaryDate) {
-    const month = parseAnniversaryMonth(anniversaryDate);
-    if (month !== null) {
-      const startMonthIndex = month - 1;
-      const endMonthIndex = (startMonthIndex + 11) % 12;
-      return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
+    // Use year=2000 as dummy -- callers only use monthAbbr
+    const range = getAnniversaryPeriodRange(anniversaryDate, 2000);
+    if (range) {
+      return `${range.start.monthAbbr} \u2192 ${range.end.monthAbbr}`;
     }
     return 'Annual';
   }
