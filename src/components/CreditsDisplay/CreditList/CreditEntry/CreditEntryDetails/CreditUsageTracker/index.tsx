@@ -1,8 +1,8 @@
 import React, { useMemo, useEffect, useRef } from 'react';
-import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, MONTH_LABEL_ABBREVIATIONS } from '../../../../../../types';
-import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_DISPLAY_NAMES, CREDIT_USAGE_ICON_NAMES } from '../../../../../../types/CardCreditsTypes';
+import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, MONTH_ABBREVIATIONS } from '../../../../../../types';
+import { CREDIT_USAGE_DISPLAY_NAMES, CREDIT_USAGE_ICON_NAMES } from '../../../../../../types/CardCreditsTypes';
 import { COLORS } from '../../../../../../types/Colors';
-import { isPeriodFuture } from '../../utils';
+import { isPeriodFuture, parseAnniversaryMonth, getPeriodMonthRange } from '../../utils';
 import Icon from '@/icons';
 import './CreditUsageTracker.scss';
 
@@ -27,6 +27,55 @@ interface PeriodInfo {
   anniversaryYear?: number;
 }
 
+type PillState = 'used' | 'partially_used' | 'not_used' | 'inactive' | 'disabled' | 'future';
+
+const PILL_BG_COLORS: Record<PillState, string> = {
+  used: `color-mix(in srgb, ${COLORS.PRIMARY_MEDIUM} 12%, ${COLORS.NEUTRAL_WHITE})`,
+  partially_used: `color-mix(in srgb, ${COLORS.WARNING} 12%, ${COLORS.NEUTRAL_WHITE})`,
+  not_used: `color-mix(in srgb, ${COLORS.NEUTRAL_MEDIUM_GRAY} 15%, ${COLORS.NEUTRAL_WHITE})`,
+  inactive: COLORS.NEUTRAL_LIGHTEST_GRAY,
+  disabled: COLORS.NEUTRAL_LIGHTEST_GRAY,
+  future: COLORS.NEUTRAL_LIGHTEST_GRAY
+};
+
+const PILL_TEXT_COLORS: Record<PillState, string> = {
+  used: COLORS.PRIMARY_MEDIUM,
+  partially_used: COLORS.WARNING_BADGE_TEXT,
+  not_used: COLORS.NEUTRAL_DARK_GRAY,
+  inactive: COLORS.NEUTRAL_MEDIUM_GRAY,
+  disabled: COLORS.DISABLED_GRAY,
+  future: COLORS.NEUTRAL_MEDIUM_GRAY
+};
+
+const PILL_BORDER_COLORS: Record<PillState, string> = {
+  used: `color-mix(in srgb, ${COLORS.PRIMARY_MEDIUM} 35%, transparent)`,
+  partially_used: `color-mix(in srgb, ${COLORS.WARNING_BADGE_TEXT} 35%, transparent)`,
+  not_used: `color-mix(in srgb, ${COLORS.NEUTRAL_DARK_GRAY} 25%, transparent)`,
+  inactive: COLORS.BORDER_LIGHT_GRAY,
+  disabled: COLORS.BORDER_LIGHT_GRAY,
+  future: COLORS.BORDER_LIGHT_GRAY
+};
+
+const formatPillValue = (value: number): string => {
+  if (value >= 1000) {
+    const k = Math.round((value / 1000) * 10) / 10;
+    return `$${k}K`;
+  }
+  return `$${Math.round(value)}`;
+};
+
+const getPillState = (period: PeriodInfo): PillState => {
+  if (period.isFuture) return 'future';
+  switch (period.usage) {
+    case CREDIT_USAGE.USED: return 'used';
+    case CREDIT_USAGE.PARTIALLY_USED: return 'partially_used';
+    case CREDIT_USAGE.NOT_USED: return 'not_used';
+    case CREDIT_USAGE.DISABLED: return 'disabled';
+    case CREDIT_USAGE.INACTIVE:
+    default: return 'inactive';
+  }
+};
+
 const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
   userCredit,
   currentYear,
@@ -34,37 +83,10 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
   currentValueUsed,
   selectedPeriodNumber,
   onPeriodSelect,
-  creditMaxValue = 100,
   isUpdating
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const periodRefs = useRef<Map<number, HTMLDivElement>>(new Map());
-
-  // Calculate the fill percentage for bar display
-  const calculateFillPercentage = (
-    usage: CreditUsageType,
-    valueUsed: number,
-    maxValue: number
-  ): number => {
-    // INACTIVE/DISABLED = 0% (empty bar)
-    if (usage === CREDIT_USAGE.INACTIVE || usage === CREDIT_USAGE.DISABLED) {
-      return 0;
-    }
-
-    // USED = 100%
-    if (usage === CREDIT_USAGE.USED) {
-      return 100;
-    }
-
-    // NOT_USED = 5% minimum solid fill so it's visible
-    if (usage === CREDIT_USAGE.NOT_USED || valueUsed === 0) {
-      return 5;
-    }
-
-    // PARTIALLY_USED = actual percentage (minimum 5% so it's visible)
-    const percentage = maxValue > 0 ? (valueUsed / maxValue) * 100 : 5;
-    return Math.max(5, Math.min(100, percentage));
-  };
 
   const periods = useMemo(() => {
     const now = new Date();
@@ -77,9 +99,19 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
       const usage = (historyEntry?.CreditUsage as CreditUsageType) ?? CREDIT_USAGE.INACTIVE;
       const valueUsed = historyEntry?.ValueUsed ?? 0;
 
+      // Build "Mon YYYY → Mon YYYY" label from anniversaryDate
+      let anniversaryLabel = String(anniversaryYear);
+      if (userCredit.anniversaryDate) {
+        const month = parseAnniversaryMonth(userCredit.anniversaryDate);
+        if (month !== null) {
+          const monthAbbr = MONTH_ABBREVIATIONS[month - 1];
+          anniversaryLabel = `${monthAbbr} ${anniversaryYear} \u2192 ${monthAbbr} ${anniversaryYear + 1}`;
+        }
+      }
+
       return [{
         periodNumber: 1,
-        name: String(anniversaryYear),
+        name: anniversaryLabel,
         usage,
         valueUsed,
         isFuture: false,
@@ -97,9 +129,6 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
 
     const totalPeriods = CREDIT_INTERVALS[periodKey] ?? 1;
     const periodsInfo: PeriodInfo[] = [];
-
-    // Generate month labels for date ranges
-    const monthLabels = MONTH_LABEL_ABBREVIATIONS.map(m => m.label);
 
     for (let i = 1; i <= totalPeriods; i++) {
       // Find the historical data for this period
@@ -122,21 +151,9 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
         ? currentValueUsed
         : (historyEntry?.ValueUsed ?? 0);
 
-      // Generate simplified period labels
-      let periodName = '';
-      if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
-        periodName = monthLabels[i - 1] || `${i}`;
-      } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
-        periodName = `Q${i}`;
-      } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Semiannually) {
-        periodName = `H${i}`;
-      } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Annually) {
-        periodName = `${currentYear}`;
-      }
-
       periodsInfo.push({
         periodNumber: i,
-        name: periodName.toUpperCase(),
+        name: getPeriodMonthRange(i, totalPeriods),
         usage,
         valueUsed,
         isFuture,
@@ -169,33 +186,6 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
       }
     }
   }, [selectedPeriodNumber]);
-
-  const getUsageColor = (usage: CreditUsageType, isFuture: boolean): string => {
-    if (isFuture && usage === CREDIT_USAGE.NOT_USED) {
-      return COLORS.NEUTRAL_MEDIUM_GRAY;
-    }
-
-    switch (usage) {
-      case CREDIT_USAGE.USED:
-        return CREDIT_USAGE_DISPLAY_COLORS.USED;
-      case CREDIT_USAGE.PARTIALLY_USED:
-        return CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED;
-      case CREDIT_USAGE.NOT_USED:
-        return CREDIT_USAGE_DISPLAY_COLORS.NOT_USED;
-      case CREDIT_USAGE.DISABLED:
-        return CREDIT_USAGE_DISPLAY_COLORS.DISABLED;
-      case CREDIT_USAGE.INACTIVE:
-      default:
-        return CREDIT_USAGE_DISPLAY_COLORS.INACTIVE;
-    }
-  };
-
-  // Determine if this usage type should show potential (unused portion background)
-  const shouldShowPotential = (usage: CreditUsageType, isFuture: boolean): boolean => {
-    // Only show potential background for partially used and not used (non-future) credits
-    if (isFuture) return false;
-    return usage === CREDIT_USAGE.PARTIALLY_USED || usage === CREDIT_USAGE.NOT_USED;
-  };
 
   const getUsageLabel = (usage: CreditUsageType, isFuture: boolean): string => {
     if (isFuture && usage === CREDIT_USAGE.NOT_USED) {
@@ -244,10 +234,10 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
       >
         {periods.map((period) => {
           const isDisabled = period.usage === CREDIT_USAGE.DISABLED;
-          const usageColor = getUsageColor(period.usage, period.isFuture);
           const isSelected = selectedPeriodNumber === period.periodNumber;
           const isNonInteractive = period.isFuture || isDisabled;
-          const fillPercentage = calculateFillPercentage(period.usage, period.valueUsed, creditMaxValue);
+          const pillState = getPillState(period);
+          const showValue = pillState === 'used' || pillState === 'partially_used' || pillState === 'not_used';
           const updating = isUpdating?.(period.periodNumber) ?? false;
 
           return (
@@ -267,34 +257,15 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
               tabIndex={isNonInteractive ? -1 : 0}
               onKeyDown={(e) => handleKeyDown(e, period)}
             >
-              <div className="period-bar-container">
-                {/* Show potential (unused portion) background for partially used and not used credits */}
-                {shouldShowPotential(period.usage, period.isFuture) && (
-                  <div
-                    className="period-bar-potential"
-                    style={{
-                      backgroundColor: usageColor
-                    }}
-                  />
+              <div className="period-bar-container" style={{ backgroundColor: PILL_BG_COLORS[pillState], borderColor: PILL_BORDER_COLORS[pillState] }}>
+                {showValue && (
+                  <span className="pill-value" style={{ color: PILL_TEXT_COLORS[pillState] }}>
+                    {formatPillValue(period.valueUsed)}
+                  </span>
                 )}
-                {/* Show inactive icon for untracked periods */}
-                {period.usage === CREDIT_USAGE.INACTIVE && (
-                  <div className="period-bar-inactive-icon">
-                    <Icon
-                      name={CREDIT_USAGE_ICON_NAMES.INACTIVE}
-                      variant="micro"
-                      size={16}
-                      style={{ color: usageColor }}
-                    />
-                  </div>
+                {pillState === 'inactive' && (
+                  <Icon name={CREDIT_USAGE_ICON_NAMES.INACTIVE} variant="micro" size={14} style={{ color: PILL_TEXT_COLORS[pillState] }} />
                 )}
-                <div
-                  className="period-bar-fill"
-                  style={{
-                    height: `${fillPercentage}%`,
-                    backgroundColor: usageColor
-                  }}
-                />
               </div>
               <span className="period-label">{period.name}</span>
             </div>

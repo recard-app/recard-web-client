@@ -188,4 +188,26 @@
     color: $info !important;
     fill: $info !important;
   }
+
+  // Credit usage tracker pills -- dark mode border visibility
+  // $neutral-light-gray resolves to #0D0D0D in Cardzen (invisible on dark surfaces)
+  .credit-usage-tracker {
+    .period-bar-container {
+      box-shadow: none;
+    }
+
+    .tracker-period.selected .period-bar-container {
+      outline-color: $neutral-dark-gray;
+    }
+
+    .tracker-period.selected .period-label {
+      color: $neutral-dark-gray;
+    }
+
+    .tracker-period.clickable .period-bar-container {
+      @include hover {
+        border-color: $neutral-medium-gray;
+      }
+    }
+  }
 }

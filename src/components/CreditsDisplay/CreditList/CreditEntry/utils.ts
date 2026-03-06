@@ -92,6 +92,37 @@ export function isPeriodFuture(periodNumber: number, periodType: CreditPeriodTyp
 }
 
 /**
+ * Parses the month number (1-12) from an anniversary date string (MM-DD or MM/DD format).
+ * Returns null if the format is invalid.
+ */
+export function parseAnniversaryMonth(anniversaryDate: string): number | null {
+  try {
+    const [month] = anniversaryDate.includes('-')
+      ? anniversaryDate.split('-').map(Number)
+      : anniversaryDate.split('/').map(Number);
+    if (!isNaN(month) && month >= 1 && month <= 12) return month;
+  } catch {
+    // Invalid format
+  }
+  return null;
+}
+
+/**
+ * Returns a month-range label for a given period number within totalPeriods.
+ * e.g. periodNumber=1, totalPeriods=4 => "Jan → Mar"
+ *      periodNumber=3, totalPeriods=12 => "Mar"
+ */
+export function getPeriodMonthRange(periodNumber: number, totalPeriods: number): string {
+  const monthsPerPeriod = 12 / totalPeriods;
+  const startMonthIndex = (periodNumber - 1) * monthsPerPeriod;
+  const endMonthIndex = startMonthIndex + monthsPerPeriod - 1;
+  if (startMonthIndex === endMonthIndex) {
+    return MONTH_ABBREVIATIONS[startMonthIndex];
+  }
+  return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
+}
+
+/**
  * Display-friendly period type names (e.g., for tracking actions)
  */
 export const PERIOD_DISPLAY_NAMES: Record<string, string> = {
@@ -115,17 +146,11 @@ export function getDateRangeText(
   now: Date = new Date()
 ): string {
   if (isAnniversaryBased && anniversaryDate) {
-    try {
-      const [month] = anniversaryDate.includes('-')
-        ? anniversaryDate.split('-').map(Number)
-        : anniversaryDate.split('/').map(Number);
-      if (!isNaN(month) && month >= 1 && month <= 12) {
-        const startMonthIndex = month - 1;
-        const endMonthIndex = (startMonthIndex + 11) % 12;
-        return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
-      }
-    } catch {
-      // Fall through to default
+    const month = parseAnniversaryMonth(anniversaryDate);
+    if (month !== null) {
+      const startMonthIndex = month - 1;
+      const endMonthIndex = (startMonthIndex + 11) % 12;
+      return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
     }
     return 'Annual';
   }
@@ -140,13 +165,6 @@ export function getDateRangeText(
   if (!periodKey) return associatedPeriod;
 
   const intervals = CREDIT_INTERVALS[periodKey] ?? 1;
-  const monthsPerPeriod = 12 / intervals;
   const currentPeriodNumber = getCurrentPeriodIndex(normalizedPeriod as CreditPeriodType, now);
-  const startMonthIndex = (currentPeriodNumber - 1) * monthsPerPeriod;
-  const endMonthIndex = startMonthIndex + monthsPerPeriod - 1;
-
-  if (startMonthIndex === endMonthIndex) {
-    return MONTH_ABBREVIATIONS[startMonthIndex];
-  }
-  return `${MONTH_ABBREVIATIONS[startMonthIndex]} \u2192 ${MONTH_ABBREVIATIONS[endMonthIndex]}`;
+  return getPeriodMonthRange(currentPeriodNumber, intervals);
 }
