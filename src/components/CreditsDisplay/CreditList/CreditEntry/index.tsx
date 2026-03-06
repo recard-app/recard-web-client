@@ -492,7 +492,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 name={USAGE_ICON_NAME[cardUsage]}
                 variant="mini"
                 size={18}
-                style={{ color: COLORS.NEUTRAL_BLACK }}
+                style={{ color: cardUsage === CREDIT_USAGE.USED ? usageColor : COLORS.NEUTRAL_BLACK }}
               />
             )}
             <div className="credit-name-group">
@@ -609,7 +609,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                         color={COLORS.NEUTRAL_BLACK}
                       />
                     ) : (
-                      <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: COLORS.NEUTRAL_BLACK }} />
+                      <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usage === CREDIT_USAGE.USED ? usageColor : COLORS.NEUTRAL_BLACK }} />
                     )}
                     <span>
                       {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
@@ -639,7 +639,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                             color={COLORS.NEUTRAL_BLACK}
                           />
                         ) : (
-                          <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: COLORS.NEUTRAL_BLACK }} />
+                          <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usage === CREDIT_USAGE.USED ? usageColor : COLORS.NEUTRAL_BLACK }} />
                         )}
                         <span>
                           {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
