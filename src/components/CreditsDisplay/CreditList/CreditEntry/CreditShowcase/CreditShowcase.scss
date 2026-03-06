@@ -1,0 +1,117 @@
+@use '../../../../../styling/variables' as *;
+@use '../../../../../styling/mixins' as *;
+
+// Credit Showcase Wrapper (showcase + footer)
+.credit-showcase-wrapper {
+  margin-bottom: $space-3;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+
+  @media (max-width: $mobile-breakpoint) {
+    box-shadow: $shadow-base;
+  }
+
+  .mobile-credit-details-drawer &,
+  .credit-edit-modal-drawer & {
+    margin-left: $space-1-5;
+    margin-right: $space-1-5;
+  }
+}
+
+// Credit Showcase Header
+.credit-showcase {
+  border-radius: $radius-lg $radius-lg 0 0;
+  padding: $space-5 $space-4;
+  background: var(--showcase-gradient, $neutral-lightest-gray);
+  border: $border-full solid $neutral-light-gray;
+  border-bottom: none;
+
+  .showcase-identity {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-4;
+
+    > svg {
+      margin-top: $space-1;
+      flex-shrink: 0;
+    }
+  }
+
+  .showcase-info {
+    flex: 1;
+    min-width: 0;
+
+    h3 {
+      margin: 0 0 $space-1 0;
+      font-size: $font-h4;
+      color: $neutral-black;
+      line-height: 1.2;
+    }
+
+    .showcase-card-name {
+      margin: 0 0 $space-2 0;
+      font-size: $font-sm;
+      color: $neutral-dark-gray;
+    }
+  }
+
+  .showcase-badges {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: $space-1-5;
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
+      padding: $space-half $space-2;
+      border-radius: $radius-full;
+      font-size: $font-xxs;
+      font-weight: $font-semibold;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .badge-category {
+      background-color: $neutral-white;
+      color: $neutral-dark-gray;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+  }
+}
+
+// Credit Showcase Footer (Value & Usage)
+.credit-showcase-footer {
+  display: flex;
+  gap: $space-5;
+  padding: $space-1-5 $space-4;
+  background-color: $neutral-lightest-gray;
+  border: $border-full solid $neutral-light-gray;
+  border-top: $border-full solid $neutral-light-gray;
+  border-radius: 0 0 $radius-lg $radius-lg;
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    .meta-label {
+      font-size: $font-xs;
+      color: $neutral-dark-gray;
+      font-weight: $font-medium;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .meta-value {
+      font-size: $font-sm;
+      color: $neutral-black;
+      font-weight: $font-semibold;
+    }
+  }
+}
+

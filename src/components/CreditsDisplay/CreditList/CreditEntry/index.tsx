@@ -19,6 +19,7 @@ import Icon from '@/icons';
 import UsagePieIcon from '@/icons/UsagePieIcon';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
+import CreditShowcase from './CreditShowcase';
 import { getMaxValue, clampValue, getUsageForValue, getValueForUsage, getDateRangeText, getCurrentPeriodIndex, PERIOD_DISPLAY_NAMES } from './utils';
 import { UserCreditService } from '../../../../services/UserServices/UserCreditService';
 import CreditEntryDetails from './CreditEntryDetails';
@@ -240,24 +241,16 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     return isMobile ? (
       <Drawer open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DrawerContent fitContent maxHeight="80vh" className="mobile-credit-details-drawer">
-          <DrawerTitle className="sr-only">{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</DrawerTitle>
-          <div className="dialog-header drawer-sticky-header">
-            <h2>{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</h2>
-            {enrichedCredit && card && (
-              <p className="card-bubble-display header-card-display">
-                <CardIcon
-                  title={card.CardName}
-                  size={12}
-                  primary={card.CardPrimaryColor}
-                  secondary={card.CardSecondaryColor}
-                  className="card-thumbnail"
-                />
-                {card.CardName}
-              </p>
-            )}
-          </div>
-          <div className="drawer-content-scroll" style={{ padding: '0 16px 16px', overflow: 'auto' }}>
+          <DrawerTitle className="sr-only">View Credit</DrawerTitle>
+          <div className="drawer-content-scroll" style={{ padding: '0 8px 16px', overflow: 'auto' }}>
             {enrichedCredit && (
+              <>
+              <CreditShowcase
+                card={card}
+                cardCredit={cardCredit}
+                userCredit={enrichedCredit}
+                currentYear={now.getFullYear()}
+              />
               <CreditEntryDetails
                 userCredit={enrichedCredit}
                 now={now}
@@ -270,6 +263,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                 selectedPeriodNumber={selectedPeriodNumber}
                 onPeriodSelect={setSelectedPeriodNumber}
               />
+              </>
             )}
           </div>
           <DrawerFooter>
@@ -301,23 +295,17 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent width="600px">
           <DialogHeader>
-            <DialogTitle>{enrichedCredit ? (cardCredit?.Title ?? enrichedCredit.CreditId) : 'Credit Details'}</DialogTitle>
-            {enrichedCredit && card && (
-              <p className="card-bubble-display header-card-display">
-                <CardIcon
-                  title={card.CardName}
-                  size={12}
-                  primary={card.CardPrimaryColor}
-                  secondary={card.CardSecondaryColor}
-                  className="card-thumbnail"
-                />
-                {card.CardName}
-              </p>
-            )}
+            <DialogTitle>View Credit</DialogTitle>
           </DialogHeader>
           <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
             {enrichedCredit && (
               <>
+                <CreditShowcase
+                  card={card}
+                  cardCredit={cardCredit}
+                  userCredit={enrichedCredit}
+                  currentYear={now.getFullYear()}
+                />
                 <CreditEntryDetails
                   userCredit={enrichedCredit}
                   now={now}

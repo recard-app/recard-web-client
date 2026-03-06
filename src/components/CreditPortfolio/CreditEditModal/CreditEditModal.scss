@@ -3,14 +3,8 @@
 
 .credit-edit-modal-drawer {
   .drawer-content-scroll {
-    padding: 0 $space-4 $space-4;
+    padding: 0 $space-2 $space-4;
     overflow: auto;
-  }
-
-  // Center the card display in drawer header (match mobile-credit-details-drawer)
-  .drawer-sticky-header .header-card-display {
-    margin-left: auto !important;
-    margin-right: auto !important;
   }
 
   // Add drop shadow to footer (match mobile-credit-details-drawer)
@@ -30,23 +24,6 @@
   padding: 0 $space-6 $space-6;
   overflow: auto;
   max-height: 70vh;
-}
-
-.card-bubble-display {
-  display: inline-flex;
-  align-items: center;
-  gap: $space-2;
-  font-family: $font-manrope;
-  font-size: $font-xs;
-  color: $neutral-dark-gray;
-
-  .card-thumbnail {
-    flex-shrink: 0;
-  }
-}
-
-.header-card-display {
-  margin-top: $space-1;
 }
 
 // Header row with title and year selector

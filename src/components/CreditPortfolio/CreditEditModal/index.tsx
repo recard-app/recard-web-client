@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
-import { CardIcon } from '@/icons';
+import CreditShowcase from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditShowcase';
 import { CREDIT_INTERVALS, CREDIT_PERIODS, CreditUsageType, MOBILE_BREAKPOINT } from '@/types';
 import { CreditCardDetails, CardCredit } from '@/types/CreditCardTypes';
 import { UserCredit } from '@/types/CardCreditsTypes';
@@ -284,29 +284,18 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
     />
   ) : null;
 
-  const cardBubble = (
-    <p className="card-bubble-display header-card-display">
-      <CardIcon
-        title={card.CardName}
-        size={12}
-        primary={card.CardPrimaryColor}
-        secondary={card.CardSecondaryColor}
-        className="card-thumbnail"
-      />
-      {card.CardName}
-    </p>
-  );
-
   if (isMobile) {
     return (
       <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DrawerContent fitContent maxHeight="80vh" className="credit-edit-modal-drawer">
-          <DrawerTitle className="sr-only">{title}</DrawerTitle>
-          <div className="dialog-header drawer-sticky-header">
-            <h2>{title}</h2>
-            {cardBubble}
-          </div>
+          <DrawerTitle className="sr-only">View Credit</DrawerTitle>
           <div className="drawer-content-scroll">
+            <CreditShowcase
+              card={card}
+              cardCredit={cardCredit}
+              userCredit={displayCredit}
+              currentYear={year}
+            />
             {detailsContent}
           </div>
           <DrawerFooter>
@@ -322,10 +311,15 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent width="600px">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {cardBubble}
+          <DialogTitle>View Credit</DialogTitle>
         </DialogHeader>
         <div className="dialog-content-scroll">
+          <CreditShowcase
+            card={card}
+            cardCredit={cardCredit}
+            userCredit={displayCredit}
+            currentYear={year}
+          />
           {detailsContent}
           {usageTracker}
         </div>

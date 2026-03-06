@@ -241,37 +241,7 @@
 
 // === CREDIT ENTRY DETAILS MODAL STYLING ===
 
-// Credit header combining title and card bubble
-.credit-header {
-  margin-bottom: $space-3;
-  
-  .credit-id {
-    margin-bottom: $space-1;
-  }
-  
-  .card-bubble-display {
-    margin-top: 0 !important;
-    margin-bottom: 0;
-  }
-}
-
 // Stacked label system for credit details
-.credit-details-section {
-  margin: $space-3 0;
-  display: flex;
-  gap: $space-4;
-  
-  @media (max-width: $mobile-breakpoint) {
-    flex-direction: column;
-    gap: $space-3;
-  }
-}
-
-.credit-detail-group {
-  flex: 1;
-  min-width: 0;
-}
-
 .credit-detail-item {
   margin-bottom: $space-2;
   
@@ -449,20 +419,6 @@ body:has(.mobile-credit-details-drawer, .credit-edit-modal-drawer) [data-radix-p
 .mobile-credit-details-drawer [data-slot="drawer-footer"] {
   box-shadow: $container-shadow-top;
   background-color: $neutral-lightest-gray;
-}
-
-// Header card display overrides - remove padding, margin, and border
-.header-card-display {
-  padding: 0 !important;
-  margin: 0 !important;
-  border: none !important;
-  background: transparent !important;
-}
-
-// Center the card display in mobile drawer header
-.mobile-credit-details-drawer .drawer-sticky-header .header-card-display {
-  margin-left: auto !important;
-  margin-right: auto !important;
 }
 
 .amount-input {
