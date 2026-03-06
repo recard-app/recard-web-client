@@ -1265,7 +1265,7 @@ function AppContent({}: AppContentProps) {
                     <ProtectedRoute>
                       <CreditsPortfolio
                         userCardDetails={userDetailedCardDetails}
-                        reloadTrigger={cardsVersion}
+                        reloadTrigger={cardsVersion + monthlyStatsRefreshTrigger}
                         onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
                         onAddUpdatingCreditId={addUpdatingCreditId}
                         onRemoveUpdatingCreditId={removeUpdatingCreditId}

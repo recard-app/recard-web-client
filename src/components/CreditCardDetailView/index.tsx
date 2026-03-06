@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, EnrichedMultiplier, CreditCard, isRotatingMultiplier, isSelectableMultiplier } from '../../types/CreditCardTypes';
 import { UserComponentTrackingPreferences, ComponentType, COMPONENT_TYPES } from '../../types/CardCreditsTypes';
@@ -57,7 +58,7 @@ interface CreditCardDetailViewProps {
     showTrackingPreferences?: boolean; // Controls whether to show credit tracking preferences
     onPreferencesUpdate?: () => Promise<void>; // Called when preferences are updated
     openDate?: string | null; // Card open/anniversary date (MM/DD/YYYY)
-    onOpenDateChange?: (date: string | null) => void; // Called when open date changes
+    onOpenDateChange?: (date: string | null) => Promise<void>; // Called when open date changes
     isFrozen?: boolean; // Whether the card is frozen (excluded from LLM context)
     onFreezeToggle?: () => void; // Called when freeze state is toggled
     initialTab?: TabType; // Initial tab to display when opening the view
@@ -241,10 +242,38 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
         e.preventDefault();
         if (!onOpenDateChange) return;
 
+        // Client-side validation for non-null dates
+        if (editingOpenDateValue) {
+            const parts = editingOpenDateValue.split('/');
+            if (parts.length !== 3) {
+                toast.error('Date must be in MM/DD/YYYY format.');
+                return;
+            }
+            const [month, day, year] = parts.map(Number);
+            const date = new Date(year, month - 1, day);
+            if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+                toast.error('Please enter a valid calendar date.');
+                return;
+            }
+            if (year < 2000) {
+                toast.error('Open date must be year 2000 or later.');
+                return;
+            }
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (date > today) {
+                toast.error('Open date cannot be in the future.');
+                return;
+            }
+        }
+
         setIsSavingOpenDate(true);
         try {
-            onOpenDateChange(editingOpenDateValue);
+            await onOpenDateChange(editingOpenDateValue);
             setIsOpenDateModalOpen(false);
+            toast.success('Open date updated.');
+        } catch {
+            toast.error('Failed to update open date. Please try again.');
         } finally {
             setIsSavingOpenDate(false);
         }
@@ -963,6 +992,8 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 placeholder="MM/DD/YYYY"
                                 clearable={true}
                                 disabled={false}
+                                min="2000-01-01"
+                                max={new Date().toISOString().split('T')[0]}
                             />
                             {editingOpenDateValue && (
                                 <button

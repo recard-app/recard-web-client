@@ -305,23 +305,18 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
 
     // Handle updating a card's open date
     const handleOpenDateChange = async (cardId: string, openDate: string | null) => {
-        try {
-            // Update the card's open date via API
-            await UserCreditCardService.updateUserCard(cardId, { openDate });
+        // Update the card's open date via API
+        await UserCreditCardService.updateUserCard(cardId, { openDate });
 
-            // Update local metadata state
-            setUserCardsMetadata(prev => {
-                const newMap = new Map(prev);
-                const existing = newMap.get(cardId);
-                if (existing) {
-                    newMap.set(cardId, { ...existing, openDate });
-                }
-                return newMap;
-            });
-        } catch (error) {
-            console.error('Error updating card open date:', error);
-            toast.error('Unable to update the card anniversary date. Please try again.');
-        }
+        // Update local metadata state
+        setUserCardsMetadata(prev => {
+            const newMap = new Map(prev);
+            const existing = newMap.get(cardId);
+            if (existing) {
+                newMap.set(cardId, { ...existing, openDate });
+            }
+            return newMap;
+        });
     };
 
     // Handle toggling a card's frozen state

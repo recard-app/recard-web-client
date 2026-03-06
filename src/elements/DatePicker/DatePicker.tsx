@@ -12,6 +12,8 @@ export interface DatePickerProps {
   clearable?: boolean;
   className?: string;
   containerClassName?: string;
+  min?: string;  // YYYY-MM-DD format, passed to native input
+  max?: string;  // YYYY-MM-DD format, passed to native input
 }
 
 // Convert MM/DD/YYYY to YYYY-MM-DD for native input
@@ -43,16 +45,21 @@ const DatePicker: React.FC<DatePickerProps> = ({
   clearable = true,
   className = '',
   containerClassName = '',
+  min,
+  max,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nativeValue = e.target.value;
+    const nativeValue = e.target.value; // YYYY-MM-DD or ''
     if (nativeValue === '') {
       onChange(null);
-    } else {
-      onChange(toDisplayFormat(nativeValue));
+      return;
     }
+    // Enforce min/max for keyboard input (picker already respects these)
+    if (min && nativeValue < min) return;
+    if (max && nativeValue > max) return;
+    onChange(toDisplayFormat(nativeValue));
   };
 
   const handleClear = (e: React.MouseEvent) => {
@@ -86,6 +93,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
           value={toNativeFormat(value)}
           onChange={handleChange}
           disabled={disabled}
+          min={min}
+          max={max}
           className={`date-picker-input default-input ${className}`.trim()}
         />
 
