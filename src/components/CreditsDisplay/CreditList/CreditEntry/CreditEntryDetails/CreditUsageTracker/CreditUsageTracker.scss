@@ -10,7 +10,7 @@
     width: 100%;
     overflow-x: auto;
     white-space: nowrap;
-    padding: $space-2 0;
+    padding: $space-1 $space-1;
     height: auto;
     // Universal scrollbar styling
     @include universal-scrollbar;

@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useRef } from 'react';
 import { UserCredit, CreditUsageType, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, MONTH_ABBREVIATIONS } from '../../../../../../types';
 import { CREDIT_USAGE_DISPLAY_NAMES, CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../../../types/CardCreditsTypes';
 import { COLORS } from '../../../../../../types/Colors';
-import { isPeriodFuture, parseAnniversaryMonth, getPeriodMonthRange } from '../../utils';
+import { isPeriodFuture, parseAnniversaryDate, getPeriodMonthRange } from '../../utils';
 import Icon from '@/icons';
 import './CreditUsageTracker.scss';
 
@@ -99,13 +99,17 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
       const usage = (historyEntry?.CreditUsage as CreditUsageType) ?? CREDIT_USAGE.INACTIVE;
       const valueUsed = historyEntry?.ValueUsed ?? 0;
 
-      // Build "Mon YYYY → Mon YYYY" label from anniversaryDate
+      // Build "Mon DD, YYYY → Mon DD, YYYY" label from anniversaryDate
+      // End date is the day before the next anniversary
       let anniversaryLabel = String(anniversaryYear);
       if (userCredit.anniversaryDate) {
-        const month = parseAnniversaryMonth(userCredit.anniversaryDate);
-        if (month !== null) {
-          const monthAbbr = MONTH_ABBREVIATIONS[month - 1];
-          anniversaryLabel = `${monthAbbr} ${anniversaryYear} \u2192 ${monthAbbr} ${anniversaryYear + 1}`;
+        const parsed = parseAnniversaryDate(userCredit.anniversaryDate);
+        if (parsed) {
+          const startAbbr = MONTH_ABBREVIATIONS[parsed.month - 1];
+          const endDate = new Date(anniversaryYear + 1, parsed.month - 1, parsed.day);
+          endDate.setDate(endDate.getDate() - 1);
+          const endAbbr = MONTH_ABBREVIATIONS[endDate.getMonth()];
+          anniversaryLabel = `${startAbbr} ${parsed.day}, ${anniversaryYear} \u2192 ${endAbbr} ${endDate.getDate()}, ${endDate.getFullYear()}`;
         }
       }
 

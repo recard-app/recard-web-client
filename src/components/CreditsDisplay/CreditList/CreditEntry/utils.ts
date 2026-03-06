@@ -96,11 +96,22 @@ export function isPeriodFuture(periodNumber: number, periodType: CreditPeriodTyp
  * Returns null if the format is invalid.
  */
 export function parseAnniversaryMonth(anniversaryDate: string): number | null {
+  const result = parseAnniversaryDate(anniversaryDate);
+  return result ? result.month : null;
+}
+
+/**
+ * Parses the month (1-12) and day (1-31) from an anniversary date string (MM-DD or MM/DD format).
+ * Returns null if the format is invalid.
+ */
+export function parseAnniversaryDate(anniversaryDate: string): { month: number; day: number } | null {
   try {
-    const [month] = anniversaryDate.includes('-')
+    const [month, day] = anniversaryDate.includes('-')
       ? anniversaryDate.split('-').map(Number)
       : anniversaryDate.split('/').map(Number);
-    if (!isNaN(month) && month >= 1 && month <= 12) return month;
+    if (!isNaN(month) && month >= 1 && month <= 12 && !isNaN(day) && day >= 1 && day <= 31) {
+      return { month, day };
+    }
   } catch {
     // Invalid format
   }
