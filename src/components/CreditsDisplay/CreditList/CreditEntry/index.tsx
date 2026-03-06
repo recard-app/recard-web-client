@@ -11,7 +11,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
-import { CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, CreditPeriodType, MOBILE_BREAKPOINT, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS, ICON_GRAY } from '../../../../types';
+import { CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, CreditPeriodType, MOBILE_BREAKPOINT, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS, ICON_GRAY, CREDIT_MODAL_TITLE, CREDIT_MODAL_WIDTH, MODAL_CLOSE_ANIMATION_MS } from '../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
 import { CardIcon } from '../../../../icons';
@@ -192,7 +192,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       // Delay clearing enriched credit to allow modal close animation to complete
       const timer = setTimeout(() => {
         setEnrichedCredit(null);
-      }, 300); // Match typical modal animation duration
+      }, MODAL_CLOSE_ANIMATION_MS);
 
       return () => clearTimeout(timer);
     }
@@ -241,7 +241,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     return isMobile ? (
       <Drawer open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DrawerContent fitContent maxHeight="80vh" className="mobile-credit-details-drawer">
-          <DrawerTitle className="sr-only">View Credit</DrawerTitle>
+          <DrawerTitle className="sr-only">{CREDIT_MODAL_TITLE}</DrawerTitle>
           <div className="drawer-content-scroll" style={{ padding: '0 8px 16px', overflow: 'auto' }}>
             {enrichedCredit && (
               <>
@@ -293,9 +293,9 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       </Drawer>
     ) : (
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent width="600px">
+        <DialogContent width={CREDIT_MODAL_WIDTH}>
           <DialogHeader>
-            <DialogTitle>View Credit</DialogTitle>
+            <DialogTitle>{CREDIT_MODAL_TITLE}</DialogTitle>
           </DialogHeader>
           <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
             {enrichedCredit && (

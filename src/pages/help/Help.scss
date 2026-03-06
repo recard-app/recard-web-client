@@ -147,7 +147,7 @@ button.help-nav-section__header {
   font-weight: $font-semibold !important;
   color: $neutral-dark-gray !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
+  letter-spacing: $letter-spacing-caps !important;
   cursor: pointer !important;
   transition: background-color $transition-fast !important;
 

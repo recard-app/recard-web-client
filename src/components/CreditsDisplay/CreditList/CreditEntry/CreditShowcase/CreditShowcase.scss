@@ -78,7 +78,7 @@
       background-color: $neutral-white;
       color: $neutral-dark-gray;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: $letter-spacing-caps;
     }
 
   }
@@ -91,7 +91,6 @@
   padding: $space-1-5 $space-4;
   background-color: $neutral-lightest-gray;
   border: $border-full solid $neutral-light-gray;
-  border-top: $border-full solid $neutral-light-gray;
   border-radius: 0 0 $radius-lg $radius-lg;
 
   .meta-item {
@@ -104,7 +103,7 @@
       color: $neutral-dark-gray;
       font-weight: $font-medium;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: $letter-spacing-caps;
     }
 
     .meta-value {

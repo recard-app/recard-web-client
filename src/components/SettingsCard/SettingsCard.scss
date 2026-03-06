@@ -38,7 +38,7 @@
     color: $primary-medium;
     margin: 0;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: $letter-spacing-caps;
   }
 
   &__chevron {

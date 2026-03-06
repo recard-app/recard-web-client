@@ -29,7 +29,7 @@
         margin: 0;
         font-family: $font-inter;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: $letter-spacing-caps;
     }
 
     &__content {

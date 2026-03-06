@@ -109,7 +109,6 @@
     padding: $space-1-5 $space-4;
     background-color: $neutral-lightest-gray;
     border: $border-full solid $neutral-light-gray;
-    border-top: $border-full solid $neutral-light-gray;
     border-radius: 0 0 $radius-lg $radius-lg;
 
     .meta-item {
@@ -122,7 +121,7 @@
         color: $neutral-dark-gray;
         font-weight: $font-medium;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: $letter-spacing-caps;
       }
 
       .meta-value {
@@ -216,7 +215,7 @@
         font-weight: $font-medium;
         color: $neutral-dark-gray;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: $letter-spacing-caps;
       }
     }
   }
@@ -348,7 +347,7 @@
           border-bottom: $border-full solid $neutral-light-gray;
           background-color: $neutral-white;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: $letter-spacing-caps;
           font-size: $font-xxs;
           font-weight: $font-semibold;
           color: $neutral-black;
@@ -675,7 +674,7 @@
     padding: $space-half $space-2;
     border-radius: $radius-full;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: $letter-spacing-caps;
   }
   
   .credit-item {
@@ -743,7 +742,7 @@
     font-size: $font-xxs;
     font-weight: $font-semibold;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: $letter-spacing-caps;
     color: $neutral-dark-gray;
     background-color: $neutral-light-gray;
     border-radius: $radius-full;

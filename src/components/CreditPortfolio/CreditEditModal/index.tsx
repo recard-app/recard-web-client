@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import CreditShowcase from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditShowcase';
-import { CREDIT_INTERVALS, CREDIT_PERIODS, CreditUsageType, MOBILE_BREAKPOINT } from '@/types';
+import { CREDIT_INTERVALS, CREDIT_PERIODS, CreditUsageType, MOBILE_BREAKPOINT, CREDIT_MODAL_TITLE, CREDIT_MODAL_WIDTH } from '@/types';
 import { CreditCardDetails, CardCredit } from '@/types/CreditCardTypes';
 import { UserCredit } from '@/types/CardCreditsTypes';
 import { UserCreditService } from '@/services/UserServices/UserCreditService';
@@ -230,7 +230,7 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
 
     return (
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent width="600px">
+        <DialogContent width={CREDIT_MODAL_WIDTH}>
           <DialogTitle className="sr-only">Loading</DialogTitle>
           {loadingContent}
         </DialogContent>
@@ -288,7 +288,7 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
     return (
       <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DrawerContent fitContent maxHeight="80vh" className="credit-edit-modal-drawer">
-          <DrawerTitle className="sr-only">View Credit</DrawerTitle>
+          <DrawerTitle className="sr-only">{CREDIT_MODAL_TITLE}</DrawerTitle>
           <div className="drawer-content-scroll">
             <CreditShowcase
               card={card}
@@ -309,9 +309,9 @@ const CreditEditModal: React.FC<CreditEditModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent width="600px">
+      <DialogContent width={CREDIT_MODAL_WIDTH}>
         <DialogHeader>
-          <DialogTitle>View Credit</DialogTitle>
+          <DialogTitle>{CREDIT_MODAL_TITLE}</DialogTitle>
         </DialogHeader>
         <div className="dialog-content-scroll">
           <CreditShowcase

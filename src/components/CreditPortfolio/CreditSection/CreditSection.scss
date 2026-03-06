@@ -44,7 +44,7 @@
           font-weight: $font-medium;
           color: $neutral-dark-gray;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: $letter-spacing-caps;
         }
       }
     }

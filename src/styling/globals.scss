@@ -318,7 +318,7 @@ button, .button {
   background-color: $neutral-light-gray;
   border-radius: $radius-full;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: $letter-spacing-caps;
 }
 
 // Credit slider color variables driven by SCSS design tokens

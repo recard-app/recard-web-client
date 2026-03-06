@@ -102,6 +102,13 @@ export const MONTH_LABEL_ABBREVIATIONS: { value: number; label: string }[] = [
 ] as const;
 
 /**
+ * Credit modal/drawer constants
+ */
+export const CREDIT_MODAL_TITLE = 'View Credit';
+export const CREDIT_MODAL_WIDTH = '600px';
+export const MODAL_CLOSE_ANIMATION_MS = 300;
+
+/**
  * Credit expiration warning thresholds (in days before period ends)
  */
 export const CREDIT_EXPIRATION_THRESHOLDS = {
