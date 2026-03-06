@@ -3,6 +3,7 @@ import { CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, C
 import { CardCredit } from '../../../../types/CreditCardTypes';
 import { MONTH_ABBREVIATIONS, MONTH_NAMES } from '../../../../types/Constants';
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
+import { parseAnniversaryDate } from './utils';
 import { Slider } from '../../../ui/slider';
 import Icon from '@/icons';
 import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './utils';
@@ -258,6 +259,17 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
 
   const getCurrentPeriodName = (): string => {
     const currentYear = now.getFullYear();
+    if (userCredit.isAnniversaryBased && userCredit.anniversaryDate) {
+      const parsed = parseAnniversaryDate(userCredit.anniversaryDate);
+      if (parsed) {
+        const anniversaryYear = userCredit.anniversaryYear || currentYear;
+        const startAbbr = MONTH_ABBREVIATIONS[parsed.month - 1];
+        const endDate = new Date(anniversaryYear + 1, parsed.month - 1, parsed.day);
+        endDate.setDate(endDate.getDate() - 1);
+        const endAbbr = MONTH_ABBREVIATIONS[endDate.getMonth()];
+        return `${startAbbr} ${anniversaryYear} \u2192 ${endAbbr} ${endDate.getFullYear()}`;
+      }
+    }
     if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Monthly) {
       return MONTH_NAMES[selectedPeriodNumber - 1] || `Month ${selectedPeriodNumber}`;
     } else if (userCredit.AssociatedPeriod === CREDIT_PERIODS.Quarterly) {
