@@ -70,7 +70,7 @@
             @include universal-scrollbar;
 
             @media (max-width: $mobile-breakpoint) {
-              padding: $space-2;
+              padding: $space-3 $space-4;
             }
 
             // Loading and empty state messages
@@ -141,7 +141,7 @@
 
     &.full-history {
       .history-panel-content {
-        padding: $space-3;
+        padding: $space-3 $space-4;
       }
     }
   }
