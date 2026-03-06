@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './CreditList.scss';
-import { CreditUsageType, UserCredit, MOBILE_BREAKPOINT, CREDIT_PERIODS, CREDIT_INTERVALS } from '../../../types';
+import { UserCredit, MOBILE_BREAKPOINT, CREDIT_PERIODS, CREDIT_INTERVALS } from '../../../types';
 import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
 import CreditEntry from './CreditEntry';
 
@@ -9,18 +9,11 @@ export interface CreditListProps {
   now: Date;
   cardById: Map<string, CreditCardDetails>;
   creditByPair: Map<string, CardCredit>;
-  displayPeriod?: boolean; // flag to display the period text (default: true)
-  variant?: 'default' | 'sidebar'; // display variant (default: 'default')
-  limit?: number; // maximum number of credits to display
-  onUpdateHistoryEntry?: (update: {
-    cardId: string;
-    creditId: string;
-    periodNumber: number;
-    creditUsage: CreditUsageType;
-    valueUsed: number;
-  }) => void;
-  onUpdateComplete?: () => void; // Optional callback when any credit is updated
-  isUpdating?: boolean; // Optional flag to show updating indicators
+  displayPeriod?: boolean;
+  variant?: 'default' | 'sidebar';
+  limit?: number;
+  onUpdateComplete?: () => void;
+  isUpdating?: boolean;
   onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
@@ -59,7 +52,7 @@ const calculateCurrentPeriod = (now: Date, associatedPeriod: string): number => 
   return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
 };
 
-const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, displayPeriod = true, variant = 'default', limit, onUpdateHistoryEntry, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
+const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditByPair, displayPeriod = true, variant = 'default', limit, onUpdateComplete, isUpdating, onAddUpdatingCreditId, onRemoveUpdatingCreditId, isCreditUpdating }) => {
   const isMobile = useIsMobile();
 
   if (!credits || credits.length === 0) return null;
@@ -90,7 +83,6 @@ const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditB
             disableDropdown={isMobile || isSidebar} // Disable dropdown on mobile or sidebar
             displayPeriod={displayPeriod && !isSidebar} // Hide period in sidebar
             variant={variant}
-            onUpdateHistoryEntry={onUpdateHistoryEntry}
             onUpdateComplete={onUpdateComplete}
             isUpdating={isThisCreditUpdating}
             onAddUpdatingCreditId={onAddUpdatingCreditId}

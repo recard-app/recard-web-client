@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard, UserCredit, CreditCardDetails, CardCredit } from './types';
-import { buildYearOptions } from './pages/my-credits/utils';
 import { Icon, CardIcon } from './icons';
 // Services
 import {
@@ -57,8 +56,8 @@ import {
 import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 import { ComponentsProvider, useComponents } from './contexts/ComponentsContext';
+import { CreditDrawerProvider, CreditDrawerBridge } from './contexts/CreditDrawerContext';
 import CreditCardDetailView, { type TabType, CARD_TABS } from './components/CreditCardDetailView';
-import CreditEditModal from './components/CreditPortfolio/CreditEditModal';
 import CreditDetailedSummary from './components/CreditSummary/CreditDetailedSummary';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
 import {
@@ -225,16 +224,13 @@ function AppContent({}: AppContentProps) {
   const [isCardDetailsOpen, setIsCardDetailsOpen] = useState(false);
   const [isDetailedSummaryOpen, setIsDetailedSummaryOpen] = useState(false);
   const [cardDetailActiveTab, setCardDetailActiveTab] = useState<TabType>('overview');
-  // State for credit detail modal (opened from chat component clicks)
-  const [isCreditModalOpen, setIsCreditModalOpen] = useState(false);
-  const [isCreditModalLoading, setIsCreditModalLoading] = useState(false);
-  const [selectedCreditForModal, setSelectedCreditForModal] = useState<{
-    userCredit: UserCredit;
-    card: CreditCardDetails;
-    cardCredit: CardCredit | null;
+  // Credit drawer controls via ref (populated by CreditDrawerBridge inside the provider)
+  const creditDrawerRef = useRef<{
+    openDrawer: (params: { cardId: string; creditId: string; year?: number; isLoading?: boolean; initialPeriodNumber?: number; fallbackData?: { userCredit: UserCredit; card: CreditCardDetails; cardCredit: CardCredit | null } }) => void;
+    closeDrawer: () => void;
+    setLoading: (loading: boolean) => void;
+    setFallbackData: (data: { userCredit: UserCredit; card: CreditCardDetails; cardCredit: CardCredit | null }) => void;
   } | null>(null);
-  const [creditModalYear, setCreditModalYear] = useState<number>(() => new Date().getFullYear());
-  const [creditModalAccountCreatedAt, setCreditModalAccountCreatedAt] = useState<Date | null>(null);
   const [cardsVersion, setCardsVersion] = useState<number>(0);
   const [isSavingCards, setIsSavingCards] = useState(false);
   const [cardSelectorSearchTerm, setCardSelectorSearchTerm] = useState<string>('');
@@ -769,63 +765,28 @@ function AppContent({}: AppContentProps) {
   };
 
   // Function to handle credit selection by ID (for chat component clicks)
-  // Opens modal immediately with loading state, then fetches data
+  // Opens drawer immediately with loading state, then fetches data
   const handleCreditSelect = async (cardId: string, creditId: string) => {
-    // Open modal immediately with loading state
-    setIsCreditModalOpen(true);
-    setIsCreditModalLoading(true);
-    setSelectedCreditForModal(null);
+    const drawer = creditDrawerRef.current;
+    if (!drawer) return;
+
+    drawer.openDrawer({ cardId, creditId, isLoading: true });
 
     try {
       const currentYear = new Date().getFullYear();
       const result = await UserCreditService.fetchCreditDetails(cardId, creditId, currentYear);
 
-      setSelectedCreditForModal({
+      drawer.setFallbackData({
         userCredit: result.credit,
         card: result.cardDetails,
         cardCredit: result.creditDetails || null,
       });
+      drawer.setLoading(false);
     } catch (error) {
       console.error('Failed to fetch credit details:', error);
-      // Close modal on error
-      setIsCreditModalOpen(false);
-    } finally {
-      setIsCreditModalLoading(false);
+      drawer.closeDrawer();
     }
   };
-
-  // Handle closing the credit modal
-  const handleCloseCreditModal = () => {
-    setIsCreditModalOpen(false);
-    setSelectedCreditForModal(null);
-    // Reset year to current when closing
-    setCreditModalYear(new Date().getFullYear());
-  };
-
-  // Handle year change in credit modal
-  const handleCreditModalYearChange = useCallback((year: number) => {
-    setCreditModalYear(year);
-  }, []);
-
-  // Fetch account creation date for credit modal year dropdown
-  useEffect(() => {
-    const fetchAccountDate = async () => {
-      try {
-        const date = await UserService.fetchAccountCreationDate();
-        setCreditModalAccountCreatedAt(date);
-      } catch (error) {
-        console.error('Failed to fetch account creation date:', error);
-      }
-    };
-    if (user) {
-      fetchAccountDate();
-    }
-  }, [user]);
-
-  // Available years for credit modal dropdown
-  const creditModalAvailableYears = useMemo(() => {
-    return buildYearOptions(creditModalAccountCreatedAt);
-  }, [creditModalAccountCreatedAt]);
 
   // Function to handle saving credit card selections
   const handleSaveCardSelections = async () => {
@@ -961,6 +922,15 @@ function AppContent({}: AppContentProps) {
   return (
     <FullHeightContext.Provider value={{ setFullHeight: setNeedsFullHeight }}>
       <ScrollHeightContext.Provider value={{ setScrollHeight: setNeedsScrollHeight }}>
+        <CreditDrawerProvider
+          prioritizedCredits={prioritizedCredits}
+          userDetailedCardDetails={userDetailedCardDetails}
+          onUpdateComplete={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
+          onAddUpdatingCreditId={addUpdatingCreditId}
+          onRemoveUpdatingCreditId={removeUpdatingCreditId}
+          isCreditUpdating={isCreditUpdating}
+        >
+        <CreditDrawerBridge drawerRef={creditDrawerRef} />
         <div className="app">
           <Toaster position="top-right" richColors />
           <Helmet>
@@ -1209,18 +1179,6 @@ function AppContent({}: AppContentProps) {
             </DialogContent>
           </Dialog>
 
-          {/* Credit Detail Modal (opened from chat component clicks) */}
-          <CreditEditModal
-            isOpen={isCreditModalOpen}
-            onClose={handleCloseCreditModal}
-            userCredit={selectedCreditForModal?.userCredit || null}
-            card={selectedCreditForModal?.card || null}
-            cardCredit={selectedCreditForModal?.cardCredit || null}
-            year={creditModalYear}
-            isLoading={isCreditModalLoading}
-            onUpdateComplete={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
-          />
-
           {/* Design System Route - rendered outside of normal app wrapper */}
           {isDesignSystemPage ? (
             <Routes>
@@ -1375,6 +1333,7 @@ function AppContent({}: AppContentProps) {
           })()
           )}
         </div>
+        </CreditDrawerProvider>
       </ScrollHeightContext.Provider>
     </FullHeightContext.Provider>
   );

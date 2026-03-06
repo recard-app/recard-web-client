@@ -10,7 +10,7 @@ import { buildYearOptions } from '@/pages/my-credits/utils';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import YearDropdown from '../YearDropdown';
 import CreditCardAccordion from '../CreditCardAccordion';
-import CreditEditModal from '../CreditEditModal';
+import { useCreditDrawer } from '@/contexts/CreditDrawerContext';
 import AnnualCreditReport from '@/components/CreditSummary/AnnualCreditReport';
 import Icon from '@/icons';
 import {
@@ -20,7 +20,7 @@ import {
   DialogTitle,
   DialogBody,
 } from '@/components/ui/dialog/dialog';
-import { CreditPortfolioViewProps, SelectedCreditState } from '../types';
+import { CreditPortfolioViewProps } from '../types';
 import './CreditPortfolioView.scss';
 
 // Sort cards: preferred first, then alphabetically
@@ -115,9 +115,8 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   // Track cards from previous year to preserve expanded state during year changes
   const [previousCardsWithCredits, setPreviousCardsWithCredits] = useState<CreditCardDetails[]>([]);
 
-  // Modal state
-  const [selectedCredit, setSelectedCredit] = useState<SelectedCreditState | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Credit drawer context
+  const { openDrawer } = useCreditDrawer();
 
   // Annual report dialog state
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
@@ -317,33 +316,24 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     });
   }, []);
 
-  // Handle period click - open modal
+  // Handle period click - open drawer
   const handlePeriodClick = useCallback((
     credit: UserCredit,
     cardCredit: CardCredit,
     periodNumber: number,
     anniversaryYear?: number
   ) => {
-    // Find the card for this credit
     const card = userCardDetails.find(c => c.id === credit.CardId);
     if (!card) return;
 
-    setSelectedCredit({
-      credit,
-      card,
-      cardCredit,
-      periodNumber,
-      anniversaryYear
+    openDrawer({
+      cardId: credit.CardId,
+      creditId: credit.CreditId,
+      year: selectedYear,
+      initialPeriodNumber: periodNumber,
+      fallbackData: { userCredit: credit, card, cardCredit },
     });
-    setIsModalOpen(true);
-  }, [userCardDetails]);
-
-  // Handle modal close
-  const handleModalClose = useCallback(() => {
-    setIsModalOpen(false);
-    // Clear selected credit after animation
-    setTimeout(() => setSelectedCredit(null), 300);
-  }, []);
+  }, [userCardDetails, selectedYear, openDrawer]);
 
   // Handle update complete - refresh data
   const handleUpdateComplete = useCallback(async () => {
@@ -480,25 +470,6 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
           ))}
         </div>
       </div>
-
-      {/* Credit Edit Modal */}
-      <CreditEditModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        userCredit={selectedCredit?.credit ?? null}
-        card={selectedCredit?.card ?? null}
-        cardCredit={selectedCredit?.cardCredit ?? null}
-        initialPeriodNumber={selectedCredit?.periodNumber}
-        year={selectedYear}
-        onUpdateComplete={handleUpdateComplete}
-        isUpdating={selectedCredit ? isCreditUpdating?.(
-          selectedCredit.card.id,
-          selectedCredit.credit.CreditId,
-          selectedCredit.periodNumber
-        ) : false}
-        onAddUpdatingCreditId={onAddUpdatingCreditId}
-        onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
-      />
 
       {/* Annual Credits Report Dialog */}
       <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>

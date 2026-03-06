@@ -1,6 +1,6 @@
 import React from 'react';
 import './CreditGroup.scss';
-import { CreditUsageType, UserCredit, UserCreditWithExpiration } from '../../../types';
+import { UserCredit, UserCreditWithExpiration } from '../../../types';
 import CreditList from '../CreditList';
 import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
 
@@ -9,16 +9,9 @@ export interface CreditGroupProps {
   now: Date;
   cardById: Map<string, CreditCardDetails>;
   creditByPair: Map<string, CardCredit>;
-  displayPeriod?: boolean; // flag to display the period text (default: true)
-  onUpdateHistoryEntry?: (update: {
-    cardId: string;
-    creditId: string;
-    periodNumber: number;
-    creditUsage: CreditUsageType;
-    valueUsed: number;
-  }) => void;
+  displayPeriod?: boolean;
   onUpdateComplete?: () => void;
-  isUpdating?: boolean; // Optional flag to show updating indicators
+  isUpdating?: boolean;
   onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
@@ -30,7 +23,6 @@ const CreditGroup: React.FC<CreditGroupProps> = ({
   cardById,
   creditByPair,
   displayPeriod = true,
-  onUpdateHistoryEntry,
   onUpdateComplete,
   isUpdating,
   onAddUpdatingCreditId,
@@ -49,7 +41,6 @@ const CreditGroup: React.FC<CreditGroupProps> = ({
         cardById={cardById}
         creditByPair={creditByPair}
         displayPeriod={displayPeriod}
-        onUpdateHistoryEntry={onUpdateHistoryEntry}
         onUpdateComplete={onUpdateComplete}
         isUpdating={isUpdating}
         onAddUpdatingCreditId={onAddUpdatingCreditId}

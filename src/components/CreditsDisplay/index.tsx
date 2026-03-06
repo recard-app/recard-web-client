@@ -1,6 +1,6 @@
 import React, { useMemo, ReactNode } from 'react';
 import './CreditsDisplay.scss';
-import { CalendarUserCredits, CreditUsageType } from '../../types';
+import { CalendarUserCredits } from '../../types';
 import CreditGroup from './CreditGroup';
 import { CreditCardDetails, CardCredit } from '../../types/CreditCardTypes';
 import { useCredits } from '../../contexts/ComponentsContext';
@@ -14,13 +14,6 @@ export interface CreditsDisplayProps {
   userCards?: CreditCardDetails[];
   // Show period text on individual credit entries (default: true)
   displayPeriod?: boolean;
-  onUpdateHistoryEntry?: (update: {
-    cardId: string;
-    creditId: string;
-    periodNumber: number;
-    creditUsage: CreditUsageType;
-    valueUsed: number;
-  }) => void;
   onUpdateComplete?: () => void; // Optional callback when any credit is updated
   children?: ReactNode; // Optional children to render at the bottom
   isUpdating?: boolean; // Optional flag to show updating indicators
@@ -35,7 +28,6 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
   now,
   userCards = [],
   displayPeriod = true,
-  onUpdateHistoryEntry,
   onUpdateComplete,
   children,
   isUpdating,
@@ -100,7 +92,6 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
         cardById={cardById}
         creditByPair={creditByPair}
         displayPeriod={displayPeriod}
-        onUpdateHistoryEntry={onUpdateHistoryEntry}
         onUpdateComplete={onUpdateComplete}
         isUpdating={isUpdating}
         onAddUpdatingCreditId={onAddUpdatingCreditId}
