@@ -42,6 +42,7 @@
 
     // Apply these styles only when viewing full history
     &.full-history {
+        background-color: $neutral-light-gray;
         display: flex;
         flex-direction: column;
         height: 100%;

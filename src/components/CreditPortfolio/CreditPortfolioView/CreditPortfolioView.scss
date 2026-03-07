@@ -19,6 +19,7 @@
 
 // Scrollable content area - KEY for edge-aligned scroll
 .portfolio-content {
+  background-color: $neutral-light-gray;
   flex: 1;
   overflow-y: auto;
   overflow-anchor: none; // Prevent browser scroll anchoring during content updates
@@ -41,7 +42,7 @@
   overflow-anchor: none; // Prevent scroll anchoring during content updates
 
   @media (max-width: $mobile-breakpoint) {
-    gap: $space-3;
+    gap: $space-2;
     max-width: none;
   }
 }

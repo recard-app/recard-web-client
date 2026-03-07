@@ -10,6 +10,10 @@ const PAGE_BACKGROUNDS: Record<string, string> = {
   [PAGES.SIGN_UP.PATH]: 'bg-white',                 // Sign up page - white background
   [PAGES.WELCOME.PATH]: 'bg-white',                 // Welcome page - white background
   [PAGES.FORGOT_PASSWORD.PATH]: 'bg-white',         // Forgot password - white background
+  [PAGES.MY_CREDITS.PATH]: 'bg-white',              // My Credits - white background
+  [PAGES.MY_CREDITS_HISTORY.PATH]: 'bg-white',      // My Credits History - white background
+  [PAGES.HISTORY.PATH]: 'bg-white',                 // Previous Chats - white background
+  [PAGES.MY_CARDS.PATH]: 'bg-white',                // My Cards - white background
   // Add more pages here as needed:
   // [PAGES.PREFERENCES.PATH]: 'bg-primary',        // Example: primary color background
   // [PAGES.ACCOUNT.PATH]: 'bg-dark',               // Example: dark background
