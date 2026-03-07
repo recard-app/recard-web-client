@@ -163,8 +163,16 @@
   .mobile-drawer-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: transparent; // Safari 26 samples fixed elements for toolbar color; keep transparent
     z-index: 20000; // ensure above any app layer/tooltips
+
+    // Dark overlay via absolute pseudo-element (Safari 26 ignores absolute children)
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+    }
   }
 
   .mobile-drawer-content {
