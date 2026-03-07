@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_NAMES } from '@/types/CardCreditsTypes';
+import { CREDIT_USAGE_DISPLAY_NAMES } from '@/types/CardCreditsTypes';
 import { COLORS } from '@/types/Colors';
 import UsageBar from '@/components/UsageBar';
 import { CreditSectionProps } from '../types';
@@ -8,22 +8,6 @@ import './CreditSection.scss';
 // Get credit value (already a number)
 const getCreditValue = (value: number): number => {
   return value || 0;
-};
-
-// Get period display name
-const getPeriodDisplayName = (period: string): string => {
-  switch (period) {
-    case CREDIT_PERIODS.Monthly:
-      return 'Monthly';
-    case CREDIT_PERIODS.Quarterly:
-      return 'Quarterly';
-    case CREDIT_PERIODS.Semiannually:
-      return 'Semi-annually';
-    case CREDIT_PERIODS.Annually:
-      return 'Annually';
-    default:
-      return period;
-  }
 };
 
 const CreditSection: React.FC<CreditSectionProps> = ({
@@ -60,34 +44,37 @@ const CreditSection: React.FC<CreditSectionProps> = ({
   // Determine if this is an anniversary-based credit
   const isAnniversaryBased = credit.isAnniversaryBased ?? cardCredit?.isAnniversaryBased ?? false;
 
-  // Determine period type label
-  const periodTypeLabel = isAnniversaryBased
-    ? 'Anniversary-based'
-    : getPeriodDisplayName(credit.AssociatedPeriod);
+  // Capitalize period label from CREDIT_PERIODS values
+  const period = isAnniversaryBased ? 'yearly' : credit.AssociatedPeriod;
+  const periodTypeLabel = period.charAt(0).toUpperCase() + period.slice(1);
 
   return (
     <div className="credit-section" onClick={onClick} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}>
       <div className="credit-header">
-        <div className="credit-info">
-          <h4 className="credit-title">{cardCredit.Title}</h4>
-          <span className="credit-meta">
-            ${creditValue}/{periodTypeLabel.toLowerCase()}
-            {isAnniversaryBased && <span className="anniversary-badge">Anniversary</span>}
-          </span>
-        </div>
+        <h4 className="credit-title">{cardCredit.Title}</h4>
+        <span className="credit-period">
+          {periodTypeLabel}
+          {isAnniversaryBased && <span className="anniversary-badge">Anniversary</span>}
+        </span>
       </div>
 
       {usageStats.totalPossible > 0 && (
-        <div className="credit-usage-bar">
-          <UsageBar
-            segments={[
-              { label: CREDIT_USAGE_DISPLAY_NAMES.USED, value: usageStats.totalUsed, color: COLORS.PRIMARY_MEDIUM }
-            ]}
-            maxValue={usageStats.totalPossible}
-            showLabels={true}
-            valuePrefix="$"
-          />
-        </div>
+        <>
+          <div className="credit-usage-bar">
+            <UsageBar
+              segments={[
+                { label: CREDIT_USAGE_DISPLAY_NAMES.USED, value: usageStats.totalUsed, color: COLORS.PRIMARY_MEDIUM }
+              ]}
+              maxValue={usageStats.totalPossible}
+              showLabels={false}
+              valuePrefix="$"
+            />
+          </div>
+          <div className={`credit-stat${usageStats.totalUsed >= usageStats.totalPossible ? ' fully-used' : ''}`}>
+            <span>${usageStats.totalUsed} / ${usageStats.totalPossible}</span>
+            <span>{Math.round((usageStats.totalUsed / usageStats.totalPossible) * 100)}%</span>
+          </div>
+        </>
       )}
     </div>
   );

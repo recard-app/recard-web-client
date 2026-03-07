@@ -2,7 +2,8 @@ import React, { useMemo } from 'react';
 import { Icon } from '@/icons';
 import { CardIcon } from '@/icons';
 import { COLORS } from '@/types/Colors';
-import { ICON_BLUE, ICON_PRIMARY, CREDIT_PERIODS } from '@/types';
+import { ICON_BLUE, ICON_PRIMARY, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_NAMES } from '@/types';
+import UsageBar from '@/components/UsageBar';
 import CreditSection from '../CreditSection';
 import { CreditCardAccordionProps, CardCreditSummary } from '../types';
 import './CreditCardAccordion.scss';
@@ -104,46 +105,41 @@ const CreditCardAccordion: React.FC<CreditCardAccordionProps> = ({
         aria-expanded={isExpanded}
         type="button"
       >
-        <div className="card-identity">
-          <CardIcon
-            title={card.CardName}
-            size={32}
-            primary={card.CardPrimaryColor}
-            secondary={card.CardSecondaryColor}
-            className="card-icon"
-          />
-          <div className="card-info">
-            <span className="card-name">
-              {card.isFrozen && (
-                <Icon
-                  name="snowflake"
-                  variant="mini"
-                  size={16}
-                  color={ICON_BLUE}
-                  className="frozen-icon"
-                />
-              )}
-              {card.isDefaultCard && (
-                <Icon
-                  name="star"
-                  variant="mini"
-                  size={16}
-                  color={ICON_PRIMARY}
-                  className="preferred-star-icon"
-                />
-              )}
-              {card.CardName}
-            </span>
-            <span className="card-meta">
-              {summary.creditCount} credit{summary.creditCount !== 1 ? 's' : ''}
-            </span>
-          </div>
-        </div>
-
-        <div className={`header-stats ${isLoading ? 'updating' : ''}`}>
-          <div className="usage-stat">
-            <span className="usage-value">${summary.totalUsedValue.toFixed(0)}</span>
-            <span className="usage-label">of ${summary.totalPossibleValue.toFixed(0)} ({usagePercentage}%)</span>
+        <div className="header-top">
+          <div className="card-identity">
+            <CardIcon
+              title={card.CardName}
+              size={32}
+              primary={card.CardPrimaryColor}
+              secondary={card.CardSecondaryColor}
+              className="card-icon"
+            />
+            <div className="card-info">
+              <span className="card-name">
+                {card.isFrozen && (
+                  <Icon
+                    name="snowflake"
+                    variant="mini"
+                    size={16}
+                    color={ICON_BLUE}
+                    className="frozen-icon"
+                  />
+                )}
+                {card.isDefaultCard && (
+                  <Icon
+                    name="star"
+                    variant="mini"
+                    size={16}
+                    color={ICON_PRIMARY}
+                    className="preferred-star-icon"
+                  />
+                )}
+                {card.CardName}
+              </span>
+              <span className="card-meta">
+                {summary.creditCount} credit{summary.creditCount !== 1 ? 's' : ''}
+              </span>
+            </div>
           </div>
           <Icon
             name="chevron-down"
@@ -152,6 +148,23 @@ const CreditCardAccordion: React.FC<CreditCardAccordionProps> = ({
             color={COLORS.NEUTRAL_GRAY}
             className={`chevron-icon ${isExpanded ? 'rotated' : ''}`}
           />
+        </div>
+
+        <div className={`usage-stat ${isLoading ? 'updating' : ''}`}>
+          <div className="usage-stat-bar">
+            <UsageBar
+              segments={[
+                { label: CREDIT_USAGE_DISPLAY_NAMES.USED, value: summary.totalUsedValue, color: COLORS.PRIMARY_MEDIUM }
+              ]}
+              maxValue={summary.totalPossibleValue}
+              showLabels={false}
+              valuePrefix="$"
+            />
+          </div>
+          <div className="usage-stat-values">
+            <span>${summary.totalUsedValue.toFixed(0)} / ${summary.totalPossibleValue.toFixed(0)}</span>
+            <span>{usagePercentage}%</span>
+          </div>
         </div>
       </button>
 

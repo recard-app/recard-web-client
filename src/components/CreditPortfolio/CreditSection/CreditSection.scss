@@ -5,6 +5,7 @@
   padding: $space-3 $space-4;
   background-color: $neutral-lightest-gray;
   border-radius: $radius-md;
+  border: $border-full solid $neutral-light-gray;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
@@ -18,50 +19,56 @@
 
   .credit-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     margin-bottom: $space-2;
 
-    .credit-info {
+    .credit-title {
+      font-family: $font-inter;
+      font-size: $font-sm;
+      font-weight: $font-semibold;
+      color: $neutral-black;
+      margin: 0;
+    }
+
+    .credit-period {
+      font-family: $font-inter;
+      font-size: $font-xs;
+      color: $neutral-dark-gray;
       display: flex;
-      flex-direction: row;
       align-items: center;
-      justify-content: space-between;
-      width: 100%;
+      gap: $space-2;
 
-      .credit-title {
-        font-family: $font-manrope;
-        font-size: $font-sm;
-        font-weight: $font-semibold;
-        color: $neutral-black;
-        margin: 0;
-      }
-
-      .credit-meta {
-        font-family: $font-manrope;
-        font-size: $font-xs;
+      .anniversary-badge {
+        display: inline-flex;
+        padding: 2px 6px;
+        background-color: $neutral-light-gray;
+        border-radius: $radius-sm;
+        font-size: $font-xxs;
+        font-weight: $font-medium;
         color: $neutral-dark-gray;
-        display: flex;
-        align-items: center;
-        gap: $space-2;
-
-        .anniversary-badge {
-          display: inline-flex;
-          padding: 2px 6px;
-          background-color: $neutral-light-gray;
-          border-radius: $radius-sm;
-          font-size: $font-xxs;
-          font-weight: $font-medium;
-          color: $neutral-dark-gray;
-          text-transform: uppercase;
-          letter-spacing: $letter-spacing-caps;
-        }
+        text-transform: uppercase;
+        letter-spacing: $letter-spacing-caps;
       }
     }
   }
 
   .credit-usage-bar {
     margin-top: 0;
+  }
+
+  .credit-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: $font-inter;
+    font-size: $font-xs;
+    color: $neutral-dark-gray;
+    margin-top: $space-1;
+
+    &.fully-used {
+      color: $primary-medium;
+    }
   }
 }
 
