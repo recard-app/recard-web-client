@@ -20,11 +20,20 @@ html, body {
   font-size: $font-base;
   line-height: $leading-normal;
   color: $neutral-black;
-  background-color: $neutral-light-gray;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-optical-sizing: auto;
   overscroll-behavior: none;
+}
+
+// Separate background colors so iOS Safari uses the html (white) background
+// for its toolbar/chrome areas, while body keeps the default page gray.
+html {
+  background-color: $neutral-white;
+}
+
+body {
+  background-color: $neutral-light-gray;
 }
 
 // Dynamic background color classes for different pages
