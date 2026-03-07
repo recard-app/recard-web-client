@@ -20,6 +20,7 @@ import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
 import UsagePieIcon from '@/icons/UsagePieIcon';
 import { getMaxValue, getValueForUsage, getDateRangeText, getCurrentPeriodIndex, PERIOD_DISPLAY_NAMES } from './utils';
+import { getEasternYear } from '../../../../utils';
 import { UserCreditService } from '../../../../services/UserServices/UserCreditService';
 import UsageDropdown from './UsageDropdown';
 import { useCreditDrawer } from '../../../../contexts/CreditDrawerContext';
@@ -204,7 +205,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         periodNumber: currentPeriodNumber,
         creditUsage: newUsage,
         valueUsed: val,
-        year: now.getFullYear(),
+        year: getEasternYear(),
         anniversaryYear: userCredit.isAnniversaryBased ? userCredit.anniversaryYear : undefined,
       });
 
