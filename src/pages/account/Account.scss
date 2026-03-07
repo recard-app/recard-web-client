@@ -55,8 +55,9 @@
 
 }
 
-// Showcase Badges (used in profile header and settings rows)
-.showcase-badges {
+// Showcase Badges (scoped to profile showcase and settings rows)
+.profile-showcase .showcase-badges,
+.account-wrapper .showcase-badges {
   display: inline-flex;
   flex-direction: row;
   flex-wrap: wrap;

@@ -256,13 +256,13 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 return;
             }
             if (year < 2000) {
-                toast.error('Open date must be year 2000 or later.');
+                toast.error('Start date must be year 2000 or later.');
                 return;
             }
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             if (date > today) {
-                toast.error('Open date cannot be in the future.');
+                toast.error('Start date cannot be in the future.');
                 return;
             }
         }
@@ -271,9 +271,9 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
         try {
             await onOpenDateChange(editingOpenDateValue);
             setIsOpenDateModalOpen(false);
-            toast.success('Open date updated.');
+            toast.success('Start date updated.');
         } catch {
-            toast.error('Failed to update open date. Please try again.');
+            toast.error('Failed to update start date. Please try again.');
         } finally {
             setIsSavingOpenDate(false);
         }
@@ -379,7 +379,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 onClick={handleOpenDateModal}
                                 icon={CARD_ACTION_ICONS.CALENDAR}
                             >
-                                {openDate ? 'Edit Open Date' : 'Set Open Date'}
+                                {openDate ? 'Edit Start Date' : 'Set Start Date'}
                             </DropdownMenuItem>
                         )}
                         {onRemoveCard && (
@@ -488,7 +488,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             )}
                             {openDate || 'Not set'}
                         </span>
-                        <span className="stat-label">Open Date</span>
+                        <span className="stat-label">Start Date</span>
                     </div>
                 )}
             </div>
@@ -978,11 +978,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 )}
             </div>
 
-            {/* Open Date Edit Modal */}
+            {/* Start Date Edit Modal */}
             <Dialog open={isOpenDateModalOpen} onOpenChange={setIsOpenDateModalOpen}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Edit Open Date</DialogTitle>
+                        <DialogTitle>Edit Start Date</DialogTitle>
                     </DialogHeader>
                     <DialogBody>
                         <form onSubmit={handleSaveOpenDate}>

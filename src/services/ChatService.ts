@@ -58,7 +58,7 @@ function getToolMessage(toolName: string): string {
     remove_card: 'Removing card...',
     set_card_frozen: 'Updating card status...',
     set_card_preferred: 'Setting preferred card...',
-    set_card_open_date: 'Updating open date...',
+    set_card_open_date: 'Updating start date...',
     get_user_credits: 'Loading your credits...',
     get_prioritized_credits: 'Loading prioritized credits...',
     get_expiring_credits: 'Checking expiring credits...',

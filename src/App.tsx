@@ -612,11 +612,21 @@ function AppContent({}: AppContentProps) {
   const getCreditCards = async (returnCreditCards: CreditCard[]): Promise<void> => {
     setCreditCards(returnCreditCards);
 
-    // After updating credit cards, fetch fresh user card details
+    // After updating credit cards, fetch fresh user card details and metadata
     if (user) {
       try {
-        const details = await UserCreditCardService.fetchUserCardsDetailedInfo();
+        const [details, userCardsData] = await Promise.all([
+          UserCreditCardService.fetchUserCardsDetailedInfo(),
+          UserCreditCardService.fetchUserCards(),
+        ]);
         setUserDetailedCardDetails(details);
+
+        // Rebuild metadata map (openDate, isFrozen, etc.)
+        const metadataMap = new Map<string, UserCreditCard>();
+        userCardsData.forEach((uc: UserCreditCard) => {
+          metadataMap.set(uc.cardReferenceId, uc);
+        });
+        setUserCardsMetadata(metadataMap);
 
         // Refetch components (perks, credits, multipliers) for the updated cards
         await refetchComponents();

@@ -40,7 +40,7 @@ const TOOL_ACTIVE_MESSAGES: Record<string, string> = {
   remove_card: 'Removing card...',
   set_card_frozen: 'Updating card status...',
   set_card_preferred: 'Setting preferred card...',
-  set_card_open_date: 'Updating open date...',
+  set_card_open_date: 'Updating start date...',
   // Credit tools
   get_user_credits: 'Checking credits...',
   get_prioritized_credits: 'Prioritizing credits...',

@@ -88,6 +88,7 @@
         font-weight: $font-semibold;
         line-height: 1;
         white-space: nowrap;
+        border: $border-full solid $neutral-gray;
       }
 
       .badge-preferred {

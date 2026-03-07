@@ -302,67 +302,48 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
         setShowDeleteConfirm(true);
     };
 
-    // Handle updating a card's open date
-    const handleOpenDateChange = async (cardId: string, openDate: string | null) => {
-        // Update the card's open date via API
-        await UserCreditCardService.updateUserCard(cardId, { openDate });
+    // Shared helper: update card metadata via API, sync local + parent state
+    const updateCardMetadata = async (cardId: string, updates: { openDate?: string | null; isFrozen?: boolean }) => {
+        await UserCreditCardService.updateUserCard(cardId, updates);
 
         // Update local metadata state
         setUserCardsMetadata(prev => {
             const newMap = new Map(prev);
             const existing = newMap.get(cardId);
             if (existing) {
-                newMap.set(cardId, { ...existing, openDate });
+                newMap.set(cardId, { ...existing, ...updates });
             }
             return newMap;
         });
+
+        // Refresh cards and notify parent so App.tsx metadata stays in sync
+        const refreshedCards = await CardService.fetchCreditCards(true);
+        setUserCards(refreshedCards);
+        notifyCardUpdate(refreshedCards);
+
+        // Refresh detailed cards data
+        const refreshedDetailedCards = await UserCreditCardService.fetchUserCardsDetailedInfo();
+        setDetailedCards(refreshedDetailedCards);
+
+        // Update local selected card state if viewing the updated card
+        if (selectedCard && selectedCard.id === cardId) {
+            setSelectedCard({ ...selectedCard, ...updates });
+            const updatedCardDetails = refreshedDetailedCards.find(detail => detail.id === cardId);
+            if (updatedCardDetails) {
+                setCardDetails(updatedCardDetails);
+            }
+        }
+    };
+
+    // Handle updating a card's open date
+    const handleOpenDateChange = async (cardId: string, openDate: string | null) => {
+        await updateCardMetadata(cardId, { openDate });
     };
 
     // Handle toggling a card's frozen state
     const handleFreezeToggle = async (cardId: string, currentFrozenState: boolean) => {
         try {
-
-            const newFrozenState = !currentFrozenState;
-
-            // Update the card's frozen state via API
-            await UserCreditCardService.updateUserCard(cardId, { isFrozen: newFrozenState });
-
-            // Update local metadata state
-            setUserCardsMetadata(prev => {
-                const newMap = new Map(prev);
-                const existing = newMap.get(cardId);
-                if (existing) {
-                    newMap.set(cardId, { ...existing, isFrozen: newFrozenState });
-                }
-                return newMap;
-            });
-
-            // Refresh cards after update (same pattern as handleSetPreferred)
-            const refreshedCards = await CardService.fetchCreditCards(true);
-            setUserCards(refreshedCards);
-
-            // Notify parent component of card updates
-            notifyCardUpdate(refreshedCards);
-
-            // Immediately update local state for a responsive UI
-            if (selectedCard && selectedCard.id === cardId) {
-                setSelectedCard({ ...selectedCard, isFrozen: newFrozenState });
-                if (cardDetails) {
-                    setCardDetails({ ...cardDetails, isFrozen: newFrozenState });
-                }
-            }
-
-            // Refresh detailed cards data in the background
-            const refreshedDetailedCards = await UserCreditCardService.fetchUserCardsDetailedInfo();
-            setDetailedCards(refreshedDetailedCards);
-
-            // If we're currently viewing a card, update its details
-            if (selectedCard) {
-                const updatedCardDetails = refreshedDetailedCards.find(detail => detail.id === selectedCard.id);
-                if (updatedCardDetails) {
-                    setCardDetails(updatedCardDetails);
-                }
-            }
+            await updateCardMetadata(cardId, { isFrozen: !currentFrozenState });
         } catch (error) {
             console.error('Error toggling card freeze state:', error);
             toast.error('Unable to update card freeze state. Please try again.');

@@ -244,7 +244,7 @@ export const UndoService = {
     } catch (error) {
       const errorMessage = axios.isAxiosError(error)
         ? error.response?.data?.message || error.message
-        : 'Failed to restore open date';
+        : 'Failed to restore start date';
       return {
         success: false,
         action,

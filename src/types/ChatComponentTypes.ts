@@ -335,7 +335,7 @@ export const CARD_ACTION_DISPLAY_LABELS: Record<CardActionType, string> = {
   [CARD_ACTION_TYPES.FROZEN]: 'Frozen',
   [CARD_ACTION_TYPES.UNFROZEN]: 'Unfrozen',
   [CARD_ACTION_TYPES.ACTIVATION]: 'Activated',
-  [CARD_ACTION_TYPES.SET_OPEN_DATE]: 'Set open date'
+  [CARD_ACTION_TYPES.SET_OPEN_DATE]: 'Set start date'
 };
 
 /**
