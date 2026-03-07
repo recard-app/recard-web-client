@@ -1279,6 +1279,7 @@ function AppContent({}: AppContentProps) {
                         subscriptionPlan={subscriptionPlan}
                         subscriptionStatus={subscriptionStatus}
                         subscriptionExpiresAt={subscriptionExpiresAt}
+                        creditCardCount={creditCards.filter(c => c.selected).length}
                       />
                     </ProtectedRoute>
                   } />

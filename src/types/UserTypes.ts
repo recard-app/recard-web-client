@@ -101,12 +101,16 @@ export interface BatchedPreferencesResponse {
     instructions: InstructionsPreference;
     chatHistory: ChatHistoryPreference;
     agentMode: AgentModePreference;
+    startDate: string | null;
+    defaultStartDate: string | null;
+    resolvedStartDate: string;
 }
 
 export interface BatchedPreferencesRequest {
     instructions?: InstructionsPreference;
     chatHistory?: ChatHistoryPreference;
     agentMode?: AgentModePreference;
+    startDate?: string | null;
 }
 
 export interface SubscriptionPlanResponse {

@@ -33,9 +33,10 @@ interface AccountProps {
   subscriptionPlan: SubscriptionPlan;
   subscriptionStatus: SubscriptionStatusType;
   subscriptionExpiresAt: string | null;
+  creditCardCount: number;
 }
 
-const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus, subscriptionExpiresAt }) => {
+const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus, subscriptionExpiresAt, creditCardCount }) => {
   const { user, sendVerificationEmail, sendPasswordResetEmail, updateDisplayName, updateEmail, logout } = useAuth();
   const navigate = useNavigate();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -160,9 +161,9 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
 
   const getVerificationStatus = () => {
     if (user?.emailVerified) {
-      return <span className="status-badge status-badge--success">Verified</span>;
+      return <span className="showcase-badges"><span className="badge badge-verified"><Icon name="check-circle" variant="mini" size={12} />Verified</span></span>;
     }
-    return <span className="status-badge status-badge--warning">Not Verified</span>;
+    return <span className="showcase-badges"><span className="badge badge-unverified"><Icon name="exclamation-triangle" variant="mini" size={12} />Not Verified</span></span>;
   };
 
   const getPlanText = () => {
@@ -210,27 +211,50 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
         <ContentContainer size="sm">
           {user ? (
             <div className="account-wrapper">
-              {/* Profile Card */}
-              <div className="profile-card">
-                <ProfileAvatar
-                  photoURL={user.photoURL}
-                  displayName={user.displayName}
-                  email={user.email}
-                  size={64}
-                  className="profile-card__avatar"
-                />
-                <div className="profile-card__info">
-                  <h2 className="profile-card__name">{user.displayName || 'Account'}</h2>
-                  <p className="profile-card__email">{user.email}</p>
-                  <div className="profile-card__badges">
-                    <span className={`badge ${user.emailVerified ? 'badge--success' : 'badge--warning'}`}>
-                      {user.emailVerified ? 'Email Verified' : 'Email Not Verified'}
+              {/* Profile Showcase */}
+              <div className="profile-showcase-wrapper">
+                <div className="profile-showcase">
+                  <div className="showcase-identity">
+                    <ProfileAvatar
+                      photoURL={user.photoURL}
+                      displayName={user.displayName}
+                      email={user.email}
+                      size={64}
+                    />
+                    <div className="showcase-info">
+                      <h2>{user.displayName || 'Account'}</h2>
+                      <p className="showcase-email">{user.email}</p>
+                      <div className="showcase-badges">
+                        {SHOW_SUBSCRIPTION_MENTIONS && (
+                          <span className={`badge badge-plan${subscriptionStatus === SUBSCRIPTION_STATUS.EXPIRED ? ' badge-expired' : ''}`}>
+                            {subscriptionPlan}{subscriptionStatus === SUBSCRIPTION_STATUS.EXPIRED ? ' (expired)' : ''}
+                          </span>
+                        )}
+                        <span className={`badge ${user.emailVerified ? 'badge-verified' : 'badge-unverified'}`}>
+                          {user.emailVerified
+                            ? <Icon name="check-circle" variant="mini" size={12} />
+                            : <Icon name="exclamation-triangle" variant="mini" size={12} />}
+                          {user.emailVerified ? 'Verified' : 'Not Verified'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="profile-showcase-footer">
+                  <div className="meta-item">
+                    <span className="meta-label">Member Since</span>
+                    <span className="meta-value">
+                      {user.metadata?.creationTime
+                        ? (() => {
+                            const d = new Date(user.metadata.creationTime);
+                            return `${MONTH_ABBREVIATIONS[d.getMonth()]} ${d.getFullYear()}`;
+                          })()
+                        : '--'}
                     </span>
-                    {SHOW_SUBSCRIPTION_MENTIONS && (
-                      <span className={`badge badge--sub${subscriptionStatus === SUBSCRIPTION_STATUS.EXPIRED ? ' badge--expired' : ''}`}>
-                        {subscriptionPlan}{subscriptionStatus === SUBSCRIPTION_STATUS.EXPIRED ? ' (expired)' : ''}
-                      </span>
-                    )}
+                  </div>
+                  <div className="meta-item">
+                    <span className="meta-label">Credit Cards</span>
+                    <span className="meta-value">{creditCardCount}</span>
                   </div>
                 </div>
               </div>

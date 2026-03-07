@@ -8,125 +8,127 @@
   gap: $space-4;
 }
 
-// Profile Card
-.profile-card {
-  display: flex;
-  align-items: center;
-  gap: $space-4;
-  background: linear-gradient(
-    to left,
-    $primary-lightest 0%,
-    $primary-light 20%,
-    transparent 70%
-  );
-  border: $border-full solid $primary-light;
+// Profile Showcase Wrapper
+.profile-showcase-wrapper {
   border-radius: $radius-lg;
-  padding: $space-4 $space-5;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
 
-  &__avatar {
-    width: $space-16;
-    height: $space-16;
-    border-radius: $radius-full;
-    border: $border-full solid $primary-light;
-    object-fit: cover;
-    flex-shrink: 0;
+// Profile Showcase Header
+.profile-showcase {
+  border-radius: $radius-lg $radius-lg 0 0;
+  padding: $space-5 $space-4;
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--color-primary-color) 12%, white), white);
+  border: $border-full solid color-mix(in srgb, $neutral-gray 50%, transparent);
+  border-bottom: none;
+  font-family: $font-inter;
+
+  .showcase-identity {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-4;
   }
 
-  &__info {
+  .showcase-info {
+    flex: 1;
+    min-width: 0;
+
+    h2 {
+      margin: 0;
+      font-size: $font-h4;
+      font-family: $font-inter;
+      font-weight: $font-bold;
+      color: $neutral-black;
+      line-height: 1.2;
+    }
+
+    .showcase-email {
+      margin: 0 0 $space-half 0;
+      font-size: $font-sm;
+      color: $neutral-dark-gray;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+}
+
+// Showcase Badges (used in profile header and settings rows)
+.showcase-badges {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: $space-1-5;
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    padding: $space-half $space-2;
+    border-radius: $radius-full;
+    font-size: $font-xxs;
+    font-weight: $font-semibold;
+    line-height: 1;
+    white-space: nowrap;
+    border: $border-full solid $primary-medium;
+  }
+
+  .badge-plan {
+    background-color: $neutral-white;
+    color: $primary-medium;
+    text-transform: capitalize;
+  }
+
+  .badge-expired {
+    background-color: $neutral-white;
+    color: $warning-badge-text;
+  }
+
+  .badge-verified {
+    background-color: $neutral-white;
+    color: $primary-medium;
+  }
+
+  .badge-unverified {
+    background-color: $neutral-white;
+    color: $warning-badge-text;
+    border-color: $warning-badge-text;
+  }
+}
+
+// Profile Showcase Footer
+.profile-showcase-footer {
+  display: flex;
+  gap: $space-5;
+  padding: $space-1-5 $space-4;
+  background-color: $neutral-lightest-gray;
+  border: $border-full solid color-mix(in srgb, $neutral-gray 50%, transparent);
+  border-radius: 0 0 $radius-lg $radius-lg;
+  font-family: $font-inter;
+
+  .meta-item {
     display: flex;
     flex-direction: column;
-    gap: $space-half;
-    min-width: 0;
-  }
+    flex: 1;
 
-  &__name {
-    font-family: $font-inter;
-    font-size: $font-h6;
-    font-weight: $font-semibold;
-    margin: 0;
-    color: $neutral-black;
-  }
+    .meta-label {
+      font-size: $font-xs;
+      color: $neutral-dark-gray;
+      font-weight: $font-medium;
+      text-transform: uppercase;
+      letter-spacing: $letter-spacing-caps;
+    }
 
-  &__email {
-    @include label;
-    color: $neutral-dark-gray;
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  &__badges {
-    display: flex;
-    gap: $space-1-5;
-    flex-wrap: wrap;
-    margin-top: $space-1;
+    .meta-value {
+      font-size: $font-sm;
+      color: $neutral-black;
+      font-weight: $font-semibold;
+    }
   }
 }
 
-// Badges
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: $space-1 $space-2;
-  border-radius: $radius-base;
-  font-size: $font-xs;
-  font-weight: $font-medium;
-  border: $border-full solid $neutral-gray;
-  background: $neutral-lightest-gray;
-  color: $neutral-dark-gray;
-
-  &--success {
-    background: $primary-light;
-    color: $primary-medium;
-    border-color: $primary-light;
-  }
-
-  &--warning {
-    background: $warning-badge-background;
-    color: $warning-badge-text;
-    border-color: $warning-badge-light;
-  }
-
-  &--sub {
-    text-transform: capitalize;
-    background: $primary-lightest;
-    color: $primary-medium;
-    border-color: $primary-light;
-  }
-
-  &--expired {
-    background: $warning-badge-background;
-    color: $warning-badge-text;
-    border-color: $warning-badge-light;
-  }
-}
-
-// Status badges for settings rows
-// Scoped to account-wrapper to override ChatComponents/shared.scss which sets fixed 16x16 size
-.account-wrapper .status-badge {
-  display: inline-flex;
-  align-items: center;
-  width: auto;
-  height: auto;
-  padding: $space-half $space-2;
-  border-radius: $radius-full;
-  font-size: $font-xs;
-  font-weight: $font-medium;
-  text-transform: capitalize;
-  white-space: nowrap;
-  flex-shrink: 0;
-
-  &.status-badge--success {
-    background: $primary-light;
-    color: $primary-medium;
-  }
-
-  &.status-badge--warning {
-    background: $warning-badge-background;
-    color: $warning-badge-text;
-  }
-}
 
 // Subscription plan display with expiration
 .subscription-plan-display {
@@ -192,16 +194,7 @@
 
 // Mobile adjustments
 @media (max-width: $mobile-breakpoint) {
-  .profile-card {
-    padding: $space-3 $space-4;
-    gap: $space-3;
-
-    &__name {
-      font-size: $font-base;
-    }
-
-    &__email {
-      font-size: $font-xs;
-    }
+  .profile-showcase-footer .meta-item {
+    align-items: flex-start;
   }
 }

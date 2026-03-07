@@ -6,26 +6,26 @@
   @include card-base;
   overflow: hidden;
   box-shadow: $shadow-sm;
-  border-color: $primary-light;
+  border-color: color-mix(in srgb, $neutral-gray 50%, transparent);
 
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: $space-2 $space-3;
-    border-bottom: $border-half solid $primary-light;
-    background: $primary-lightest;
+    border-bottom: $border-full solid color-mix(in srgb, $neutral-gray 50%, transparent);
+    background: $neutral-lightest-gray;
 
     &--clickable {
       cursor: pointer;
       user-select: none;
 
       @include hover {
-        background: color-mix(in srgb, $primary-lightest 94%, black);
+        background: color-mix(in srgb, $neutral-lightest-gray 94%, black);
       }
 
       &:focus-visible {
-        outline: 2px solid $primary-color;
+        outline: 2px solid $neutral-gray;
         outline-offset: -2px;
       }
     }
@@ -35,7 +35,7 @@
     font-family: $font-inter;
     font-size: $font-xs;
     font-weight: $font-semibold;
-    color: $primary-medium;
+    color: $neutral-dark-gray;
     margin: 0;
     text-transform: uppercase;
     letter-spacing: $letter-spacing-caps;
