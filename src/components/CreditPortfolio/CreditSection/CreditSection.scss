@@ -3,17 +3,18 @@
 
 .credit-section {
   padding: $space-3 $space-4;
+  background-color: $neutral-lightest-gray;
+  border-radius: $radius-md;
   cursor: pointer;
   transition: background-color 0.2s ease;
 
   @include hover {
-    background-color: $neutral-lightest-gray;
+    background-color: $background-lighter-gray;
   }
 
   &:active {
-    background-color: $neutral-lightest-gray;
+    background-color: $background-lighter-gray;
   }
-
 
   .credit-header {
     display: flex;

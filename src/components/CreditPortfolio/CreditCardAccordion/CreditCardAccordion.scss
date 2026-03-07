@@ -149,8 +149,11 @@
   // Accordion content
   .accordion-content {
     border-top: $border-full solid $neutral-light-gray;
-    padding: 0 0 $space-4;
+    padding: $space-2 $space-3 $space-3;
     background-color: $neutral-white;
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
 
     &.updating {
       @include updating-state;
@@ -193,7 +196,7 @@
     }
 
     .accordion-content {
-      padding: 0 0 $space-3;
+      padding: $space-2 $space-2 $space-2;
     }
   }
 }
