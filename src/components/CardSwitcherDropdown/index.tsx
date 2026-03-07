@@ -1,7 +1,8 @@
 import React from 'react';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { CreditCard } from '../../types/CreditCardTypes';
-import { ICON_PRIMARY, ICON_BLUE, ICON_GRAY } from '../../types';
+import { ICON_PRIMARY, ICON_BLUE } from '../../types';
+import { COLORS } from '../../types/Colors';
 import { Icon, CardIcon } from '../../icons';
 import {
   DropdownMenu,
@@ -9,6 +10,43 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu/dropdown-menu';
 import './CardSwitcherDropdown.scss';
+
+interface CardSelectContentProps {
+  selectedCard: CreditCard | null;
+  hasCards: boolean;
+}
+
+export const CardSelectContent: React.FC<CardSelectContentProps> = ({ selectedCard, hasCards }) => {
+  if (selectedCard) {
+    return (
+      <>
+        <CardIcon
+          title={`${selectedCard.CardName} card`}
+          size={24}
+          primary={selectedCard.CardPrimaryColor}
+          secondary={selectedCard.CardSecondaryColor}
+          className="select-card-icon"
+        />
+        <span className="label-text">{selectedCard.CardName}</span>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <CardIcon
+        title={hasCards ? 'Select a card' : 'No cards'}
+        size={24}
+        primary={COLORS.NEUTRAL_GRAY}
+        secondary={COLORS.NEUTRAL_LIGHT_GRAY}
+        className="select-card-icon"
+      />
+      <span className="label-text">
+        {hasCards ? 'Select a card to view' : 'No cards added'}
+      </span>
+    </>
+  );
+};
 
 interface CardSwitcherDropdownProps {
   cards: CreditCard[];
@@ -29,61 +67,10 @@ const CardSwitcherDropdown: React.FC<CardSwitcherDropdownProps> = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={`card-switcher-trigger ${isDisabled ? 'disabled' : ''}`}
+        className="view-card-select"
         disabled={isDisabled}
       >
-        {selectedCard ? (
-          <>
-            <CardIcon
-              title={`${selectedCard.CardName} card`}
-              size={36}
-              primary={selectedCard.CardPrimaryColor}
-              secondary={selectedCard.CardSecondaryColor}
-              className="trigger-card-icon"
-            />
-            <div className="trigger-card-info">
-              <div className="trigger-card-name">
-                {selectedCard.isFrozen && (
-                  <Icon
-                    name="snowflake"
-                    variant="mini"
-                    size={16}
-                    color={ICON_BLUE}
-                    className="frozen-icon"
-                  />
-                )}
-                {selectedCard.isDefaultCard && (
-                  <Icon
-                    name="star"
-                    variant="mini"
-                    size={16}
-                    color={ICON_PRIMARY}
-                    className="preferred-star-icon"
-                  />
-                )}
-                {selectedCard.CardName}
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="trigger-empty-icon">
-              <Icon name="card" variant="outline" size={24} color={ICON_GRAY} />
-            </div>
-            <div className="trigger-card-info">
-              <div className="trigger-card-name placeholder">
-                {hasCards ? 'Select a card to view' : 'No cards added'}
-              </div>
-            </div>
-          </>
-        )}
-        <Icon
-          name="chevron-down"
-          variant="mini"
-          size={20}
-          color={ICON_GRAY}
-          className="trigger-chevron"
-        />
+        <CardSelectContent selectedCard={selectedCard} hasCards={hasCards} />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="card-switcher-content" align="start">

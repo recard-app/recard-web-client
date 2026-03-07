@@ -22,8 +22,7 @@ import {
   DrawerTitle,
 } from '../ui/drawer';
 import Icon from '../../icons';
-import { CardIcon } from '../../icons';
-import CardSwitcherDropdown from '../CardSwitcherDropdown';
+import CardSwitcherDropdown, { CardSelectContent } from '../CardSwitcherDropdown';
 import HeaderControls from '../PageControls/HeaderControls';
 import FooterControls from '../PageControls/FooterControls';
 import {
@@ -608,40 +607,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                             aria-haspopup="dialog"
                             disabled={selectedCards.length === 0}
                         >
-                            {selectedCards.length === 0 ? (
-                                <>
-                                    <CardIcon
-                                        title="No cards"
-                                        size={24}
-                                        primary={COLORS.NEUTRAL_GRAY}
-                                        secondary={COLORS.NEUTRAL_LIGHT_GRAY}
-                                        className="select-card-icon"
-                                    />
-                                    <span className="label-text">No cards added</span>
-                                </>
-                            ) : selectedCard ? (
-                                <>
-                                    <CardIcon
-                                        title={`${selectedCard.CardName} card`}
-                                        size={24}
-                                        primary={selectedCard.CardPrimaryColor}
-                                        secondary={selectedCard.CardSecondaryColor}
-                                        className="select-card-icon"
-                                    />
-                                    <span className="label-text">{selectedCard.CardName}</span>
-                                </>
-                            ) : (
-                                <>
-                                    <CardIcon
-                                        title="Select a card"
-                                        size={24}
-                                        primary={COLORS.NEUTRAL_GRAY}
-                                        secondary={COLORS.NEUTRAL_LIGHT_GRAY}
-                                        className="select-card-icon"
-                                    />
-                                    <span className="label-text">Select a card to view</span>
-                                </>
-                            )}
+                            <CardSelectContent selectedCard={selectedCard} hasCards={selectedCards.length > 0} />
                         </button>
                         <button className="button icon add-card-button" onClick={handleAddCard} aria-haspopup="dialog" aria-label="Add card">
                             <Icon name="big-plain-plus" variant="solid" size={20} color={COLORS.NEUTRAL_WHITE} />

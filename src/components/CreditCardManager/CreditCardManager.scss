@@ -10,19 +10,57 @@
   background-color: $neutral-lightest-gray;
   overflow: hidden;
 
+  /* Shared styles for card selector button (desktop dropdown trigger + mobile select) */
+  .view-card-select {
+    @include default-select;
+
+    & {
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: $space-2;
+      font-weight: $font-medium;
+      font-size: $font-sm;
+      background-color: $neutral-lightest-gray;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @media (max-width: $mobile-breakpoint) {
+      font-size: $font-sm;
+    }
+
+    @include hover {
+      background-color: $neutral-light-gray;
+    }
+
+    &:active:not(:disabled) {
+      background-color: $neutral-lightest-gray;
+      transform: none;
+    }
+
+    .select-card-icon {
+      flex-shrink: 0;
+    }
+
+    .label-text {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
   /* Desktop header - uses HeaderControls component, only override specifics */
   .card-switcher-header {
     gap: $space-2;
     align-items: stretch;
 
-    // Make the dropdown trigger take all available width
-    // DropdownMenu Root doesn't render a DOM element, so target the trigger directly
-    .card-switcher-trigger {
+    .view-card-select {
       flex: 1;
       min-width: 0;
     }
 
-    // Make button stretch to match dropdown height
     .button {
       align-self: stretch;
     }
@@ -51,36 +89,6 @@
       overflow-y: auto;
       min-height: 0;
       background-color: $neutral-lightest-gray;
-    }
-
-    /* Shared styles for card selector row (used in both sub-header and potentially elsewhere) */
-    .view-card-select {
-      @include default-select;
-      width: 100%;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: $space-2;
-      font-weight: $font-medium;
-      background-color: $neutral-lightest-gray;
-      -webkit-tap-highlight-color: transparent;
-
-      &:active:not(:disabled) {
-        background-color: $neutral-lightest-gray;
-        transform: none;
-      }
-
-      .select-card-icon {
-        flex-shrink: 0;
-      }
-
-      .label-text {
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: $font-sm;
-      }
     }
 
     .footer-row {
