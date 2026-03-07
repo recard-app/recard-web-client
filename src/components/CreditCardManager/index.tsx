@@ -599,11 +599,27 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             )}
 
             {/* Mobile sticky sub-header: card selector + add button */}
-            {isMobileViewport && !isLoading && selectedCards.length > 0 && (
+            {isMobileViewport && !isLoading && (
                 <HeaderControls className="mobile-card-selector-header">
                     <div className="footer-row">
-                        <button className="view-card-select" onClick={handleOpenViewSelector} aria-haspopup="dialog">
-                            {selectedCard ? (
+                        <button
+                            className="view-card-select"
+                            onClick={selectedCards.length === 0 ? handleAddCard : handleOpenViewSelector}
+                            aria-haspopup="dialog"
+                            disabled={selectedCards.length === 0}
+                        >
+                            {selectedCards.length === 0 ? (
+                                <>
+                                    <CardIcon
+                                        title="No cards"
+                                        size={24}
+                                        primary={COLORS.NEUTRAL_GRAY}
+                                        secondary={COLORS.NEUTRAL_LIGHT_GRAY}
+                                        className="select-card-icon"
+                                    />
+                                    <span className="label-text">No cards added</span>
+                                </>
+                            ) : selectedCard ? (
                                 <>
                                     <CardIcon
                                         title={`${selectedCard.CardName} card`}
@@ -616,7 +632,13 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                                 </>
                             ) : (
                                 <>
-                                    <Icon name="card" variant="mini" color={COLORS.NEUTRAL_GRAY} />
+                                    <CardIcon
+                                        title="Select a card"
+                                        size={24}
+                                        primary={COLORS.NEUTRAL_GRAY}
+                                        secondary={COLORS.NEUTRAL_LIGHT_GRAY}
+                                        className="select-card-icon"
+                                    />
                                     <span className="label-text">Select a card to view</span>
                                 </>
                             )}
@@ -671,15 +693,6 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                 </FooterControls>
             )}
 
-            {/* No-cards footer -- mobile only */}
-            {isMobileViewport && !isLoading && selectedCards.length === 0 && (
-                <FooterControls className="card-manager-footer">
-                    <button className="button icon with-text add-card-button" onClick={handleAddCard} aria-haspopup="dialog">
-                        <Icon name="card" variant="solid" />
-                        Add Cards
-                    </button>
-                </FooterControls>
-            )}
             
             {/* Card selector modal/drawer */}
             {(() => {
