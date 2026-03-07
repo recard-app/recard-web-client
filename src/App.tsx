@@ -620,6 +620,7 @@ function AppContent({}: AppContentProps) {
 
         // Refetch components (perks, credits, multipliers) for the updated cards
         await refetchComponents();
+        setMonthlyStatsRefreshTrigger(prev => prev + 1);
       } catch (error) {
         console.error('Error fetching updated user card details:', error);
       }
