@@ -30,7 +30,7 @@ interface PeriodInfo {
 type PillState = 'used' | 'partially_used' | 'not_used' | 'inactive' | 'disabled' | 'future';
 
 const PILL_BG_COLORS: Record<PillState, string> = {
-  used: `color-mix(in srgb, ${COLORS.PRIMARY_MEDIUM} 12%, ${COLORS.NEUTRAL_WHITE})`,
+  used: `color-mix(in srgb, ${COLORS.PRIMARY_MEDIUM} 15%, ${COLORS.NEUTRAL_WHITE})`,
   partially_used: `color-mix(in srgb, ${COLORS.NEUTRAL_MEDIUM_GRAY} 15%, ${COLORS.NEUTRAL_WHITE})`,
   not_used: `color-mix(in srgb, ${COLORS.NEUTRAL_MEDIUM_GRAY} 15%, ${COLORS.NEUTRAL_WHITE})`,
   inactive: COLORS.NEUTRAL_LIGHTEST_GRAY,
@@ -48,7 +48,7 @@ const PILL_TEXT_COLORS: Record<PillState, string> = {
 };
 
 const PILL_BORDER_COLORS: Record<PillState, string> = {
-  used: `color-mix(in srgb, ${COLORS.PRIMARY_MEDIUM} 35%, transparent)`,
+  used: `color-mix(in srgb, ${COLORS.PRIMARY_MEDIUM} 45%, transparent)`,
   partially_used: `color-mix(in srgb, ${COLORS.NEUTRAL_DARK_GRAY} 25%, transparent)`,
   not_used: `color-mix(in srgb, ${COLORS.NEUTRAL_DARK_GRAY} 25%, transparent)`,
   inactive: COLORS.BORDER_LIGHT_GRAY,
