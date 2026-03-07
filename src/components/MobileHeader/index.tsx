@@ -92,7 +92,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     return location.pathname === path;
   };
   const isHomeOrChatRoute = (pathname: string) => {
-    return PageUtils.isPage(pathname, 'HOME');
+    return pathname === PAGES.HOME.PATH || pathname.startsWith('/chat/');
   };
 
   // Check if current chat has messages to determine if new chat button should be visible

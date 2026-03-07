@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard, UserCredit, CreditCardDetails, CardCredit } from './types';
 import { Icon, CardIcon } from './icons';
@@ -311,7 +311,7 @@ function AppContent({}: AppContentProps) {
     // Don't redirect if we're intentionally clearing the chat
     // This prevents the race condition where we try to restore a chat we're actively clearing
     if (location.pathname === PAGES.HOME.PATH && currentChatId && !isClearingChatRef.current) {
-      navigate(`${PAGES.HOME.PATH}${currentChatId}`, { replace: true });
+      navigate(`/chat/${currentChatId}`, { replace: true });
     }
   }, [location.pathname, currentChatId, navigate]);
 
@@ -400,9 +400,7 @@ function AppContent({}: AppContentProps) {
 
         // Extract chatId from URL if present (priority loading)
         const currentPath = location.pathname;
-        const urlChatId = currentPath !== PAGES.HOME.PATH && PageUtils.isPage(currentPath, 'HOME')
-          ? currentPath.slice(1) // Remove leading slash
-          : null;
+        const urlChatId = PageUtils.getChatIdFromPath(currentPath);
 
         // Prepare parallel requests
         const requests = [
@@ -521,9 +519,7 @@ function AppContent({}: AppContentProps) {
     if (isClearingChatRef.current) return;
 
     const currentPath = location.pathname;
-    const urlChatId = currentPath !== PAGES.HOME.PATH && PageUtils.isPage(currentPath, 'HOME')
-      ? currentPath.slice(1) // Remove leading slash
-      : null;
+    const urlChatId = PageUtils.getChatIdFromPath(currentPath);
 
     setCurrentChatId(urlChatId);
   }, [location.pathname]);
@@ -1205,13 +1201,15 @@ function AppContent({}: AppContentProps) {
                 whiteBackground={isHelpPage || isLegalPage}
               >
                 <Routes>
-                  <Route path="/:chatId?" element={
+                  <Route path="/" element={
+                    user ? renderMainContent() : <LandingPage />
+                  } />
+                  <Route path="/chat/:chatId" element={
                     user ? renderMainContent() : (
-                      location.pathname === PAGES.HOME.PATH
-                        ? <LandingPage />
-                        : <ProtectedRoute>{renderMainContent()}</ProtectedRoute>
+                      <ProtectedRoute>{renderMainContent()}</ProtectedRoute>
                     )
                   } />
+                  <Route path="/chat" element={<Navigate to="/" replace />} />
                   <Route path={PAGES.PREFERENCES.PATH} element={
                     <ProtectedRoute>
                       <Preferences

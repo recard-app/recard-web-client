@@ -100,12 +100,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   
   // Helper function to determine if current path is home or chat route
   const isHomeOrChatRoute = (pathname: string) => {
-    // Matches home route
     if (pathname === PAGES.HOME.PATH) return true;
-    
-    // Matches "/:chatId" route using currentChatId state
-    if (currentChatId && pathname === `${PAGES.HOME.PATH}${currentChatId}`) return true;
-    
+    if (pathname.startsWith('/chat/')) return true;
     return false;
   };
 

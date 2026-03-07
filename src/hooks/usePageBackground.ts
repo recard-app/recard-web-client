@@ -55,13 +55,9 @@ export const usePageBackground = () => {
     const currentPath = location.pathname;
     let backgroundClass = PAGE_BACKGROUNDS[currentPath];
     
-    // Handle dynamic routes (like /:chatId)
-    if (!backgroundClass && currentPath !== PAGES.HOME.PATH) {
-      // Check if this is a chat route (starts with / followed by a chatId)
-      const chatIdPattern = /^\/[^\/]+$/;
-      if (chatIdPattern.test(currentPath)) {
-        backgroundClass = PAGE_BACKGROUNDS[PAGES.HOME.PATH];
-      }
+    // Handle /chat/:chatId routes
+    if (!backgroundClass && currentPath.startsWith('/chat/')) {
+      backgroundClass = PAGE_BACKGROUNDS[PAGES.HOME.PATH];
     }
 
     // Apply the background class if one is configured

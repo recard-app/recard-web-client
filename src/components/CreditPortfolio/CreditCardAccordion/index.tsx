@@ -64,11 +64,9 @@ const CreditCardAccordion: React.FC<CreditCardAccordionProps> = ({
   card,
   credits,
   creditMetadata,
-  year,
   isExpanded,
   onToggle,
   onPeriodClick,
-  isUpdating,
   isLoading
 }) => {
   // Calculate summary stats
@@ -87,11 +85,6 @@ const CreditCardAccordion: React.FC<CreditCardAccordionProps> = ({
     if (!cardCredit) return;
 
     onPeriodClick(credit, cardCredit, periodNumber, anniversaryYear);
-  };
-
-  // Check if credit is updating
-  const isCreditUpdating = (creditId: string) => (periodNumber: number) => {
-    return isUpdating?.(creditId, periodNumber) ?? false;
   };
 
   // No credits for this card - return null unless loading (show empty state when loading)
@@ -178,11 +171,7 @@ const CreditCardAccordion: React.FC<CreditCardAccordionProps> = ({
                   key={credit.CreditId}
                   credit={credit}
                   cardCredit={cardCredit}
-                  year={year}
-                  onPeriodClick={(periodNumber, anniversaryYear) =>
-                    handlePeriodClick(credit, periodNumber, anniversaryYear)
-                  }
-                  isUpdating={isCreditUpdating(credit.CreditId)}
+                  onClick={() => handlePeriodClick(credit, 1)}
                 />
               );
             })

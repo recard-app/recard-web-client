@@ -53,20 +53,16 @@ export interface YearDropdownProps {
 export interface CreditSectionProps {
   credit: UserCredit;
   cardCredit: CardCredit;
-  year: number;
-  onPeriodClick: (periodNumber: number, anniversaryYear?: number) => void;
-  isUpdating?: (periodNumber: number) => boolean;
+  onClick: () => void;
 }
 
 export interface CreditCardAccordionProps {
   card: CreditCardDetails;
   credits: UserCredit[];
   creditMetadata: Map<string, CardCredit>;
-  year: number;
   isExpanded: boolean;
   onToggle: () => void;
   onPeriodClick: (credit: UserCredit, cardCredit: CardCredit, periodNumber: number, anniversaryYear?: number) => void;
-  isUpdating?: (creditId: string, periodNumber: number) => boolean;
   isLoading?: boolean;  // Indicates year data is loading (show pulse animation)
 }
 

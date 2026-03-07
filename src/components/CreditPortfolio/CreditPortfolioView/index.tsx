@@ -460,11 +460,9 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
               card={card}
               credits={creditsByCard.get(card.id) || []}
               creditMetadata={creditMetadataMap}
-              year={selectedYear}
               isExpanded={expandedCardIds.has(card.id)}
               onToggle={() => toggleCard(card.id)}
               onPeriodClick={handlePeriodClick}
-              isUpdating={(creditId, periodNumber) => isUpdatingPeriod(card.id, creditId, periodNumber)}
               isLoading={isYearLoading}
             />
           ))}

@@ -216,11 +216,21 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
   const isMobile = useIsMobile();
   const allCredits = useCredits();
 
-  // Resolve live data from prioritizedCredits
+  // Resolve live data from prioritizedCredits or fallbackData
   const resolvedData = useMemo(() => {
     if (!activeCreditId) return null;
 
-    // Find PrioritizedCredit
+    // If fallbackData is provided, prefer it — the caller supplied the correct
+    // data for their context (e.g., history page viewing a previous year).
+    if (fallbackData) {
+      return {
+        userCredit: fallbackData.userCredit,
+        card: fallbackData.card,
+        cardCredit: fallbackData.cardCredit,
+      };
+    }
+
+    // Otherwise resolve from prioritizedCredits (current-year data)
     const pc = prioritizedCredits.find(
       c => c.CardId === activeCreditId.cardId && c.CreditId === activeCreditId.creditId
     );
@@ -244,15 +254,6 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
       ) || null;
 
       return { userCredit, card, cardCredit };
-    }
-
-    // Fallback for chat-triggered opens
-    if (fallbackData) {
-      return {
-        userCredit: fallbackData.userCredit,
-        card: fallbackData.card,
-        cardCredit: fallbackData.cardCredit,
-      };
     }
 
     return null;
@@ -332,11 +333,12 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
   // Expiration info
   const isExpiring = useMemo(() => {
     if (!activeCreditId) return false;
+    if (year !== new Date().getFullYear()) return false;
     const pc = prioritizedCredits.find(
       c => c.CardId === activeCreditId.cardId && c.CreditId === activeCreditId.creditId
     );
     return pc?.isExpiring ?? false;
-  }, [activeCreditId, prioritizedCredits]);
+  }, [activeCreditId, prioritizedCredits, year]);
 
   const daysUntilExpiration = useMemo(() => {
     if (!activeCreditId) return undefined;

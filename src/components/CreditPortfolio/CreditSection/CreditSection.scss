@@ -1,12 +1,19 @@
 @use '../../../styling/variables' as *;
+@use '../../../styling/mixins' as *;
 
 .credit-section {
-  padding: $space-2 $space-4;
+  padding: $space-3 $space-4;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 
-  // Divider between credit sections
-  & + & {
-    border-top: $border-full solid $neutral-light-gray;
+  @include hover {
+    background-color: $neutral-lightest-gray;
   }
+
+  &:active {
+    background-color: $neutral-lightest-gray;
+  }
+
 
   .credit-header {
     display: flex;
@@ -16,8 +23,10 @@
 
     .credit-info {
       display: flex;
-      flex-direction: column;
-      gap: $space-1;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
 
       .credit-title {
         font-family: $font-manrope;
@@ -50,17 +59,13 @@
     }
   }
 
-  .credit-period-display {
-    margin: $space-2 0;
-  }
-
   .credit-usage-bar {
-    margin-top: $space-3;
+    margin-top: 0;
   }
 }
 
 @media (max-width: $mobile-breakpoint) {
   .credit-section {
-    padding: $space-2 $space-3;
+    padding: $space-3 $space-3;
   }
 }

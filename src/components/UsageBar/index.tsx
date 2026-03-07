@@ -37,8 +37,8 @@ const UsageBar: React.FC<UsageBarProps> = ({
   // Filter out segments with zero or negative values
   const validSegments = segments.filter(segment => segment.value > 0);
 
-  // Calculate total value from all segments
-  const totalValue = validSegments.reduce((sum, segment) => sum + segment.value, 0);
+  // Calculate total value from all segments (round to avoid floating point artifacts)
+  const totalValue = Math.round(validSegments.reduce((sum, segment) => sum + segment.value, 0) * 100) / 100;
 
   // Calculate percentage for each segment
   const segmentPercentages = validSegments.map(segment => ({
@@ -83,7 +83,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
                     borderTopRightRadius: (isLast && remainingPercentage === 0) || isOnlySegment ? `${borderRadius}px` : '0',
                     borderBottomRightRadius: (isLast && remainingPercentage === 0) || isOnlySegment ? `${borderRadius}px` : '0',
                   }}
-                  title={`${segment.label}: ${valuePrefix}${segment.value}`}
+                  title={`${segment.label}: ${valuePrefix}${Math.round(segment.value * 100) / 100}`}
                 />
               );
             })}
@@ -95,7 +95,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
                   borderTopRightRadius: `${borderRadius}px`,
                   borderBottomRightRadius: `${borderRadius}px`,
                 }}
-                title={`Remaining: ${valuePrefix}${maxValue - totalValue}`}
+                title={`Remaining: ${valuePrefix}${Math.round((maxValue - totalValue) * 100) / 100}`}
               />
             )}
           </>
@@ -120,7 +120,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
                 style={{ backgroundColor: segment.color }}
               />
               <span className="usage-bar-label-text">
-                {segment.label}: {valuePrefix}{segment.value}
+                {segment.label}: {valuePrefix}{Math.round(segment.value * 100) / 100}
               </span>
             </div>
           ))}
@@ -128,7 +128,7 @@ const UsageBar: React.FC<UsageBarProps> = ({
             <div className="usage-bar-label">
               <span className="usage-bar-label-dot usage-bar-label-dot--remaining" />
               <span className="usage-bar-label-text">
-                Remaining: {valuePrefix}{maxValue - totalValue}
+                Remaining: {valuePrefix}{Math.round((maxValue - totalValue) * 100) / 100}
               </span>
             </div>
           )}

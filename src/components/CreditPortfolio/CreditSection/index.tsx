@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_NAMES } from '@/types/CardCreditsTypes';
 import { COLORS } from '@/types/Colors';
 import UsageBar from '@/components/UsageBar';
-import CreditUsageTracker from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditEntryDetails/CreditUsageTracker';
 import { CreditSectionProps } from '../types';
 import './CreditSection.scss';
 
@@ -30,9 +29,7 @@ const getPeriodDisplayName = (period: string): string => {
 const CreditSection: React.FC<CreditSectionProps> = ({
   credit,
   cardCredit,
-  year,
-  onPeriodClick,
-  isUpdating
+  onClick
 }) => {
   const creditValue = getCreditValue(cardCredit.Value);
 
@@ -54,7 +51,10 @@ const CreditSection: React.FC<CreditSectionProps> = ({
       }
     }
 
-    return { totalUsed, totalPossible };
+    return {
+      totalUsed: Math.round(totalUsed * 100) / 100,
+      totalPossible: Math.round(totalPossible * 100) / 100
+    };
   }, [credit.History, credit.isAnniversaryBased, creditValue]);
 
   // Determine if this is an anniversary-based credit
@@ -66,7 +66,7 @@ const CreditSection: React.FC<CreditSectionProps> = ({
     : getPeriodDisplayName(credit.AssociatedPeriod);
 
   return (
-    <div className="credit-section">
+    <div className="credit-section" onClick={onClick} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}>
       <div className="credit-header">
         <div className="credit-info">
           <h4 className="credit-title">{cardCredit.Title}</h4>
@@ -89,16 +89,6 @@ const CreditSection: React.FC<CreditSectionProps> = ({
           />
         </div>
       )}
-
-      <div className="credit-period-display">
-        <CreditUsageTracker
-          userCredit={credit}
-          currentYear={year}
-          creditMaxValue={creditValue}
-          onPeriodSelect={(periodNumber, anniversaryYear) => onPeriodClick(periodNumber, anniversaryYear)}
-          isUpdating={isUpdating}
-        />
-      </div>
     </div>
   );
 };

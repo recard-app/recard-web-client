@@ -83,7 +83,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
     e.preventDefault();
     // Make sure we're not clicking on the action icon or its dropdown
     if (!(e.target as HTMLElement).closest('.actions-dropdown')) {
-      navigate(`/${chatEntry.chatId}`, { replace: true });
+      navigate(`/chat/${chatEntry.chatId}`, { replace: true });
     }
   };
 

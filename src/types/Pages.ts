@@ -5,7 +5,11 @@ export const PAGES = {
   HOME: {
     PATH: '/',
     TITLE: 'Home',
-    DYNAMIC_PATH: '/:chatId', // For chat routes
+  },
+  CHAT: {
+    PATH: '/chat',
+    DYNAMIC_PATH: '/chat/:chatId',
+    TITLE: 'Home',
   },
   
   // Authentication pages
@@ -107,6 +111,16 @@ export const PageUtils = {
   },
 
   /**
+   * Extract chatId from a /chat/:chatId path
+   * @param path - The current pathname
+   * @returns The chatId or null if not a chat path
+   */
+  getChatIdFromPath: (path: string): string | null => {
+    const match = path.match(/^\/chat\/([^/]+)$/);
+    return match ? match[1] : null;
+  },
+
+  /**
    * Get page title by path
    * @param path - The current pathname
    * @returns Page title or null if not found
@@ -125,16 +139,8 @@ export const PageUtils = {
   isPage: (path: string, pageKey: PageKey): boolean => {
     const page = PAGES[pageKey];
     if (path === page.PATH) return true;
-    if ('DYNAMIC_PATH' in page && page.DYNAMIC_PATH && pageKey === 'HOME') {
-      // Special handling for HOME page chat routes - only match UUID-like patterns, not other page paths
-      const dynamicPage = page as PageConfig & { DYNAMIC_PATH: string };
-      // Match UUID pattern (8-4-4-4-12 hex chars) or other ID patterns, but exclude known page paths
-      const knownPagePaths = Object.values(PAGES).map(p => p.PATH.slice(1)).filter(p => p); // Remove leading slash, filter empty
-      const isKnownPage = knownPagePaths.some(pagePath => path === `/${pagePath}`);
-      if (isKnownPage) return false;
-      
-      // Only match patterns that look like IDs (alphanumeric, hyphens, underscores)
-      return /^\/[a-zA-Z0-9_-]+$/.test(path);
+    if (pageKey === 'CHAT') {
+      return path.startsWith('/chat/');
     }
     if ('DYNAMIC_PATH' in page && page.DYNAMIC_PATH) {
       const dynamicPage = page as PageConfig & { DYNAMIC_PATH: string };
@@ -163,6 +169,7 @@ export const PageUtils = {
 // Export individual pages for convenience
 export const {
   HOME,
+  CHAT,
   SIGN_IN,
   SIGN_UP,
   FORGOT_PASSWORD,

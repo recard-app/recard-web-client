@@ -343,7 +343,7 @@ function PromptWindow({
     useEffect(() => {
         if (chatId && chatId !== urlChatId) {
             returnCurrentChatId(chatId);
-            navigate(`/${chatId}`, { replace: true });
+            navigate(`/chat/${chatId}`, { replace: true });
         }
     }, [chatId]);
 
