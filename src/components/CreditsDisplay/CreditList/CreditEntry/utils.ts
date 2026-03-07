@@ -1,5 +1,10 @@
 import { CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS, type CreditUsageType, type CreditPeriodType } from '../../../../types';
 import { MONTH_ABBREVIATIONS } from '../../../../types/Constants';
+export function formatCreditDollars(value: number): string {
+  const rounded = Math.round(value * 100) / 100;
+  return rounded % 1 === 0 ? `$${rounded}` : `$${rounded.toFixed(2)}`;
+}
+
 export function parseCreditValue(raw: string | number | null | undefined): number | undefined {
   if (raw == null) return undefined;
   if (typeof raw === 'number' && isFinite(raw) && raw > 0) return Math.floor(raw);

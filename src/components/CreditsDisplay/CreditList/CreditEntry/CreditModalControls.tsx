@@ -6,7 +6,7 @@ import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../.
 import { getAnniversaryPeriodRange } from './utils';
 import { Slider } from '../../../ui/slider';
 import Icon from '@/icons';
-import { getMaxValue, clampValue, getUsageForValue, getValueForUsage } from './utils';
+import { getMaxValue, clampValue, getUsageForValue, getValueForUsage, formatCreditDollars } from './utils';
 import { generateSmartSteps, snapToClosestStep } from '../../../../utils/slider-steps';
 import UsageDropdown from './UsageDropdown';
 
@@ -297,7 +297,7 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
       <div className="credit-period-row">
         <div className="period-name">{getCurrentPeriodName()}</div>
         <div className="amount-display">
-          <span className="amount-text">${valueUsed} / ${maxValue}</span>
+          <span className="amount-text">{formatCreditDollars(valueUsed)} / {formatCreditDollars(maxValue)}</span>
         </div>
       </div>
       

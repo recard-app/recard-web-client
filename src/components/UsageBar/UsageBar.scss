@@ -13,7 +13,7 @@
   display: flex;
   overflow: hidden;
   background-color: $neutral-light-gray;
-  border: 1px solid $neutral-gray;
+  border: 1px solid color-mix(in srgb, $neutral-gray 35%, transparent);
   position: relative;
 }
 

@@ -15,6 +15,8 @@ interface CreditUsageTrackerProps {
   onPeriodSelect?: (periodNumber: number, anniversaryYear?: number) => void;
   creditMaxValue?: number;
   isUpdating?: (periodNumber: number) => boolean;
+  isExpiring?: boolean;
+  currentPeriodNumber?: number;
 }
 
 interface PeriodInfo {
@@ -83,7 +85,9 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
   currentValueUsed,
   selectedPeriodNumber,
   onPeriodSelect,
-  isUpdating
+  isUpdating,
+  isExpiring,
+  currentPeriodNumber
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const periodRefs = useRef<Map<number, HTMLDivElement>>(new Map());
@@ -265,7 +269,12 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
                   <Icon name={CREDIT_USAGE_ICON_NAMES.INACTIVE} variant="micro" size={14} style={{ color: PILL_TEXT_COLORS[pillState] }} />
                 )}
               </div>
-              <span className="period-label">{period.name}</span>
+              <span className="period-label">
+                {isExpiring && period.periodNumber === currentPeriodNumber && (
+                  <Icon name="clock" variant="micro" size={12} style={{ color: COLORS.WARNING, flexShrink: 0 }} />
+                )}
+                <span className="period-label-text">{period.name}</span>
+              </span>
             </div>
           );
         })}

@@ -471,6 +471,8 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
       creditMaxValue={creditMaxValue}
       currentUsage={liveUsage}
       currentValueUsed={liveValueUsed}
+      isExpiring={isExpiring}
+      currentPeriodNumber={currentPeriodNumber}
     />
   );
 

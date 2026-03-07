@@ -95,14 +95,21 @@
   }
 
   .period-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
     font-size: $font-xxs;
     font-weight: $font-semibold;
     color: $neutral-medium-gray;
     text-align: center;
     text-transform: uppercase;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     max-width: 100%;
+
+    .period-label-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 }

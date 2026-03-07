@@ -3,6 +3,7 @@ import './CreditShowcase.scss';
 import { UserCredit } from '../../../../../types';
 import { CreditCardDetails, CardCredit } from '../../../../../types/CreditCardTypes';
 import { CardIcon } from '../../../../../icons';
+import { formatCreditDollars } from '../utils';
 
 interface CreditShowcaseProps {
   card: CreditCardDetails | null;
@@ -65,11 +66,11 @@ const CreditShowcase: React.FC<CreditShowcaseProps> = ({
       <div className="credit-showcase-footer">
         <div className="meta-item">
           <span className="meta-label">Value</span>
-          <span className="meta-value">${value} {timePeriod}</span>
+          <span className="meta-value">{formatCreditDollars(value)} {timePeriod}</span>
         </div>
         <div className="meta-item">
           <span className="meta-label">{currentYear} Usage</span>
-          <span className="meta-value">${totalUsed} / ${totalPossible}</span>
+          <span className="meta-value">{formatCreditDollars(totalUsed)} / {formatCreditDollars(totalPossible)}</span>
         </div>
       </div>
     </div>
