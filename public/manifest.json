@@ -1,6 +1,7 @@
 {
   "name": "Cardzen",
   "short_name": "Cardzen",
+  "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
