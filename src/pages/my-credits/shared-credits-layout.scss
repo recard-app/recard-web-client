@@ -18,6 +18,7 @@
     min-height: 0;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    background-color: $neutral-light-gray;
 
     // Universal scrollbar styling
     @include universal-scrollbar;
