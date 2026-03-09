@@ -42,6 +42,11 @@ const SelectCardsStep: React.FC<SelectCardsStepProps> = ({ onModalOpen, creditCa
         description="Add the credit cards you own to get personalized recommendations. You can also set a preferred card, which the assistant will default to when making suggestions."
       />
 
+      <button className="button icon with-text" style={{ alignSelf: 'flex-start' }} onClick={onModalOpen}>
+        <Icon name="card" variant="mini" size={18} />
+        Select Cards
+      </button>
+
       {hasCards ? (
         <div className="onboarding-component-list">
           {selectedCards.map((card, i) => (
@@ -60,10 +65,6 @@ const SelectCardsStep: React.FC<SelectCardsStepProps> = ({ onModalOpen, creditCa
           showTitle={false}
         />
       )}
-      <button className="button icon with-text" style={{ alignSelf: 'flex-start' }} onClick={onModalOpen}>
-        <Icon name="card" variant="mini" size={18} />
-        Select Cards
-      </button>
     </div>
   );
 };
