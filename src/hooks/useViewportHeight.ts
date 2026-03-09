@@ -15,6 +15,12 @@ export function useViewportHeight(): void {
     const setAppVh = () => {
       try {
         const visualViewport = window.visualViewport;
+
+        // Skip updates during pinch-to-zoom -- the layout viewport hasn't changed,
+        // only the visual viewport has shrunk. Updating --app-vh during zoom causes
+        // the entire layout to collapse and shift.
+        if (visualViewport && visualViewport.scale > 1.01) return;
+
         const height = visualViewport?.height ?? window.innerHeight;
         // Store both the pixel height and a 1% unit helper
         root.style.setProperty('--app-vh-px', `${height}px`);

@@ -8,6 +8,10 @@
   max-height: calc(var(--app-vh, 1vh) * 100);
   box-sizing: border-box;
 
+  @supports (height: 100svh) {
+    max-height: 100svh;
+  }
+
   .app-content {
     flex: 1;
     min-height: 0;
