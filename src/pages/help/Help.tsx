@@ -33,7 +33,7 @@ const Help: React.FC = () => {
               aria-label="Toggle help navigation"
             >
               <Icon
-                name="bars-3"
+                name="list-bullet"
                 variant="mini"
                 size={20}
                 color={ICON_GRAY}

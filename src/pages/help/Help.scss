@@ -126,6 +126,11 @@ button.help-layout__mobile-toggle {
   // Constrain height to viewport minus header (~60px) and padding
   max-height: calc(100vh - 80px);
   overflow-y: auto;
+
+  // On mobile, account for page header + toggle button + padding
+  @media (max-width: $mobile-breakpoint) {
+    max-height: calc(100dvh - 160px);
+  }
 }
 
 // Help navigation section (collapsible)
