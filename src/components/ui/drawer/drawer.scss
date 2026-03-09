@@ -179,3 +179,18 @@
     }
   }
 }
+
+// Card selector drawer: shadow on sticky header and footer
+.mobile-card-selector-drawer {
+  .drawer-sticky-header {
+    box-shadow: $container-shadow-bottom-bigger;
+    position: relative;
+    z-index: 2;
+  }
+
+  .dialog-footer {
+    box-shadow: $container-shadow-top-bigger;
+    position: relative;
+    z-index: 2;
+  }
+}
