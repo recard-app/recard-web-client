@@ -1,7 +1,8 @@
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import showdown from 'showdown';
 import Icon from '@/icons';
-import { PRIMARY_MEDIUM, NEUTRAL_MEDIUM_GRAY } from '../../../types/Colors';
+import { PRIMARY_MEDIUM } from '../../../types/Colors';
+import { RefreshButton } from '../../RefreshButton';
 import { sanitizeMarkdownHtml } from '../../../utils/sanitizeMarkdown';
 import './DailyDigest.scss';
 
@@ -87,14 +88,11 @@ export const DailyDigest: React.FC<DailyDigestProps> = ({
                         </span>
                     )}
                     {onRegenerate && (
-                        <button
-                            className={`daily-digest__regenerate-button ${isRegenerating ? 'daily-digest__regenerate-button--loading' : ''}`}
+                        <RefreshButton
                             onClick={onRegenerate}
-                            disabled={isRegenerating}
+                            isLoading={isRegenerating}
                             title="Regenerate snapshot"
-                        >
-                            <Icon name="arrow-refresh" variant="micro" size={12} color={NEUTRAL_MEDIUM_GRAY} />
-                        </button>
+                        />
                     )}
                 </div>
             )}

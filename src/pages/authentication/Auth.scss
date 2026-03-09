@@ -93,12 +93,11 @@
 
 // Submit button with enhanced states and loading support
 .submit-button {
+  @include button-base;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background-color: $primary-color;
+  color: $neutral-white;
   gap: $space-2;
-  font-size: $font-sm;
   transition: background-color 150ms ease, transform 100ms ease, opacity 150ms ease;
 
   @media (hover: hover) {
@@ -178,12 +177,9 @@
 
 // Social button with Google icon support - white background
 .social-button {
+  @include button-base;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: $space-2;
-  font-size: $font-sm;
   background-color: $neutral-white;
   color: $neutral-dark-gray;
   border: $border-full solid $neutral-gray;

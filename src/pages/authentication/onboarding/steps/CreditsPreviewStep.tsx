@@ -2,6 +2,7 @@ import React from 'react';
 import ChatCreditComponent from '../../../../elements/ChatComponents/ChatCreditComponent';
 import { Icon } from '../../../../icons';
 import { InfoDisplay } from '../../../../elements';
+import OnboardingHeader from '../OnboardingHeader';
 import { APP_NAME } from '../../../../types/Constants';
 import { CHAT_COMPONENT_TYPES } from '../../../../types/ChatComponentTypes';
 import type { CreditComponentItem } from '../../../../types/ChatComponentTypes';
@@ -59,12 +60,11 @@ const CreditsPreviewStep: React.FC<CreditsPreviewStepProps> = ({
 
   return (
     <div className="onboarding-step">
-      <div>
-        <h2 className="onboarding-step__title">Your Credits</h2>
-        <p className="onboarding-step__subtitle">
-          Your cards come with credits, benefits that save you money each billing period. {APP_NAME} tracks them so you never leave money on the table.
-        </p>
-      </div>
+      <OnboardingHeader
+        icon="banknotes"
+        title="Your Credits"
+        description={`Your cards come with credits, benefits that save you money each billing period. ${APP_NAME} tracks them so you never leave money on the table.`}
+      />
 
       {!hasCards ? (
         <>

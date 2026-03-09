@@ -59,6 +59,18 @@ export const cardzenTheme: Theme = {
     infoSuccessGreen: '#7BAE7F',
     infoLoadingGray: '#BDB7B0',
 
+    // Info component background colors
+    infoErrorBg: 'hsl(358, 76%, 10%)',
+    infoBlueBg: 'hsl(215, 100%, 6%)',
+    infoWarningBg: 'hsl(64, 100%, 6%)',
+    infoSuccessBg: 'hsl(150, 100%, 6%)',
+
+    // Info component border colors
+    infoErrorBorder: 'hsl(357, 89%, 16%)',
+    infoBlueBorder: 'hsl(223, 43%, 17%)',
+    infoWarningBorder: 'hsl(60, 100%, 9%)',
+    infoSuccessBorder: 'hsl(147, 100%, 12%)',
+
     // Component-specific colors
     creditEntryBorder: '#404040',
     creditEntryBackground: '#262626',

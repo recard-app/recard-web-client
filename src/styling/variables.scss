@@ -72,6 +72,18 @@ $info-warning-orange: var(--color-info-warning-orange);
 $info-success-green: var(--color-info-success-green);
 $info-loading-gray: var(--color-info-loading-gray);
 
+// Info component background colors
+$info-error-bg: var(--color-info-error-bg);
+$info-blue-bg: var(--color-info-blue-bg);
+$info-warning-bg: var(--color-info-warning-bg);
+$info-success-bg: var(--color-info-success-bg);
+
+// Info component border colors
+$info-error-border: var(--color-info-error-border);
+$info-blue-border: var(--color-info-blue-border);
+$info-warning-border: var(--color-info-warning-border);
+$info-success-border: var(--color-info-success-border);
+
 // Component-specific colors
 $credit-entry-border: var(--color-credit-entry-border);
 $credit-entry-background: var(--color-credit-entry-background);

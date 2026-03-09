@@ -121,15 +121,42 @@
     height: 8px;
     border-radius: 50%;
     background-color: $neutral-light-gray;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, width 0.2s ease, border-radius 0.2s ease;
 
     &--active {
+      width: 20px;
+      border-radius: 4px;
       background-color: $primary-color;
     }
 
     &--completed {
       background-color: $primary-light;
     }
+  }
+}
+
+// Onboarding header with icon badge
+.onboarding-header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    background-color: $primary-lightest;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: $primary-color;
   }
 }
 
@@ -143,7 +170,11 @@
   &__title {
     @include heading-4;
     margin: 0;
-    margin-bottom: $space-1;
+
+    &--large {
+      @include heading-3;
+      margin: 0;
+    }
   }
 
   &__subtitle {
@@ -180,29 +211,33 @@
 
 // Step 1: Welcome - Value prop cards
 .onboarding-value-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: $space-3;
-
-  @media (max-width: $breakpoint-sm) {
-    grid-template-columns: 1fr;
-  }
 }
 
 .onboarding-value-card {
   @include card-base;
   padding: $space-4;
   display: flex;
-  flex-direction: column;
-  gap: $space-2;
-  text-align: center;
+  flex-direction: row;
   align-items: center;
+  gap: $space-3;
+  border-left: 3px solid $primary-color;
 
   &__icon {
     color: $primary-color;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    min-width: 0;
   }
 
   &__title {
@@ -239,40 +274,49 @@
   }
 }
 
-// Step 4: Install App (reuses .install-app-drawer__* classes from InstallAppDrawer)
+// Step 4: Install App
+.onboarding-app-icon {
+  display: flex;
+  justify-content: center;
+
+  &__image {
+    width: 72px;
+    height: 72px;
+    border-radius: $radius-xl;
+    box-shadow: $shadow-md;
+  }
+}
 
 // Step 5: Verify Email
 .onboarding-verify {
-  &__email {
-    font-weight: $font-semibold;
-    color: $neutral-black;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  &__email-block {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    margin-bottom: $space-2;
   }
 
-  &__verified {
+  &__status-line {
     display: flex;
     align-items: center;
     gap: $space-2;
-    color: $success;
-    font-size: $font-sm;
-    font-weight: $font-medium;
   }
 
-  &__resend-status {
-    font-size: $font-sm;
-    color: $success;
-    margin-top: $space-1;
+  &__email {
+    font-weight: $font-semibold;
+    color: $neutral-black;
   }
 }
 
 // Step 6: Start Chatting - Example prompts
 .onboarding-prompts {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: $space-3;
-
-  @media (max-width: $breakpoint-sm) {
-    grid-template-columns: 1fr;
-  }
 }
 
 .onboarding-prompt-card {
@@ -281,6 +325,9 @@
   cursor: pointer;
   transition: border-color 0.15s ease, background-color 0.15s ease;
   border-color: $neutral-light-gray;
+  display: flex;
+  align-items: center;
+  gap: $space-3;
 
   &:hover {
     border-color: $primary-color;
@@ -296,10 +343,19 @@
     }
   }
 
+  &__icon {
+    color: $primary-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
   &__text {
     font-size: $font-sm;
     color: $neutral-black;
     margin: 0;
     line-height: $leading-relaxed;
+    font-style: italic;
   }
 }

@@ -63,6 +63,18 @@ export class COLORS {
   static readonly INFO_SUCCESS_GREEN = 'var(--color-info-success-green)';
   static readonly INFO_LOADING_GRAY = 'var(--color-info-loading-gray)';
 
+  // Info component background colors
+  static readonly INFO_ERROR_BG = 'var(--color-info-error-bg)';
+  static readonly INFO_BLUE_BG = 'var(--color-info-blue-bg)';
+  static readonly INFO_WARNING_BG = 'var(--color-info-warning-bg)';
+  static readonly INFO_SUCCESS_BG = 'var(--color-info-success-bg)';
+
+  // Info component border colors
+  static readonly INFO_ERROR_BORDER = 'var(--color-info-error-border)';
+  static readonly INFO_BLUE_BORDER = 'var(--color-info-blue-border)';
+  static readonly INFO_WARNING_BORDER = 'var(--color-info-warning-border)';
+  static readonly INFO_SUCCESS_BORDER = 'var(--color-info-success-border)';
+
   // Button and action colors
   static readonly BUTTON_RED = 'var(--color-button-red)';
   static readonly BUTTON_RED_DARK = 'var(--color-button-red-dark)';
@@ -118,6 +130,14 @@ export const {
   INFO_WARNING_ORANGE,
   INFO_SUCCESS_GREEN,
   INFO_LOADING_GRAY,
+  INFO_ERROR_BG,
+  INFO_BLUE_BG,
+  INFO_WARNING_BG,
+  INFO_SUCCESS_BG,
+  INFO_ERROR_BORDER,
+  INFO_BLUE_BORDER,
+  INFO_WARNING_BORDER,
+  INFO_SUCCESS_BORDER,
   BUTTON_RED,
   BUTTON_RED_DARK,
   BUTTON_BLUE,

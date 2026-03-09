@@ -1,6 +1,6 @@
 import React from 'react';
 import './InfoDisplay.scss';
-import { INFO_COLORS, INFO_ICONS, INFO_TITLES, LOADING_ICON, LOADING_ICON_SIZE } from '../../types/Constants';
+import { INFO_COLORS, INFO_BG_COLORS, INFO_BORDER_COLORS, INFO_ICONS, INFO_TITLES, LOADING_ICON, LOADING_ICON_SIZE } from '../../types/Constants';
 import { IconRenderer } from '../../icons';
 
 interface InfoDisplayProps {
@@ -30,68 +30,35 @@ export const InfoDisplay: React.FC<InfoDisplayProps> = ({
 }) => {
   // Default values based on type
   const getDefaultValues = () => {
-    switch (type) {
-      case 'default':
-        return {
-          defaultTitle: INFO_TITLES.DEFAULT,
-          defaultColor: INFO_COLORS.DEFAULT,
-          defaultIcon: INFO_ICONS.DEFAULT
-        };
-      case 'error':
-        return {
-          defaultTitle: INFO_TITLES.ERROR,
-          defaultColor: INFO_COLORS.ERROR,
-          defaultIcon: INFO_ICONS.ERROR
-        };
-      case 'warning':
-        return {
-          defaultTitle: INFO_TITLES.WARNING,
-          defaultColor: INFO_COLORS.WARNING,
-          defaultIcon: INFO_ICONS.WARNING
-        };
-      case 'success':
-        return {
-          defaultTitle: INFO_TITLES.SUCCESS,
-          defaultColor: INFO_COLORS.SUCCESS,
-          defaultIcon: INFO_ICONS.SUCCESS
-        };
-      case 'loading':
-        return {
-          defaultTitle: INFO_TITLES.LOADING,
-          defaultColor: INFO_COLORS.LOADING,
-          defaultIcon: INFO_ICONS.LOADING
-        };
-      case 'info':
-      default:
-        return {
-          defaultTitle: INFO_TITLES.INFO,
-          defaultColor: INFO_COLORS.INFO,
-          defaultIcon: INFO_ICONS.INFO
-        };
-    }
+    const key = (type === 'info' || !type) ? 'INFO'
+      : type === 'default' ? 'DEFAULT'
+      : type.toUpperCase() as keyof typeof INFO_COLORS;
+    return {
+      defaultTitle: INFO_TITLES[key],
+      defaultColor: INFO_COLORS[key],
+      defaultBg: INFO_BG_COLORS[key],
+      defaultBorder: INFO_BORDER_COLORS[key],
+      defaultIcon: INFO_ICONS[key]
+    };
   };
 
-  const { defaultTitle, defaultColor, defaultIcon } = getDefaultValues();
+  const { defaultTitle, defaultColor, defaultBg, defaultBorder, defaultIcon } = getDefaultValues();
 
   // Use provided values or fall back to defaults
   const displayTitle = title || defaultTitle;
   const displayColor = color || defaultColor;
   const displayIcon = icon || defaultIcon;
-  
-  // Create background color with 10% opacity tint
-  const getBackgroundColor = (colorValue: string) => {
-    if (transparent) {
-      return 'transparent';
-    }
-    return `color-mix(in srgb, ${colorValue} 10%, transparent)`;
-  };
+
+  const backgroundColor = transparent ? 'transparent' : (color ? `color-mix(in srgb, ${color} 10%, transparent)` : defaultBg);
+  const borderColor = transparent ? 'transparent' : (color ? 'transparent' : defaultBorder);
 
   return (
     <div
       className={`info-component ${centered ? 'centered' : ''} ${hideOverflow ? 'hide-overflow' : ''}`}
       style={{
-        backgroundColor: getBackgroundColor(displayColor),
+        backgroundColor,
         color: displayColor,
+        border: borderColor !== 'transparent' ? `1px solid ${borderColor}` : undefined,
         // Keep text left-aligned when not centered; let CSS control centered variant
         textAlign: centered ? undefined : 'left',
         justifyContent: centered ? 'center' : undefined,

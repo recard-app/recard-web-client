@@ -51,12 +51,24 @@ export const defaultTheme: Theme = {
     warningBadgeLight: '#EAB308',
     alertRedBackground: '#EF4444',
 
-    // Info component colors
-    infoErrorRed: '#EF4444',
+    // Info component colors (text colors match Sonner toast defaults)
+    infoErrorRed: 'hsl(360, 100%, 45%)',
     infoBlue: '#2563EB',
     infoWarningOrange: '#F59E0B',
-    infoSuccessGreen: '#4caf50',
+    infoSuccessGreen: 'hsl(140, 100%, 27%)',
     infoLoadingGray: '#5A5F66',
+
+    // Info component background colors (match Sonner toast defaults)
+    infoErrorBg: 'hsl(359, 100%, 97%)',
+    infoBlueBg: 'hsl(208, 100%, 97%)',
+    infoWarningBg: 'hsl(49, 100%, 97%)',
+    infoSuccessBg: 'hsl(143, 85%, 96%)',
+
+    // Info component border colors (match Sonner toast defaults)
+    infoErrorBorder: 'hsl(359, 100%, 94%)',
+    infoBlueBorder: 'hsl(221, 91%, 93%)',
+    infoWarningBorder: 'hsl(49, 91%, 84%)',
+    infoSuccessBorder: 'hsl(145, 92%, 87%)',
 
     // Component-specific colors
     creditEntryBorder: '#e5e7eb',

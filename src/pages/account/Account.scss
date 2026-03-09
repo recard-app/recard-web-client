@@ -57,7 +57,8 @@
 
 // Showcase Badges (scoped to profile showcase and settings rows)
 .profile-showcase .showcase-badges,
-.account-wrapper .showcase-badges {
+.account-wrapper .showcase-badges,
+.onboarding-verify .showcase-badges {
   display: inline-flex;
   flex-direction: row;
   flex-wrap: wrap;

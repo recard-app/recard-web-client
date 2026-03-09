@@ -30,6 +30,7 @@ interface AuthContextType {
   sendPasswordResetEmail: (email: string) => Promise<void>;
   updateDisplayName: (newName: string) => Promise<void>;
   updateEmail: (newEmail: string, currentPassword: string) => Promise<void>;
+  refreshUser: () => Promise<void>;
   loading: boolean;
 }
 
@@ -281,6 +282,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     );
   }
 
+  const refreshUser = async (): Promise<void> => {
+    if (auth.currentUser) {
+      await auth.currentUser.reload();
+      setUser({ ...auth.currentUser });
+    }
+  };
+
   const value: AuthContextType = {
     user,
     login,
@@ -291,6 +299,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     sendPasswordResetEmail,
     updateDisplayName,
     updateEmail,
+    refreshUser,
     loading
   };
 

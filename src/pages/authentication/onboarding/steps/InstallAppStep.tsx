@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { usePWAInstall } from '../../../../hooks/usePWAInstall';
 import { APP_NAME } from '../../../../types/Constants';
+import OnboardingHeader from '../OnboardingHeader';
 
 const ShareIcon: React.FC = () => (
   <svg
@@ -30,11 +31,14 @@ const InstallAppStep: React.FC = () => {
 
   return (
     <div className="onboarding-step">
-      <div>
-        <h2 className="onboarding-step__title">Install the App</h2>
-        <p className="onboarding-step__subtitle">
-          Install {APP_NAME} on your device for the best experience. Get instant access from your home screen, faster load times, and a full-screen interface without browser tabs getting in the way.
-        </p>
+      <OnboardingHeader
+        icon="phone"
+        title="Install the App"
+        description={`Install ${APP_NAME} on your device for the best experience. Get instant access from your home screen, faster load times, and a full-screen interface without browser tabs getting in the way.`}
+      />
+
+      <div className="onboarding-app-icon">
+        <img src="/cardzen_logo_small.png" alt={APP_NAME} className="onboarding-app-icon__image" />
       </div>
 
       {platform === 'ios' ? (

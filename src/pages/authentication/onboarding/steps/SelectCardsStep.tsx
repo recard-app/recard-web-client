@@ -2,6 +2,7 @@ import React from 'react';
 import ChatCardComponent from '../../../../elements/ChatComponents/ChatCardComponent';
 import { Icon } from '../../../../icons';
 import { InfoDisplay } from '../../../../elements';
+import OnboardingHeader from '../OnboardingHeader';
 import { CHAT_COMPONENT_TYPES } from '../../../../types/ChatComponentTypes';
 import type { CardComponentItem } from '../../../../types/ChatComponentTypes';
 import type { CreditCard } from '../../../../types/CreditCardTypes';
@@ -35,12 +36,11 @@ const SelectCardsStep: React.FC<SelectCardsStepProps> = ({ onModalOpen, creditCa
 
   return (
     <div className="onboarding-step">
-      <div>
-        <h2 className="onboarding-step__title">Select Your Cards</h2>
-        <p className="onboarding-step__subtitle">
-          Add the credit cards you own to get personalized recommendations. You can also set a preferred card, which the assistant will default to when making suggestions.
-        </p>
-      </div>
+      <OnboardingHeader
+        icon="card"
+        title="Select Your Cards"
+        description="Add the credit cards you own to get personalized recommendations. You can also set a preferred card, which the assistant will default to when making suggestions."
+      />
 
       {hasCards ? (
         <div className="onboarding-component-list">

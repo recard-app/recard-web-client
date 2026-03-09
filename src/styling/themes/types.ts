@@ -53,6 +53,18 @@ export interface ThemeColors {
   infoSuccessGreen: string;
   infoLoadingGray: string;
 
+  // Info component background colors
+  infoErrorBg: string;
+  infoBlueBg: string;
+  infoWarningBg: string;
+  infoSuccessBg: string;
+
+  // Info component border colors
+  infoErrorBorder: string;
+  infoBlueBorder: string;
+  infoWarningBorder: string;
+  infoSuccessBorder: string;
+
   // Component-specific colors
   creditEntryBorder: string;
   creditEntryBackground: string;
