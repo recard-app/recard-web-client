@@ -71,6 +71,11 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const isLastStep = currentStep === TOTAL_STEPS;
   const isFirstStep = currentStep === 1;
 
+  const stepHint: Record<number, string> = {
+    4: 'You can install the app later from your account settings',
+    5: 'You can verify your email later from your account settings',
+  };
+
   const renderStep = () => {
     switch (currentStep) {
       case 1:
@@ -110,6 +115,9 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       <div className="onboarding-wizard__card">
         <div className="onboarding-wizard__body" ref={contentRef}>
           {renderStep()}
+          {stepHint[currentStep] && (
+            <p className="onboarding-wizard__hint">{stepHint[currentStep]}</p>
+          )}
         </div>
         <div className={`onboarding-wizard__nav${isOverflowing ? ' onboarding-wizard__nav--shadow' : ''}`}>
           <button
