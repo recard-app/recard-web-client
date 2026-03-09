@@ -42,7 +42,6 @@ const typography = [
 const fontFamilies = [
   { name: 'Cal Sans', variable: '$font-cal-sans', sample: 'The quick brown fox jumps over the lazy dog' },
   { name: 'Inter', variable: '$font-inter', sample: 'The quick brown fox jumps over the lazy dog' },
-  { name: 'Manrope', variable: '$font-manrope', sample: 'The quick brown fox jumps over the lazy dog' },
 ];
 
 const spacing = [
@@ -116,9 +115,8 @@ const DesignTokens: React.FC = () => {
               <span 
                 className="ds-typography-text" 
                 style={{ 
-                  fontFamily: font.name === 'Cal Sans' ? '"Cal Sans", sans-serif' : 
-                              font.name === 'Inter' ? '"Inter", sans-serif' : 
-                              '"Manrope", sans-serif',
+                  fontFamily: font.name === 'Cal Sans' ? '"Cal Sans", sans-serif' :
+                              '"Inter", sans-serif',
                   fontSize: '1.25rem'
                 }}
               >

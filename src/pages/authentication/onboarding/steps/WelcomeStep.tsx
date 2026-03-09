@@ -6,9 +6,8 @@ import OnboardingHeader from '../OnboardingHeader';
 const WelcomeStep: React.FC = () => {
   const { user } = useAuth();
 
-  const firstName = user?.displayName?.split(' ')[0];
-  const greeting = firstName
-    ? `Hi ${firstName}!`
+  const greeting = user?.displayName
+    ? `Hi ${user.displayName}!`
     : 'Welcome!';
 
   return (
