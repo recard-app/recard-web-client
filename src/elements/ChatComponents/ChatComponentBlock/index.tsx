@@ -17,7 +17,9 @@ import ChatCardComponent from '../ChatCardComponent';
 import ChatCreditComponent from '../ChatCreditComponent';
 import ChatPerkComponent from '../ChatPerkComponent';
 import ChatMultiplierComponent from '../ChatMultiplierComponent';
+import ChatMultiplierComponentLegacy from '../ChatMultiplierComponentLegacy';
 import ShowMoreButton from '../ShowMoreButton';
+import { USE_LEGACY_MULTIPLIER_COMPONENT } from '../constants';
 import './ChatComponentBlock.scss';
 
 /** Default number of items to show before "Show more" */
@@ -145,8 +147,11 @@ const ChatComponentBlock: React.FC<ChatComponentBlockProps> = ({
     }
 
     if (isMultiplierComponentItem(item)) {
+      const MultiplierComp = USE_LEGACY_MULTIPLIER_COMPONENT
+        ? ChatMultiplierComponentLegacy
+        : ChatMultiplierComponent;
       return (
-        <ChatMultiplierComponent
+        <MultiplierComp
           key={item.id}
           item={item}
           onMultiplierClick={onMultiplierClick}
