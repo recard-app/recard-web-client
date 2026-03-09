@@ -88,12 +88,14 @@
             
             .default-tag {
               background-color: $primary-light;
-              color: $primary-medium;
+              color: $primary-dark;
+              border: $border-full solid $primary-medium;
               font-size: $font-xxs;
               font-family: $font-inter;
-              font-weight: $font-medium;
-              padding: $space-half $space-2;
+              font-weight: $font-semibold;
+              padding: $space-half $space-1-5;
               border-radius: $radius-full;
+              line-height: 1;
               white-space: nowrap;
               flex-shrink: 0;
             }
@@ -130,23 +132,25 @@
       }
 
       .set-default-button {
-        @include button-small;
-        @include button-outline;
-
-        & {
-          margin-left: $space-3;
-          white-space: nowrap;
-          flex-shrink: 0;
-
-          // Make button smaller
-          padding: $space-1 $space-2;
-          font-size: $font-xs;
-          line-height: 1;
-        }
+        white-space: nowrap;
+        flex-shrink: 0;
+        background-color: $primary-light;
+        border: $border-full solid $primary-medium;
+        color: $primary-dark;
+        gap: $space-1-5;
+        transition: background-color $transition-fast, border-color $transition-fast;
 
         @media (max-width: $mobile-breakpoint) {
           padding: $space-2 $space-3;
           font-size: $font-sm;
+        }
+
+        @media (hover: hover) {
+          &:hover:not(:disabled) {
+            background-color: $primary-medium;
+            border-color: $primary-dark;
+            color: $neutral-white;
+          }
         }
       }
     }

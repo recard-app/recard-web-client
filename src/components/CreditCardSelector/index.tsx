@@ -256,10 +256,11 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                                 </label>
                                 {card.selected && !card.isDefaultCard && (
                                     <button
-                                        className="set-default-button"
+                                        className="button outline mini with-text set-default-button"
                                         onClick={() => handleSetDefault(card.id)}
                                         disabled={isSaving}
                                     >
+                                        <Icon name="star" variant="micro" size={12} />
                                         Set as Preferred Card
                                     </button>
                                 )}
