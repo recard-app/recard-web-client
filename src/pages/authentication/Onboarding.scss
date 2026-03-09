@@ -223,7 +223,8 @@
   flex-direction: row;
   align-items: center;
   gap: $space-3;
-  border-left: 3px solid $primary-color;
+  border: $border-full solid $neutral-light-gray;
+  box-shadow: $shadow-xs;
 
   &__icon {
     color: $primary-color;
