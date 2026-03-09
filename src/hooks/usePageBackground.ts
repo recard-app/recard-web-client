@@ -8,7 +8,7 @@ const PAGE_BACKGROUNDS: Record<string, string> = {
   [PAGES.HOME.PATH]: 'bg-white',                    // Home page - white background
   [PAGES.SIGN_IN.PATH]: 'bg-white',                 // Sign in page - white background
   [PAGES.SIGN_UP.PATH]: 'bg-white',                 // Sign up page - white background
-  [PAGES.WELCOME.PATH]: 'bg-white',                 // Welcome page - white background
+  // Onboarding uses auth-background gradient via UniversalContentWrapper
   [PAGES.FORGOT_PASSWORD.PATH]: 'bg-white',         // Forgot password - white background
   [PAGES.MY_CREDITS.PATH]: 'bg-white',              // My Credits - white background
   [PAGES.MY_CREDITS_HISTORY.PATH]: 'bg-white',      // My Credits History - white background

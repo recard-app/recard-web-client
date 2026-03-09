@@ -26,7 +26,7 @@ import Preferences from './pages/preferences/Preferences';
 import SignIn from './pages/authentication/SignIn';
 import SignUp from './pages/authentication/SignUp';
 import ForgotPassword from './pages/authentication/ForgotPassword';
-import Welcome from './pages/authentication/Welcome';
+import Onboarding from './pages/authentication/Onboarding';
 import AuthAction from './pages/authentication/AuthAction';
 import History from './pages/history/History';
 import MyCards from './pages/my-cards/MyCards';
@@ -128,6 +128,7 @@ function AppContent({}: AppContentProps) {
   const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH, PAGES.AUTH_ACTION.PATH]);
   const isAuthRoute = authPaths.has(location.pathname);
   const isLegalPage = location.pathname === PAGES.TERMS_OF_SERVICE.PATH || location.pathname === PAGES.PRIVACY_POLICY.PATH;
+  const isOnboardingRoute = location.pathname === PAGES.ONBOARDING.PATH;
   const isLandingPage = !user && !isAuthRoute && !isLegalPage && location.pathname === '/';
   const pageMeta = usePageMeta(isLandingPage);
 
@@ -274,7 +275,7 @@ function AppContent({}: AppContentProps) {
 
   // Proactive PWA install prompt (one-time, 3s after mount)
   useEffect(() => {
-    if (!shouldProactiveShow) return;
+    if (!shouldProactiveShow || isOnboardingRoute) return;
 
     const timer = setTimeout(() => {
       setIsInstallDrawerOpen(true);
@@ -282,7 +283,7 @@ function AppContent({}: AppContentProps) {
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [shouldProactiveShow, markProactiveShown]);
+  }, [shouldProactiveShow, markProactiveShown, isOnboardingRoute]);
 
   // Effect to fetch daily digest when user is authenticated
   useEffect(() => {
@@ -982,7 +983,7 @@ function AppContent({}: AppContentProps) {
             return (
               <>
                 {/* Universal Sidebar - shown on all pages when user is authenticated (except auth pages and design system) */}
-                {user && !isDesignSystemPage && !isAuthRoute && (
+                {user && !isDesignSystemPage && !isAuthRoute && !isOnboardingRoute && (
             <AppSidebar
               isOpen={isSidePanelOpen}
               onToggle={toggleSidePanel}
@@ -1012,7 +1013,7 @@ function AppContent({}: AppContentProps) {
                 )}
 
                 {/* Mobile Header - shown on mobile for authenticated, non-auth routes (except design system) */}
-                {user && !isAuthRoute && !isDesignSystemPage && (
+                {user && !isAuthRoute && !isDesignSystemPage && !isOnboardingRoute && (
                   <MobileHeader
                     title={PageUtils.getTitleByPath(location.pathname) || APP_NAME}
                     onLogout={handleLogout}
@@ -1053,7 +1054,7 @@ function AppContent({}: AppContentProps) {
                   }
                   setIsCardSelectorOpen(open);
                 }} direction="bottom">
-                  <DrawerContent className="mobile-card-selector-drawer">
+                  <DrawerContent className="mobile-card-selector-drawer" fixedHeight="90vh">
                     <DrawerTitle className="sr-only">Select Your Credit Cards</DrawerTitle>
                     <div className="dialog-header drawer-sticky-header">
                       <h2>Select Your Credit Cards</h2>
@@ -1229,12 +1230,12 @@ function AppContent({}: AppContentProps) {
             return (
               <UniversalContentWrapper
                 isSidePanelOpen={user ? isSidePanelOpen : false}
-                fullHeight={isAuthRoute ? true : needsFullHeight}
+                fullHeight={isAuthRoute || isOnboardingRoute ? true : needsFullHeight}
                 className={[
-                  isAuthRoute ? 'center-content auth-background' : '',
+                  isAuthRoute || isOnboardingRoute ? 'center-content auth-background' : '',
                   isLandingPage ? 'auth-background' : '',
                 ].join(' ').trim()}
-                disableSidebarMargin={isAuthRoute || !user}
+                disableSidebarMargin={isAuthRoute || !user || isOnboardingRoute}
                 whiteBackground={isHelpPage || isLegalPage}
               >
                 <Routes>
@@ -1275,9 +1276,16 @@ function AppContent({}: AppContentProps) {
                       <SignUp />
                     </RedirectIfAuthenticated>
                   } />
-                  <Route path={PAGES.WELCOME.PATH} element={
+                  <Route path={PAGES.ONBOARDING.PATH} element={
                     <ProtectedRoute>
-                      <Welcome onModalOpen={() => setIsCardSelectorOpen(true)} />
+                      <Onboarding
+                        onModalOpen={() => setIsCardSelectorOpen(true)}
+                        creditCards={creditCards}
+                        prioritizedCredits={prioritizedCredits}
+                        isLoadingPrioritizedCredits={isLoadingPrioritizedCredits}
+                        onCardClick={handleCardSelectById}
+                        onCreditClick={handleCreditSelect}
+                      />
                     </ProtectedRoute>
                   } />
                   <Route path={PAGES.MY_CREDITS.PATH} element={

@@ -25,9 +25,9 @@ export const PAGES = {
     PATH: '/forgotpassword',
     TITLE: 'Reset Password',
   },
-  WELCOME: {
-    PATH: '/welcome',
-    TITLE: 'Welcome',
+  ONBOARDING: {
+    PATH: '/onboarding',
+    TITLE: 'Onboarding',
   },
   AUTH_ACTION: {
     PATH: '/auth/action',
@@ -173,7 +173,7 @@ export const {
   SIGN_IN,
   SIGN_UP,
   FORGOT_PASSWORD,
-  WELCOME,
+  ONBOARDING,
   AUTH_ACTION,
   PREFERENCES,
   ACCOUNT,

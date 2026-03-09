@@ -17,6 +17,7 @@ import {
 } from './utils';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
+import { useOnboardingState } from '../../hooks/useOnboardingState';
 import { InfoDisplay } from '../../elements';
 import { SettingsCard, SettingsRow } from '../../components/SettingsCard';
 import ContentContainer from '../../components/ContentContainer';
@@ -41,6 +42,7 @@ interface AccountProps {
 const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus, subscriptionExpiresAt, creditCardCount }) => {
   const { user, sendVerificationEmail, sendPasswordResetEmail, updateDisplayName, updateEmail, logout } = useAuth();
   const navigate = useNavigate();
+  const { resetOnboarding } = useOnboardingState(user?.uid);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   // Name change modal state
@@ -335,7 +337,10 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
                 />
                 <SettingsRow
                   label="Revisit Onboarding"
-                  to={PAGES.WELCOME.PATH}
+                  onClick={() => {
+                    resetOnboarding();
+                    navigate(PAGES.ONBOARDING.PATH);
+                  }}
                 />
                 {canShowInstall && (
                   <SettingsRow

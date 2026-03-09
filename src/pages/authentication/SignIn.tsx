@@ -59,7 +59,7 @@ const SignIn: React.FC = () => {
             const { isNewUser }: AuthResponse = await login();
             await AuthService.googleSignIn(isNewUser);
             if (isNewUser) {
-                navigate(PAGES.WELCOME.PATH);
+                navigate(PAGES.ONBOARDING.PATH);
             } else {
                 navigate(PAGES.HOME.PATH);
             }

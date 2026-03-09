@@ -1,0 +1,304 @@
+@use '../../styling/globals' as *;
+@use '../../styling/mixins' as *;
+
+// Desktop: floating card layout (centered by parent's center-content class)
+.onboarding-wizard__card {
+  background-color: $neutral-white;
+  border: $border-full solid $primary-light;
+  border-radius: $radius-2xl;
+  box-shadow: $shadow-xl;
+  width: 100%;
+  max-width: $container-sm;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+
+.onboarding-wizard__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $space-6 $space-6;
+  min-height: 0;
+}
+
+.onboarding-wizard__nav {
+  padding: $space-4 $space-6;
+  border-top: $border-full solid $neutral-lightest-gray;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  flex-shrink: 0;
+
+  &--shadow {
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.06);
+  }
+}
+
+// Navigation arrows (kept as onboarding-footer__arrow for reuse)
+.onboarding-footer__arrow {
+  background: none;
+  border: none;
+  padding: $space-2;
+  cursor: pointer;
+  color: $neutral-dark-gray;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  &:hover:not(:disabled) {
+    color: $neutral-black;
+    background: $neutral-lightest-gray;
+  }
+
+  &:disabled {
+    opacity: 0.25;
+    cursor: default;
+  }
+}
+
+// Mobile: undo desktop card layout and restore standard page behavior
+@media (max-width: $mobile-breakpoint) {
+  // Neutralize center-content and auth-background on the wrapper
+  .universal-content-wrapper.center-content:has(.onboarding-wizard) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
+    background: $neutral-white;
+  }
+
+  .onboarding-wizard {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .onboarding-wizard__card {
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: none;
+    max-height: none;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .onboarding-wizard__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: ($space-4 * 3) $space-4 $space-4;
+  }
+
+  .onboarding-wizard__nav {
+    border-top: $border-half solid $neutral-light-gray;
+    background-color: $neutral-white;
+    box-shadow: $container-shadow-top-bigger;
+    padding: $space-2 $space-4;
+    flex-shrink: 0;
+
+    @media (display-mode: standalone) {
+      padding-bottom: $pwa-bottom-padding-sm;
+    }
+  }
+}
+
+// Step Indicator
+.step-indicator {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+
+  &__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: $neutral-light-gray;
+    transition: background-color 0.2s ease;
+
+    &--active {
+      background-color: $primary-color;
+    }
+
+    &--completed {
+      background-color: $primary-light;
+    }
+  }
+}
+
+// Step shared styles
+.onboarding-step {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+
+  &__title {
+    @include heading-4;
+    margin: 0;
+    margin-bottom: $space-1;
+  }
+
+  &__subtitle {
+    @include body-regular;
+    color: $neutral-dark-gray;
+    margin: 0;
+    line-height: $leading-relaxed;
+  }
+
+  &__description {
+    font-size: $font-sm;
+    color: $neutral-dark-gray;
+    margin: 0;
+    line-height: $leading-relaxed;
+  }
+
+  &__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: $space-2;
+  }
+}
+
+// Chat component list spacing (matches chat's component-list gap)
+.onboarding-component-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  .chat-component-item {
+    max-width: none;
+  }
+}
+
+// Step 1: Welcome - Value prop cards
+.onboarding-value-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-3;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.onboarding-value-card {
+  @include card-base;
+  padding: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  text-align: center;
+  align-items: center;
+
+  &__icon {
+    color: $primary-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__title {
+    font-family: $font-inter;
+    font-size: $font-sm;
+    font-weight: $font-semibold;
+    margin: 0;
+    color: $neutral-black;
+  }
+
+  &__description {
+    font-size: $font-xs;
+    color: $neutral-dark-gray;
+    margin: 0;
+    line-height: $leading-relaxed;
+  }
+}
+
+// Step 3: Credits "more" text
+.onboarding-credits-more {
+  margin-top: -($space-5 - $space-2); // Pull closer to the component list above
+
+  &__count {
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    color: $success;
+    margin: 0;
+  }
+
+  &__hint {
+    font-size: $font-xs;
+    color: $neutral-dark-gray;
+    margin: $space-1 0 0;
+  }
+}
+
+// Step 4: Install App (reuses .install-app-drawer__* classes from InstallAppDrawer)
+
+// Step 5: Verify Email
+.onboarding-verify {
+  &__email {
+    font-weight: $font-semibold;
+    color: $neutral-black;
+  }
+
+  &__verified {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    color: $success;
+    font-size: $font-sm;
+    font-weight: $font-medium;
+  }
+
+  &__resend-status {
+    font-size: $font-sm;
+    color: $success;
+    margin-top: $space-1;
+  }
+}
+
+// Step 6: Start Chatting - Example prompts
+.onboarding-prompts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-3;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.onboarding-prompt-card {
+  @include card-base;
+  padding: $space-3 $space-4;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  border-color: $neutral-light-gray;
+
+  &:hover {
+    border-color: $primary-color;
+    background-color: $primary-lightest;
+  }
+
+  &--static {
+    cursor: default;
+
+    &:hover {
+      border-color: $neutral-light-gray;
+      background-color: transparent;
+    }
+  }
+
+  &__text {
+    font-size: $font-sm;
+    color: $neutral-black;
+    margin: 0;
+    line-height: $leading-relaxed;
+  }
+}

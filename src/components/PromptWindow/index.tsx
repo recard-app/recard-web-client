@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import { useAgentChat } from '../../hooks/useAgentChat';
@@ -90,6 +90,7 @@ function PromptWindow({
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const promptHistoryRef = useRef<HTMLDivElement>(null);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     // Ref to track when we're intentionally clearing the chat (prevents loading effects from restoring)
@@ -416,6 +417,19 @@ function PromptWindow({
             setExistingChatStates(existingChat.conversation, urlChatId);
         }
     }, [existingHistoryList, urlChatId, user, chatId]);
+
+    // Handle initial prompt from onboarding navigation state
+    const initialPromptHandledRef = useRef(false);
+    useEffect(() => {
+        if (initialPromptHandledRef.current) return;
+        const state = location.state as { initialPrompt?: string } | null;
+        if (state?.initialPrompt && isNewChat) {
+            initialPromptHandledRef.current = true;
+            // Clear the navigation state to prevent re-submission on refresh
+            navigate(location.pathname, { replace: true, state: {} });
+            getPrompt(state.initialPrompt);
+        }
+    }, [isNewChat, location.state]);
 
     /**
      * Effect hook that handles clearing the chat when triggered externally.

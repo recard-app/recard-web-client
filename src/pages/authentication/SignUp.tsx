@@ -91,7 +91,7 @@ const SignUp: React.FC = () => {
             // Use the UserAuthService for backend registration
             await AuthService.emailSignUp(firstName, lastName);
 
-            navigate(PAGES.WELCOME.PATH);
+            navigate(PAGES.ONBOARDING.PATH);
         } catch (error: any) {
             toast.error(getAuthErrorMessage(error));
             logError('Registration failed:', error);
@@ -114,7 +114,7 @@ const SignUp: React.FC = () => {
             await AuthService.googleSignIn(isNewUser ?? false);
 
             if (isNewUser) {
-                navigate(PAGES.WELCOME.PATH);
+                navigate(PAGES.ONBOARDING.PATH);
             } else {
                 navigate(PAGES.HOME.PATH);
             }

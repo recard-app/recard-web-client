@@ -1,0 +1,118 @@
+import React from 'react';
+import ChatCreditComponent from '../../../../elements/ChatComponents/ChatCreditComponent';
+import { InfoDisplay } from '../../../../elements';
+import { APP_NAME } from '../../../../types/Constants';
+import { CHAT_COMPONENT_TYPES } from '../../../../types/ChatComponentTypes';
+import type { CreditComponentItem } from '../../../../types/ChatComponentTypes';
+import type { CreditCard } from '../../../../types/CreditCardTypes';
+import type { PrioritizedCredit } from '../../../../types/CardCreditsTypes';
+
+interface CreditsPreviewStepProps {
+  prioritizedCredits: PrioritizedCredit[];
+  isLoadingPrioritizedCredits: boolean;
+  hasCards: boolean;
+  creditCards: CreditCard[];
+  onCreditClick: (cardId: string, creditId: string) => void;
+}
+
+const MAX_CREDITS_SHOWN = 6;
+
+function toCreditComponentItem(credit: PrioritizedCredit, card: CreditCard | undefined, index: number): CreditComponentItem {
+  return {
+    id: credit.id,
+    displayOrder: index,
+    componentType: CHAT_COMPONENT_TYPES.CREDIT,
+    card: {
+      id: credit.cardId,
+      CardName: credit.cardName,
+      CardPrimaryColor: card?.CardPrimaryColor || '#5A5F66',
+      CardSecondaryColor: card?.CardSecondaryColor || '#F2F4F6',
+    },
+    cardCredit: {
+      id: credit.CreditId,
+      Title: credit.name,
+      Value: credit.totalAmount,
+      TimePeriod: credit.period,
+    },
+    userCredit: {
+      AssociatedPeriod: credit.AssociatedPeriod,
+      isAnniversaryBased: credit.isAnniversaryBased,
+      anniversaryDate: credit.anniversaryDate,
+    },
+    creditMaxValue: credit.totalAmount,
+    currentValueUsed: credit.usedAmount,
+  };
+}
+
+const CreditsPreviewStep: React.FC<CreditsPreviewStepProps> = ({
+  prioritizedCredits,
+  isLoadingPrioritizedCredits,
+  hasCards,
+  creditCards,
+  onCreditClick,
+}) => {
+  const creditsToShow = prioritizedCredits.slice(0, MAX_CREDITS_SHOWN);
+  const remainingCount = prioritizedCredits.length - MAX_CREDITS_SHOWN;
+
+  return (
+    <div className="onboarding-step">
+      <div>
+        <h2 className="onboarding-step__title">Your Credits</h2>
+        <p className="onboarding-step__subtitle">
+          Your cards come with credits, benefits that save you money each billing period. {APP_NAME} tracks them so you never leave money on the table.
+        </p>
+      </div>
+
+      {!hasCards ? (
+        <InfoDisplay
+          type="default"
+          message="Go back to add your cards to see your credits."
+          showTitle={false}
+          transparent
+          showIcon={false}
+          centered
+        />
+      ) : isLoadingPrioritizedCredits ? (
+        <InfoDisplay
+          type="loading"
+          message="Loading credits..."
+          showTitle={false}
+          transparent
+          centered
+        />
+      ) : prioritizedCredits.length === 0 ? (
+        <InfoDisplay
+          type="default"
+          message="No credits found for your current cards."
+          showTitle={false}
+          transparent
+          showIcon={false}
+          centered
+        />
+      ) : (
+        <>
+          <div className="onboarding-component-list">
+            {creditsToShow.map((credit, i) => {
+              const card = creditCards.find(c => c.id === credit.cardId);
+              return (
+                <ChatCreditComponent
+                  key={credit.id}
+                  item={toCreditComponentItem(credit, card, i)}
+                  onCreditClick={onCreditClick}
+                  canUndo={false}
+                />
+              );
+            })}
+          </div>
+          {remainingCount > 0 && (
+            <div className="onboarding-credits-more">
+              <p className="onboarding-credits-more__count">+ {remainingCount} more</p>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default CreditsPreviewStep;
