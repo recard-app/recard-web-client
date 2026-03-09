@@ -1227,6 +1227,7 @@ function AppContent({}: AppContentProps) {
           ) : (
           (() => {
             const isHelpPage = location.pathname.startsWith(PAGES.HELP_CENTER.PATH);
+            const backgroundVariant = (isHelpPage || isLegalPage || isOnboardingRoute) ? 'bg-white' as const : undefined;
             return (
               <UniversalContentWrapper
                 isSidePanelOpen={user ? isSidePanelOpen : false}
@@ -1236,7 +1237,7 @@ function AppContent({}: AppContentProps) {
                   isLandingPage ? 'auth-background' : '',
                 ].join(' ').trim()}
                 disableSidebarMargin={isAuthRoute || !user || isOnboardingRoute}
-                whiteBackground={isHelpPage || isLegalPage || isOnboardingRoute}
+                backgroundVariant={backgroundVariant}
               >
                 <Routes>
                   <Route path="/" element={

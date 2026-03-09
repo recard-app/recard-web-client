@@ -50,6 +50,9 @@ const InstallAppStep: React.FC = () => {
             <span>Scroll down and tap <strong>"Add to Home Screen"</strong></span>
           </li>
           <li>
+            <span>Make sure the <strong>"Open as Web App"</strong> toggle is enabled</span>
+          </li>
+          <li>
             <span>Tap <strong>"Add"</strong> to confirm</span>
           </li>
         </ol>

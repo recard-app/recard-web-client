@@ -6,9 +6,13 @@
   min-height: 0;
   transition: margin-left $side-panel-speed ease-in-out;
 
-  // White background variant for pages that need it
-  &.white-background {
+  // Per-page background variants
+  &.bg-white {
     background-color: $neutral-white;
+  }
+
+  &.bg-lightest {
+    background-color: $neutral-lightest-gray;
   }
   
   // Default behavior: apply sidebar margins
