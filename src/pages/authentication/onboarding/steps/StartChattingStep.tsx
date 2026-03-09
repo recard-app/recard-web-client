@@ -2,10 +2,6 @@ import React from 'react';
 import { Icon } from '../../../../icons';
 import OnboardingHeader from '../OnboardingHeader';
 
-interface StartChattingStepProps {
-  onComplete: (initialPrompt?: string) => void;
-}
-
 const EXAMPLE_PROMPTS = [
   { text: "Which card should I use for groceries?", icon: "card" },
   { text: "What credits do I have expiring soon?", icon: "clock" },
@@ -13,7 +9,7 @@ const EXAMPLE_PROMPTS = [
   { text: "Help me pick a card for travel", icon: "globe-alt" },
 ];
 
-const StartChattingStep: React.FC<StartChattingStepProps> = ({ onComplete }) => {
+const StartChattingStep: React.FC = () => {
   return (
     <div className="onboarding-step">
       <OnboardingHeader
@@ -32,11 +28,6 @@ const StartChattingStep: React.FC<StartChattingStepProps> = ({ onComplete }) => 
           </div>
         ))}
       </div>
-
-      <button className="button icon with-text" style={{ alignSelf: 'flex-start' }} onClick={() => onComplete()}>
-        <Icon name="chat-bubble" variant="mini" size={18} />
-        Start Chatting
-      </button>
     </div>
   );
 };

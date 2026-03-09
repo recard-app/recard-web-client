@@ -104,7 +104,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       case 5:
         return <VerifyEmailStep />;
       case 6:
-        return <StartChattingStep onComplete={onComplete} />;
+        return <StartChattingStep />;
       default:
         return null;
     }
@@ -117,6 +117,14 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           {renderStep()}
           {stepHint[currentStep] && (
             <p className="onboarding-wizard__hint">{stepHint[currentStep]}</p>
+          )}
+          {isLastStep && (
+            <div className="onboarding-wizard__start-chatting-wrapper">
+              <button className="onboarding-wizard__start-chatting" onClick={() => onComplete()}>
+                <Icon name="chat-bubble" variant="mini" size={20} />
+                Start Chatting
+              </button>
+            </div>
           )}
         </div>
         <div className={`onboarding-wizard__nav${isOverflowing ? ' onboarding-wizard__nav--shadow' : ''}`}>
