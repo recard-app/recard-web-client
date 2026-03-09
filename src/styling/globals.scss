@@ -155,13 +155,37 @@ a, .link {
 }
 
 // Buttons
-button, .button {
+
+// Bare <button> elements get neutral defaults so component-level styles
+// are not polluted by primary-button colors (green hover/active).
+button {
+  background-color: transparent;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      background-color: transparent;
+    }
+  }
+
+  &:active:not(:disabled) {
+    background-color: transparent;
+    transform: none;
+  }
+}
+
+// .button class gets the full primary styling + all variants
+.button {
   @include button-primary;
-  
+
   &.secondary {
     @include button-secondary;
   }
-  
+
   &.outline {
     @include button-outline;
   }
@@ -195,11 +219,11 @@ button, .button {
   &.mini {
     @include button-mini;
   }
-  
+
   &.small {
     @include button-small;
   }
-  
+
   &.large {
     @include button-large;
   }

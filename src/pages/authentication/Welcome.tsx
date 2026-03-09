@@ -36,11 +36,11 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
                 for every purchase and maximize your rewards.
               </p>
               <div className="welcome-actions">
-                <button className="icon with-text" onClick={onModalOpen}>
+                <button className="button icon with-text" onClick={onModalOpen}>
                   <Icon name="card" variant="mini" size={16} />
                   <span>Select Your Credit Cards</span>
                 </button>
-                <button className="secondary icon with-text" onClick={() => navigate(PAGES.HOME.PATH)}>
+                <button className="button secondary icon with-text" onClick={() => navigate(PAGES.HOME.PATH)}>
                   <Icon name="chat-bubble" variant="mini" size={16} />
                   <span>{PAGE_NAMES.NEW_TRANSACTION_CHAT}</span>
                 </button>
@@ -58,7 +58,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onModalOpen }) => {
                     <div className="step-card__content">
                       <p className="step-card__description">Select the cards you own to unlock personalized rewards guidance.</p>
                       <div className="card-actions">
-                        <button className="icon with-text mini ghost" onClick={onModalOpen}>
+                        <button className="button icon with-text mini ghost" onClick={onModalOpen}>
                           <Icon name="card" variant="mini" size={16} />
                           <span>Add your cards</span>
                         </button>

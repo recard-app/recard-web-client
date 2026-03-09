@@ -36,7 +36,7 @@ const ErrorWithRetry: React.FC<ErrorWithRetryProps> = ({
         centered={centered}
       />
       {onRetry && (
-        <button onClick={onRetry} type="button">
+        <button className="button" onClick={onRetry} type="button">
           {retryText}
         </button>
       )}

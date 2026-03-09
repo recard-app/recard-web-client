@@ -116,6 +116,11 @@
     }
   }
 
+  &:active:not(.settings-row--disabled):not(.settings-row--static) {
+    background: $neutral-lightest-gray;
+    transform: none;
+  }
+
   &:focus-visible {
     outline: 2px solid $primary-color;
     outline-offset: -2px;

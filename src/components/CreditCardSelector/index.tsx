@@ -158,8 +158,8 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                 <h2>Sign In Required</h2>
                 <p>Log in to unlock full features, manage your credit cards, and get the most out of {APP_NAME}!</p>
                 <div className="auth-buttons">
-                    <button onClick={() => handleAuthRedirect(PAGES.SIGN_IN.PATH)}>Sign In</button>
-                    <button onClick={() => handleAuthRedirect(PAGES.SIGN_UP.PATH)}>Sign Up</button>
+                    <button className="button" onClick={() => handleAuthRedirect(PAGES.SIGN_IN.PATH)}>Sign In</button>
+                    <button className="button outline" onClick={() => handleAuthRedirect(PAGES.SIGN_UP.PATH)}>Sign Up</button>
                 </div>
             </div>
         );
@@ -282,7 +282,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
 
                     {showSaveButton && (
                         <div className="save-section">
-                            <button onClick={handleSave} className="save-button">
+                            <button onClick={handleSave} className="button save-button">
                                 Save
                             </button>
                         </div>
