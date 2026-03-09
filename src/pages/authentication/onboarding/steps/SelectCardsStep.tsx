@@ -1,6 +1,7 @@
 import React from 'react';
 import ChatCardComponent from '../../../../elements/ChatComponents/ChatCardComponent';
 import { Icon } from '../../../../icons';
+import { InfoDisplay } from '../../../../elements';
 import { CHAT_COMPONENT_TYPES } from '../../../../types/ChatComponentTypes';
 import type { CardComponentItem } from '../../../../types/ChatComponentTypes';
 import type { CreditCard } from '../../../../types/CreditCardTypes';
@@ -37,32 +38,32 @@ const SelectCardsStep: React.FC<SelectCardsStepProps> = ({ onModalOpen, creditCa
       <div>
         <h2 className="onboarding-step__title">Select Your Cards</h2>
         <p className="onboarding-step__subtitle">
-          Add the credit cards you own to get personalized recommendations.
+          Add the credit cards you own to get personalized recommendations. You can also set a preferred card, which the assistant will default to when making suggestions.
         </p>
       </div>
 
       {hasCards ? (
-        <>
-          <div className="onboarding-component-list">
-            {selectedCards.map((card, i) => (
-              <ChatCardComponent
-                key={card.id}
-                item={toCardComponentItem(card, i)}
-                onCardClick={onCardClick}
-                canUndo={false}
-              />
-            ))}
-          </div>
-          <button className="button icon with-text" style={{ alignSelf: 'flex-start' }} onClick={onModalOpen}>
-            <Icon name="card" variant="mini" size={18} />
-            Select Cards
-          </button>
-        </>
+        <div className="onboarding-component-list">
+          {selectedCards.map((card, i) => (
+            <ChatCardComponent
+              key={card.id}
+              item={toCardComponentItem(card, i)}
+              onCardClick={onCardClick}
+              canUndo={false}
+            />
+          ))}
+        </div>
       ) : (
-        <button className="button" onClick={onModalOpen}>
-          Select Your Credit Cards
-        </button>
+        <InfoDisplay
+          type="info"
+          message="No cards selected yet. Tap below to add your cards."
+          showTitle={false}
+        />
       )}
+      <button className="button icon with-text" style={{ alignSelf: 'flex-start' }} onClick={onModalOpen}>
+        <Icon name="card" variant="mini" size={18} />
+        Select Cards
+      </button>
     </div>
   );
 };

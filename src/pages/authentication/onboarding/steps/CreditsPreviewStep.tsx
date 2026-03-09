@@ -1,5 +1,6 @@
 import React from 'react';
 import ChatCreditComponent from '../../../../elements/ChatComponents/ChatCreditComponent';
+import { Icon } from '../../../../icons';
 import { InfoDisplay } from '../../../../elements';
 import { APP_NAME } from '../../../../types/Constants';
 import { CHAT_COMPONENT_TYPES } from '../../../../types/ChatComponentTypes';
@@ -13,6 +14,7 @@ interface CreditsPreviewStepProps {
   hasCards: boolean;
   creditCards: CreditCard[];
   onCreditClick: (cardId: string, creditId: string) => void;
+  onModalOpen: () => void;
 }
 
 const MAX_CREDITS_SHOWN = 6;
@@ -50,6 +52,7 @@ const CreditsPreviewStep: React.FC<CreditsPreviewStepProps> = ({
   hasCards,
   creditCards,
   onCreditClick,
+  onModalOpen,
 }) => {
   const creditsToShow = prioritizedCredits.slice(0, MAX_CREDITS_SHOWN);
   const remainingCount = prioritizedCredits.length - MAX_CREDITS_SHOWN;
@@ -64,14 +67,17 @@ const CreditsPreviewStep: React.FC<CreditsPreviewStepProps> = ({
       </div>
 
       {!hasCards ? (
-        <InfoDisplay
-          type="default"
-          message="Go back to add your cards to see your credits."
-          showTitle={false}
-          transparent
-          showIcon={false}
-          centered
-        />
+        <>
+          <InfoDisplay
+            type="info"
+            message="Add your cards to see if they come with any credits."
+            showTitle={false}
+          />
+          <button className="button icon with-text" style={{ alignSelf: 'flex-start' }} onClick={onModalOpen}>
+            <Icon name="card" variant="mini" size={18} />
+            Select Cards
+          </button>
+        </>
       ) : isLoadingPrioritizedCredits ? (
         <InfoDisplay
           type="loading"
@@ -82,12 +88,9 @@ const CreditsPreviewStep: React.FC<CreditsPreviewStepProps> = ({
         />
       ) : prioritizedCredits.length === 0 ? (
         <InfoDisplay
-          type="default"
-          message="No credits found for your current cards."
+          type="info"
+          message="None of your current cards have trackable credits. You can still use the chat to get card recommendations and spending advice."
           showTitle={false}
-          transparent
-          showIcon={false}
-          centered
         />
       ) : (
         <>

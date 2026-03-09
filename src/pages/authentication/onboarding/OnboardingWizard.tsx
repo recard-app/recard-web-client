@@ -90,6 +90,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             isLoadingPrioritizedCredits={isLoadingPrioritizedCredits}
             hasCards={hasCards}
             creditCards={creditCards}
+            onModalOpen={onModalOpen}
             onCreditClick={onCreditClick}
           />
         );
