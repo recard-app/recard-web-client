@@ -1,19 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Icon } from '../../../icons';
-import { ICON_GRAY } from '../../../types';
+import { ICON_GRAY, MOBILE_BREAKPOINT } from '../../../types';
 
 interface HelpNavSectionProps {
   title: string;
   defaultExpanded?: boolean;
+  /** When true, auto-expands the section (e.g. current page is in this section). */
+  containsActivePage?: boolean;
+  /** Current pathname -- used on mobile to reset sections on navigation. */
+  pathname?: string;
   children: React.ReactNode;
 }
 
 const HelpNavSection: React.FC<HelpNavSectionProps> = ({
   title,
-  defaultExpanded = true,
+  defaultExpanded = false,
+  containsActivePage = false,
+  pathname,
   children
 }) => {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded || containsActivePage);
+
+  const isMobile = useCallback(
+    () => window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches,
+    []
+  );
+
+  // Mobile: reset all sections on every navigation -- only active section stays open
+  // Desktop: only auto-expand the active section, leave manual toggles alone
+  useEffect(() => {
+    if (isMobile()) {
+      setIsExpanded(containsActivePage);
+    } else if (containsActivePage) {
+      setIsExpanded(true);
+    }
+  }, [containsActivePage, pathname, isMobile]);
 
   return (
     <div className="help-nav-section">

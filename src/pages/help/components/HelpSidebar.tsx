@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import HelpNavSection from './HelpNavSection';
 import HelpNavItem from './HelpNavItem';
 import { HelpService } from '../../../services/helpService';
@@ -36,6 +37,7 @@ interface HelpSidebarProps {
 const HelpSidebar: React.FC<HelpSidebarProps> = ({ onNavClick }) => {
   const [categories, setCategories] = useState<HelpTocCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     HelpService.fetchTableOfContents()
@@ -82,19 +84,29 @@ const HelpSidebar: React.FC<HelpSidebarProps> = ({ onNavClick }) => {
       )}
 
       {/* Category sections */}
-      {sections.map((section) => (
-        <HelpNavSection key={section.category} title={section.label} defaultExpanded={true}>
-          {section.articles.map((article) => (
-            <HelpNavItem
-              key={article.id}
-              label={article.title}
-              to={articleIdToPath(article.id)}
-              indent
-              onClick={onNavClick}
-            />
-          ))}
-        </HelpNavSection>
-      ))}
+      {sections.map((section) => {
+        const sectionHasActivePage = section.articles.some(
+          (article) => location.pathname === articleIdToPath(article.id)
+        );
+        return (
+          <HelpNavSection
+            key={section.category}
+            title={section.label}
+            containsActivePage={sectionHasActivePage}
+            pathname={location.pathname}
+          >
+            {section.articles.map((article) => (
+              <HelpNavItem
+                key={article.id}
+                label={article.title}
+                to={articleIdToPath(article.id)}
+                indent
+                onClick={onNavClick}
+              />
+            ))}
+          </HelpNavSection>
+        );
+      })}
 
       {/* FAQ -- top-level */}
       {faq && faq.articles[0] && (
