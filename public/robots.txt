@@ -1,3 +1,17 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /chat/
+Disallow: /account
+Disallow: /preferences
+Disallow: /my-cards
+Disallow: /my-credits
+Disallow: /previous-chats
+Disallow: /delete-history
+Disallow: /delete-account
+Disallow: /welcome
+Disallow: /help
+Disallow: /auth/action
+Disallow: /design
+Disallow: /design/
+
+Sitemap: https://cardzen.ai/sitemap.xml

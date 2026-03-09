@@ -1,12 +1,14 @@
 {
   "name": "Cardzen",
   "short_name": "Cardzen",
+  "description": "The calm way to maximize rewards. AI-powered credit card recommendations tailored to your spending habits.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#FFFFFF",
   "background_color": "#FFFFFF",
+  "categories": ["finance", "productivity", "ai"],
   "icons": [
     {
       "src": "cardzen_logo_small.png",

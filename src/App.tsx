@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard, UserCredit, CreditCardDetails, CardCredit } from './types';
 import { Icon, CardIcon } from './icons';
 // Services
@@ -40,6 +39,7 @@ import LandingPage from './pages/landing/LandingPage';
 import { Help } from './pages/help';
 import { HelpArticleRenderer } from './pages/help/components';
 import { TermsOfService, PrivacyPolicy } from './pages/legal';
+import NotFound from './pages/not-found/NotFound';
 // Components
 
 import AppSidebar from './components/AppSidebar';
@@ -76,6 +76,7 @@ import { useAuth } from './context/AuthContext';
 // Hooks
 import { usePageBackground } from './hooks/usePageBackground';
 import { useViewportHeight } from './hooks/useViewportHeight';
+import { usePageMeta } from './hooks/usePageMeta';
 
 // Constants and Types
 import {
@@ -120,6 +121,13 @@ function AppContent({}: AppContentProps) {
   usePageBackground();
   // Ensure iOS Safari uses visible viewport height
   useViewportHeight();
+
+  // SEO: dynamic title, meta description, canonical, noindex
+  const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH, PAGES.AUTH_ACTION.PATH]);
+  const isAuthRoute = authPaths.has(location.pathname);
+  const isLegalPage = location.pathname === PAGES.TERMS_OF_SERVICE.PATH || location.pathname === PAGES.PRIVACY_POLICY.PATH;
+  const isLandingPage = !user && !isAuthRoute && !isLegalPage && location.pathname === '/';
+  const pageMeta = usePageMeta(isLandingPage);
 
   useEffect(() => {
     if (!isDesignSystemPage || typeof document === 'undefined') {
@@ -831,15 +839,6 @@ function AppContent({}: AppContentProps) {
     }
   };
 
-  const createTitle = (suffix?: string) => {
-    return suffix ? APP_NAME + ' - ' + suffix : APP_NAME;
-  };
-
-  const getPageTitle = () => {
-    const path = location.pathname;
-    const pageTitle = PageUtils.getTitleByPath(path);
-    return pageTitle ? createTitle(pageTitle) : createTitle();
-  };
 
   // Effect to persist side panel state to localStorage
   useEffect(() => {
@@ -940,15 +939,10 @@ function AppContent({}: AppContentProps) {
         <CreditDrawerBridge drawerRef={creditDrawerRef} />
         <div className="app">
           <Toaster position="top-right" richColors />
-          <Helmet>
-            <title>{getPageTitle()}</title>
-          </Helmet>
+          {pageMeta}
 
           {/* Check if current route is an auth page (no sidebar/nav should show) */}
           {(() => {
-            const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH, PAGES.AUTH_ACTION.PATH]);
-            const isAuthRoute = authPaths.has(location.pathname);
-
             return (
               <>
                 {/* Universal Sidebar - shown on all pages when user is authenticated (except auth pages and design system) */}
@@ -1195,11 +1189,7 @@ function AppContent({}: AppContentProps) {
             </Routes>
           ) : (
           (() => {
-            const authPaths = new Set<string>([PAGES.SIGN_IN.PATH, PAGES.SIGN_UP.PATH, PAGES.FORGOT_PASSWORD.PATH, PAGES.AUTH_ACTION.PATH]);
-            const isAuthRoute = authPaths.has(location.pathname);
             const isHelpPage = location.pathname.startsWith(PAGES.HELP_CENTER.PATH);
-            const isLegalPage = location.pathname === PAGES.TERMS_OF_SERVICE.PATH || location.pathname === PAGES.PRIVACY_POLICY.PATH;
-            const isLandingPage = !user && !isAuthRoute && !isLegalPage;
             return (
               <UniversalContentWrapper
                 isSidePanelOpen={user ? isSidePanelOpen : false}
@@ -1337,6 +1327,7 @@ function AppContent({}: AppContentProps) {
                   </Route>
                   <Route path={PAGES.TERMS_OF_SERVICE.PATH} element={<TermsOfService />} />
                   <Route path={PAGES.PRIVACY_POLICY.PATH} element={<PrivacyPolicy />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </UniversalContentWrapper>
             );
@@ -1352,11 +1343,9 @@ function AppContent({}: AppContentProps) {
 function App() {
   return (
     <Router>
-      <HelmetProvider>
-        <ComponentsProvider autoFetch={true}>
-          <AppContent />
-        </ComponentsProvider>
-      </HelmetProvider>
+      <ComponentsProvider autoFetch={true}>
+        <AppContent />
+      </ComponentsProvider>
     </Router>
   );
 }

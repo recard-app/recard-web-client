@@ -5,7 +5,8 @@
     <link rel="icon" type="image/png" href="/cardzen_logo_small.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
     <meta name="theme-color" content="#FFFFFF" />
-    <meta name="description" content="AI-powered credit card recommendations tailored to your spending habits" />
+    <!-- Keep in sync with src/types/MarketingContent.ts -->
+    <meta name="description" content="Cardzen - The calm way to maximize rewards. AI-powered credit card recommendations tailored to your spending habits." />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -15,26 +16,60 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&display=swap" rel="stylesheet">
-    
+
     <!-- Preconnect to API origin for faster first-load TTFB -->
-    <!-- If using an env var, replace with your production API origin -->
     <link rel="preconnect" href="https://api.cardzen.ai" crossorigin>
-    
+
+    <!-- Open Graph - keep in sync with src/types/MarketingContent.ts -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cardzen" />
+    <meta property="og:title" content="Cardzen - The calm way to maximize rewards" />
+    <meta property="og:description" content="Cardzen - The calm way to maximize rewards. AI-powered credit card recommendations tailored to your spending habits." />
+    <meta property="og:url" content="https://cardzen.ai" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter/X Card - keep in sync with src/types/MarketingContent.ts -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Cardzen - The calm way to maximize rewards" />
+    <meta name="twitter:description" content="Cardzen - The calm way to maximize rewards. AI-powered credit card recommendations tailored to your spending habits." />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Cardzen",
+      "url": "https://cardzen.ai",
+      "description": "Cardzen - The calm way to maximize rewards. AI-powered credit card recommendations tailored to your spending habits.",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Cardzen",
+      "url": "https://cardzen.ai",
+      "logo": "https://cardzen.ai/cardzen_logo_large.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "hello@cardzen.ai",
+        "contactType": "customer support"
+      }
+    }
+    </script>
+
     <title>Cardzen</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
