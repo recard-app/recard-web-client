@@ -6,6 +6,8 @@ import { SubscriptionPlan, SubscriptionStatusType, SUBSCRIPTION_STATUS, MONTH_AB
 import Icon from '../../icons';
 import ProfileAvatar from '../../components/ProfileAvatar';
 import { SHOW_SUBSCRIPTION_MENTIONS } from '../../types';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
+import { InstallAppDrawer } from '../../components/InstallAppDrawer';
 import {
   handleVerificationEmail as handleVerificationEmailUtil,
   validateDisplayName,
@@ -56,6 +58,10 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
   const [currentPassword, setCurrentPassword] = useState('');
   const [isUpdatingEmail, setIsUpdatingEmail] = useState(false);
   const [emailError, setEmailError] = useState<string | null>(null);
+
+  // PWA install state
+  const [isInstallDrawerOpen, setIsInstallDrawerOpen] = useState(false);
+  const { canShow: canShowInstall, platform, promptInstall, markDismissed } = usePWAInstall();
 
   useFullHeight(true);
 
@@ -331,6 +337,13 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
                   label="Revisit Onboarding"
                   to={PAGES.WELCOME.PATH}
                 />
+                {canShowInstall && (
+                  <SettingsRow
+                    label="Install App"
+                    onClick={() => setIsInstallDrawerOpen(true)}
+                    icon={<Icon name="globe-alt" variant="mini" size={16} color={ICON_GRAY} />}
+                  />
+                )}
               </SettingsCard>
 
               {/* Legal */}
@@ -475,6 +488,18 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+
+              {/* Install App Drawer */}
+              <InstallAppDrawer
+                open={isInstallDrawerOpen}
+                onOpenChange={setIsInstallDrawerOpen}
+                platform={platform}
+                onInstall={promptInstall}
+                onDismiss={() => {
+                  markDismissed();
+                  setIsInstallDrawerOpen(false);
+                }}
+              />
             </div>
           ) : (
             <p>Please sign in to view your account details.</p>

@@ -1,0 +1,62 @@
+@use '../../styling/variables' as *;
+@use '../../styling/pwa' as *;
+
+.install-app-drawer__body {
+  padding: 0 $space-6 $space-2;
+}
+
+.install-app-drawer__steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  li {
+    counter-increment: step;
+    display: grid;
+    grid-template-columns: $icon-medium 1fr;
+    gap: $space-3;
+    align-items: start;
+    font-size: $font-sm;
+    line-height: $leading-relaxed;
+
+    &::before {
+      content: counter(step);
+      width: $icon-medium;
+      height: $icon-medium;
+      border-radius: $radius-full;
+      background: $primary-color;
+      color: $neutral-white;
+      font-size: $font-xs;
+      font-weight: $font-semibold;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+  }
+}
+
+.install-app-drawer__share-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 $space-half;
+  color: $primary-color;
+}
+
+.install-app-drawer__message {
+  font-size: $font-sm;
+  line-height: $leading-normal;
+  margin: 0;
+  text-align: center;
+}
+
+// PWA safe area padding for footer
+@media (display-mode: standalone) {
+  .install-app-drawer [data-slot="drawer-footer"] {
+    padding-bottom: $drawer-bottom-buffer-pwa;
+  }
+}

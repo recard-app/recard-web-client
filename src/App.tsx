@@ -77,6 +77,8 @@ import { useAuth } from './context/AuthContext';
 import { usePageBackground } from './hooks/usePageBackground';
 import { useViewportHeight } from './hooks/useViewportHeight';
 import { usePageMeta } from './hooks/usePageMeta';
+import { usePWAInstall } from './hooks/usePWAInstall';
+import { InstallAppDrawer } from './components/InstallAppDrawer';
 
 // Constants and Types
 import {
@@ -255,10 +257,32 @@ function AppContent({}: AppContentProps) {
   // Ref to track if we're intentionally clearing the chat (prevents sync effect from redirecting)
   const isClearingChatRef = useRef<boolean>(false);
 
+  // PWA install state
+  const [isInstallDrawerOpen, setIsInstallDrawerOpen] = useState(false);
+  const {
+    shouldProactiveShow,
+    platform: installPlatform,
+    promptInstall,
+    markDismissed: markInstallDismissed,
+    markProactiveShown
+  } = usePWAInstall();
+
   // Effect to reset current chat ID when user changes
   useEffect(() => {
     setCurrentChatId(null);
   }, [user]);
+
+  // Proactive PWA install prompt (one-time, 3s after mount)
+  useEffect(() => {
+    if (!shouldProactiveShow) return;
+
+    const timer = setTimeout(() => {
+      setIsInstallDrawerOpen(true);
+      markProactiveShown();
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [shouldProactiveShow, markProactiveShown]);
 
   // Effect to fetch daily digest when user is authenticated
   useEffect(() => {
@@ -940,6 +964,18 @@ function AppContent({}: AppContentProps) {
         <div className="app">
           <Toaster position="top-right" richColors />
           {pageMeta}
+
+          {/* PWA Install Drawer */}
+          <InstallAppDrawer
+            open={isInstallDrawerOpen}
+            onOpenChange={setIsInstallDrawerOpen}
+            platform={installPlatform}
+            onInstall={promptInstall}
+            onDismiss={() => {
+              markInstallDismissed();
+              setIsInstallDrawerOpen(false);
+            }}
+          />
 
           {/* Check if current route is an auth page (no sidebar/nav should show) */}
           {(() => {
