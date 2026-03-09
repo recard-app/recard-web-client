@@ -1236,7 +1236,7 @@ function AppContent({}: AppContentProps) {
                   isLandingPage ? 'auth-background' : '',
                 ].join(' ').trim()}
                 disableSidebarMargin={isAuthRoute || !user || isOnboardingRoute}
-                whiteBackground={isHelpPage || isLegalPage}
+                whiteBackground={isHelpPage || isLegalPage || isOnboardingRoute}
               >
                 <Routes>
                   <Route path="/" element={

@@ -70,7 +70,7 @@
     align-items: stretch;
     justify-content: stretch;
     padding: 0;
-    background: $neutral-white;
+    background: $neutral-white; // Override auth-background gradient on mobile
   }
 
   .onboarding-wizard {
@@ -81,7 +81,7 @@
   }
 
   .onboarding-wizard__card {
-    background: none;
+    background-color: $neutral-lightest-gray;
     border: none;
     border-radius: 0;
     box-shadow: none;
