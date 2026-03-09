@@ -376,9 +376,6 @@
                 font-weight: $font-semibold;
                 color: $neutral-black;
               }
-              .cell.rate {
-                color: $primary-color;
-              }
             }
 
             &.sub-row {
@@ -388,7 +385,7 @@
             // Expandable row structure
             .multiplier-row-clickable {
               display: grid;
-              grid-template-columns: auto 1fr 2fr;
+              grid-template-columns: auto 1fr 2fr 2rem;
               gap: 0;
               align-items: start;
               width: 100%;
@@ -396,7 +393,6 @@
               transition: background-color $transition-base;
 
               &.has-expandable {
-                grid-template-columns: auto 1fr 2fr auto;
                 cursor: pointer;
 
                 @include hover {
@@ -527,9 +523,21 @@
               }
 
               &.rate {
-                font-weight: $font-semibold;
-                color: $primary-color;
                 white-space: nowrap;
+                padding-right: 0;
+                font-size: $font-xs;
+
+                .rate-badge {
+                  display: inline-flex;
+                  align-items: center;
+                  justify-content: center;
+                  padding: 1px $space-half;
+                  background-color: $info-success-green;
+                  color: $neutral-white;
+                  font-weight: $font-bold;
+                  border-radius: $radius-sm;
+                  min-width: 24px;
+                }
               }
 
               &.description {

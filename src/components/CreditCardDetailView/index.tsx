@@ -565,7 +565,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                                 tabIndex={hasExpandableContent ? 0 : undefined}
                                                                 onKeyDown={(e) => hasExpandableContent && e.key === 'Enter' && toggleMultiplierExpanded(m.id)}
                                                             >
-                                                                <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
+                                                                <div className="cell rate">
+                                                                    {m.Multiplier !== null ? (
+                                                                        <span className="rate-badge">{m.Multiplier}x</span>
+                                                                    ) : '—'}
+                                                                </div>
                                                                 <div className="cell subcategory">
                                                                     {isDisabled && (
                                                                         <span className="disabled-pill">Disabled</span>
@@ -680,7 +684,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                                 tabIndex={hasExpandableContent ? 0 : undefined}
                                                                 onKeyDown={(e) => hasExpandableContent && e.key === 'Enter' && toggleMultiplierExpanded(m.id)}
                                                             >
-                                                                <div className="cell rate">{m.Multiplier !== null ? `${m.Multiplier}x` : '—'}</div>
+                                                                <div className="cell rate">
+                                                                    {m.Multiplier !== null ? (
+                                                                        <span className="rate-badge">{m.Multiplier}x</span>
+                                                                    ) : '—'}
+                                                                </div>
                                                                 <div className="cell subcategory">
                                                                     {isDisabled && (
                                                                         <span className="disabled-pill">Disabled</span>
