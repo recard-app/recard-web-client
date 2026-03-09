@@ -845,11 +845,6 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                         </div>
                                         {isExpanded && hasDetails && (
                                             <div className="component-details-section">
-                                                {(credit.Category || credit.SubCategory) && (
-                                                    <span className="category-badge">
-                                                        {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
-                                                    </span>
-                                                )}
                                                 {credit.Requirements && (
                                                     <div className="component-requirements">
                                                         <span className="label">Requirements:</span> {credit.Requirements}
@@ -864,6 +859,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                     <div className="component-anniversary-note">
                                                         <span className="label">Note:</span> This credit renews annually on your card's anniversary date rather than the calendar year.
                                                     </div>
+                                                )}
+                                                {(credit.Category || credit.SubCategory) && (
+                                                    <span className="category-badge">
+                                                        {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
+                                                    </span>
                                                 )}
                                                 {showTrackingPreferences && (
                                                     <div className="tracking-toggle">
@@ -921,6 +921,11 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                         {perk.Title}
                                                     </div>
                                                 </div>
+                                                {(perk.Category || perk.SubCategory) && (
+                                                    <span className="category-badge">
+                                                        {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
+                                                    </span>
+                                                )}
                                                 <div className="component-description">
                                                     {perk.Description}
                                                 </div>
@@ -939,11 +944,6 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                         </div>
                                         {isExpanded && hasDetails && (
                                             <div className="component-details-section">
-                                                {(perk.Category || perk.SubCategory) && (
-                                                    <span className="category-badge">
-                                                        {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
-                                                    </span>
-                                                )}
                                                 {perk.Requirements && (
                                                     <div className="component-requirements">
                                                         <span className="label">Requirements:</span> {perk.Requirements}

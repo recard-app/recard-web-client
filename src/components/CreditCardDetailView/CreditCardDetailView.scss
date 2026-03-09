@@ -542,7 +542,7 @@
 
               &.description {
                 .multiplier-desc {
-                  font-size: $font-xs;
+                  font-size: $font-sm;
                   color: $neutral-dark-gray;
                   line-height: $leading-normal;
                 }
@@ -745,15 +745,19 @@
 
   // Disabled pill badge
   .disabled-pill {
-    display: inline-block;
-    padding: $space-half $space-1-5;
+    display: inline-flex;
+    align-items: center;
+    padding: $space-half $space-2;
     margin-right: $space-1-5;
     font-size: $font-xxs;
     font-weight: $font-semibold;
+    line-height: 1;
+    white-space: nowrap;
     text-transform: uppercase;
     letter-spacing: $letter-spacing-caps;
     color: $neutral-dark-gray;
-    background-color: $neutral-light-gray;
+    background-color: $neutral-lightest-gray;
+    border: $border-full solid $neutral-light-gray;
     border-radius: $radius-full;
     vertical-align: middle;
   }
@@ -895,12 +899,12 @@
       margin-bottom: $space-2;
 
       .value-badge {
-        background-color: $primary-lightest;
-        color: $primary-color;
+        background-color: $info-success-green;
+        color: $neutral-white;
         padding: $space-half $space-1-5;
         border-radius: $radius-sm;
         font-size: $font-xs;
-        font-weight: $font-semibold;
+        font-weight: $font-bold;
         white-space: nowrap;
       }
 
@@ -942,13 +946,13 @@
       transition: background-color $transition-base;
 
       .category-badge {
-        margin-bottom: $space-2;
+        margin-bottom: 0;
       }
 
       .component-requirements,
       .component-details-text,
       .component-anniversary-note {
-        font-size: $font-xs;
+        font-size: $font-sm;
         color: $neutral-dark-gray;
         line-height: $leading-normal;
         margin-bottom: $space-2;
@@ -971,6 +975,16 @@
           color: $neutral-dark-gray;
         }
       }
+    }
+  }
+
+  .perks-grid .component-card {
+    .component-header {
+      margin-bottom: 0;
+    }
+
+    .category-badge {
+      margin-bottom: $space-1;
     }
   }
 }
