@@ -27,12 +27,14 @@ function formatMultiplierBadge(multiplier: number | null): string {
 }
 
 /**
- * Displays a single multiplier in the chat with optional action.
- * Clickable - opens card detail modal to multipliers tab.
+ * @deprecated Legacy V1 multiplier component. Use ChatMultiplierComponent (V2) instead.
  *
- * V2 layout:
- *   <multiplier rate> <card icon> <card name>
- *   <multiplier name (bold)>: <multiplier description>
+ * V1 layout:
+ *   <multiplier rate> <card icon> <multiplier name>
+ *   <multiplier description>
+ *
+ * Replaced by V2 which shows the card name in the header row and
+ * prefixes the description with the bold multiplier name.
  */
 const ChatMultiplierComponent: React.FC<ChatMultiplierComponentProps> = ({
   item,
@@ -70,13 +72,10 @@ const ChatMultiplierComponent: React.FC<ChatMultiplierComponentProps> = ({
   // Get action display text
   const actionText = action ? MULTIPLIER_ACTION_DISPLAY_LABELS[action.actionType] : '';
 
-  // Get category for display fallback when no description
+  // Get category for display (backend provides effective category already resolved)
   const categoryDisplay = multiplier.SubCategory && multiplier.SubCategory !== multiplier.Category
     ? `${multiplier.Category} - ${multiplier.SubCategory}`
     : multiplier.Category;
-
-  // Build the detail line: "<Name>: <Description>" or "<Name>: <Category>"
-  const detailText = multiplier.Description || categoryDisplay;
 
   return (
     <div className={className}>
@@ -99,13 +98,15 @@ const ChatMultiplierComponent: React.FC<ChatMultiplierComponentProps> = ({
             secondary={card.CardSecondaryColor}
             className="multiplier-card-icon"
           />
-          <span className="multiplier-title">{card.CardName}</span>
+          <span className="multiplier-title">{multiplier.Name}</span>
         </div>
 
         <div className="multiplier-details">
-          <span className={multiplier.Description ? 'multiplier-description' : 'multiplier-category'}>
-            <strong className="multiplier-name-label">{multiplier.Name}</strong>: {detailText}
-          </span>
+          {multiplier.Description ? (
+            <span className="multiplier-description">{multiplier.Description}</span>
+          ) : (
+            <span className="multiplier-category">{categoryDisplay}</span>
+          )}
         </div>
       </div>
 

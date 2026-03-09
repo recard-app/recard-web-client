@@ -804,6 +804,16 @@ function AppContent({}: AppContentProps) {
     }
   };
 
+  // Function to handle multiplier click - opens card drawer to multipliers tab
+  const handleMultiplierClick = (cardId: string, _multiplierId: string) => {
+    const details = userDetailedCardDetails.find(detail => detail.id === cardId);
+    if (details) {
+      setSelectedCardDetails(details);
+      setCardDetailActiveTab('multipliers');
+      setIsCardDetailsOpen(true);
+    }
+  };
+
   // Function to handle credit selection by ID (for chat component clicks)
   // Opens drawer immediately with loading state, then fetches data
   const handleCreditSelect = async (cardId: string, creditId: string) => {
@@ -937,6 +947,7 @@ function AppContent({}: AppContentProps) {
               onNewChat={handleClearChat}
               onCardSelect={handleCardSelectById}
               onCreditClick={handleCreditSelect}
+              onMultiplierClick={handleMultiplierClick}
               onRefreshCredits={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
               onRefreshCards={() => setCardsVersion(v => v + 1)}
               digest={digest}

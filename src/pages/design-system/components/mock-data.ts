@@ -953,6 +953,129 @@ export const mockMultiplierComponentItems: MultiplierComponentItem[] = [
   },
 ];
 
+// All multiplier permutations for design system comparison
+export const mockMultiplierPermutations: MultiplierComponentItem[] = [
+  // With description + track action
+  {
+    id: 'item-mult-perm-desc-track',
+    componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+    displayOrder: 1,
+    multiplier: toChatComponentMultiplier(mockCardMultipliers[0]),
+    card: toChatComponentCard(mockCreditCards[0]),
+    action: {
+      id: 'action-mult-perm-1',
+      componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: MULTIPLIER_ACTION_TYPES.TRACK,
+      cardId: 'card-amex-gold',
+      multiplierId: 'mult-amex-gold-dining',
+    },
+  },
+  // With description + untrack action
+  {
+    id: 'item-mult-perm-desc-untrack',
+    componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+    displayOrder: 2,
+    multiplier: toChatComponentMultiplier(mockCardMultipliers[1]),
+    card: toChatComponentCard(mockCreditCards[1]),
+    action: {
+      id: 'action-mult-perm-2',
+      componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: MULTIPLIER_ACTION_TYPES.UNTRACK,
+      cardId: 'card-chase-sapphire',
+      multiplierId: 'mult-chase-travel',
+    },
+  },
+  // With description + no action
+  {
+    id: 'item-mult-perm-desc-none',
+    componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+    displayOrder: 3,
+    multiplier: toChatComponentMultiplier(mockCardMultipliers[2]),
+    card: toChatComponentCard(mockCreditCards[4]),
+  },
+  // No description (falls back to category) + track action
+  {
+    id: 'item-mult-perm-cat-track',
+    componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+    displayOrder: 4,
+    multiplier: {
+      id: 'mult-no-desc',
+      Name: 'Grocery Rewards',
+      Category: 'Groceries',
+      SubCategory: 'Supermarkets',
+      Multiplier: 3,
+    },
+    card: toChatComponentCard(mockCreditCards[2]),
+    action: {
+      id: 'action-mult-perm-4',
+      componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: MULTIPLIER_ACTION_TYPES.TRACK,
+      cardId: 'card-citi-premier',
+      multiplierId: 'mult-no-desc',
+    },
+  },
+  // No description (same category/subcategory) + no action
+  {
+    id: 'item-mult-perm-cat-same-none',
+    componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+    displayOrder: 5,
+    multiplier: {
+      id: 'mult-no-desc-same-cat',
+      Name: 'Gas Rewards',
+      Category: 'Gas',
+      SubCategory: 'Gas',
+      Multiplier: 2,
+    },
+    card: toChatComponentCard(mockCreditCards[3]),
+  },
+  // Bonus (null multiplier) + track action
+  {
+    id: 'item-mult-perm-bonus-track',
+    componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+    displayOrder: 6,
+    multiplier: {
+      id: 'mult-bonus',
+      Name: 'Welcome Bonus',
+      Category: 'All Purchases',
+      Multiplier: null,
+      Description: 'Earn bonus points on all purchases in the first 6 months',
+    },
+    card: toChatComponentCard(mockCreditCards[0]),
+    action: {
+      id: 'action-mult-perm-6',
+      componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+      timestamp: new Date().toISOString(),
+      isUndone: false,
+      actionType: MULTIPLIER_ACTION_TYPES.TRACK,
+      cardId: 'card-amex-gold',
+      multiplierId: 'mult-bonus',
+    },
+  },
+  // Undone action
+  {
+    id: 'item-mult-perm-undone',
+    componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+    displayOrder: 7,
+    multiplier: toChatComponentMultiplier(mockCardMultipliers[0]),
+    card: toChatComponentCard(mockCreditCards[0]),
+    action: {
+      id: 'action-mult-perm-7',
+      componentType: CHAT_COMPONENT_TYPES.MULTIPLIER,
+      timestamp: new Date().toISOString(),
+      isUndone: true,
+      actionType: MULTIPLIER_ACTION_TYPES.TRACK,
+      cardId: 'card-amex-gold',
+      multiplierId: 'mult-amex-gold-dining',
+    },
+  },
+];
+
 // Mixed component block for testing
 export const mockChatComponentBlock: ChatComponentBlock = {
   id: 'block-mixed-1',

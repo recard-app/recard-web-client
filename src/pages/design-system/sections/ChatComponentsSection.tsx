@@ -5,6 +5,7 @@ import {
   ChatCreditComponent,
   ChatPerkComponent,
   ChatMultiplierComponent,
+  ChatMultiplierComponentLegacy,
   ActionDisplay,
   ShowMoreButton,
 } from '../../../elements/ChatComponents';
@@ -15,7 +16,7 @@ import {
   mockCardComponentItems,
   mockCreditComponentItems,
   mockPerkComponentItems,
-  mockMultiplierComponentItems,
+  mockMultiplierPermutations,
   mockChatComponentBlock,
   mockLargeChatComponentBlock,
 } from '../components/mock-data';
@@ -492,15 +493,38 @@ const ChatComponentsSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Multiplier Components */}
+      {/* Multiplier Components V2 (Current) */}
       <div className="ds-subsection">
-        <h3>ChatMultiplierComponent</h3>
+        <h3>ChatMultiplierComponent V2 (Current)</h3>
         <p className="ds-description">
-          Multipliers with badge and category (clickable - opens card modal to multipliers tab)
+          V2 layout: rate badge + card icon + card name on the header row,
+          then bold multiplier name + description on the detail line.
+          All permutations with action rows shown below.
         </p>
         <div className="ds-component-list">
-          {mockMultiplierComponentItems.map((item) => (
+          {mockMultiplierPermutations.map((item) => (
             <ChatMultiplierComponent
+              key={item.id}
+              item={item}
+              onMultiplierClick={handleMultiplierClick}
+              onUndoAction={handleUndoAction}
+              canUndo={true}
+              isUndoPending={pendingUndoActions.has(item.action?.id || '')}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Multiplier Components Legacy (V1) */}
+      <div className="ds-subsection">
+        <h3>ChatMultiplierComponent Legacy (V1)</h3>
+        <p className="ds-description">
+          Legacy layout: rate badge + card icon + multiplier name on the header row,
+          then description text on the detail line. Kept for reference.
+        </p>
+        <div className="ds-component-list">
+          {mockMultiplierPermutations.map((item) => (
+            <ChatMultiplierComponentLegacy
               key={item.id}
               item={item}
               onMultiplierClick={handleMultiplierClick}

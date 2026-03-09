@@ -3,6 +3,7 @@
 
 .chat-multiplier-component {
   // Uses base .chat-component-item from shared.scss
+  // No .clickable - multipliers are display-only
 
   .multiplier-header-row {
     display: flex;
@@ -44,11 +45,6 @@
     margin-top: $space-half;
   }
 
-  .multiplier-name-label {
-    font-weight: $font-bold;
-    color: $neutral-black;
-  }
-
   .multiplier-description,
   .multiplier-category {
     font-size: $font-xs;
@@ -62,7 +58,7 @@
   }
 
   .multiplier-category {
-    // No italic in V2 - renders uniformly with description
+    font-style: italic;
   }
 
   // .action-row styles are in shared.scss

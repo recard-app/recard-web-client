@@ -13,6 +13,7 @@ export { default as ChatCardComponent } from './ChatCardComponent';
 export { default as ChatCreditComponent } from './ChatCreditComponent';
 export { default as ChatPerkComponent } from './ChatPerkComponent';
 export { default as ChatMultiplierComponent } from './ChatMultiplierComponent';
+export { default as ChatMultiplierComponentLegacy } from './ChatMultiplierComponentLegacy';
 
 // Shared/utility components
 export { default as ActionDisplay } from './ActionDisplay';

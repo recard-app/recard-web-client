@@ -50,6 +50,7 @@ interface PromptWindowProps {
     onNewChat: () => void;
     onCardSelect?: (cardId: string) => void;
     onCreditClick?: (cardId: string, creditId: string) => void;
+    onMultiplierClick?: (cardId: string, multiplierId: string) => void;
     /** Callback to refresh credits/monthly stats after AI updates */
     onRefreshCredits?: () => void;
     /** Callback to refresh cards after AI updates */
@@ -81,6 +82,7 @@ function PromptWindow({
     onNewChat,
     onCardSelect,
     onCreditClick,
+    onMultiplierClick,
     onRefreshCredits,
     onRefreshCards,
     digest = null,
@@ -556,8 +558,10 @@ function PromptWindow({
         // TODO: Implement perk detail modal
     };
 
-    const handleMultiplierClick = (_cardId: string, _multiplierId: string) => {
-        // TODO: Implement multiplier detail modal
+    const handleMultiplierClick = (cardId: string, multiplierId: string) => {
+        if (onMultiplierClick) {
+            onMultiplierClick(cardId, multiplierId);
+        }
     };
 
     // Add effect to handle initial state
