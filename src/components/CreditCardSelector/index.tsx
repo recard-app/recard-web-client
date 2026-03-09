@@ -1,6 +1,6 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import './CreditCardSelector.scss';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveUserCardSelections, sortCards } from './utils';

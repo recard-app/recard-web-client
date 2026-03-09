@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { auth } from '../config/firebase';
 import {
   User as FirebaseUser,
@@ -19,26 +19,12 @@ import {
 import { PLACEHOLDER_PROFILE_IMAGE, APP_NAME, PAGE_ICONS, LOADING_ICON, COLORS } from '../types';
 import Icon from '../icons';
 import { logError } from '../utils/logger';
-
-interface AuthContextType {
-  user: FirebaseUser | null;
-  login: () => Promise<{ user: FirebaseUser; token: string; isNewUser: boolean }>;
-  loginWithEmail: (email: string, password: string) => Promise<{ user: FirebaseUser; token: string }>;
-  registerWithEmail: (email: string, password: string, firstName: string, lastName: string) => Promise<{ user: FirebaseUser; token: string }>;
-  logout: () => Promise<void>;
-  sendVerificationEmail: () => Promise<boolean>;
-  sendPasswordResetEmail: (email: string) => Promise<void>;
-  updateDisplayName: (newName: string) => Promise<void>;
-  updateEmail: (newEmail: string, currentPassword: string) => Promise<void>;
-  refreshUser: () => Promise<void>;
-  loading: boolean;
-}
+import { AuthContext } from './useAuth';
+import type { AuthContextType } from './useAuth';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
-
-const AuthContext = createContext<AuthContextType | null>(null);
 
 const DEFAULT_PROFILE_PICTURE = PLACEHOLDER_PROFILE_IMAGE;
 
@@ -310,15 +296,3 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-/**
- * Custom hook to access auth context
- * @throws Error if used outside of AuthProvider
- * @returns AuthContextType containing user state and auth methods
- */
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}; 

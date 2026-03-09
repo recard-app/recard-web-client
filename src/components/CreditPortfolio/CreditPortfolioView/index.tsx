@@ -4,13 +4,13 @@ import { UserService } from '@/services/UserServices/UserService';
 import { CalendarUserCredits, UserCredit, CREDIT_PERIODS, AnnualStats } from '@/types/CardCreditsTypes';
 import { ICON_PRIMARY_MEDIUM } from '@/types/Constants';
 import { CardCredit, CreditCardDetails } from '@/types/CreditCardTypes';
-import { useCredits } from '@/contexts/ComponentsContext';
+import { useCredits } from '@/contexts/useComponents';
 import { InfoDisplay, ErrorWithRetry } from '@/elements';
 import { buildYearOptions } from '@/pages/my-credits/utils';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import YearDropdown from '../YearDropdown';
 import CreditCardAccordion from '../CreditCardAccordion';
-import { useCreditDrawer } from '@/contexts/CreditDrawerContext';
+import { useCreditDrawer } from '@/contexts/useCreditDrawer';
 import AnnualCreditReport from '@/components/CreditSummary/AnnualCreditReport';
 import Icon from '@/icons';
 import {

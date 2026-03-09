@@ -369,6 +369,7 @@ export interface GetPrioritizedCreditsListResponse {
     credits: PrioritizedCredit[];
     totalCount: number;
     lastUpdated: string;
+    error?: boolean;
 }
 
 export interface MonthlyStatsResponse {

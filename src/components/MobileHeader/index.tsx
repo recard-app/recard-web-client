@@ -8,7 +8,7 @@ import CreditCardPreviewList from '../CreditCardPreviewList';
 import CreditSummary from '../CreditSummary';
 import CreditList from '../CreditsDisplay/CreditList';
 import { convertPrioritizedCreditsToUserCredits } from '../../utils/creditTransformers';
-import { useCredits } from '../../contexts/ComponentsContext';
+import { useCredits } from '../../contexts/useComponents';
 import {
   DropdownMenu,
   DropdownMenuContent,

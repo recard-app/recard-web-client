@@ -6,7 +6,9 @@ import { UserCreditCard } from '../../types/UserTypes';
 import { MOBILE_BREAKPOINT, COLORS } from '../../types';
 import SingleCardSelector from '../CreditCardSelector/SingleCardSelector';
 import { CardService, UserCreditCardService, UserCreditService } from '../../services';
-import CreditCardDetailView, { type TabType, CARD_TABS } from '../CreditCardDetailView';
+import CreditCardDetailView from '../CreditCardDetailView';
+import { CARD_TABS } from '../CreditCardDetailView/cardTabs';
+import type { TabType } from '../CreditCardDetailView/cardTabs';
 import { InfoDisplay, SearchField, ErrorWithRetry, TabBar } from '../../elements';
 import {
   Dialog,

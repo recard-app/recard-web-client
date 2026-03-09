@@ -1,20 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { CardPerk, CardCredit, EnrichedMultiplier, isSelectableMultiplier } from '../types/CreditCardTypes';
+import React, { useEffect, useState, ReactNode } from 'react';
+import { CardPerk, CardCredit, EnrichedMultiplier } from '../types/CreditCardTypes';
 import { ComponentService } from '../services';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { apiCache } from '../utils/ApiCache';
-
-interface ComponentsContextType {
-  perks: CardPerk[];
-  credits: CardCredit[];
-  multipliers: EnrichedMultiplier[];
-  isLoading: boolean;
-  error: string | null;
-  refetch: () => Promise<void>;
-  updateMultiplierSelection: (multiplierId: string, categoryId: string) => Promise<void>;
-}
-
-const ComponentsContext = createContext<ComponentsContextType | undefined>(undefined);
+import { ComponentsContext } from './useComponents';
+import type { ComponentsContextType } from './useComponents';
 
 interface ComponentsProviderProps {
   children: ReactNode;
@@ -125,74 +115,3 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
   );
 };
 
-export const useComponents = (): ComponentsContextType => {
-  const context = useContext(ComponentsContext);
-  if (context === undefined) {
-    throw new Error('useComponents must be used within a ComponentsProvider');
-  }
-  return context;
-};
-
-// Individual hooks for specific component types
-export const useCredits = (): CardCredit[] => {
-  const { credits } = useComponents();
-  return credits;
-};
-
-export const usePerks = (): CardPerk[] => {
-  const { perks } = useComponents();
-  return perks;
-};
-
-export const useMultipliers = (): EnrichedMultiplier[] => {
-  const { multipliers } = useComponents();
-  return multipliers;
-};
-
-// Helper hooks to get component data by ID or card ID
-export const useCreditById = (creditId: string): CardCredit | undefined => {
-  const { credits } = useComponents();
-  return credits.find(credit => credit.id === creditId);
-};
-
-export const usePerkById = (perkId: string): CardPerk | undefined => {
-  const { perks } = useComponents();
-  return perks.find(perk => perk.id === perkId);
-};
-
-export const useMultiplierById = (multiplierId: string): EnrichedMultiplier | undefined => {
-  const { multipliers } = useComponents();
-  return multipliers.find(multiplier => multiplier.id === multiplierId);
-};
-
-export const useCreditsByCardId = (cardId: string): CardCredit[] => {
-  const { credits } = useComponents();
-  return credits.filter(credit => credit.ReferenceCardId === cardId);
-};
-
-export const usePerksByCardId = (cardId: string): CardPerk[] => {
-  const { perks } = useComponents();
-  return perks.filter(perk => perk.ReferenceCardId === cardId);
-};
-
-export const useMultipliersByCardId = (cardId: string): EnrichedMultiplier[] => {
-  const { multipliers } = useComponents();
-  return multipliers.filter(multiplier => multiplier.ReferenceCardId === cardId);
-};
-
-/**
- * Hook to access and update selection for a selectable multiplier
- */
-export const useMultiplierSelection = (multiplierId: string) => {
-  const { multipliers, updateMultiplierSelection } = useComponents();
-
-  const multiplier = multipliers.find(m => m.id === multiplierId);
-  const isSelectable = multiplier ? isSelectableMultiplier(multiplier) : false;
-
-  return {
-    isSelectable,
-    allowedCategories: isSelectable && multiplier ? multiplier.allowedCategories || [] : [],
-    selectedCategory: isSelectable && multiplier ? multiplier.userSelectedCategory || null : null,
-    updateSelection: (categoryId: string) => updateMultiplierSelection(multiplierId, categoryId),
-  };
-};

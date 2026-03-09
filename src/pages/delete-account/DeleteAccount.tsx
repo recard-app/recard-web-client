@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useFullHeight } from '../../hooks/useFullHeight';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import PageHeader from '../../components/PageHeader';
 import ContentContainer from '../../components/ContentContainer';
 import { PAGE_ICONS, PAGES } from '../../types';

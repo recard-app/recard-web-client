@@ -55,9 +55,12 @@ import {
 } from './components/ui/dialog/dialog';
 import ProtectedRoute from './context/ProtectedRoute';
 import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
-import { ComponentsProvider, useComponents } from './contexts/ComponentsContext';
+import { ComponentsProvider } from './contexts/ComponentsContext';
+import { useComponents } from './contexts/useComponents';
 import { CreditDrawerProvider, CreditDrawerBridge } from './contexts/CreditDrawerContext';
-import CreditCardDetailView, { type TabType, CARD_TABS } from './components/CreditCardDetailView';
+import CreditCardDetailView from './components/CreditCardDetailView';
+import { CARD_TABS } from './components/CreditCardDetailView/cardTabs';
+import type { TabType } from './components/CreditCardDetailView/cardTabs';
 import CreditDetailedSummary from './components/CreditSummary/CreditDetailedSummary';
 import UniversalContentWrapper from './components/UniversalContentWrapper';
 import {
@@ -71,7 +74,7 @@ import MobileHeader from './components/MobileHeader';
 import { InfoDisplay, SearchField, TabBar } from './elements';
 
 // Context
-import { useAuth } from './context/AuthContext';
+import { useAuth } from './context/useAuth';
 
 // Hooks
 import { usePageBackground } from './hooks/usePageBackground';

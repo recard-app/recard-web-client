@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PAGES, PAGE_NAMES, PAGE_ICONS } from '../../types';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import ContentContainer from '../../components/ContentContainer';
 import PageHeader from '../../components/PageHeader';
 import './LegalPageLayout.scss';

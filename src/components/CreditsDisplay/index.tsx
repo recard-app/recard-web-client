@@ -3,7 +3,7 @@ import './CreditsDisplay.scss';
 import { CalendarUserCredits } from '../../types';
 import CreditGroup from './CreditGroup';
 import { CreditCardDetails, CardCredit } from '../../types/CreditCardTypes';
-import { useCredits } from '../../contexts/ComponentsContext';
+import { useCredits } from '../../contexts/useComponents';
 import { InfoDisplay } from '../../elements';
 
 export interface CreditsDisplayProps {

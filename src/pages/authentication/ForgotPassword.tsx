@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { toast } from 'sonner';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import { Link } from 'react-router-dom';
 import { PAGES, APP_NAME, COLORS } from '../../types';
 import Icon from '../../icons';

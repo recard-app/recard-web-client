@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 import { SubscriptionPlan, SubscriptionStatusType, SUBSCRIPTION_STATUS, MONTH_ABBREVIATIONS, PAGE_NAMES, PAGE_ICONS, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY } from '../../types';
 import Icon from '../../icons';
 import ProfileAvatar from '../../components/ProfileAvatar';

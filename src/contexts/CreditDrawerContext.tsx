@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode, MutableRefObject } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, ReactNode, MutableRefObject } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import CreditShowcase from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditShowcase';
@@ -19,39 +19,11 @@ import {
   PrioritizedCredit,
 } from '@/types';
 import { CreditCardDetails, CardCredit } from '@/types/CreditCardTypes';
-import { useCredits } from './ComponentsContext';
+import { useCredits } from './useComponents';
+import { CreditDrawerContext, useCreditDrawer } from './useCreditDrawer';
+import type { CreditDrawerContextType, CreditDrawerIdentifier, FallbackData } from './useCreditDrawer';
 
 // --- Types ---
-
-interface CreditDrawerIdentifier {
-  cardId: string;
-  creditId: string;
-}
-
-interface FallbackData {
-  userCredit: UserCredit;
-  card: CreditCardDetails;
-  cardCredit: CardCredit | null;
-}
-
-interface CreditDrawerContextType {
-  isOpen: boolean;
-  activeCreditId: CreditDrawerIdentifier | null;
-  year: number;
-  isLoading: boolean;
-  openDrawer: (params: {
-    cardId: string;
-    creditId: string;
-    year?: number;
-    isLoading?: boolean;
-    initialPeriodNumber?: number;
-    fallbackData?: FallbackData;
-  }) => void;
-  closeDrawer: () => void;
-  setYear: (year: number) => void;
-  setLoading: (loading: boolean) => void;
-  setFallbackData: (data: FallbackData) => void;
-}
 
 interface CreditDrawerProviderProps {
   prioritizedCredits: PrioritizedCredit[];
@@ -81,10 +53,6 @@ const useIsMobile = () => {
 
   return isMobile;
 };
-
-// --- Context ---
-
-const CreditDrawerContext = createContext<CreditDrawerContextType | undefined>(undefined);
 
 // --- Provider ---
 
@@ -168,16 +136,6 @@ export const CreditDrawerProvider: React.FC<CreditDrawerProviderProps> = ({
       />
     </CreditDrawerContext.Provider>
   );
-};
-
-// --- Hook ---
-
-export const useCreditDrawer = (): CreditDrawerContextType => {
-  const context = useContext(CreditDrawerContext);
-  if (context === undefined) {
-    throw new Error('useCreditDrawer must be used within a CreditDrawerProvider');
-  }
-  return context;
 };
 
 // --- Renderer ---

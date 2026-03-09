@@ -23,7 +23,7 @@ import { getMaxValue, getValueForUsage, getDateRangeText, getCurrentPeriodIndex,
 import { getEasternYear } from '../../../../utils';
 import { UserCreditService } from '../../../../services/UserServices/UserCreditService';
 import UsageDropdown from './UsageDropdown';
-import { useCreditDrawer } from '../../../../contexts/CreditDrawerContext';
+import { useCreditDrawer } from '../../../../contexts/useCreditDrawer';
 
 export interface CreditEntryProps {
   userCredit: UserCredit | UserCreditWithExpiration;

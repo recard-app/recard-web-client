@@ -9,7 +9,7 @@ import { CardIcon } from '../../icons';
 import { InfoDisplay, DatePicker } from '../../elements';
 import { Icon, createIconVariant } from '../../icons';
 import { UserComponentService } from '../../services/UserServices';
-import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId, useComponents } from '../../contexts/ComponentsContext';
+import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId, useComponents } from '../../contexts/useComponents';
 import { MultiplierBadge, CurrentCategoryDisplay, CategorySelector } from '../multipliers';
 import {
     Dialog,
@@ -27,14 +27,7 @@ import {
     DropdownMenuSeparator,
 } from '../ui/dropdown-menu/dropdown-menu';
 
-export type TabType = 'overview' | 'multipliers' | 'credits' | 'perks';
-
-export const CARD_TABS = [
-    { id: 'overview', label: 'Overview', icon: 'home' as const, hideLabel: true },
-    { id: 'multipliers', label: 'Multipliers', icon: 'chart-bar' as const },
-    { id: 'credits', label: 'Credits', icon: 'banknotes' as const },
-    { id: 'perks', label: 'Perks', icon: 'gift' as const },
-];
+import type { TabType } from './cardTabs';
 
 // Dropdown menu icon factories
 const CARD_ACTION_ICONS = {
