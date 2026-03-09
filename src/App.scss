@@ -20,6 +20,13 @@ html {
   height: calc(var(--app-vh, 1vh) * 100);
   max-height: calc(var(--app-vh, 1vh) * 100);
   overflow: hidden;
+  will-change: height;
+}
+
+// During keyboard open/close, apply a transition that tracks the iOS keyboard
+// animation curve. The `keyboard-animating` class is toggled by useViewportHeight.
+html.keyboard-animating .app {
+  transition: height 0.12s ease-out, max-height 0.12s ease-out;
 }
 
 // Generic full-page layout system
