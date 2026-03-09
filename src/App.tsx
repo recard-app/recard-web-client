@@ -275,7 +275,7 @@ function AppContent({}: AppContentProps) {
 
   // Proactive PWA install prompt (one-time, 3s after mount)
   useEffect(() => {
-    if (!shouldProactiveShow || isOnboardingRoute) return;
+    if (!shouldProactiveShow || isOnboardingRoute || isAuthRoute) return;
 
     const timer = setTimeout(() => {
       setIsInstallDrawerOpen(true);
@@ -283,7 +283,7 @@ function AppContent({}: AppContentProps) {
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [shouldProactiveShow, markProactiveShown, isOnboardingRoute]);
+  }, [shouldProactiveShow, markProactiveShown, isOnboardingRoute, isAuthRoute]);
 
   // Effect to fetch daily digest when user is authenticated
   useEffect(() => {
