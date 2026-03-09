@@ -114,6 +114,8 @@
     box-shadow: $container-shadow-top-bigger;
     padding: $space-2 $space-4;
     flex-shrink: 0;
+    position: relative;
+    z-index: 2;
 
     @media (display-mode: standalone) {
       padding-bottom: $pwa-bottom-padding-sm;

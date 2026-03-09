@@ -428,8 +428,10 @@ body:has(.mobile-credit-details-drawer, .credit-edit-modal-drawer) [data-radix-p
 
 // Add drop shadow specifically to the credit details drawer footer
 .mobile-credit-details-drawer [data-slot="drawer-footer"] {
-  box-shadow: $container-shadow-top;
+  box-shadow: $container-shadow-top-bigger;
   background-color: $neutral-lightest-gray;
+  position: relative;
+  z-index: 2;
 }
 
 .amount-input {
