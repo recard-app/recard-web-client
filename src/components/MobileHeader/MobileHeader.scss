@@ -270,6 +270,7 @@
       button {
         color: $primary-medium;
         svg { color: $primary-medium; }
+        span { font-weight: $font-medium; }
 
         // Override global button-primary active/hover states that flash green on tap
         &:hover,
