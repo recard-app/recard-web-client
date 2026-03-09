@@ -966,17 +966,19 @@ function AppContent({}: AppContentProps) {
           <Toaster position="top-right" richColors />
           {pageMeta}
 
-          {/* PWA Install Drawer */}
-          <InstallAppDrawer
-            open={isInstallDrawerOpen}
-            onOpenChange={setIsInstallDrawerOpen}
-            platform={installPlatform}
-            onInstall={promptInstall}
-            onDismiss={() => {
-              markInstallDismissed();
-              setIsInstallDrawerOpen(false);
-            }}
-          />
+          {/* PWA Install Drawer - hidden on auth and onboarding pages */}
+          {!isAuthRoute && !isOnboardingRoute && (
+            <InstallAppDrawer
+              open={isInstallDrawerOpen}
+              onOpenChange={setIsInstallDrawerOpen}
+              platform={installPlatform}
+              onInstall={promptInstall}
+              onDismiss={() => {
+                markInstallDismissed();
+                setIsInstallDrawerOpen(false);
+              }}
+            />
+          )}
 
           {/* Check if current route is an auth page (no sidebar/nav should show) */}
           {(() => {
