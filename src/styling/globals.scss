@@ -25,6 +25,9 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   font-optical-sizing: auto;
   overscroll-behavior: none;
+  // Prevent iOS Safari from scrolling the document when the keyboard opens.
+  // All scrolling happens inside inner containers (.prompt-history-container, etc.).
+  overflow: hidden;
 }
 
 // Separate background colors so iOS Safari uses the html (white) background

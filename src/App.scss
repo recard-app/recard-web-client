@@ -11,23 +11,15 @@ html {
 }
 
 // App-specific layout styles
+// Uses --app-vh (set by useViewportHeight) so the layout resizes when the iOS
+// keyboard opens/closes. The hook skips updates during pinch-to-zoom (scale > 1)
+// so zoom won't cause layout thrashing.
 .app {
   display: flex;
   flex-direction: column;
-  // Default: iOS-safe CSS variable (set by useViewportHeight); fallback to classic 100vh
   height: calc(var(--app-vh, 1vh) * 100);
   max-height: calc(var(--app-vh, 1vh) * 100);
-  
-  // If browser supports dvh, prefer it
-  @supports (height: 100dvh) {
-    height: 100dvh;
-    max-height: 100dvh;
-  }
-  // Otherwise, if svh is supported, use it
-  @supports (height: 100svh) {
-    height: 100svh;
-    max-height: 100svh;
-  }
+  overflow: hidden;
 }
 
 // Generic full-page layout system
@@ -35,12 +27,7 @@ html {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-height: calc(var(--app-vh, 1vh) * 100);
   box-sizing: border-box;
-
-  @supports (height: 100svh) {
-    max-height: 100svh;
-  }
 }
 
 // Base content area styles (shared by all variants)
