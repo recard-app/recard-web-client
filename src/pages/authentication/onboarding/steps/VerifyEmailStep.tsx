@@ -63,7 +63,7 @@ const VerifyEmailStep: React.FC = () => {
         </div>
 
         {isVerified ? (
-          <InfoDisplay type="success" message="Your email is verified. You're all set!" />
+          <InfoDisplay type="success" message="Your email is verified. You're all set!" showTitle={false} />
         ) : (
           <>
             <div className="onboarding-verify__actions">

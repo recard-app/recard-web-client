@@ -334,7 +334,15 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
                 <SettingsRow
                   label="Help Center"
                   to={PAGES.HELP_CENTER.PATH}
+                  icon={<Icon name="question-mark-circle" variant="mini" size={16} color={ICON_GRAY} />}
                 />
+                {canShowInstall && (
+                  <SettingsRow
+                    label="Install App"
+                    onClick={() => setIsInstallDrawerOpen(true)}
+                    icon={<Icon name="phone" variant="mini" size={16} color={ICON_GRAY} />}
+                  />
+                )}
                 <SettingsRow
                   label="Revisit Onboarding"
                   onClick={() => {
@@ -342,13 +350,6 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
                     navigate(PAGES.ONBOARDING.PATH);
                   }}
                 />
-                {canShowInstall && (
-                  <SettingsRow
-                    label="Install App"
-                    onClick={() => setIsInstallDrawerOpen(true)}
-                    icon={<Icon name="globe-alt" variant="mini" size={16} color={ICON_GRAY} />}
-                  />
-                )}
               </SettingsCard>
 
               {/* Legal */}
