@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ReactNode } from 'react';
-import { CardPerk, CardCredit, EnrichedMultiplier } from '../types/CreditCardTypes';
+import { CardPerk, CardCredit, EnrichedMultiplier, isSelectableMultiplier } from '../types/CreditCardTypes';
 import { ComponentService } from '../services';
 import { useAuth } from '../context/useAuth';
 import { apiCache } from '../utils/ApiCache';

@@ -18,7 +18,7 @@ import {
   UserCredit,
   PrioritizedCredit,
 } from '@/types';
-import { CreditCardDetails, CardCredit } from '@/types/CreditCardTypes';
+import { CreditCardDetails } from '@/types/CreditCardTypes';
 import { useCredits } from './useComponents';
 import { CreditDrawerContext, useCreditDrawer } from './useCreditDrawer';
 import type { CreditDrawerContextType, CreditDrawerIdentifier, FallbackData } from './useCreditDrawer';
