@@ -131,6 +131,7 @@ export interface SingleCreditHistory {
     PeriodNumber: number;
     CreditUsage: CreditUsageType;
     ValueUsed: number;
+    StatusBeforeDisable?: CreditUsageType;
 }
 
 /**
