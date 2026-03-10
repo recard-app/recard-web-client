@@ -17,6 +17,7 @@ import { AgentModePreferenceType, BillingPeriodType, ChatHistoryPreferenceType, 
 export interface UserCreditCard {
     cardReferenceId: string;  // Credit card ID (also the doc ID)
     openDate: string | null;  // MM/DD/YYYY format or null
+    defaultStartDate: string | null;  // MM/DD/YYYY, auto-set on first add, immutable
     isDefault: boolean;       // Whether this is the default card
     isFrozen: boolean;        // For future LLM exclusion
 }
@@ -101,16 +102,12 @@ export interface BatchedPreferencesResponse {
     instructions: InstructionsPreference;
     chatHistory: ChatHistoryPreference;
     agentMode: AgentModePreference;
-    startDate: string | null;
-    defaultStartDate: string | null;
-    resolvedStartDate: string;
 }
 
 export interface BatchedPreferencesRequest {
     instructions?: InstructionsPreference;
     chatHistory?: ChatHistoryPreference;
     agentMode?: AgentModePreference;
-    startDate?: string | null;
 }
 
 export interface SubscriptionPlanResponse {

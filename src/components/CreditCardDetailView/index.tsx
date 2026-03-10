@@ -162,6 +162,21 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     const [editingOpenDateValue, setEditingOpenDateValue] = useState<string | null>(null);
     const [isSavingOpenDate, setIsSavingOpenDate] = useState(false);
 
+    // Detect if changing the open date would reset anniversary credits
+    const getMonthDay = (date: string | null | undefined): string | null => {
+        if (!date) return null;
+        const parts = date.split('/');
+        return parts.length >= 2 ? `${parts[0]}/${parts[1]}` : null;
+    };
+    const hasAnniversaryCredits = cardCredits.some(c => c.isAnniversaryBased);
+    const willResetAnniversary = hasAnniversaryCredits
+        && !!openDate
+        && !!editingOpenDateValue
+        && getMonthDay(openDate) !== getMonthDay(editingOpenDateValue);
+    const willClearAnniversary = hasAnniversaryCredits
+        && !!openDate
+        && editingOpenDateValue === null;
+
     // Fetch tracking preferences when component mounts or when cardDetails changes
     // Always fetch preferences so disabled styling applies even in preview mode
     useEffect(() => {
@@ -991,7 +1006,6 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 value={editingOpenDateValue}
                                 onChange={setEditingOpenDateValue}
                                 placeholder="MM/DD/YYYY"
-                                clearable={true}
                                 disabled={false}
                                 min="2000-01-01"
                                 max={new Date().toISOString().split('T')[0]}
@@ -1006,6 +1020,17 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 </button>
                             )}
                         </form>
+                        {(willResetAnniversary || willClearAnniversary) && (
+                            <div className="open-date-reset-warning">
+                                <InfoDisplay
+                                    type="warning"
+                                    message={willClearAnniversary
+                                        ? 'Clearing your start date will reset anniversary credit tracking and revert to the default calendar year.'
+                                        : 'Changing the month/day of your start date will reset anniversary credit tracking for this card.'}
+                                    showTitle={false}
+                                />
+                            </div>
+                        )}
                     </DialogBody>
                     <DialogFooter>
                         <div className="button-group">

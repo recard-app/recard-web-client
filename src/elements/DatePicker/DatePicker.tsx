@@ -9,7 +9,6 @@ export interface DatePickerProps {
   placeholder?: string;
   disabled?: boolean;
   label?: string;
-  clearable?: boolean;
   className?: string;
   containerClassName?: string;
   min?: string;  // YYYY-MM-DD format, passed to native input
@@ -42,7 +41,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
   onChange,
   disabled = false,
   label,
-  clearable = true,
   className = '',
   containerClassName = '',
   min,
@@ -62,16 +60,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
     onChange(toDisplayFormat(nativeValue));
   };
 
-  const handleClear = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    onChange(null);
-    // Directly clear native input to prevent stale value on iOS
-    if (inputRef.current) {
-      inputRef.current.value = '';
-    }
-  };
-
   const handleCalendarClick = () => {
     try {
       inputRef.current?.showPicker();
@@ -80,8 +68,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
       inputRef.current?.focus();
     }
   };
-
-  const showClearButton = clearable && value && !disabled;
 
   return (
     <div className={`date-picker ${containerClassName}`.trim()}>
@@ -99,17 +85,6 @@ const DatePicker: React.FC<DatePickerProps> = ({
         />
 
         <div className="date-picker-actions">
-          {showClearButton && (
-            <button
-              type="button"
-              onClick={handleClear}
-              onPointerDown={(e) => e.preventDefault()}
-              className="date-picker-clear"
-              aria-label="Clear date"
-            >
-              <Icon name="x" variant="mini" size={14} color={ICON_GRAY} />
-            </button>
-          )}
           <button
             type="button"
             disabled={disabled}

@@ -85,15 +85,6 @@ export const UserPreferencesService = {
     },
 
     /**
-     * Updates the user-set start date for credit history range.
-     * Pass null to clear the user-set date and fall back to defaultStartDate.
-     * @param startDate YYYY-MM-DD string or null
-     */
-    async updateStartDate(startDate: string | null): Promise<BatchedPreferencesResponse> {
-        return this.updatePreferences({ startDate });
-    },
-
-    /**
      * Clear preferences cache - useful when preferences change
      */
     clearCache(): void {
