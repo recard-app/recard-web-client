@@ -16,7 +16,7 @@ import {
   reauthenticateWithCredential,
   verifyBeforeUpdateEmail
 } from 'firebase/auth';
-import { PLACEHOLDER_PROFILE_IMAGE, APP_NAME, PAGE_ICONS, LOADING_ICON, COLORS } from '../types';
+import { PLACEHOLDER_PROFILE_IMAGE, LOADING_ICON, COLORS } from '../types';
 import Icon from '../icons';
 import { logError } from '../utils/logger';
 import { AuthContext } from './useAuth';
