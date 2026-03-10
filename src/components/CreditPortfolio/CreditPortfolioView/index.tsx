@@ -357,8 +357,10 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     return isCreditUpdating(cardId, creditId, periodNumber);
   }, [isCreditUpdating]);
 
-  // Loading state
-  if (isLoading && !creditData) {
+  // Show loading while credit data is fetching, or while card details
+  // haven't loaded yet but credits exist (prevents brief empty state flash)
+  const isWaitingForCardDetails = displayCards.length === 0 && hasAnyCardsWithCredits && userCardDetails.length === 0;
+  if ((isLoading && !creditData) || isWaitingForCardDetails) {
     return (
       <div className="credit-portfolio-panel">
         <div className="portfolio-content">
