@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { UserCreditService } from '@/services/UserServices/UserCreditService';
-import { UserService } from '@/services/UserServices/UserService';
 import { CalendarUserCredits, UserCredit, CREDIT_PERIODS, AnnualStats } from '@/types/CardCreditsTypes';
 import { ICON_PRIMARY_MEDIUM } from '@/types/Constants';
 import { CardCredit, CreditCardDetails } from '@/types/CreditCardTypes';
@@ -93,21 +92,11 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
 
   // Year selection state
   const [selectedYear, setSelectedYear] = useState<number>(() => new Date().getFullYear());
-  const [accountCreatedAt, setAccountCreatedAt] = useState<Date | null>(null);
 
-  // Fetch account creation date on mount for dynamic year range
-  useEffect(() => {
-    const fetchAccountDate = async () => {
-      const date = await UserService.fetchAccountCreationDate();
-      setAccountCreatedAt(date);
-    };
-    fetchAccountDate();
-  }, []);
-
-  // Dynamic year options based on account creation date
+  // Dynamic year options based on card open dates
   const availableYears = useMemo(() => {
-    return buildYearOptions(accountCreatedAt);
-  }, [accountCreatedAt]);
+    return buildYearOptions(userCardDetails);
+  }, [userCardDetails]);
 
   // Credit data state
   const [creditData, setCreditData] = useState<CalendarUserCredits | null>(null);
