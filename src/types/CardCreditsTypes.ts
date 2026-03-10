@@ -37,7 +37,10 @@ export type CreditIntervalType = typeof CREDIT_INTERVALS[keyof typeof CREDIT_INT
  * - NOT_USED: Credit has not been used yet (applies to current, past, and future periods)
  * - PARTIALLY_USED: Credit has been partially redeemed (0 < usedAmount < totalAmount)
  * - INACTIVE: Credit was available in a past period but was not used
- * - DISABLED: Credit is not available for this period (e.g., outside effective date range)
+ *
+ * System-disabled periods (outside effective date range, before card open date, etc.) are
+ * indicated by the `Disabled?: boolean` field on SingleCreditHistory, not by a status value.
+ * The CreditUsage field always holds the period's natural status regardless of disabled state.
  *
  * Note: Future periods are stored with NOT_USED status. Use the `isPeriodFuture()` utility
  * function to dynamically determine if a period is in the future for UI display purposes.
@@ -46,8 +49,7 @@ export const CREDIT_USAGE = {
     USED: 'used',
     NOT_USED: 'not_used',
     PARTIALLY_USED: 'partially_used',
-    INACTIVE: 'inactive',
-    DISABLED: 'disabled'
+    INACTIVE: 'inactive'
 } as const;
 export type CreditUsageType = typeof CREDIT_USAGE[keyof typeof CREDIT_USAGE];
 
@@ -58,8 +60,7 @@ export const CREDIT_USAGE_DISPLAY_NAMES = {
     USED: 'Redeemed',
     NOT_USED: 'Not Used',
     PARTIALLY_USED: 'Partially Used',
-    INACTIVE: 'Not Tracked',
-    DISABLED: 'Disabled'
+    INACTIVE: 'Not Tracked'
 } as const;
 export type CreditUsageDisplayNameType = typeof CREDIT_USAGE_DISPLAY_NAMES[keyof typeof CREDIT_USAGE_DISPLAY_NAMES];
 
@@ -68,10 +69,8 @@ export type CreditUsageDisplayNameType = typeof CREDIT_USAGE_DISPLAY_NAMES[keyof
  */
 // Statuses that count as "redeemed" for filtering
 export const REDEEMED_STATUSES = [CREDIT_USAGE.USED] as const;
-// Statuses that count as "not tracked" for filtering
-export const NOT_TRACKED_STATUSES = [CREDIT_USAGE.INACTIVE, CREDIT_USAGE.DISABLED] as const;
-// Non-clickable statuses (future periods)
-export const NON_INTERACTIVE_STATUSES = [CREDIT_USAGE.DISABLED] as const;
+// Statuses that count as "not tracked" for filtering (system-disabled periods are handled via Disabled field)
+export const NOT_TRACKED_STATUSES = [CREDIT_USAGE.INACTIVE] as const;
 
 /**
  * Represents the credit history for a user
@@ -131,7 +130,8 @@ export interface SingleCreditHistory {
     PeriodNumber: number;
     CreditUsage: CreditUsageType;
     ValueUsed: number;
-    StatusBeforeDisable?: CreditUsageType;
+    /** When true, period is system-disabled (outside effective dates, before card open date, etc.). The CreditUsage field retains the period's natural status. */
+    Disabled?: boolean;
 }
 
 /**
@@ -469,8 +469,7 @@ export const CREDIT_USAGE_DISPLAY_COLORS = {
     USED: COLORS.PRIMARY_MEDIUM,
     PARTIALLY_USED: COLORS.PRIMARY_MEDIUM,
     NOT_USED: COLORS.NEUTRAL_DARK_GRAY,
-    INACTIVE: COLORS.NEUTRAL_MEDIUM_GRAY,
-    DISABLED: COLORS.DISABLED_GRAY
+    INACTIVE: COLORS.NEUTRAL_MEDIUM_GRAY
 } as const;
 export type CreditUsageDisplayColorType = typeof CREDIT_USAGE_DISPLAY_COLORS[keyof typeof CREDIT_USAGE_DISPLAY_COLORS];
 
@@ -481,8 +480,7 @@ export const CREDIT_USAGE_ICON_NAMES = {
     USED: 'used-icon-filled',
     NOT_USED: 'not-used-icon-v2',
     PARTIALLY_USED: 'partially-used-icon-filled',
-    INACTIVE: 'inactive-filled',
-    DISABLED: 'disabled-filled'
+    INACTIVE: 'inactive-filled'
 } as const;
 export type CreditUsageIconNameType = typeof CREDIT_USAGE_ICON_NAMES[keyof typeof CREDIT_USAGE_ICON_NAMES];
 
