@@ -26,6 +26,7 @@ interface PeriodInfo {
   valueUsed: number;
   isFuture: boolean;
   isActive: boolean;
+  disabled?: boolean;
   anniversaryYear?: number;
 }
 
@@ -45,7 +46,7 @@ const PILL_TEXT_COLORS: Record<PillState, string> = {
   partially_used: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
   not_used: CREDIT_USAGE_DISPLAY_COLORS.NOT_USED,
   inactive: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE,
-  disabled: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
+  disabled: COLORS.DISABLED_GRAY,
   future: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE
 };
 
@@ -68,11 +69,11 @@ const formatPillValue = (value: number): string => {
 
 const getPillState = (period: PeriodInfo): PillState => {
   if (period.isFuture) return 'future';
+  if (period.disabled) return 'disabled';
   switch (period.usage) {
     case CREDIT_USAGE.USED: return 'used';
     case CREDIT_USAGE.PARTIALLY_USED: return 'partially_used';
     case CREDIT_USAGE.NOT_USED: return 'not_used';
-    case CREDIT_USAGE.DISABLED: return 'disabled';
     case CREDIT_USAGE.INACTIVE:
     default: return 'inactive';
   }
@@ -117,7 +118,8 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
         usage,
         valueUsed,
         isFuture: false,
-        isActive: usage !== CREDIT_USAGE.INACTIVE && usage !== CREDIT_USAGE.DISABLED,
+        isActive: !historyEntry?.Disabled && usage !== CREDIT_USAGE.INACTIVE,
+        disabled: historyEntry?.Disabled,
         anniversaryYear
       }];
     }
@@ -159,7 +161,8 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
         usage,
         valueUsed,
         isFuture,
-        isActive: !isFuture && usage !== CREDIT_USAGE.INACTIVE && usage !== CREDIT_USAGE.DISABLED
+        isActive: !isFuture && !historyEntry?.Disabled && usage !== CREDIT_USAGE.INACTIVE,
+        disabled: historyEntry?.Disabled,
       });
     }
 
@@ -201,8 +204,6 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
         return CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED;
       case CREDIT_USAGE.NOT_USED:
         return CREDIT_USAGE_DISPLAY_NAMES.NOT_USED;
-      case CREDIT_USAGE.DISABLED:
-        return CREDIT_USAGE_DISPLAY_NAMES.DISABLED;
       case CREDIT_USAGE.INACTIVE:
       default:
         return CREDIT_USAGE_DISPLAY_NAMES.INACTIVE;
@@ -210,7 +211,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
   };
 
   const handlePeriodClick = (period: PeriodInfo) => {
-    const isDisabled = period.usage === CREDIT_USAGE.DISABLED;
+    const isDisabled = period.disabled === true;
     const isNonInteractive = period.isFuture || isDisabled;
 
     if (onPeriodSelect && !isNonInteractive) {
@@ -219,7 +220,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent, period: PeriodInfo) => {
-    const isDisabled = period.usage === CREDIT_USAGE.DISABLED;
+    const isDisabled = period.disabled === true;
     const isNonInteractive = period.isFuture || isDisabled;
 
     if ((e.key === 'Enter' || e.key === ' ') && !isNonInteractive) {
@@ -235,7 +236,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
         className={`tracker-periods ${userCredit.AssociatedPeriod}`}
       >
         {periods.map((period) => {
-          const isDisabled = period.usage === CREDIT_USAGE.DISABLED;
+          const isDisabled = period.disabled === true;
           const isSelected = selectedPeriodNumber === period.periodNumber;
           const isNonInteractive = period.isFuture || isDisabled;
           const pillState = getPillState(period);

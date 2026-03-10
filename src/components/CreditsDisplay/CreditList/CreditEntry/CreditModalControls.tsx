@@ -83,8 +83,8 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   }, [selectedHistory, userCredit.CardId, userCredit.CreditId, selectedPeriodNumber, onLiveChange]);
 
   const maxValue = getMaxValue(creditMaxValue);
-  const isSliderDisabled = usage === CREDIT_USAGE.INACTIVE || usage === CREDIT_USAGE.DISABLED;
-  const isCompletelyDisabled = usage === CREDIT_USAGE.DISABLED;
+  const isSliderDisabled = usage === CREDIT_USAGE.INACTIVE || selectedHistory?.Disabled === true;
+  const isCompletelyDisabled = selectedHistory?.Disabled === true;
 
   // Generate smart steps for this credit's maximum value
   const smartSteps = useMemo(() => generateSmartSteps(maxValue, 1), [maxValue]);
@@ -108,7 +108,6 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
     [CREDIT_USAGE.PARTIALLY_USED]: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
     [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_DISPLAY_COLORS.NOT_USED,
     [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_DISPLAY_COLORS.INACTIVE,
-    [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_DISPLAY_COLORS.DISABLED,
   };
 
   const usageColor = USAGE_COLOR_BY_STATE[usage] || CREDIT_USAGE_DISPLAY_COLORS.INACTIVE;
@@ -118,7 +117,6 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
     [CREDIT_USAGE.PARTIALLY_USED]: CREDIT_USAGE_ICON_NAMES.PARTIALLY_USED,
     [CREDIT_USAGE.NOT_USED]: CREDIT_USAGE_ICON_NAMES.NOT_USED,
     [CREDIT_USAGE.INACTIVE]: CREDIT_USAGE_ICON_NAMES.INACTIVE,
-    [CREDIT_USAGE.DISABLED]: CREDIT_USAGE_ICON_NAMES.DISABLED,
   };
 
   // Tinting via CSS color-mix (works with CSS custom property values)
@@ -147,8 +145,8 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   };
 
   const handleUsageSelect = async (newUsage: CreditUsageType) => {
-    // Don't allow changing DISABLED status
-    if (usage === CREDIT_USAGE.DISABLED || newUsage === CREDIT_USAGE.DISABLED) {
+    // Don't allow changing disabled periods
+    if (isCompletelyDisabled) {
       return;
     }
 
