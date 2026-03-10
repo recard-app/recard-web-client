@@ -863,11 +863,25 @@ function AppContent({}: AppContentProps) {
       // Refresh global cards and bump version to trigger dependents
       (async () => {
         try {
-          const cards = await CardService.fetchCreditCards(true);
+          const [cards, details, userCardsData] = await Promise.all([
+            CardService.fetchCreditCards(true),
+            UserCreditCardService.fetchUserCardsDetailedInfo(),
+            UserCreditCardService.fetchUserCards(),
+          ]);
           setCreditCards(cards);
+          setUserDetailedCardDetails(details);
+
+          // Rebuild metadata map (openDate, isFrozen, etc.)
+          const metadataMap = new Map<string, UserCreditCard>();
+          userCardsData.forEach((uc: UserCreditCard) => {
+            metadataMap.set(uc.cardReferenceId, uc);
+          });
+          setUserCardsMetadata(metadataMap);
+
           setCardsVersion(v => v + 1);
           // Refetch components (perks, credits, multipliers) for new cards
           await refetchComponents();
+          setMonthlyStatsRefreshTrigger(prev => prev + 1);
         } catch (err) {
           console.error('Error refreshing cards after save:', err);
         }

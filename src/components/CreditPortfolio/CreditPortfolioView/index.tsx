@@ -192,7 +192,8 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
 
   // Fetch credit data for selected year
   // isYearChange: true = year change (use pulse animation), false = initial/background load
-  const fetchCredits = useCallback(async (showLoading: boolean = true, isYearChange: boolean = false) => {
+  // skipDebounce: true = use direct sync (for reloads after card changes)
+  const fetchCredits = useCallback(async (showLoading: boolean = true, isYearChange: boolean = false, skipDebounce: boolean = false) => {
     // Cancel any in-flight request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -211,10 +212,12 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     setError(null);
 
     try {
-      // First sync to ensure all credits exist for the year
-      const data = await UserCreditService.syncYearCreditsDebounced(selectedYear, {
-        excludeHidden: true
-      });
+      // Sync to ensure all credits exist for the year
+      // Use direct (non-debounced) sync for reloads to avoid stale data from debounce races
+      const syncFn = skipDebounce
+        ? UserCreditService.syncYearCredits(selectedYear, { excludeHidden: true })
+        : UserCreditService.syncYearCreditsDebounced(selectedYear, { excludeHidden: true });
+      const data = await syncFn;
 
       // Only update state if request wasn't aborted
       if (!signal.aborted) {
@@ -239,10 +242,17 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
     }
   }, [selectedYear]);
 
-  // Fetch on mount and when year changes
+  // Track previous reloadTrigger to detect external reloads (card additions, etc.)
+  const prevReloadTriggerRef = useRef(reloadTrigger);
+
+  // Fetch on mount and when year/reloadTrigger changes
   useEffect(() => {
     const isYearChange = hasInitialLoadCompleted.current;
-    fetchCredits(true, isYearChange).then(() => {
+    // Skip debounce when reloadTrigger changed (card added/removed) to get fresh data immediately
+    const isExternalReload = hasInitialLoadCompleted.current && prevReloadTriggerRef.current !== reloadTrigger;
+    prevReloadTriggerRef.current = reloadTrigger;
+
+    fetchCredits(true, isYearChange, isExternalReload).then(() => {
       hasInitialLoadCompleted.current = true;
     });
   }, [fetchCredits, reloadTrigger]);
@@ -418,8 +428,6 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
               type="info"
               message={emptyMessage}
               showTitle={false}
-              transparent={true}
-              centered={true}
             />
           </div>
         </div>

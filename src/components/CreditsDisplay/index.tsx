@@ -73,11 +73,9 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
     return (
       <div className="credits-display empty">
         <InfoDisplay
-          type="warning"
+          type="info"
           message="No credit history found for the current year."
           showTitle={false}
-          transparent={true}
-          centered={true}
         />
         {children}
       </div>

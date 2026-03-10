@@ -59,8 +59,16 @@
 // Empty state
 .portfolio-empty {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   flex: 1;
   min-height: 200px;
+  padding-top: $space-8;
+  max-width: 720px;
+  margin: 0 auto;
+
+  @media (max-width: $mobile-breakpoint) {
+    max-width: none;
+    padding-top: $space-5;
+  }
 }

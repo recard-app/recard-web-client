@@ -179,43 +179,58 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                 transparent={true}
                 centered
               />
+            ) : !showRedeemed && hasRedeemedCredits && !calendarUserCredits ? (
+              <div className="credits-display empty">
+                <InfoDisplay
+                  type="success"
+                  message="All active credits have been redeemed."
+                  showTitle={false}
+                />
+                <div className="redeemed-credits-toggle-container">
+                  <button
+                    className="button ghost icon with-text"
+                    onClick={() => handleToggleRedeemed(true)}
+                  >
+                    <Icon name="visibility-on" variant="micro" size={14} />
+                    Show redeemed credits
+                  </button>
+                </div>
+              </div>
             ) : (
-              <>
-                <CreditsDisplay
-                  key={`credits-display-${showRedeemed}-${stableFilteredCredits.length}`}
-                  calendar={calendarUserCredits}
-                  isLoading={false}
-                  userCards={userCards}
-                  now={new Date()}
-                  onUpdateComplete={onRefreshMonthlyStats}
-                  isUpdating={isUpdatingMonthlyStats}
-                  onAddUpdatingCreditId={onAddUpdatingCreditId}
-                  onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
-                  isCreditUpdating={isCreditUpdating}
-                >
-                  {hasRedeemedCredits && (
-                    <div className="redeemed-credits-toggle-container">
-                      {!showRedeemed ? (
-                        <button
-                          className="button ghost icon with-text"
-                          onClick={() => handleToggleRedeemed(true)}
-                        >
-                          <Icon name="visibility-on" variant="micro" size={14} />
-                          Show redeemed credits
-                        </button>
-                      ) : (
-                        <button
-                          className="button ghost icon with-text"
-                          onClick={() => handleToggleRedeemed(false)}
-                        >
-                          <Icon name="visibility-off" variant="micro" size={14} />
-                          Hide redeemed credits
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </CreditsDisplay>
-              </>
+              <CreditsDisplay
+                key={`credits-display-${showRedeemed}-${stableFilteredCredits.length}`}
+                calendar={calendarUserCredits}
+                isLoading={false}
+                userCards={userCards}
+                now={new Date()}
+                onUpdateComplete={onRefreshMonthlyStats}
+                isUpdating={isUpdatingMonthlyStats}
+                onAddUpdatingCreditId={onAddUpdatingCreditId}
+                onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+                isCreditUpdating={isCreditUpdating}
+              >
+                {hasRedeemedCredits && (
+                  <div className="redeemed-credits-toggle-container">
+                    {!showRedeemed ? (
+                      <button
+                        className="button ghost icon with-text"
+                        onClick={() => handleToggleRedeemed(true)}
+                      >
+                        <Icon name="visibility-on" variant="micro" size={14} />
+                        Show redeemed credits
+                      </button>
+                    ) : (
+                      <button
+                        className="button ghost icon with-text"
+                        onClick={() => handleToggleRedeemed(false)}
+                      >
+                        <Icon name="visibility-off" variant="micro" size={14} />
+                        Hide redeemed credits
+                      </button>
+                    )}
+                  </div>
+                )}
+              </CreditsDisplay>
             )}
           </div>
           <CreditsTabFooter />
