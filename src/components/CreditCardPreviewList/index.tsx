@@ -13,9 +13,15 @@ interface CreditCardPreviewListProps {
   variant?: 'sidebar' | 'my-cards' | 'mobile-sidebar';
 }
 
-// Helper function to sort credit cards (default card first, then alphabetically)
+// Helper function to sort credit cards (frozen last, default card first, then alphabetically)
 export const sortCreditCards = (cards: CreditCard[]): CreditCard[] => {
   return [...cards].sort((a, b) => {
+    // Frozen cards go to bottom
+    const aFrozen = a.isFrozen ?? false;
+    const bFrozen = b.isFrozen ?? false;
+    if (aFrozen !== bFrozen) {
+      return aFrozen ? 1 : -1;
+    }
     // Sort default card first
     if (a.isDefaultCard !== b.isDefaultCard) {
       return a.isDefaultCard ? -1 : 1;

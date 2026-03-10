@@ -23,9 +23,15 @@ import {
 import { CreditPortfolioViewProps } from '../types';
 import './CreditPortfolioView.scss';
 
-// Sort cards: preferred first, then alphabetically
+// Sort cards: frozen last, preferred first, then alphabetically
 const sortCreditCards = (cards: CreditCardDetails[]): CreditCardDetails[] => {
   return [...cards].sort((a, b) => {
+    // Frozen cards go to bottom
+    const aFrozen = a.isFrozen ?? false;
+    const bFrozen = b.isFrozen ?? false;
+    if (aFrozen !== bFrozen) {
+      return aFrozen ? 1 : -1;
+    }
     // Sort default card first
     if (a.isDefaultCard !== b.isDefaultCard) {
       return a.isDefaultCard ? -1 : 1;

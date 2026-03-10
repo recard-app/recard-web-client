@@ -554,6 +554,10 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
     // Get only the selected cards to display
     const selectedCards = userCards.filter(card => card.selected)
         .sort((a, b) => {
+            // Frozen cards go to bottom
+            const aFrozen = a.isFrozen ?? false;
+            const bFrozen = b.isFrozen ?? false;
+            if (aFrozen !== bFrozen) return aFrozen ? 1 : -1;
             // Sort default card first, then alphabetically
             if (a.isDefaultCard !== b.isDefaultCard) {
                 return a.isDefaultCard ? -1 : 1;

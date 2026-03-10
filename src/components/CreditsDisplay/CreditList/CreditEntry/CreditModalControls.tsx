@@ -156,11 +156,12 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
     // Update slider according to the rules and (un)disable
     try {
       if (newUsage === CREDIT_USAGE.INACTIVE) {
-        // Disable slider but RETAIN existing value; persist same value
-        await persistUpdate(newUsage, valueUsed);
+        // Reset value to 0 -- inactive means "not tracked", no value recorded
+        setValueUsed(0);
+        await persistUpdate(newUsage, 0);
         // Notify parent of committed change
         if (onLiveChange) {
-          onLiveChange(newUsage, valueUsed);
+          onLiveChange(newUsage, 0);
         }
         return;
       }
