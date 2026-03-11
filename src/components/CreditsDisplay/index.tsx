@@ -2,7 +2,7 @@ import React, { useMemo, ReactNode } from 'react';
 import './CreditsDisplay.scss';
 import { CalendarUserCredits } from '../../types';
 import CreditGroup from './CreditGroup';
-import { CreditCardDetails, CardCredit } from '../../types/CreditCardTypes';
+import { CreditCard, CreditCardDetails, CardCredit } from '../../types/CreditCardTypes';
 import { useCredits } from '../../contexts/useComponents';
 import { InfoDisplay } from '../../elements';
 
@@ -40,7 +40,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
 
   // Build lookup maps for quick resolution in child components
   const cardById = useMemo(() => {
-    const map = new Map<string, CreditCardDetails>();
+    const map = new Map<string, CreditCard>();
     for (const c of userCards || []) map.set(c.id, c);
     return map;
   }, [userCards]);

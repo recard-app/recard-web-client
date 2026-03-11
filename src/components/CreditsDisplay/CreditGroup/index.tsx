@@ -2,12 +2,12 @@ import React from 'react';
 import './CreditGroup.scss';
 import { UserCredit, UserCreditWithExpiration } from '../../../types';
 import CreditList from '../CreditList';
-import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
+import { CreditCard, CardCredit } from '../../../types/CreditCardTypes';
 
 export interface CreditGroupProps {
   credits: (UserCredit | UserCreditWithExpiration)[];
   now: Date;
-  cardById: Map<string, CreditCardDetails>;
+  cardById: Map<string, CreditCard>;
   creditByPair: Map<string, CardCredit>;
   displayPeriod?: boolean;
   onUpdateComplete?: () => void;

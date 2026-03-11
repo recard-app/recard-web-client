@@ -1,12 +1,12 @@
 import React from 'react';
 import './CreditEntryDetails.scss';
 import { CreditUsageType, UserCredit } from '../../../../../types';
-import { CreditCardDetails, CardCredit } from '../../../../../types/CreditCardTypes';
+import { CreditCard, CardCredit } from '../../../../../types/CreditCardTypes';
 
 export interface CreditEntryDetailsProps {
   userCredit: UserCredit;
   now: Date;
-  card: CreditCardDetails | null;
+  card: CreditCard | null;
   cardCredit: CardCredit | null;
   creditMaxValue?: number;
   currentYear: number;

@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './CreditList.scss';
 import { UserCredit, MOBILE_BREAKPOINT, CREDIT_PERIODS, CREDIT_INTERVALS } from '../../../types';
-import { CreditCardDetails, CardCredit } from '../../../types/CreditCardTypes';
+import { CreditCard, CardCredit } from '../../../types/CreditCardTypes';
 import CreditEntry from './CreditEntry';
 
 export interface CreditListProps {
   credits: UserCredit[];
   now: Date;
-  cardById: Map<string, CreditCardDetails>;
+  cardById: Map<string, CreditCard>;
   creditByPair: Map<string, CardCredit>;
   displayPeriod?: boolean;
   variant?: 'default' | 'sidebar';

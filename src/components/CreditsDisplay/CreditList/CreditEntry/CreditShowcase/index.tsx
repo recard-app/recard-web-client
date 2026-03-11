@@ -1,12 +1,12 @@
 import React from 'react';
 import './CreditShowcase.scss';
 import { UserCredit } from '../../../../../types';
-import { CreditCardDetails, CardCredit } from '../../../../../types/CreditCardTypes';
+import { CreditCard, CardCredit } from '../../../../../types/CreditCardTypes';
 import { CardIcon } from '../../../../../icons';
 import { formatCreditDollars } from '../utils';
 
 interface CreditShowcaseProps {
-  card: CreditCardDetails | null;
+  card: CreditCard | null;
   cardCredit: CardCredit | null;
   userCredit: UserCredit;
   currentYear: number;

@@ -14,7 +14,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
 import { CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, CreditPeriodType, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS, ICON_GRAY } from '../../../../types';
-import { CreditCardDetails, CardCredit } from '../../../../types/CreditCardTypes';
+import { CreditCard, CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
 import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
@@ -28,7 +28,7 @@ import { useCreditDrawer } from '../../../../contexts/useCreditDrawer';
 export interface CreditEntryProps {
   userCredit: UserCredit | UserCreditWithExpiration;
   now: Date;
-  card: CreditCardDetails | null;
+  card: CreditCard | null;
   cardCredit: CardCredit | null;
   creditMaxValue?: number;
   hideSlider?: boolean;
