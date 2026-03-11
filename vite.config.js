@@ -41,7 +41,8 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /^https:\/\/api\.cardzen\.ai\/.*/i,
+            // Cache API responses for both production and stage API domains.
+            urlPattern: /^https:\/\/api(?:-stage)?\.cardzen\.ai\/.*/i,
             handler: "NetworkFirst",
             options: {
               cacheName: "api-cache",
