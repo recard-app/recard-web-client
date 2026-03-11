@@ -99,11 +99,10 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
     return (
       <InfoDisplay
         type="default"
-        message={variant === 'sidebar' ? "No stats available" : "No stats data available"}
+        message="No credits available"
         showTitle={false}
         transparent={true}
         showIcon={false}
-        centered={true}
       />
     );
   }

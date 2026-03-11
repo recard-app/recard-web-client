@@ -92,7 +92,6 @@ function HistoryPanelPreview({
           showTitle={false}
           transparent={true}
           showIcon={false}
-          centered
         />
       ) : (
         displayList.map(entry => (

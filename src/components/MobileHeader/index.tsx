@@ -224,6 +224,13 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     setIsDrawerOpen(false);
   };
 
+  const hasPrioritizedCredits = prioritizedCredits && prioritizedCredits.length > 0;
+  const totalCreditsCount = monthlyStats
+    ? monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount
+    : 0;
+  const hasAnyCredits = totalCreditsCount > 0 || hasPrioritizedCredits;
+  const showCreditsSection = isLoadingMonthlyStats || hasAnyCredits;
+
   const myCardsNavLink = !MY_CARDS_IN_ACCOUNT_MENU ? (
     <li key="my-cards-link" className={isActive(PAGES.MY_CARDS.PATH) ? 'active' : ''}>
       <Drawer.Close asChild>
@@ -284,7 +291,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       />
 
       {/* Priority Credits List */}
-      {prioritizedCredits && prioritizedCredits.length > 0 && (
+      {hasPrioritizedCredits ? (
         <CreditList
           credits={convertPrioritizedCreditsToUserCredits(prioritizedCredits)}
           now={new Date()}
@@ -305,13 +312,14 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
           onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
           isCreditUpdating={isCreditUpdating}
         />
-      )}
+      ) : null}
     </div>
   );
 
-  const orderedSidebarSections = MY_CREDITS_BEFORE_MY_CARDS
-    ? [myCreditsSection, myCardsSection]
-    : [myCardsSection, myCreditsSection];
+  const orderedSidebarSections = (MY_CREDITS_BEFORE_MY_CARDS
+    ? [showCreditsSection ? myCreditsSection : null, myCardsSection]
+    : [myCardsSection, showCreditsSection ? myCreditsSection : null]
+  ).filter(Boolean) as React.ReactNode[];
 
   // We no longer render a dynamic title in the mobile header
 

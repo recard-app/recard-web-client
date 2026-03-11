@@ -66,7 +66,6 @@ const CreditCardPreviewList: React.FC<CreditCardPreviewListProps> = ({
             showTitle={false}
             transparent={true}
             showIcon={false}
-            centered
           />
         </div>
       ) : (

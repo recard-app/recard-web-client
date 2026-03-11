@@ -228,6 +228,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     );
   };
 
+  const hasPrioritizedCredits = prioritizedCredits && prioritizedCredits.length > 0;
+  const totalCreditsCount = monthlyStats
+    ? monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount
+    : 0;
+  const hasAnyCredits = totalCreditsCount > 0 || hasPrioritizedCredits;
+  const showCreditsSection = isLoadingMonthlyStats || hasAnyCredits;
+
   const myCardsSidebarItem = (
     <SidebarItem
       key="my-cards"
@@ -260,7 +267,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       />
 
       {/* Priority Credits List */}
-      {prioritizedCredits && prioritizedCredits.length > 0 && (
+      {hasPrioritizedCredits ? (
         (() => {
           const convertedCredits = convertPrioritizedCreditsToUserCredits(prioritizedCredits);
 
@@ -291,13 +298,14 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             />
           );
         })()
-      )}
+      ) : null}
     </SidebarItem>
   );
 
-  const orderedSidebarSections = MY_CREDITS_BEFORE_MY_CARDS
-    ? [myCreditsSidebarItem, myCardsSidebarItem]
-    : [myCardsSidebarItem, myCreditsSidebarItem];
+  const orderedSidebarSections = (MY_CREDITS_BEFORE_MY_CARDS
+    ? [showCreditsSection ? myCreditsSidebarItem : null, myCardsSidebarItem]
+    : [myCardsSidebarItem, showCreditsSection ? myCreditsSidebarItem : null]
+  ).filter(Boolean) as React.ReactNode[];
 
   return (
     <div 
