@@ -4,3 +4,4 @@ export * from './UserHistoryService';
 export * from './UserPreferencesService';
 export * from './UserCreditService';
 export * from './UserComponentService';
+export * from './BootstrapService';

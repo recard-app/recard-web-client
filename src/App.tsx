@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard, UserCredit, CreditCardDetails, CardCredit } from './types';
+import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard, UserCredit, CreditCardDetails, CardCredit, CardPerk, EnrichedMultiplier } from './types';
 import { Icon, CardIcon } from './icons';
 // Services
 import {
@@ -11,7 +11,9 @@ import {
   UserPreferencesService,
   UserCreditService,
   UserComponentService,
-  ComponentService
+  ComponentService,
+  BootstrapService,
+  hasRequiredBootstrapSections
 } from './services';
 
 // Styles
@@ -127,7 +129,7 @@ function AppContent({}: AppContentProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const isDesignSystemPage = location.pathname.startsWith('/design');
-  const { refetch: refetchComponents } = useComponents();
+  const { refetch: refetchComponents, hydrate: hydrateComponents } = useComponents();
 
   // Enable dynamic page background colors
   usePageBackground();
@@ -363,6 +365,8 @@ function AppContent({}: AppContentProps) {
 
     return () => {
       cancelled = true;
+      // Reset ref so a StrictMode re-mount (or re-auth) can re-fetch
+      digestFetchedRef.current = false;
 
       if (typeof window !== 'undefined') {
         const windowWithIdle = window as Window & {
@@ -445,6 +449,14 @@ function AppContent({}: AppContentProps) {
       cancelDeferredCreditsTask();
     };
   }, []);
+
+  const buildUserCardMetadataMap = (userCardsData: UserCreditCard[]): Map<string, UserCreditCard> => {
+    const metadataMap = new Map<string, UserCreditCard>();
+    userCardsData.forEach((userCard: UserCreditCard) => {
+      metadataMap.set(userCard.cardReferenceId, userCard);
+    });
+    return metadataMap;
+  };
 
   const fetchMonthlySummary = async ({
     showLoading = false,
@@ -565,6 +577,161 @@ function AppContent({}: AppContentProps) {
 
   // Effect to fetch all initial data in parallel batches when user is authenticated
   useEffect(() => {
+    const applyBootstrapData = (
+      bootstrapResponse: {
+        cards: {
+          previews: CreditCard[];
+          userCards: UserCreditCard[];
+          details: CreditCardDetails[];
+        };
+        subscription: {
+          plan: SubscriptionPlan;
+          status: SubscriptionStatusType;
+          billingPeriod: string | null;
+          expiresAt: string | null;
+        };
+        preferences: {
+          instructions: string;
+          chatHistory: ChatHistoryPreference;
+          agentMode: AgentModePreference;
+        };
+        components: {
+          perks: CardPerk[];
+          credits: CardCredit[];
+          multipliers: EnrichedMultiplier[];
+        };
+        componentPreferences: UserComponentTrackingPreferences;
+        history: {
+          previews: Conversation[];
+          priorityChat?: Conversation | null;
+        };
+      },
+      urlChatId: string | null
+    ): void => {
+      setCreditCards(bootstrapResponse.cards.previews);
+      setSubscriptionPlan(bootstrapResponse.subscription.plan);
+      setSubscriptionStatus(bootstrapResponse.subscription.status);
+      setSubscriptionExpiresAt(bootstrapResponse.subscription.expiresAt);
+      setComponentPreferences(bootstrapResponse.componentPreferences);
+      setPreferencesInstructions(bootstrapResponse.preferences.instructions || '');
+      setChatHistoryPreference(bootstrapResponse.preferences.chatHistory);
+      setAgentModePreference(bootstrapResponse.preferences.agentMode || AGENT_MODE_PREFERENCE.SIMPLIFIED);
+      setUserDetailedCardDetails(bootstrapResponse.cards.details);
+      setUserCardsMetadata(buildUserCardMetadataMap(bootstrapResponse.cards.userCards));
+      hydrateComponents({
+        perks: bootstrapResponse.components.perks,
+        credits: bootstrapResponse.components.credits,
+        multipliers: bootstrapResponse.components.multipliers,
+      });
+
+      const chatHistoryList = [...(bootstrapResponse.history.previews || [])];
+      const priorityChat = bootstrapResponse.history.priorityChat;
+
+      if (urlChatId && priorityChat) {
+        const existingPriorityIndex = chatHistoryList.findIndex(chat => chat.chatId === urlChatId);
+        if (existingPriorityIndex >= 0) {
+          chatHistoryList[existingPriorityIndex] = priorityChat;
+        } else {
+          chatHistoryList.unshift(priorityChat);
+        }
+      }
+
+      setChatHistory(chatHistoryList);
+      if (urlChatId) {
+        setCurrentChatId(urlChatId);
+      }
+    };
+
+    const loadLegacyInitialData = async (urlChatId: string | null): Promise<void> => {
+      const [
+        cards,
+        subscriptionData,
+        componentPrefs,
+        allPreferences,
+        detailedInfo,
+        userCardsData,
+        historyResponse,
+        priorityChat,
+        componentsData,
+      ] = await Promise.all([
+        CardService.fetchCreditCards(true).catch(error => {
+          console.error('Error fetching credit cards:', error);
+          return [];
+        }),
+        UserService.fetchUserSubscription().catch(error => {
+          console.error('Error fetching subscription plan:', error);
+          return {
+            subscriptionPlan: SUBSCRIPTION_PLAN.FREE as SubscriptionPlan,
+            subscriptionStatus: SUBSCRIPTION_STATUS.NONE as SubscriptionStatusType,
+            subscriptionBillingPeriod: null,
+            subscriptionExpiresAt: null,
+          };
+        }),
+        UserComponentService.fetchComponentTrackingPreferences().catch(error => {
+          console.error('Error fetching component tracking preferences:', error);
+          return { Cards: [] };
+        }),
+        UserPreferencesService.loadAllPreferences().catch(error => {
+          console.error('Error fetching user preferences:', error);
+          return {
+            success: false,
+            instructions: '',
+            chatHistory: CHAT_HISTORY_PREFERENCE.KEEP_HISTORY,
+            agentMode: AGENT_MODE_PREFERENCE.SIMPLIFIED,
+          };
+        }),
+        UserCreditCardService.fetchUserCardsDetailedInfo().catch(error => {
+          console.error('Error fetching user detailed card info:', error);
+          return [];
+        }),
+        UserCreditCardService.fetchUserCards().catch(error => {
+          console.error('Error fetching user cards metadata:', error);
+          return [];
+        }),
+        UserHistoryService.fetchChatHistoryPreview(quick_history_size).catch(error => {
+          console.error('Error fetching chat history preview:', error);
+          return { chatHistory: [] };
+        }),
+        urlChatId
+          ? UserHistoryService.fetchChatHistoryById(urlChatId).catch(error => {
+              console.error('Error fetching priority chat:', error);
+              return null;
+            })
+          : Promise.resolve(null),
+        ComponentService.fetchAllUserCardComponents().catch(error => {
+          console.error('Error fetching components:', error);
+          return { perks: [], credits: [], multipliers: [] };
+        }),
+      ]);
+
+      setCreditCards(cards);
+      setSubscriptionPlan(subscriptionData.subscriptionPlan);
+      setSubscriptionStatus(subscriptionData.subscriptionStatus);
+      setSubscriptionExpiresAt(subscriptionData.subscriptionExpiresAt);
+      setComponentPreferences(componentPrefs);
+      setPreferencesInstructions(allPreferences.instructions || '');
+      setChatHistoryPreference(allPreferences.chatHistory);
+      setAgentModePreference(allPreferences.agentMode || AGENT_MODE_PREFERENCE.SIMPLIFIED);
+      setUserDetailedCardDetails(detailedInfo);
+      setUserCardsMetadata(buildUserCardMetadataMap(userCardsData));
+      hydrateComponents(componentsData);
+
+      const chatHistoryList = historyResponse.chatHistory || [];
+      if (urlChatId && priorityChat) {
+        const existingPriorityIndex = chatHistoryList.findIndex(chat => chat.chatId === urlChatId);
+        if (existingPriorityIndex >= 0) {
+          chatHistoryList[existingPriorityIndex] = priorityChat;
+        } else {
+          chatHistoryList.unshift(priorityChat);
+        }
+      }
+
+      setChatHistory(chatHistoryList);
+      if (urlChatId) {
+        setCurrentChatId(urlChatId);
+      }
+    };
+
     const loadInitialData = async () => {
       if (!user) {
         // Reset all states when user is not authenticated
@@ -603,96 +770,30 @@ function AppContent({}: AppContentProps) {
         // Extract chatId from URL if present (priority loading for initial chat hydration)
         const currentPath = location.pathname;
         const urlChatId = PageUtils.getChatIdFromPath(currentPath);
+        let bootstrapLoaded = false;
 
-        const [
-          cards,
-          subscriptionData,
-          componentPrefs,
-          allPreferences,
-          detailedInfo,
-          userCardsData,
-          historyResponse,
-          priorityChat
-        ] = await Promise.all([
-          CardService.fetchCreditCards(true).catch(error => {
-            console.error('Error fetching credit cards:', error);
-            return [];
-          }),
-          UserService.fetchUserSubscription().catch(error => {
-            console.error('Error fetching subscription plan:', error);
-            return {
-              subscriptionPlan: SUBSCRIPTION_PLAN.FREE as SubscriptionPlan,
-              subscriptionStatus: SUBSCRIPTION_STATUS.NONE as SubscriptionStatusType,
-              subscriptionBillingPeriod: null,
-              subscriptionExpiresAt: null,
-            };
-          }),
-          UserComponentService.fetchComponentTrackingPreferences().catch(error => {
-            console.error('Error fetching component tracking preferences:', error);
-            return { Cards: [] };
-          }),
-          UserPreferencesService.loadAllPreferences().catch(error => {
-            console.error('Error fetching user preferences:', error);
-            return {
-              success: false,
-              instructions: '',
-              chatHistory: CHAT_HISTORY_PREFERENCE.KEEP_HISTORY,
-              agentMode: AGENT_MODE_PREFERENCE.SIMPLIFIED
-            };
-          }),
-          UserCreditCardService.fetchUserCardsDetailedInfo().catch(error => {
-            console.error('Error fetching user detailed card info:', error);
-            return [];
-          }),
-          UserCreditCardService.fetchUserCards().catch(error => {
-            console.error('Error fetching user cards metadata:', error);
-            return [];
-          }),
-          UserHistoryService.fetchChatHistoryPreview(quick_history_size).catch(error => {
-            console.error('Error fetching chat history preview:', error);
-            return { chatHistory: [] };
-          }),
-          urlChatId
-            ? UserHistoryService.fetchChatHistoryById(urlChatId).catch(error => {
-              console.error('Error fetching priority chat:', error);
-              return null;
-            })
-            : Promise.resolve(null),
-        ]);
+        try {
+          const bootstrapResponse = await BootstrapService.fetchBootstrap({
+            historySize: quick_history_size,
+            chatId: urlChatId,
+          });
 
-        setCreditCards(cards);
-        setSubscriptionPlan(subscriptionData.subscriptionPlan);
-        setSubscriptionStatus(subscriptionData.subscriptionStatus);
-        setSubscriptionExpiresAt(subscriptionData.subscriptionExpiresAt);
-        setComponentPreferences(componentPrefs);
-        setPreferencesInstructions(allPreferences.instructions || '');
-        setChatHistoryPreference(allPreferences.chatHistory);
-        setAgentModePreference(allPreferences.agentMode || AGENT_MODE_PREFERENCE.SIMPLIFIED);
-        setUserDetailedCardDetails(detailedInfo);
+          if (!hasRequiredBootstrapSections(bootstrapResponse)) {
+            throw new Error('Bootstrap response missing required sections');
+          }
 
-        // Build a map of user card metadata keyed by cardReferenceId
-        const metadataMap = new Map<string, UserCreditCard>();
-        userCardsData.forEach((uc: UserCreditCard) => {
-          metadataMap.set(uc.cardReferenceId, uc);
-        });
-        setUserCardsMetadata(metadataMap);
-
-        const chatHistoryList = historyResponse.chatHistory || [];
-        if (urlChatId && priorityChat && !chatHistoryList.find(chat => chat.chatId === urlChatId)) {
-          chatHistoryList.unshift(priorityChat);
+          applyBootstrapData(bootstrapResponse, urlChatId);
+          bootstrapLoaded = true;
+        } catch (bootstrapError) {
+          console.warn('Bootstrap load failed, falling back to legacy endpoint fan-out:', bootstrapError);
         }
 
-        setChatHistory(chatHistoryList);
-        if (urlChatId) {
-          // Set the current chat ID immediately for faster loading
-          setCurrentChatId(urlChatId);
+        if (!bootstrapLoaded) {
+          await loadLegacyInitialData(urlChatId);
         }
 
         setLastUpdateTimestamp(new Date().toISOString());
-
-        // Defer non-critical credit sync and monthly summary work until after first paint
         scheduleDeferredCreditsTasks({ prefetchMonthlySummary: true, forceMonthlyRefresh: false });
-
       } catch (error) {
         console.error('Error loading initial data:', error);
       } finally {
@@ -704,7 +805,7 @@ function AppContent({}: AppContentProps) {
       }
     };
 
-    loadInitialData();
+    void loadInitialData();
   }, [user]); // Refresh only when user changes
 
   // Refresh only card-related data when cardsVersion changes (card edits / agent card actions)
@@ -725,12 +826,7 @@ function AppContent({}: AppContentProps) {
 
         setCreditCards(cards);
         setUserDetailedCardDetails(details);
-
-        const metadataMap = new Map<string, UserCreditCard>();
-        userCardsData.forEach((uc: UserCreditCard) => {
-          metadataMap.set(uc.cardReferenceId, uc);
-        });
-        setUserCardsMetadata(metadataMap);
+        setUserCardsMetadata(buildUserCardMetadataMap(userCardsData));
 
         if (preferences) {
           setComponentPreferences(preferences);
@@ -851,13 +947,7 @@ function AppContent({}: AppContentProps) {
           UserCreditCardService.fetchUserCards(),
         ]);
         setUserDetailedCardDetails(details);
-
-        // Rebuild metadata map (openDate, isFrozen, etc.)
-        const metadataMap = new Map<string, UserCreditCard>();
-        userCardsData.forEach((uc: UserCreditCard) => {
-          metadataMap.set(uc.cardReferenceId, uc);
-        });
-        setUserCardsMetadata(metadataMap);
+        setUserCardsMetadata(buildUserCardMetadataMap(userCardsData));
 
         // Refetch components (perks, credits, multipliers) for the updated cards
         await refetchComponents();
@@ -1589,7 +1679,7 @@ function AppContent({}: AppContentProps) {
 function App() {
   return (
     <Router>
-      <ComponentsProvider autoFetch={true}>
+      <ComponentsProvider autoFetch={false}>
         <AppContent />
       </ComponentsProvider>
     </Router>

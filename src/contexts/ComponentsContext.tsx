@@ -45,6 +45,14 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
     await fetchComponents(true);
   };
 
+  const hydrate = (componentData: { perks: CardPerk[]; credits: CardCredit[]; multipliers: EnrichedMultiplier[] }) => {
+    setPerks(componentData.perks || []);
+    setCredits(componentData.credits || []);
+    setMultipliers(componentData.multipliers || []);
+    setError(null);
+    setIsLoading(false);
+  };
+
   /**
    * Update user's category selection for a selectable multiplier
    * Uses optimistic update for immediate UI feedback
@@ -105,6 +113,7 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
     isLoading,
     error,
     refetch,
+    hydrate,
     updateMultiplierSelection,
   };
 
@@ -114,4 +123,3 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
     </ComponentsContext.Provider>
   );
 };
-

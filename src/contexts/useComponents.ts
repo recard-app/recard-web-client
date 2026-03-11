@@ -9,6 +9,7 @@ export interface ComponentsContextType {
   isLoading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
+  hydrate: (componentData: { perks: CardPerk[]; credits: CardCredit[]; multipliers: EnrichedMultiplier[] }) => void;
   updateMultiplierSelection: (multiplierId: string, categoryId: string) => Promise<void>;
 }
 

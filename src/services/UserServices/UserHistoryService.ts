@@ -159,18 +159,29 @@ export const UserHistoryService = {
     },
 
     /**
-     * Fetches recent chat history entries with full conversation data for sidebar preview
+     * Fetches recent chat history entries for sidebar preview.
+     * Lightweight responses are normalized to include an empty conversation array.
      * @param size Optional size parameter (defaults to 3, max 10)
-     * @returns Promise containing the full conversation data
+     * @returns Promise containing normalized conversation data
      */
     async fetchChatHistoryPreview(size: number = 3): Promise<{ chatHistory: Conversation[] }> {
         const headers = await getAuthHeaders();
-        const response = await axios.get<{ chatHistory: Conversation[] }>(
+        const response = await axios.get<{ chatHistory: Array<Partial<Conversation> & Pick<Conversation, 'chatId' | 'chatDescription' | 'timestamp'>> }>(
             `${apiurl}/users/history/preview`,
             { headers, params: { size: Math.min(size, 10) } }
         );
-        return response.data;
+
+        const normalizedHistory = (response.data.chatHistory || []).map(chat => ({
+            ...chat,
+            conversation: Array.isArray(chat.conversation) ? chat.conversation : [],
+            componentBlocks: Array.isArray(chat.componentBlocks) ? chat.componentBlocks : [],
+            messageCount: typeof chat.messageCount === 'number'
+                ? chat.messageCount
+                : 0,
+        }));
+
+        return {
+            chatHistory: normalizedHistory,
+        };
     }
 };
-
-

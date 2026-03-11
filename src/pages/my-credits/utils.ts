@@ -1,5 +1,7 @@
 import type { CreditCardDetails } from '@/types/CreditCardTypes';
 
+const MIN_CREDIT_HISTORY_YEAR = 2000;
+
 export interface YearMonth {
   y: number;
   m: number;
@@ -53,7 +55,9 @@ export function isAllowedYearMonth(
   const maxYear = now.getFullYear();
   const maxMonth = now.getMonth() + 1;
   const earliestYear = getEarliestOpenDateYear(cards);
-  const minYear = earliestYear ?? maxYear;
+  const minYear = earliestYear === null
+    ? maxYear
+    : Math.max(MIN_CREDIT_HISTORY_YEAR, Math.min(earliestYear, maxYear));
   if (year > maxYear || (year === maxYear && month > maxMonth)) return false;
   if (year < minYear) return false;
   return true;
@@ -65,7 +69,10 @@ export function buildYearOptions(
 ): number[] {
   const currentYear = now.getFullYear();
   const earliestYear = getEarliestOpenDateYear(cards);
-  const startYear = earliestYear ?? currentYear;
+  // Hard floor to prevent runaway historical ranges from malformed legacy dates.
+  const startYear = earliestYear === null
+    ? currentYear
+    : Math.max(MIN_CREDIT_HISTORY_YEAR, Math.min(earliestYear, currentYear));
   const years: number[] = [];
   for (let y = currentYear; y >= startYear; y -= 1) years.push(y);
   return years;

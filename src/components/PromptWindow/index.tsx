@@ -341,6 +341,37 @@ function PromptWindow({
     };
 
     /**
+     * Loads an existing chat from preview data when possible, and falls back to
+     * fetching full history when preview payload is metadata-only.
+     */
+    const loadExistingChatFromPreview = async (
+        existingChat: Conversation,
+        targetChatId: string
+    ): Promise<void> => {
+        setChatLoadError(null);
+
+        const previewConversation = Array.isArray(existingChat.conversation)
+            ? existingChat.conversation
+            : [];
+        const previewMessageCount = typeof existingChat.messageCount === 'number'
+            ? existingChat.messageCount
+            : previewConversation.length;
+
+        if (previewConversation.length > 0) {
+            setExistingChatStates(previewConversation, targetChatId);
+            return;
+        }
+
+        if (previewMessageCount === 0) {
+            setExistingChatStates([], targetChatId);
+            return;
+        }
+
+        const response = await UserHistoryService.fetchChatHistoryById(targetChatId);
+        setExistingChatStates(response.conversation, targetChatId);
+    };
+
+    /**
      * Effect hook that synchronizes the URL with the current chat ID.
      */
     useEffect(() => {
@@ -387,8 +418,13 @@ function PromptWindow({
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
 
                 if (existingChat) {
-                    // Chat found in pre-loaded history - fast path
-                    setExistingChatStates(existingChat.conversation, urlChatId);
+                    // Chat found in pre-loaded history (may be full or lightweight preview)
+                    try {
+                        await loadExistingChatFromPreview(existingChat, urlChatId);
+                    } catch (error) {
+                        console.error('Error loading chat from preview data:', error);
+                        setChatLoadError('Failed to load chat. Please try again.');
+                    }
                     return;
                 }
 
@@ -402,7 +438,7 @@ function PromptWindow({
                     setChatLoadError('Failed to load chat. Please try again.');
                 }
             };
-            loadHistory();
+            void loadHistory();
         }
     }, [urlChatId, user, isLoadingHistory, existingHistoryList.length]);
 
@@ -416,7 +452,10 @@ function PromptWindow({
         const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
         if (existingChat && chatId !== urlChatId) {
             // Chat just became available and we haven't loaded it yet
-            setExistingChatStates(existingChat.conversation, urlChatId);
+            void loadExistingChatFromPreview(existingChat, urlChatId).catch(error => {
+                console.error('Error loading newly available chat from preview data:', error);
+                setChatLoadError('Failed to load chat. Please try again.');
+            });
         }
     }, [existingHistoryList, urlChatId, user, chatId]);
 

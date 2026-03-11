@@ -109,8 +109,12 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       return false;
     }
     
-    // Show button if current chat has messages
-    return currentChat.conversation && currentChat.conversation.length > 0;
+    const messageCount = typeof currentChat.messageCount === 'number'
+      ? currentChat.messageCount
+      : (currentChat.conversation?.length || 0);
+
+    // Show button if current chat has at least one message
+    return messageCount > 0;
   };
 
   // Determine if user has any selected cards (fallback to length > 0)

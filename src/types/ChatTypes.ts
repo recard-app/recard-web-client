@@ -24,6 +24,7 @@ export interface Conversation {
     timestamp: string;
     conversation: ChatMessage[];
     componentBlocks?: ChatComponentBlock[];  // Agent component blocks
+    messageCount?: number;  // Available on lightweight history preview payloads
 }
 
 /**
