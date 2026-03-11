@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, SUBSCRIPTION_PLAN, COLORS } from '../../types';
+import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, MY_CREDITS_BEFORE_MY_CARDS, SUBSCRIPTION_PLAN, COLORS } from '../../types';
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -224,6 +224,95 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     setIsDrawerOpen(false);
   };
 
+  const myCardsNavLink = !MY_CARDS_IN_ACCOUNT_MENU ? (
+    <li key="my-cards-link" className={isActive(PAGES.MY_CARDS.PATH) ? 'active' : ''}>
+      <Drawer.Close asChild>
+        <Link to={PAGES.MY_CARDS.PATH}>
+          <Icon
+            name="card"
+            variant={isActive(PAGES.MY_CARDS.PATH) ? 'solid' : 'outline'}
+            size={18}
+            color={SIDEBAR_INACTIVE_ICON_COLOR}
+          />
+          <span>{PAGE_NAMES.MY_CARDS}</span>
+        </Link>
+      </Drawer.Close>
+    </li>
+  ) : null;
+
+  const myCreditsNavLink = (
+    <li key="my-credits-link" className={isActive(PAGES.MY_CREDITS.PATH) ? 'active' : ''}>
+      <Drawer.Close asChild>
+        <Link to={PAGES.MY_CREDITS.PATH}>
+          <Icon 
+            name="banknotes" 
+            variant={isActive(PAGES.MY_CREDITS.PATH) ? 'solid' : 'outline'} 
+            size={18}
+            color={SIDEBAR_INACTIVE_ICON_COLOR}
+          />
+          <span>{PAGE_NAMES.MY_CREDITS}</span>
+        </Link>
+      </Drawer.Close>
+    </li>
+  );
+
+  const orderedPrimaryLinks = MY_CREDITS_BEFORE_MY_CARDS
+    ? [myCreditsNavLink, ...(myCardsNavLink ? [myCardsNavLink] : [])]
+    : [...(myCardsNavLink ? [myCardsNavLink] : []), myCreditsNavLink];
+
+  const myCardsSection = (
+    <div key="my-cards-section" className="mobile-drawer-section">
+      <div className="section-title">My Cards</div>
+      <CreditCardPreviewList
+        cards={creditCards}
+        loading={isLoadingCreditCards}
+        showOnlySelected={true}
+        onCardSelect={onCardSelect!}
+        variant="mobile-sidebar"
+      />
+    </div>
+  );
+
+  const myCreditsSection = (
+    <div key="my-credits-section" className="mobile-drawer-section">
+      <div className="section-title">{PAGE_NAMES.MY_CREDITS}</div>
+      <CreditSummary
+        variant="sidebar"
+        monthlyStats={monthlyStats}
+        loading={isLoadingMonthlyStats}
+        isUpdating={isUpdatingMonthlyStats}
+      />
+
+      {/* Priority Credits List */}
+      {prioritizedCredits && prioritizedCredits.length > 0 && (
+        <CreditList
+          credits={convertPrioritizedCreditsToUserCredits(prioritizedCredits)}
+          now={new Date()}
+          cardById={new Map(creditCards.map(card => [card.id, card]))}
+          creditByPair={(() => {
+            const map = new Map();
+            for (const credit of credits) {
+              map.set(`${credit.ReferenceCardId}:${credit.id}`, credit);
+            }
+            return map;
+          })()}
+          variant="sidebar"
+          limit={5}
+          displayPeriod={false}
+          onUpdateComplete={onRefreshMonthlyStats}
+          isUpdating={isUpdatingMonthlyStats}
+          onAddUpdatingCreditId={onAddUpdatingCreditId}
+          onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+          isCreditUpdating={isCreditUpdating}
+        />
+      )}
+    </div>
+  );
+
+  const orderedSidebarSections = MY_CREDITS_BEFORE_MY_CARDS
+    ? [myCreditsSection, myCardsSection]
+    : [myCardsSection, myCreditsSection];
+
   // We no longer render a dynamic title in the mobile header
 
   return (
@@ -345,34 +434,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                           </Link>
                         </Drawer.Close>
                       </li>
-                      {!MY_CARDS_IN_ACCOUNT_MENU && (
-                        <li className={isActive(PAGES.MY_CARDS.PATH) ? 'active' : ''}>
-                          <Drawer.Close asChild>
-                            <Link to={PAGES.MY_CARDS.PATH}>
-                              <Icon
-                                name="card"
-                                variant={isActive(PAGES.MY_CARDS.PATH) ? 'solid' : 'outline'}
-                                size={18}
-                                color={SIDEBAR_INACTIVE_ICON_COLOR}
-                              />
-                              <span>{PAGE_NAMES.MY_CARDS}</span>
-                            </Link>
-                          </Drawer.Close>
-                        </li>
-                      )}
-                      <li className={isActive(PAGES.MY_CREDITS.PATH) ? 'active' : ''}>
-                        <Drawer.Close asChild>
-                          <Link to={PAGES.MY_CREDITS.PATH}>
-                            <Icon 
-                              name="banknotes" 
-                              variant={isActive(PAGES.MY_CREDITS.PATH) ? 'solid' : 'outline'} 
-                              size={18}
-                              color={SIDEBAR_INACTIVE_ICON_COLOR}
-                            />
-                            <span>{PAGE_NAMES.MY_CREDITS}</span>
-                          </Link>
-                        </Drawer.Close>
-                      </li>
+                      {orderedPrimaryLinks}
                     </ul>
                   </nav>
 
@@ -398,51 +460,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                     </div>
                   </div>
 
-                  {/* My Cards section - always show card list, navigation link controlled by MY_CARDS_IN_ACCOUNT_MENU */}
-                  <div className="mobile-drawer-section">
-                    <div className="section-title">My Cards</div>
-                    <CreditCardPreviewList
-                      cards={creditCards}
-                      loading={isLoadingCreditCards}
-                      showOnlySelected={true}
-                      onCardSelect={onCardSelect!}
-                      variant="mobile-sidebar"
-                    />
-                  </div>
-
-                  <div className="mobile-drawer-section">
-                    <div className="section-title">{PAGE_NAMES.MY_CREDITS}</div>
-                    <CreditSummary
-                      variant="sidebar"
-                      monthlyStats={monthlyStats}
-                      loading={isLoadingMonthlyStats}
-                      isUpdating={isUpdatingMonthlyStats}
-                    />
-
-                    {/* Priority Credits List */}
-                    {prioritizedCredits && prioritizedCredits.length > 0 && (
-                      <CreditList
-                        credits={convertPrioritizedCreditsToUserCredits(prioritizedCredits)}
-                        now={new Date()}
-                        cardById={new Map(creditCards.map(card => [card.id, card]))}
-                        creditByPair={(() => {
-                          const map = new Map();
-                          for (const credit of credits) {
-                            map.set(`${credit.ReferenceCardId}:${credit.id}`, credit);
-                          }
-                          return map;
-                        })()}
-                        variant="sidebar"
-                        limit={5}
-                        displayPeriod={false}
-                        onUpdateComplete={onRefreshMonthlyStats}
-                        isUpdating={isUpdatingMonthlyStats}
-                        onAddUpdatingCreditId={onAddUpdatingCreditId}
-                        onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
-                        isCreditUpdating={isCreditUpdating}
-                      />
-                    )}
-                  </div>
+                  {/* My Cards/My Credits order controlled by MY_CREDITS_BEFORE_MY_CARDS */}
+                  {orderedSidebarSections}
                 </div>
 
                 {user && (
@@ -527,5 +546,3 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 };
 
 export default MobileHeader;
-
-

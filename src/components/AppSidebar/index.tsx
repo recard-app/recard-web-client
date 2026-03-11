@@ -29,6 +29,7 @@ import {
   PAGES,
   MY_CARDS_IN_ACCOUNT_MENU,
   MY_CARDS_DROPDOWN_LABEL,
+  MY_CREDITS_BEFORE_MY_CARDS,
   SUBSCRIPTION_PLAN,
   COLORS
 } from '../../types';
@@ -158,6 +159,22 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     setActiveTooltip(null);
   };
 
+  const myCardsNavItem = {
+    to: PAGES.MY_CARDS.PATH,
+    name: PAGE_NAMES.MY_CARDS,
+    icon: () => getIconVariant(PAGE_ICONS.MY_CARDS, PAGES.MY_CARDS.PATH)({ size: 20 })
+  };
+
+  const myCreditsNavItem = {
+    to: PAGES.MY_CREDITS.PATH,
+    name: PAGE_NAMES.MY_CREDITS,
+    icon: () => getIconVariant(PAGE_ICONS.MY_CREDITS, PAGES.MY_CREDITS.PATH)({ size: 20 })
+  };
+
+  const orderedAccountNavItems = MY_CREDITS_BEFORE_MY_CARDS
+    ? [myCreditsNavItem, ...(!MY_CARDS_IN_ACCOUNT_MENU ? [myCardsNavItem] : [])]
+    : [...(!MY_CARDS_IN_ACCOUNT_MENU ? [myCardsNavItem] : []), myCreditsNavItem];
+
   // Mini navigation items for collapsed state
   const miniMiddleNavItems = [
     {
@@ -170,17 +187,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       name: PAGE_NAMES.TRANSACTION_HISTORY,
       icon: () => getIconVariant(PAGE_ICONS.TRANSACTION_HISTORY, PAGES.HISTORY.PATH)({ size: 20 })
     },
-    // Only include My Cards in sidebar navigation if not moved to account menu
-    ...(!MY_CARDS_IN_ACCOUNT_MENU ? [{
-      to: PAGES.MY_CARDS.PATH,
-      name: PAGE_NAMES.MY_CARDS,
-      icon: () => getIconVariant(PAGE_ICONS.MY_CARDS, PAGES.MY_CARDS.PATH)({ size: 20 })
-    }] : []),
-    {
-      to: PAGES.MY_CREDITS.PATH,
-      name: PAGE_NAMES.MY_CREDITS,
-      icon: () => getIconVariant(PAGE_ICONS.MY_CREDITS, PAGES.MY_CREDITS.PATH)({ size: 20 })
-    }
+    ...orderedAccountNavItems
   ];
 
   const handleMiniNavHover = (e: React.MouseEvent, name: string) => {
@@ -220,6 +227,77 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       document.body
     );
   };
+
+  const myCardsSidebarItem = (
+    <SidebarItem
+      key="my-cards"
+      icon={PAGE_ICONS.MY_CARDS.INACTIVE}
+      name={PAGE_NAMES.MY_CARDS}
+      isDropdown={true}
+    >
+      <CreditCardPreviewList
+        cards={creditCards}
+        loading={isLoadingCreditCards}
+        showOnlySelected={true}
+        onCardSelect={onCardSelect}
+        variant="sidebar"
+      />
+    </SidebarItem>
+  );
+
+  const myCreditsSidebarItem = (
+    <SidebarItem
+      key="my-credits"
+      icon={PAGE_ICONS.MY_CREDITS.INACTIVE}
+      name={PAGE_NAMES.MY_CREDITS}
+      isDropdown={true}
+    >
+      <CreditSummary
+        variant="sidebar"
+        monthlyStats={monthlyStats}
+        loading={isLoadingMonthlyStats}
+        isUpdating={isUpdatingMonthlyStats}
+      />
+
+      {/* Priority Credits List */}
+      {prioritizedCredits && prioritizedCredits.length > 0 && (
+        (() => {
+          const convertedCredits = convertPrioritizedCreditsToUserCredits(prioritizedCredits);
+
+          // Create the cardById map from creditCards array
+          const cardById = new Map(creditCards.map(card => [card.id, card]));
+
+          // Create creditByPair map using the same logic as CreditsDisplay
+          const creditByPair = new Map();
+          for (const credit of credits) {
+            // Use ReferenceCardId to map credits to cards
+            creditByPair.set(`${credit.ReferenceCardId}:${credit.id}`, credit);
+          }
+
+          return (
+            <CreditList
+              credits={convertedCredits}
+              now={new Date()}
+              cardById={cardById}
+              creditByPair={creditByPair}
+              variant="sidebar"
+              limit={5}
+              displayPeriod={false}
+              onUpdateComplete={onRefreshMonthlyStats}
+              isUpdating={isUpdatingMonthlyStats}
+              onAddUpdatingCreditId={onAddUpdatingCreditId}
+              onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+              isCreditUpdating={isCreditUpdating}
+            />
+          );
+        })()
+      )}
+    </SidebarItem>
+  );
+
+  const orderedSidebarSections = MY_CREDITS_BEFORE_MY_CARDS
+    ? [myCreditsSidebarItem, myCardsSidebarItem]
+    : [myCardsSidebarItem, myCreditsSidebarItem];
 
   return (
     <div 
@@ -311,68 +389,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 />
               </SidebarItem>
 
-              {/* My Cards as SidebarItem - always show card list, navigation icon controlled by MY_CARDS_IN_ACCOUNT_MENU */}
-              <SidebarItem
-                icon={PAGE_ICONS.MY_CARDS.INACTIVE}
-                name={PAGE_NAMES.MY_CARDS}
-                isDropdown={true}
-              >
-                <CreditCardPreviewList
-                  cards={creditCards}
-                  loading={isLoadingCreditCards}
-                  showOnlySelected={true}
-                  onCardSelect={onCardSelect}
-                  variant="sidebar"
-                />
-              </SidebarItem>
-
-              {/* My Credits as SidebarItem */}
-              <SidebarItem
-                icon={PAGE_ICONS.MY_CREDITS.INACTIVE}
-                name={PAGE_NAMES.MY_CREDITS}
-                isDropdown={true}
-              >
-                <CreditSummary
-                  variant="sidebar"
-                  monthlyStats={monthlyStats}
-                  loading={isLoadingMonthlyStats}
-                  isUpdating={isUpdatingMonthlyStats}
-                />
-
-                {/* Priority Credits List */}
-                {prioritizedCredits && prioritizedCredits.length > 0 && (
-                  (() => {
-                    const convertedCredits = convertPrioritizedCreditsToUserCredits(prioritizedCredits);
-
-                    // Create the cardById map from creditCards array
-                    const cardById = new Map(creditCards.map(card => [card.id, card]));
-
-                    // Create creditByPair map using the same logic as CreditsDisplay
-                    const creditByPair = new Map();
-                    for (const credit of credits) {
-                      // Use ReferenceCardId to map credits to cards
-                      creditByPair.set(`${credit.ReferenceCardId}:${credit.id}`, credit);
-                    }
-
-                    return (
-                      <CreditList
-                        credits={convertedCredits}
-                        now={new Date()}
-                        cardById={cardById}
-                        creditByPair={creditByPair}
-                        variant="sidebar"
-                        limit={5}
-                        displayPeriod={false}
-                        onUpdateComplete={onRefreshMonthlyStats}
-                        isUpdating={isUpdatingMonthlyStats}
-                        onAddUpdatingCreditId={onAddUpdatingCreditId}
-                        onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
-                        isCreditUpdating={isCreditUpdating}
-                      />
-                    );
-                  })()
-                )}
-              </SidebarItem>
+              {/* My Cards/My Credits order controlled by MY_CREDITS_BEFORE_MY_CARDS */}
+              {orderedSidebarSections}
             </div>
           </>
         ) : (

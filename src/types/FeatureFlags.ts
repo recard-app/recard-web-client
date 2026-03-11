@@ -44,3 +44,8 @@ export const SHOW_CARD_NAME_BUBBLE_IN_CREDITS = false;
 export const MY_CARDS_IN_ACCOUNT_MENU = false;
 // Label for "My Cards" when displayed in account dropdown menu (when MY_CARDS_IN_ACCOUNT_MENU is true)
 export const MY_CARDS_DROPDOWN_LABEL = 'Manage Cards';
+
+// Swap the order of My Credits and My Cards in sidebar sections and navigation links
+// TRUE: My Credits appears before My Cards
+// FALSE: My Cards appears before My Credits (default behavior)
+export const MY_CREDITS_BEFORE_MY_CARDS = true;
