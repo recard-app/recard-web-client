@@ -112,6 +112,13 @@ import { toast } from 'sonner';
 import { Toaster } from './components/ui/sonner';
 
 const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
+const DEFERRED_CREDITS_IDLE_TIMEOUT_MS = 2000;
+const DEFERRED_CREDITS_TIMEOUT_FALLBACK_MS = 0;
+const MONTHLY_SUMMARY_QUERY = {
+  showRedeemed: true,
+  includeHidden: false,
+  limit: 0
+} as const;
 
 interface AppContentProps {}
 
@@ -165,7 +172,7 @@ function AppContent({}: AppContentProps) {
   const [componentPreferences, setComponentPreferences] = useState<UserComponentTrackingPreferences | null>(null);
   // State for storing monthly credit stats
   const [monthlyStats, setMonthlyStats] = useState<MonthlyStatsResponse | null>(null);
-  const [isLoadingMonthlyStats, setIsLoadingMonthlyStats] = useState<boolean>(true);
+  const [isLoadingMonthlyStats, setIsLoadingMonthlyStats] = useState<boolean>(false);
   const [isUpdatingMonthlyStats, setIsUpdatingMonthlyStats] = useState<boolean>(false);
   // State for tracking which specific credits are being updated
   const [updatingCreditIds, setUpdatingCreditIds] = useState<Set<string>>(new Set());
@@ -196,7 +203,7 @@ function AppContent({}: AppContentProps) {
 
   // State for storing prioritized credits list
   const [prioritizedCredits, setPrioritizedCredits] = useState<PrioritizedCredit[]>([]);
-  const [isLoadingPrioritizedCredits, setIsLoadingPrioritizedCredits] = useState<boolean>(true);
+  const [isLoadingPrioritizedCredits, setIsLoadingPrioritizedCredits] = useState<boolean>(false);
   // State for storing chat history/conversations
   const [chatHistory, setChatHistory] = useState<Conversation[]>([]);
   // State for tracking the current active chat ID
@@ -293,6 +300,7 @@ function AppContent({}: AppContentProps) {
     if (!user) {
       // Reset digest when user logs out
       setDigest(null);
+      setDigestLoading(false);
       digestFetchedRef.current = false;
       return;
     }
@@ -301,24 +309,74 @@ function AppContent({}: AppContentProps) {
     if (digestFetchedRef.current) return;
 
     digestFetchedRef.current = true;
-    setDigestLoading(true);
 
-    UserService.fetchDailyDigest()
-      .then(response => {
-        if (response) {
+    let cancelled = false;
+    let hasExecuted = false;
+    let idleCallbackId: number | null = null;
+    let timeoutId: number | null = null;
+
+    const runDigestFetch = () => {
+      if (cancelled || hasExecuted) return;
+      hasExecuted = true;
+
+      setDigestLoading(true);
+
+      UserService.fetchDailyDigest()
+        .then(response => {
+          if (cancelled || !response) return;
           setDigest({
             title: response.data.title,
             content: response.data.content,
             generatedAt: response.data.generatedAt
           });
+        })
+        .catch(() => {
+          // Silent failure - digest is optional
+        })
+        .finally(() => {
+          if (!cancelled) {
+            setDigestLoading(false);
+          }
+        });
+    };
+
+    if (typeof window !== 'undefined') {
+      const windowWithIdle = window as Window & {
+        requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+        cancelIdleCallback?: (handle: number) => void;
+      };
+      const hasIdleSupport = typeof windowWithIdle.requestIdleCallback === 'function';
+
+      if (hasIdleSupport) {
+        idleCallbackId = windowWithIdle.requestIdleCallback(runDigestFetch, {
+          timeout: DEFERRED_CREDITS_IDLE_TIMEOUT_MS
+        });
+      }
+
+      const fallbackDelayMs = hasIdleSupport
+        ? DEFERRED_CREDITS_IDLE_TIMEOUT_MS + 100
+        : DEFERRED_CREDITS_TIMEOUT_FALLBACK_MS;
+      timeoutId = window.setTimeout(runDigestFetch, fallbackDelayMs);
+    } else {
+      runDigestFetch();
+    }
+
+    return () => {
+      cancelled = true;
+
+      if (typeof window !== 'undefined') {
+        const windowWithIdle = window as Window & {
+          cancelIdleCallback?: (handle: number) => void;
+        };
+
+        if (idleCallbackId !== null && typeof windowWithIdle.cancelIdleCallback === 'function') {
+          windowWithIdle.cancelIdleCallback(idleCallbackId);
         }
-      })
-      .catch(() => {
-        // Silent failure - digest is optional
-      })
-      .finally(() => {
-        setDigestLoading(false);
-      });
+        if (timeoutId !== null) {
+          window.clearTimeout(timeoutId);
+        }
+      }
+    };
   }, [user]);
 
   // Handler to regenerate the daily digest
@@ -354,6 +412,156 @@ function AppContent({}: AppContentProps) {
   
   // Ref to prevent duplicate initial loads
   const isLoadingRef = useRef(false);
+  const isSyncingCreditsRef = useRef(false);
+  const isFetchingMonthlySummaryRef = useRef(false);
+  const activeUserIdRef = useRef<string | null>(user?.uid ?? null);
+  const deferredIdleCallbackIdRef = useRef<number | null>(null);
+  const deferredTimeoutIdRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    activeUserIdRef.current = user?.uid ?? null;
+  }, [user]);
+
+  const cancelDeferredCreditsTask = (): void => {
+    if (typeof window === 'undefined') return;
+
+    const windowWithIdle = window as Window & {
+      cancelIdleCallback?: (handle: number) => void;
+    };
+
+    if (deferredIdleCallbackIdRef.current !== null && typeof windowWithIdle.cancelIdleCallback === 'function') {
+      windowWithIdle.cancelIdleCallback(deferredIdleCallbackIdRef.current);
+    }
+    if (deferredTimeoutIdRef.current !== null) {
+      window.clearTimeout(deferredTimeoutIdRef.current);
+    }
+
+    deferredIdleCallbackIdRef.current = null;
+    deferredTimeoutIdRef.current = null;
+  };
+
+  useEffect(() => {
+    return () => {
+      cancelDeferredCreditsTask();
+    };
+  }, []);
+
+  const fetchMonthlySummary = async ({
+    showLoading = false,
+    markUpdatingComplete = false,
+    force = false
+  }: {
+    showLoading?: boolean;
+    markUpdatingComplete?: boolean;
+    force?: boolean;
+  } = {}): Promise<void> => {
+    if (!user) return;
+    if (!force && monthlyStats) return;
+    if (isFetchingMonthlySummaryRef.current) return;
+
+    if (showLoading) {
+      setIsLoadingMonthlyStats(true);
+      setIsLoadingPrioritizedCredits(true);
+    }
+
+    isFetchingMonthlySummaryRef.current = true;
+
+    try {
+      const summaryData = await UserCreditService.fetchMonthlySummary(MONTHLY_SUMMARY_QUERY);
+
+      setMonthlyStats(summaryData);
+      setPrioritizedCredits(summaryData.PrioritizedCredits?.credits ?? []);
+    } catch (error) {
+      console.error('Error fetching monthly stats:', error);
+    } finally {
+      isFetchingMonthlySummaryRef.current = false;
+
+      if (showLoading) {
+        setIsLoadingMonthlyStats(false);
+        setIsLoadingPrioritizedCredits(false);
+      }
+
+      if (markUpdatingComplete) {
+        setIsUpdatingMonthlyStats(false);
+        setUpdatingCreditIds(new Set());
+      }
+    }
+  };
+
+  const syncCreditsInBackground = async (): Promise<void> => {
+    if (!user || isSyncingCreditsRef.current) return;
+
+    isSyncingCreditsRef.current = true;
+
+    try {
+      await UserCreditService.syncCurrentYearCredits();
+    } catch (error) {
+      console.error('Error syncing current year credits:', error);
+    } finally {
+      isSyncingCreditsRef.current = false;
+    }
+  };
+
+  const scheduleDeferredCreditsTasks = ({
+    prefetchMonthlySummary = false,
+    forceMonthlyRefresh = false
+  }: {
+    prefetchMonthlySummary?: boolean;
+    forceMonthlyRefresh?: boolean;
+  } = {}): void => {
+    const scheduledUserId = activeUserIdRef.current;
+    if (!scheduledUserId) return;
+
+    cancelDeferredCreditsTask();
+
+    const runDeferredWork = async () => {
+      if (activeUserIdRef.current !== scheduledUserId) return;
+      await syncCreditsInBackground();
+      if (activeUserIdRef.current !== scheduledUserId) return;
+      if (prefetchMonthlySummary) {
+        await fetchMonthlySummary({ showLoading: false, force: forceMonthlyRefresh });
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      const windowWithIdle = window as Window & {
+        requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+        cancelIdleCallback?: (handle: number) => void;
+      };
+      const hasIdleSupport = typeof windowWithIdle.requestIdleCallback === 'function';
+      let hasExecuted = false;
+      const execute = () => {
+        if (hasExecuted) return;
+        hasExecuted = true;
+
+        if (deferredIdleCallbackIdRef.current !== null && typeof windowWithIdle.cancelIdleCallback === 'function') {
+          windowWithIdle.cancelIdleCallback(deferredIdleCallbackIdRef.current);
+        }
+        if (deferredTimeoutIdRef.current !== null) {
+          window.clearTimeout(deferredTimeoutIdRef.current);
+        }
+
+        deferredIdleCallbackIdRef.current = null;
+        deferredTimeoutIdRef.current = null;
+
+        void runDeferredWork();
+      };
+
+      if (hasIdleSupport) {
+        deferredIdleCallbackIdRef.current = windowWithIdle.requestIdleCallback(execute, {
+          timeout: DEFERRED_CREDITS_IDLE_TIMEOUT_MS
+        });
+      }
+
+      const fallbackDelayMs = hasIdleSupport
+        ? DEFERRED_CREDITS_IDLE_TIMEOUT_MS + 100
+        : DEFERRED_CREDITS_TIMEOUT_FALLBACK_MS;
+      deferredTimeoutIdRef.current = window.setTimeout(execute, fallbackDelayMs);
+      return;
+    }
+
+    void runDeferredWork();
+  };
 
   // Effect to fetch all initial data in parallel batches when user is authenticated
   useEffect(() => {
@@ -372,6 +580,8 @@ function AppContent({}: AppContentProps) {
         setAgentModePreference(AGENT_MODE_PREFERENCE.SIMPLIFIED);
         setMonthlyStats(null);
         setPrioritizedCredits([]);
+        setIsUpdatingMonthlyStats(false);
+        setUpdatingCreditIds(new Set());
         setIsLoadingCreditCards(false);
         setIsLoadingHistory(false);
         setIsLoadingMonthlyStats(false);
@@ -386,13 +596,28 @@ function AppContent({}: AppContentProps) {
 
       setIsLoadingCreditCards(true);
       setIsLoadingHistory(true);
-      setIsLoadingMonthlyStats(true);
-      setIsLoadingPrioritizedCredits(true);
+      setIsLoadingMonthlyStats(false);
+      setIsLoadingPrioritizedCredits(false);
 
       try {
-        // Batch 1: Critical data that's needed immediately (parallel)
-        const [cards, subscriptionData] = await Promise.all([
-          CardService.fetchCreditCards(true),
+        // Extract chatId from URL if present (priority loading for initial chat hydration)
+        const currentPath = location.pathname;
+        const urlChatId = PageUtils.getChatIdFromPath(currentPath);
+
+        const [
+          cards,
+          subscriptionData,
+          componentPrefs,
+          allPreferences,
+          detailedInfo,
+          userCardsData,
+          historyResponse,
+          priorityChat
+        ] = await Promise.all([
+          CardService.fetchCreditCards(true).catch(error => {
+            console.error('Error fetching credit cards:', error);
+            return [];
+          }),
           UserService.fetchUserSubscription().catch(error => {
             console.error('Error fetching subscription plan:', error);
             return {
@@ -401,19 +626,10 @@ function AppContent({}: AppContentProps) {
               subscriptionBillingPeriod: null,
               subscriptionExpiresAt: null,
             };
-          })
-        ]);
-
-        setCreditCards(cards);
-        setSubscriptionPlan(subscriptionData.subscriptionPlan);
-        setSubscriptionStatus(subscriptionData.subscriptionStatus);
-        setSubscriptionExpiresAt(subscriptionData.subscriptionExpiresAt);
-
-        // Batch 2: User preferences and tracking data (parallel)
-        const [componentPrefs, allPreferences] = await Promise.all([
+          }),
           UserComponentService.fetchComponentTrackingPreferences().catch(error => {
             console.error('Error fetching component tracking preferences:', error);
-            return { Cards: [] }; // Return empty preferences if fetch fails
+            return { Cards: [] };
           }),
           UserPreferencesService.loadAllPreferences().catch(error => {
             console.error('Error fetching user preferences:', error);
@@ -423,23 +639,7 @@ function AppContent({}: AppContentProps) {
               chatHistory: CHAT_HISTORY_PREFERENCE.KEEP_HISTORY,
               agentMode: AGENT_MODE_PREFERENCE.SIMPLIFIED
             };
-          })
-        ]);
-
-        setComponentPreferences(componentPrefs);
-        setPreferencesInstructions(allPreferences.instructions || '');
-        setChatHistoryPreference(allPreferences.chatHistory);
-        setAgentModePreference(allPreferences.agentMode || AGENT_MODE_PREFERENCE.SIMPLIFIED);
-
-        // Batch 3: Card details and chat history with priority loading
-        const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
-
-        // Extract chatId from URL if present (priority loading)
-        const currentPath = location.pathname;
-        const urlChatId = PageUtils.getChatIdFromPath(currentPath);
-
-        // Prepare parallel requests
-        const requests = [
+          }),
           UserCreditCardService.fetchUserCardsDetailedInfo().catch(error => {
             console.error('Error fetching user detailed card info:', error);
             return [];
@@ -447,93 +647,51 @@ function AppContent({}: AppContentProps) {
           UserCreditCardService.fetchUserCards().catch(error => {
             console.error('Error fetching user cards metadata:', error);
             return [];
-          })
-        ];
-
-        // If there's a specific chat in the URL, prioritize loading it
-        if (urlChatId) {
-          requests.push(
-            UserHistoryService.fetchChatHistoryById(urlChatId).catch(error => {
+          }),
+          UserHistoryService.fetchChatHistoryPreview(quick_history_size).catch(error => {
+            console.error('Error fetching chat history preview:', error);
+            return { chatHistory: [] };
+          }),
+          urlChatId
+            ? UserHistoryService.fetchChatHistoryById(urlChatId).catch(error => {
               console.error('Error fetching priority chat:', error);
               return null;
-            }),
-            UserHistoryService.fetchChatHistoryPreview(quick_history_size).catch(error => {
-              console.error('Error fetching chat history preview:', error);
-              return { chatHistory: [] };
             })
-          );
+            : Promise.resolve(null),
+        ]);
 
-          const [detailedInfo, userCardsData, priorityChat, historyResponse] = await Promise.all(requests);
+        setCreditCards(cards);
+        setSubscriptionPlan(subscriptionData.subscriptionPlan);
+        setSubscriptionStatus(subscriptionData.subscriptionStatus);
+        setSubscriptionExpiresAt(subscriptionData.subscriptionExpiresAt);
+        setComponentPreferences(componentPrefs);
+        setPreferencesInstructions(allPreferences.instructions || '');
+        setChatHistoryPreference(allPreferences.chatHistory);
+        setAgentModePreference(allPreferences.agentMode || AGENT_MODE_PREFERENCE.SIMPLIFIED);
+        setUserDetailedCardDetails(detailedInfo);
 
-          setUserDetailedCardDetails(detailedInfo);
+        // Build a map of user card metadata keyed by cardReferenceId
+        const metadataMap = new Map<string, UserCreditCard>();
+        userCardsData.forEach((uc: UserCreditCard) => {
+          metadataMap.set(uc.cardReferenceId, uc);
+        });
+        setUserCardsMetadata(metadataMap);
 
-          // Build a map of user card metadata keyed by cardReferenceId
-          const metadataMap = new Map<string, UserCreditCard>();
-          userCardsData.forEach((uc: UserCreditCard) => {
-            metadataMap.set(uc.cardReferenceId, uc);
-          });
-          setUserCardsMetadata(metadataMap);
+        const chatHistoryList = historyResponse.chatHistory || [];
+        if (urlChatId && priorityChat && !chatHistoryList.find(chat => chat.chatId === urlChatId)) {
+          chatHistoryList.unshift(priorityChat);
+        }
 
-          // Build chat history with priority chat first
-          const chatHistoryList = historyResponse.chatHistory || [];
-          if (priorityChat && !chatHistoryList.find(chat => chat.chatId === urlChatId)) {
-            chatHistoryList.unshift(priorityChat);
-          }
-
-          setChatHistory(chatHistoryList);
+        setChatHistory(chatHistoryList);
+        if (urlChatId) {
           // Set the current chat ID immediately for faster loading
           setCurrentChatId(urlChatId);
-        } else {
-          // Regular loading without priority chat
-          requests.push(
-            UserHistoryService.fetchChatHistoryPreview(quick_history_size).catch(error => {
-              console.error('Error fetching chat history preview:', error);
-              return { chatHistory: [] };
-            })
-          );
-
-          const [detailedInfo, userCardsData, historyResponse] = await Promise.all(requests);
-
-          setUserDetailedCardDetails(detailedInfo);
-
-          // Build a map of user card metadata keyed by cardReferenceId
-          const metadataMap = new Map<string, UserCreditCard>();
-          userCardsData.forEach((uc: UserCreditCard) => {
-            metadataMap.set(uc.cardReferenceId, uc);
-          });
-          setUserCardsMetadata(metadataMap);
-
-          setChatHistory(historyResponse.chatHistory);
         }
 
         setLastUpdateTimestamp(new Date().toISOString());
 
-        // Batch 4: Sync current year credits to ensure they exist (handles new year rollover)
-        // This is critical for ensuring credits are created when a new year starts
-        try {
-          await UserCreditService.syncCurrentYearCredits();
-        } catch (error) {
-          console.error('Error syncing current year credits:', error);
-          // Continue even if sync fails - user can manually trigger from credits page
-        }
-
-        // Batch 5: Monthly credits data (low priority, after core app is loaded)
-        try {
-          const monthlyStatsData = await UserCreditService.fetchMonthlySummary({
-            showRedeemed: true,
-            includeHidden: false,
-            limit: 0 // Get all credits
-          });
-
-          setMonthlyStats(monthlyStatsData);
-          if (monthlyStatsData) {
-            setPrioritizedCredits(monthlyStatsData.PrioritizedCredits.credits);
-          }
-        } catch (error) {
-          console.error('Error fetching monthly stats (low priority):', error);
-        } finally {
-          setIsLoadingPrioritizedCredits(false);
-        }
+        // Defer non-critical credit sync and monthly summary work until after first paint
+        scheduleDeferredCreditsTasks({ prefetchMonthlySummary: true, forceMonthlyRefresh: false });
 
       } catch (error) {
         console.error('Error loading initial data:', error);
@@ -547,7 +705,46 @@ function AppContent({}: AppContentProps) {
     };
 
     loadInitialData();
-  }, [user, cardsVersion]); // Refresh when user changes or cards version changes
+  }, [user]); // Refresh only when user changes
+
+  // Refresh only card-related data when cardsVersion changes (card edits / agent card actions)
+  useEffect(() => {
+    if (!user || cardsVersion === 0) return;
+
+    const refreshCardData = async () => {
+      try {
+        const [cards, details, userCardsData, preferences] = await Promise.all([
+          CardService.fetchCreditCards(true),
+          UserCreditCardService.fetchUserCardsDetailedInfo(),
+          UserCreditCardService.fetchUserCards(),
+          UserComponentService.fetchComponentTrackingPreferences().catch(error => {
+            console.error('Error fetching component tracking preferences after card update:', error);
+            return null;
+          }),
+        ]);
+
+        setCreditCards(cards);
+        setUserDetailedCardDetails(details);
+
+        const metadataMap = new Map<string, UserCreditCard>();
+        userCardsData.forEach((uc: UserCreditCard) => {
+          metadataMap.set(uc.cardReferenceId, uc);
+        });
+        setUserCardsMetadata(metadataMap);
+
+        if (preferences) {
+          setComponentPreferences(preferences);
+        }
+
+        await refetchComponents();
+        scheduleDeferredCreditsTasks({ prefetchMonthlySummary: true, forceMonthlyRefresh: true });
+      } catch (error) {
+        console.error('Error refreshing card-related data:', error);
+      }
+    };
+
+    void refreshCardData();
+  }, [cardsVersion, user]);
 
   // Update current chat ID when URL changes (no API calls here)
   useEffect(() => {
@@ -616,33 +813,31 @@ function AppContent({}: AppContentProps) {
     const refreshMonthlyStats = async () => {
       if (!user || monthlyStatsRefreshTrigger === 0) return;
 
-      // If we already have data, this is an update - don't show loading indicators
-      // Just let the data refresh silently in the background
-      if (!monthlyStats) {
-        setIsLoadingMonthlyStats(true);
-        setIsLoadingPrioritizedCredits(true);
-      }
-      try {
-        const summaryData = await UserCreditService.fetchMonthlySummary({
-          showRedeemed: true,
-          includeHidden: false,
-          limit: 0 // Get all credits
-        });
-        setMonthlyStats(summaryData);
-        setPrioritizedCredits(summaryData.PrioritizedCredits.credits);
-      } catch (error) {
-        console.error('Error refreshing monthly stats:', error);
-      } finally {
-        setIsLoadingMonthlyStats(false);
-        setIsLoadingPrioritizedCredits(false);
-        setIsUpdatingMonthlyStats(false);
-        // Clear all updating credit indicators after refresh completes
-        setUpdatingCreditIds(new Set());
-      }
+      // If we already have data, refresh silently in the background.
+      // If not, show loading so credits views can render a skeleton.
+      const shouldShowLoading = !monthlyStats;
+      await fetchMonthlySummary({
+        showLoading: shouldShowLoading,
+        markUpdatingComplete: true,
+        force: true
+      });
     };
 
-    refreshMonthlyStats();
-  }, [monthlyStatsRefreshTrigger]);
+    void refreshMonthlyStats();
+  }, [monthlyStatsRefreshTrigger, user]);
+
+  // Monthly summary is non-critical for first paint; fetch on-demand for credits-focused UI surfaces
+  useEffect(() => {
+    if (!user) return;
+
+    const isCreditsRoute = location.pathname.startsWith(PAGES.MY_CREDITS.PATH);
+    const shouldLoadOnDemand = isDetailedSummaryOpen || isCreditsRoute;
+
+    if (!shouldLoadOnDemand) return;
+    if (monthlyStats) return;
+
+    void fetchMonthlySummary({ showLoading: true, force: false });
+  }, [isDetailedSummaryOpen, location.pathname, monthlyStats, user]);
 
   // Function to update credit cards and refresh user card details
   const getCreditCards = async (returnCreditCards: CreditCard[]): Promise<void> => {
@@ -860,32 +1055,8 @@ function AppContent({}: AppContentProps) {
   const handleCardSelectorSaveComplete = (success: boolean, message: string) => {
     if (success) {
       toast.success(message);
-      // Refresh global cards and bump version to trigger dependents
-      (async () => {
-        try {
-          const [cards, details, userCardsData] = await Promise.all([
-            CardService.fetchCreditCards(true),
-            UserCreditCardService.fetchUserCardsDetailedInfo(),
-            UserCreditCardService.fetchUserCards(),
-          ]);
-          setCreditCards(cards);
-          setUserDetailedCardDetails(details);
-
-          // Rebuild metadata map (openDate, isFrozen, etc.)
-          const metadataMap = new Map<string, UserCreditCard>();
-          userCardsData.forEach((uc: UserCreditCard) => {
-            metadataMap.set(uc.cardReferenceId, uc);
-          });
-          setUserCardsMetadata(metadataMap);
-
-          setCardsVersion(v => v + 1);
-          // Refetch components (perks, credits, multipliers) for new cards
-          await refetchComponents();
-          setMonthlyStatsRefreshTrigger(prev => prev + 1);
-        } catch (err) {
-          console.error('Error refreshing cards after save:', err);
-        }
-      })();
+      // Trigger card-only refresh effect
+      setCardsVersion(v => v + 1);
     } else {
       toast.error(message);
     }

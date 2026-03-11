@@ -94,27 +94,45 @@ export const ComponentService = {
     multipliers: EnrichedMultiplier[];
   }> {
     return apiCache.get(CACHE_KEYS.COMPONENTS_ALL, async () => {
-      // Execute all three requests in parallel for better performance
-      const [perks, credits, multipliers] = await Promise.all([
-        apiCache.get(CACHE_KEYS.COMPONENTS_PERKS, async () => {
-          const headers = await getAuthHeaders();
-          const url = `${apiurl}/users/cards/components/perks`;
-          const response = await axios.get<{ perks: CardPerk[] }>(url, { headers });
-          return response.data.perks;
-        }, { forceRefresh }),
-        apiCache.get(CACHE_KEYS.COMPONENTS_CREDITS, async () => {
-          const headers = await getAuthHeaders();
-          const url = `${apiurl}/users/cards/components/credits`;
-          const response = await axios.get<{ credits: CardCredit[] }>(url, { headers });
-          return response.data.credits;
-        }, { forceRefresh }),
-        apiCache.get(CACHE_KEYS.COMPONENTS_MULTIPLIERS, async () => {
-          const headers = await getAuthHeaders();
-          const url = `${apiurl}/users/cards/components/multipliers`;
-          const response = await axios.get<{ multipliers: EnrichedMultiplier[] }>(url, { headers });
-          return response.data.multipliers;
-        }, { forceRefresh })
-      ]);
+      const headers = await getAuthHeaders();
+      const query = new URLSearchParams({
+        types: 'perk,credit,multiplier',
+        limit: '100',
+        onlyActive: 'true',
+        excludeDisabled: 'true'
+      });
+      const v1Url = `${apiurl}/api/v1/users/components?${query.toString()}`;
+
+      const response = await axios.get<{
+        data?: {
+          perks?: CardPerk[];
+          credits?: CardCredit[];
+          multipliers?: EnrichedMultiplier[];
+        };
+      }>(v1Url, { headers });
+
+      const perks = response.data?.data?.perks ?? [];
+      const credits = response.data?.data?.credits ?? [];
+      let multipliers = response.data?.data?.multipliers ?? [];
+
+      // Transitional safety: if v1 response lacks enriched multiplier fields,
+      // fall back to legacy enriched multipliers endpoint to preserve UI behavior.
+      const needsLegacyMultiplierFallback = multipliers.some(multiplier => {
+        if (multiplier.multiplierType === 'rotating') {
+          return !Array.isArray(multiplier.currentSchedules);
+        }
+        if (multiplier.multiplierType === 'selectable') {
+          const hasUserSelectedCategoryField = Object.prototype.hasOwnProperty.call(multiplier, 'userSelectedCategory');
+          return !Array.isArray(multiplier.allowedCategories) || !hasUserSelectedCategoryField;
+        }
+        return false;
+      });
+
+      if (needsLegacyMultiplierFallback) {
+        const legacyMultipliersUrl = `${apiurl}/users/cards/components/multipliers`;
+        const legacyResponse = await axios.get<{ multipliers: EnrichedMultiplier[] }>(legacyMultipliersUrl, { headers });
+        multipliers = legacyResponse.data.multipliers;
+      }
 
       return {
         perks,
