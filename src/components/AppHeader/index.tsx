@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './AppHeader.scss';
 import { User as FirebaseUser } from 'firebase/auth';
-import { APP_NAME, TEMP_ICON, PAGES } from '../../types';
+import { APP_NAME, TEMP_ICON, PAGES, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL } from '../../types';
 import ProfileAvatar from '../ProfileAvatar';
 import {
   DropdownMenu,
@@ -60,9 +60,11 @@ const AppHeader: React.FC<AppHeaderProps> = ({ user, onLogout, isSidePanelOpen, 
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="profile-dropdown">
-              <Link to={PAGES.MY_CARDS.PATH}>
-                <DropdownMenuItem icon={TEMP_ICON}>My Cards</DropdownMenuItem>
-              </Link>
+              {MY_CARDS_IN_ACCOUNT_MENU && (
+                <Link to={PAGES.MY_CARDS.PATH}>
+                  <DropdownMenuItem icon={TEMP_ICON}>{MY_CARDS_DROPDOWN_LABEL}</DropdownMenuItem>
+                </Link>
+              )}
               <Link to={PAGES.PREFERENCES.PATH}>
                 <DropdownMenuItem>Preferences</DropdownMenuItem>
               </Link>
