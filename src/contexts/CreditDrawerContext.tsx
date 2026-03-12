@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, ReactNode, MutableRefObject } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef, ReactNode, MutableRefObject } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog/dialog';
 import { Drawer, DrawerContent, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import CreditShowcase from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditShowcase';
@@ -71,6 +71,14 @@ export const CreditDrawerProvider: React.FC<CreditDrawerProviderProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [initialPeriodNumber, setInitialPeriodNumber] = useState<number | undefined>(undefined);
   const [fallbackData, setFallbackDataState] = useState<FallbackData | null>(null);
+  const closeTimeoutRef = useRef<number | null>(null);
+
+  const clearCloseTimeout = useCallback(() => {
+    if (closeTimeoutRef.current !== null) {
+      window.clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  }, []);
 
   const openDrawer = useCallback((params: {
     cardId: string;
@@ -80,25 +88,34 @@ export const CreditDrawerProvider: React.FC<CreditDrawerProviderProps> = ({
     initialPeriodNumber?: number;
     fallbackData?: FallbackData;
   }) => {
+    clearCloseTimeout();
     setActiveCreditId({ cardId: params.cardId, creditId: params.creditId });
     if (params.year !== undefined) setYear(params.year);
     setIsLoading(params.isLoading ?? false);
     setInitialPeriodNumber(params.initialPeriodNumber);
     setFallbackDataState(params.fallbackData ?? null);
     setIsOpen(true);
-  }, []);
+  }, [clearCloseTimeout]);
 
   const closeDrawer = useCallback(() => {
     setIsOpen(false);
+    clearCloseTimeout();
     // Delay clearing data to allow close animation to complete
-    setTimeout(() => {
+    closeTimeoutRef.current = window.setTimeout(() => {
       setActiveCreditId(null);
       setFallbackDataState(null);
       setIsLoading(false);
       setYear(new Date().getFullYear());
       setInitialPeriodNumber(undefined);
+      closeTimeoutRef.current = null;
     }, MODAL_CLOSE_ANIMATION_MS);
-  }, []);
+  }, [clearCloseTimeout]);
+
+  useEffect(() => {
+    return () => {
+      clearCloseTimeout();
+    };
+  }, [clearCloseTimeout]);
 
   const setFallbackData = useCallback((data: FallbackData) => {
     setFallbackDataState(data);
@@ -361,8 +378,8 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     }
   };
 
-  // Render nothing if not open
-  if (!isOpen) return null;
+  // Keep renderer mounted during close animation and unmount after delayed state clear
+  if (!isOpen && !activeCreditId) return null;
 
   // Loading state
   if (isLoading || !resolvedData || !resolvedData.userCredit || !resolvedData.card || !resolvedData.cardCredit) {
