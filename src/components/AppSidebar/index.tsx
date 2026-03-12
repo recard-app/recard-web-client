@@ -46,7 +46,7 @@ interface AppSidebarProps {
   currentChatId: string | null;
   onCurrentChatIdChange: (chatId: string | null) => void;
   onHistoryUpdate: (updatedChat: Conversation | ((prevHistory: Conversation[]) => Conversation[])) => Promise<void>;
-  subscriptionPlan: SubscriptionPlan;
+  subscriptionPlan: SubscriptionPlan | null;
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
   isLoadingCreditCards: boolean;
@@ -459,9 +459,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                       />
                       <div className="profile-info">
                         <span className="profile-name">{user.displayName || user.email}</span>
-                        <span className="profile-plan">
-                          {PLAN_DISPLAY_TEXT[subscriptionPlan === SUBSCRIPTION_PLAN.PLUS ? 'PLUS' : subscriptionPlan === SUBSCRIPTION_PLAN.PRO ? 'PRO' : 'FREE']}
-                        </span>
+                        {subscriptionPlan && (
+                          <span className="profile-plan">
+                            {PLAN_DISPLAY_TEXT[subscriptionPlan === SUBSCRIPTION_PLAN.PLUS ? 'PLUS' : subscriptionPlan === SUBSCRIPTION_PLAN.PRO ? 'PRO' : 'FREE']}
+                          </span>
+                        )}
                       </div>
                       <Icon 
                         name="ellipsis-vertical" 

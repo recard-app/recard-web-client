@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
+import { toast } from 'sonner';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import { useAgentChat } from '../../hooks/useAgentChat';
 
@@ -15,15 +16,28 @@ import {
 } from './utils';
 
 // Import types
-import { PAGES, TERMINOLOGY } from '../../types';
+import { PAGES } from '../../types';
 import { ChatMessage, Conversation } from '../../types';
+import { ChatComponentBlock } from '../../types/ChatComponentTypes';
 import { AgentModePreference, ChatHistoryPreference } from '../../types';
 import { MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE, CHAT_SOURCE } from '../../types';
-import { UserHistoryService, UserService } from '../../services';
+import { UserHistoryService } from '../../services';
 import { ErrorWithRetry } from '../../elements';
 import { classifyError } from '../../types/AgentChatTypes';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
+
+const PERSIST_RETRY_DELAYS_MS = [1000, 3000, 10000] as const;
+const PERSIST_FAILURE_TOAST_MESSAGE = 'We could not save this chat yet. Your messages are still visible in this session.';
+
+interface PendingPersistState {
+    chatId: string;
+    historyToSave: ChatMessage[];
+    componentBlocks: ChatComponentBlock[];
+    retryIndex: number;
+    timeoutId: number | null;
+    notifiedFailure: boolean;
+}
 
 /**
  * Data structure for daily digest
@@ -116,95 +130,366 @@ function PromptWindow({
 
     // Ref to track if we're currently saving to prevent duplicate saves
     const isSavingRef = useRef<boolean>(false);
+    // In-flight create promise for first-message send + parallel persistence
+    const pendingChatCreateRef = useRef<Promise<void> | null>(null);
+    // Tracks whether the current chat document is known to exist in persistence
+    const isChatPersistedRef = useRef<boolean>(false);
+    // Retry state for failed persistence (create/update)
+    const pendingPersistRef = useRef<PendingPersistState | null>(null);
+    // Tracks whether existing chat history has been hydrated locally
+    const hasHydratedCurrentChatRef = useRef<boolean>(false);
+    // Tracks if user sent a message on current chat before hydration finished
+    const hasUserSentInCurrentChatRef = useRef<boolean>(false);
+    // Metrics refs for submit -> first token latency
+    const submitStartedAtRef = useRef<number | null>(null);
+    const hasLoggedFirstTokenRef = useRef<boolean>(false);
+
+    const logMetric = useCallback((name: string, metadata: Record<string, unknown> = {}) => {
+        console.info('[PromptWindowMetrics]', { name, ...metadata });
+    }, []);
+
+    const clearPendingPersistTimeout = useCallback(() => {
+        const pendingPersist = pendingPersistRef.current;
+        if (!pendingPersist || pendingPersist.timeoutId === null) {
+            return;
+        }
+
+        window.clearTimeout(pendingPersist.timeoutId);
+        pendingPersist.timeoutId = null;
+    }, []);
+
+    const getCurrentChatContext = useCallback(() => {
+        return chatIdRef.current || chatId || urlChatId || '';
+    }, [chatId, urlChatId]);
+
+    const mergeHistoryWithServerIfNeeded = useCallback(async (
+        currentChatId: string,
+        historyToSave: ChatMessage[],
+        componentBlocks: ChatComponentBlock[]
+    ): Promise<{ mergedHistory: ChatMessage[]; mergedBlocks: ChatComponentBlock[] }> => {
+        const shouldMergeExistingChat = Boolean(
+            urlChatId
+            && currentChatId === urlChatId
+            && !hasHydratedCurrentChatRef.current
+        );
+
+        if (!shouldMergeExistingChat) {
+            return {
+                mergedHistory: historyToSave,
+                mergedBlocks: componentBlocks,
+            };
+        }
+
+        try {
+            const existingChat = await UserHistoryService.fetchChatHistoryById(currentChatId);
+            const existingConversation = Array.isArray(existingChat.conversation)
+                ? existingChat.conversation
+                : [];
+            const existingMessageIds = new Set(existingConversation.map(message => message.id));
+            const unsavedMessages = historyToSave.filter(message => !existingMessageIds.has(message.id));
+            const mergedHistory = limitChatHistory([...existingConversation, ...unsavedMessages]);
+
+            const existingBlocks = Array.isArray(existingChat.componentBlocks)
+                ? existingChat.componentBlocks
+                : [];
+            const existingBlockIds = new Set(existingBlocks.map(block => block.id));
+            const mergedBlocks = [
+                ...existingBlocks,
+                ...componentBlocks.filter(block => !existingBlockIds.has(block.id)),
+            ];
+
+            // Once merged, local state becomes authoritative and we avoid losing context.
+            chatHistoryRef.current = mergedHistory;
+            setChatHistory(mergedHistory);
+            hasHydratedCurrentChatRef.current = true;
+
+            return { mergedHistory, mergedBlocks };
+        } catch (error) {
+            const status = (error as { response?: { status?: number } })?.response?.status;
+
+            // If the URL references a chat that does not exist, treat it as a new persisted chat.
+            if (status === 404) {
+                console.warn('History merge source not found; persisting local conversation as a new chat:', currentChatId);
+                return {
+                    mergedHistory: historyToSave,
+                    mergedBlocks: componentBlocks,
+                };
+            }
+
+            // Any non-404 merge failure is potentially transient and unsafe to overwrite with local-only state.
+            throw error;
+        }
+    }, [urlChatId]);
+
+    const persistConversation = useCallback(async (
+        currentChatId: string,
+        historyToSave: ChatMessage[],
+        componentBlocks: ChatComponentBlock[]
+    ): Promise<void> => {
+        if (!user || chatHistoryPreference === CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
+            return;
+        }
+
+        if (!currentChatId) {
+            return;
+        }
+
+        const { mergedHistory, mergedBlocks } = await mergeHistoryWithServerIfNeeded(
+            currentChatId,
+            historyToSave,
+            componentBlocks
+        );
+
+        if (!isChatPersistedRef.current) {
+            const createStart = performance.now();
+            const createdChat = await UserHistoryService.createChatHistory(
+                mergedHistory,
+                mergedBlocks,
+                undefined,
+                true,
+                currentChatId
+            );
+            isChatPersistedRef.current = true;
+
+            logMetric('chat_create_latency', {
+                chatId: currentChatId,
+                durationMs: Math.round(performance.now() - createStart),
+                source: 'persist_flow',
+            });
+
+            onHistoryUpdate(createdChat);
+
+            // Always follow create with update to guarantee persistence when create is idempotent.
+            await UserHistoryService.updateChatHistory(
+                currentChatId,
+                mergedHistory,
+                mergedBlocks
+            );
+        } else {
+            await UserHistoryService.updateChatHistory(
+                currentChatId,
+                mergedHistory,
+                mergedBlocks
+            );
+        }
+
+        const existingChat = existingHistoryList.find(chat => chat.chatId === currentChatId);
+        const updatedChat: Conversation = {
+            chatId: currentChatId,
+            timestamp: new Date().toISOString(),
+            conversation: mergedHistory,
+            chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
+            componentBlocks: mergedBlocks
+        };
+        onHistoryUpdate(updatedChat);
+
+        if (!existingChat?.chatDescription || existingChat.chatDescription === DEFAULT_CHAT_NAME_PLACEHOLDER) {
+            try {
+                const newTitle = await UserHistoryService.generateChatTitle(currentChatId);
+                onHistoryUpdate({
+                    ...updatedChat,
+                    chatDescription: newTitle
+                });
+            } catch (titleError) {
+                console.error('Failed to generate title:', titleError);
+            }
+        }
+    }, [
+        user,
+        chatHistoryPreference,
+        mergeHistoryWithServerIfNeeded,
+        logMetric,
+        onHistoryUpdate,
+        existingHistoryList
+    ]);
+
+    const runPersistRetryAttempt = useCallback(async () => {
+        const pendingPersist = pendingPersistRef.current;
+        if (!pendingPersist) {
+            return;
+        }
+
+        pendingPersist.timeoutId = null;
+        const retryAttempt = pendingPersist.retryIndex + 1;
+
+        logMetric('persistence_retry_attempt', {
+            chatId: pendingPersist.chatId,
+            retryAttempt,
+        });
+
+        try {
+            await persistConversation(
+                pendingPersist.chatId,
+                pendingPersist.historyToSave,
+                pendingPersist.componentBlocks
+            );
+
+            pendingPersistRef.current = null;
+            setIsNewChatPending(false);
+        } catch (error) {
+            pendingPersist.retryIndex += 1;
+
+            logMetric('persistence_retry_failure', {
+                chatId: pendingPersist.chatId,
+                retryAttempt,
+                error: error instanceof Error ? error.message : String(error),
+            });
+
+            if (pendingPersist.retryIndex >= PERSIST_RETRY_DELAYS_MS.length) {
+                if (!pendingPersist.notifiedFailure) {
+                    pendingPersist.notifiedFailure = true;
+                    toast.error(PERSIST_FAILURE_TOAST_MESSAGE);
+                }
+
+                logMetric('persistence_terminal_failure', {
+                    chatId: pendingPersist.chatId,
+                    retries: pendingPersist.retryIndex,
+                });
+                setIsNewChatPending(false);
+                return;
+            }
+
+            const delayMs = PERSIST_RETRY_DELAYS_MS[pendingPersist.retryIndex];
+            pendingPersist.timeoutId = window.setTimeout(() => {
+                void runPersistRetryAttempt();
+            }, delayMs);
+        }
+    }, [logMetric, persistConversation]);
+
+    const schedulePersistRetry = useCallback((
+        payload: Pick<PendingPersistState, 'chatId' | 'historyToSave' | 'componentBlocks'>,
+        error: unknown
+    ) => {
+        const existingPending = pendingPersistRef.current;
+
+        if (!existingPending) {
+            pendingPersistRef.current = {
+                ...payload,
+                retryIndex: 0,
+                timeoutId: null,
+                notifiedFailure: false,
+            };
+        } else {
+            existingPending.chatId = payload.chatId;
+            existingPending.historyToSave = payload.historyToSave;
+            existingPending.componentBlocks = payload.componentBlocks;
+
+            // After a terminal failure, a new failed persist attempt should start a fresh retry window.
+            if (
+                existingPending.timeoutId === null
+                && existingPending.retryIndex >= PERSIST_RETRY_DELAYS_MS.length
+            ) {
+                existingPending.retryIndex = 0;
+                existingPending.notifiedFailure = false;
+            }
+        }
+
+        const pendingPersist = pendingPersistRef.current;
+        if (!pendingPersist) {
+            return;
+        }
+
+        logMetric('persistence_retry_scheduled', {
+            chatId: pendingPersist.chatId,
+            retryAttempt: pendingPersist.retryIndex + 1,
+            error: error instanceof Error ? error.message : String(error),
+        });
+
+        if (pendingPersist.timeoutId !== null) {
+            return;
+        }
+
+        if (pendingPersist.retryIndex >= PERSIST_RETRY_DELAYS_MS.length) {
+            if (!pendingPersist.notifiedFailure) {
+                pendingPersist.notifiedFailure = true;
+                toast.error(PERSIST_FAILURE_TOAST_MESSAGE);
+            }
+            return;
+        }
+
+        const delayMs = PERSIST_RETRY_DELAYS_MS[pendingPersist.retryIndex];
+        pendingPersist.timeoutId = window.setTimeout(() => {
+            void runPersistRetryAttempt();
+        }, delayMs);
+    }, [logMetric, runPersistRetryAttempt]);
 
     // Handler for completed messages - updates chat and generates title
     const handleMessageComplete = useCallback((
         message: ChatMessage
     ) => {
-        // Prevent duplicate saves (React strict mode can call this multiple times)
         if (isSavingRef.current) {
             return;
         }
         isSavingRef.current = true;
 
-        // Build history synchronously using ref BEFORE any async operations
-        // This avoids React state timing issues on mobile Safari where
-        // setTimeout runs before setChatHistory callback executes
         const historyForStorage = [...chatHistoryRef.current, message];
-
-        // Update the ref immediately (synchronous)
         chatHistoryRef.current = historyForStorage;
-
-        // Update React state (async, but we don't depend on it for saving)
         setChatHistory(prev => limitChatHistory([...prev, message]));
 
-        // Save the chat - run as async IIFE to avoid setTimeout timing issues
         (async () => {
-            // Use ref for chatId to avoid React state timing issues
-            const currentChatId = chatIdRef.current;
+            const currentChatId = getCurrentChatContext();
 
             try {
-                // Skip if user preference is to not track history
                 if (!user || chatHistoryPreference === CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
                     setIsNewChatPending(false);
                     return;
                 }
 
-                // Skip if no chatId (shouldn't happen, but safety check)
                 if (!currentChatId) {
                     setIsNewChatPending(false);
                     return;
                 }
 
-                // Filter out error messages before saving
+                if (pendingChatCreateRef.current) {
+                    try {
+                        await pendingChatCreateRef.current;
+                    } catch (createError) {
+                        console.warn('Initial chat create failed, continuing with persistence retry flow:', createError);
+                    } finally {
+                        pendingChatCreateRef.current = null;
+                    }
+                }
+
                 const historyToSave = historyForStorage.filter(
                     m => m.chatSource !== CHAT_SOURCE.ERROR && !m.isError
                 );
-
                 const componentBlocks = extractComponentBlocks(historyForStorage);
 
-                // Update the existing chat
-                await UserHistoryService.updateChatHistory(
+                await persistConversation(
                     currentChatId,
                     historyToSave,
                     componentBlocks
                 );
 
-                // Update sidebar with the new conversation
-                const existingChat = existingHistoryList.find(chat => chat.chatId === currentChatId);
-                const updatedChat: Conversation = {
-                    chatId: currentChatId,
-                    timestamp: new Date().toISOString(),
-                    conversation: historyToSave,
-                    chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
-                    componentBlocks: componentBlocks
-                };
-                onHistoryUpdate(updatedChat);
-
-                // Generate title if chat still has placeholder name
-                if (!existingChat?.chatDescription || existingChat.chatDescription === DEFAULT_CHAT_NAME_PLACEHOLDER) {
-                    try {
-                        const newTitle = await UserHistoryService.generateChatTitle(currentChatId);
-
-                        // Update sidebar with the new title
-                        onHistoryUpdate({
-                            ...updatedChat,
-                            chatDescription: newTitle
-                        });
-                    } catch (titleError) {
-                        console.error('Failed to generate title:', titleError);
-                        // Chat still works, just keeps "New Chat" title
-                    }
-                }
-
+                clearPendingPersistTimeout();
+                pendingPersistRef.current = null;
                 setIsNewChatPending(false);
             } catch (error) {
-                console.error('Error updating chat history:', error);
+                const historyToSave = historyForStorage.filter(
+                    m => m.chatSource !== CHAT_SOURCE.ERROR && !m.isError
+                );
+                const componentBlocks = extractComponentBlocks(historyForStorage);
+
+                schedulePersistRetry(
+                    {
+                        chatId: currentChatId,
+                        historyToSave,
+                        componentBlocks,
+                    },
+                    error
+                );
             } finally {
                 isSavingRef.current = false;
             }
         })();
-    }, [user, chatHistoryPreference, existingHistoryList, onHistoryUpdate]);
+    }, [
+        user,
+        chatHistoryPreference,
+        getCurrentChatContext,
+        persistConversation,
+        clearPendingPersistTimeout,
+        schedulePersistRetry
+    ]);
 
     // Handler for stream errors
     const handleStreamError = useCallback((error: string) => {
@@ -213,6 +498,8 @@ function PromptWindow({
         chatHistoryRef.current = [...chatHistoryRef.current, errorMessage];
         setChatHistory(prev => [...prev, errorMessage]);
         setIsNewChatPending(false);
+        submitStartedAtRef.current = null;
+        hasLoggedFirstTokenRef.current = false;
     }, []);
 
     // Handler for data changes (triggers UI refresh)
@@ -258,7 +545,6 @@ function PromptWindow({
         isProcessing,
     } = useAgentChat({
         userName: user?.displayName || NO_DISPLAY_NAME_PLACEHOLDER,
-        conversationId: chatId || undefined,
         agentMode: agentModePreference,
         onMessageComplete: handleMessageComplete,
         onError: handleStreamError,
@@ -268,9 +554,41 @@ function PromptWindow({
     // Declare that this component needs full height behavior
     useFullHeight(true);
 
+    const generateClientChatId = (): string => {
+        if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+            return crypto.randomUUID();
+        }
+        return `chat-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    };
+
+    useEffect(() => {
+        if (!isProcessing || hasLoggedFirstTokenRef.current) {
+            return;
+        }
+
+        if (!streamingState.streamedText) {
+            return;
+        }
+
+        const startedAt = submitStartedAtRef.current;
+        if (startedAt !== null) {
+            logMetric('submit_to_first_token', {
+                durationMs: Math.round(performance.now() - startedAt),
+            });
+        }
+        hasLoggedFirstTokenRef.current = true;
+    }, [isProcessing, streamingState.streamedText, logMetric]);
+
+    useEffect(() => {
+        if (!isProcessing) {
+            submitStartedAtRef.current = null;
+            hasLoggedFirstTokenRef.current = false;
+        }
+    }, [isProcessing]);
+
     /**
      * Retrieves user prompt input and triggers the chat process.
-     * For new chats, creates the chat immediately before sending to agent.
+     * For new chats, sends immediately and persists in parallel.
      */
     const getPrompt = async (returnPromptStr: string) => {
         if (isNewChat && isNewChatPending) {
@@ -284,44 +602,67 @@ function PromptWindow({
 
         // Create user message and add to history
         const userMessage = createUserMessage(returnPromptStr);
+        hasUserSentInCurrentChatRef.current = true;
+
         // Update ref immediately (synchronous) for use in callbacks
         chatHistoryRef.current = [...chatHistoryRef.current, userMessage];
         setChatHistory(prev => [...prev, userMessage]);
 
-        // For NEW chats: Create chat immediately with just the user message
-        if (isNewChat) {
+        submitStartedAtRef.current = performance.now();
+        hasLoggedFirstTokenRef.current = false;
+
+        let currentChatId = getCurrentChatContext();
+
+        if (
+            isNewChat
+            && !currentChatId
+            && user
+            && chatHistoryPreference !== CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY
+        ) {
+            currentChatId = generateClientChatId();
+            chatIdRef.current = currentChatId;
+            setChatId(currentChatId);
+            setIsNewChat(false);
+            returnCurrentChatId(currentChatId);
+
             setIsNewChatPending(true);
-            try {
-                // Create chat with skipTitleGeneration - title will be generated after AI responds
-                const response = await UserHistoryService.createChatHistory(
-                    [userMessage],
-                    [],
-                    undefined,
-                    true  // skipTitleGeneration
-                );
-
-                // Store the chatId and mark as no longer new
-                // Update ref immediately (synchronous) for use in callbacks
-                chatIdRef.current = response.chatId;
-                setChatId(response.chatId);
-                setIsNewChat(false);
-                returnCurrentChatId(response.chatId);
-
-                // Add to sidebar immediately with placeholder title
+            const createStart = performance.now();
+            pendingChatCreateRef.current = UserHistoryService.createChatHistory(
+                [userMessage],
+                [],
+                undefined,
+                true,
+                currentChatId
+            ).then((response) => {
+                isChatPersistedRef.current = true;
+                logMetric('chat_create_latency', {
+                    chatId: currentChatId,
+                    durationMs: Math.round(performance.now() - createStart),
+                    source: 'initial_parallel_create',
+                });
                 onHistoryUpdate(response);
-            } catch (error) {
-                console.error('Failed to create chat:', error);
+            }).catch((error) => {
+                isChatPersistedRef.current = false;
+                schedulePersistRetry(
+                    {
+                        chatId: currentChatId,
+                        historyToSave: [userMessage],
+                        componentBlocks: [],
+                    },
+                    error
+                );
+            }).finally(() => {
                 setIsNewChatPending(false);
-                // Remove the user message we added optimistically
-                chatHistoryRef.current = chatHistoryRef.current.filter(m => m.id !== userMessage.id);
-                setChatHistory(prev => prev.filter(m => m.id !== userMessage.id));
-                return;
-            }
+            });
         }
 
         // Send to agent endpoint (hook handles streaming)
         // Use ref for up-to-date history (React state closure is one render behind)
-        sendAgentMessage(returnPromptStr, chatHistoryRef.current);
+        sendAgentMessage(
+            returnPromptStr,
+            chatHistoryRef.current,
+            currentChatId || undefined
+        );
     };
 
     /**
@@ -337,6 +678,9 @@ function PromptWindow({
         chatIdRef.current = newChatId;
         setChatId(newChatId);
         setIsNewChat(false);
+        isChatPersistedRef.current = true;
+        hasHydratedCurrentChatRef.current = true;
+        hasUserSentInCurrentChatRef.current = false;
         returnCurrentChatId(newChatId);
     };
 
@@ -372,6 +716,22 @@ function PromptWindow({
     };
 
     /**
+     * Seed chat refs from URL as early as possible so submit path is not blocked
+     * on history hydration for /chat/:chatId routes.
+     */
+    useEffect(() => {
+        if (!urlChatId) {
+            return;
+        }
+
+        if (chatIdRef.current !== urlChatId) {
+            chatIdRef.current = urlChatId;
+            setChatId(urlChatId);
+        }
+        setIsNewChat(false);
+    }, [urlChatId]);
+
+    /**
      * Effect hook that synchronizes the URL with the current chat ID.
      */
     useEffect(() => {
@@ -399,12 +759,25 @@ function PromptWindow({
                     chatIdRef.current = '';
                     setChatId('');
                     setIsNewChat(true);
+                    isChatPersistedRef.current = false;
+                    hasHydratedCurrentChatRef.current = false;
+                    hasUserSentInCurrentChatRef.current = false;
+                    pendingChatCreateRef.current = null;
+                    clearPendingPersistTimeout();
+                    pendingPersistRef.current = null;
                     returnCurrentChatId('');
                     return;
                 }
 
-                // Return early if the URL chat ID is the same as the current chat ID
-                if (urlChatId === chatId) return;
+                // If user already started sending on this chat, do not overwrite local state with hydration.
+                if (urlChatId === chatIdRef.current && hasUserSentInCurrentChatRef.current) {
+                    return;
+                }
+
+                // Return early only when this chat is already hydrated locally.
+                if (urlChatId === chatIdRef.current && hasHydratedCurrentChatRef.current) {
+                    return;
+                }
 
                 // Wait for initial history loading to complete before checking for existing chat
                 if (isLoadingHistory && !existingHistoryList.find(chat => chat.chatId === urlChatId)) {
@@ -414,6 +787,9 @@ function PromptWindow({
                 // Always reset state when loading a new chat
                 chatHistoryRef.current = [];
                 setChatHistory([]);
+                hasHydratedCurrentChatRef.current = false;
+                hasUserSentInCurrentChatRef.current = false;
+                isChatPersistedRef.current = false;
 
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
 
@@ -440,7 +816,7 @@ function PromptWindow({
             };
             void loadHistory();
         }
-    }, [urlChatId, user, isLoadingHistory, existingHistoryList.length]);
+    }, [urlChatId, user, isLoadingHistory, existingHistoryList.length, clearPendingPersistTimeout]);
 
     // Separate effect to handle when chat becomes available in history
     useEffect(() => {
@@ -448,6 +824,8 @@ function PromptWindow({
 
         // Skip if we're intentionally clearing the chat
         if (isClearingRef.current) return;
+
+        if (hasUserSentInCurrentChatRef.current) return;
 
         const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
         if (existingChat && chatId !== urlChatId) {
@@ -489,6 +867,12 @@ function PromptWindow({
             }, 150);
         }
     }, [clearChatCallback, setClearChatCallback]);
+
+    useEffect(() => {
+        return () => {
+            clearPendingPersistTimeout();
+        };
+    }, [clearPendingPersistTimeout]);
 
     // Auto-scroll effect
     useEffect(() => {
@@ -554,6 +938,8 @@ function PromptWindow({
     const handleCancel = () => {
         cancelStream();
         setIsNewChatPending(false);
+        submitStartedAtRef.current = null;
+        hasLoggedFirstTokenRef.current = false;
     };
 
     /**
@@ -570,6 +956,14 @@ function PromptWindow({
         setIsNewChatPending(false);
         chatIdRef.current = '';
         setChatId('');
+        hasHydratedCurrentChatRef.current = false;
+        hasUserSentInCurrentChatRef.current = false;
+        isChatPersistedRef.current = false;
+        pendingChatCreateRef.current = null;
+        clearPendingPersistTimeout();
+        pendingPersistRef.current = null;
+        submitStartedAtRef.current = null;
+        hasLoggedFirstTokenRef.current = false;
 
         // Reset saving flag for the new chat
         isSavingRef.current = false;

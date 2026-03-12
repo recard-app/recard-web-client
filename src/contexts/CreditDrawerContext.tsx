@@ -190,6 +190,10 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
 }) => {
   const isMobile = useIsMobile();
   const allCredits = useCredits();
+  const activeCreditKey = useMemo(
+    () => (activeCreditId ? `${activeCreditId.cardId}:${activeCreditId.creditId}` : null),
+    [activeCreditId]
+  );
 
   // Resolve live data from prioritizedCredits or fallbackData
   const resolvedData = useMemo(() => {
@@ -234,6 +238,60 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     return null;
   }, [activeCreditId, prioritizedCredits, userDetailedCardDetails, allCredits, fallbackData]);
 
+  const [stableResolvedData, setStableResolvedData] = useState<{
+    key: string;
+    data: {
+      userCredit: UserCredit;
+      card: CreditCardDetails;
+      cardCredit: NonNullable<FallbackData['cardCredit']>;
+    };
+  } | null>(null);
+
+  // Keep the latest fully-resolved payload for the active credit so drawer content
+  // can stay visible if the active credit is filtered out during background refresh.
+  useEffect(() => {
+    if (
+      !activeCreditKey ||
+      !resolvedData?.userCredit ||
+      !resolvedData.card ||
+      !resolvedData.cardCredit
+    ) {
+      return;
+    }
+
+    setStableResolvedData({
+      key: activeCreditKey,
+      data: {
+        userCredit: resolvedData.userCredit,
+        card: resolvedData.card,
+        cardCredit: resolvedData.cardCredit,
+      },
+    });
+  }, [activeCreditKey, resolvedData]);
+
+  // Replace stale snapshot immediately when the active credit changes.
+  useEffect(() => {
+    setStableResolvedData((prev) => {
+      if (!activeCreditKey) return null;
+      if (!prev) return prev;
+      return prev.key === activeCreditKey ? prev : null;
+    });
+  }, [activeCreditKey]);
+
+  // Ensure no stale snapshot survives a close/unmount.
+  useEffect(() => {
+    if (!isOpen) {
+      setStableResolvedData(null);
+    }
+  }, [isOpen]);
+
+  const stableSnapshotForActiveKey = useMemo(() => {
+    if (!activeCreditKey || !stableResolvedData) return null;
+    return stableResolvedData.key === activeCreditKey ? stableResolvedData.data : null;
+  }, [activeCreditKey, stableResolvedData]);
+
+  const effectiveResolvedData = resolvedData ?? stableSnapshotForActiveKey;
+
   // Date for period calculations
   const now = useMemo(() => {
     const date = new Date();
@@ -243,8 +301,8 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
 
   // Compute current period number
   const currentPeriodNumber = useMemo(() => {
-    if (!resolvedData?.userCredit) return 1;
-    const uc = resolvedData.userCredit;
+    if (!effectiveResolvedData?.userCredit) return 1;
+    const uc = effectiveResolvedData.userCredit;
 
     if (uc.isAnniversaryBased) return 1;
 
@@ -259,7 +317,7 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     const monthZeroBased = now.getMonth();
     const segmentLength = 12 / intervals;
     return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
-  }, [now, resolvedData?.userCredit]);
+  }, [now, effectiveResolvedData?.userCredit]);
 
   // Selected period state
   const [selectedPeriodNumber, setSelectedPeriodNumber] = useState<number>(
@@ -278,12 +336,23 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     setLiveValueUsed(valueUsed);
   }, []);
 
-  // Sync localUserCredit when resolved data changes
+  // Sync localUserCredit when effective resolved data changes
   useEffect(() => {
-    if (resolvedData?.userCredit) {
-      setLocalUserCredit(resolvedData.userCredit);
+    if (effectiveResolvedData?.userCredit) {
+      setLocalUserCredit(effectiveResolvedData.userCredit);
     }
-  }, [resolvedData?.userCredit?.CardId, resolvedData?.userCredit?.CreditId, resolvedData?.userCredit?.History]);
+  }, [effectiveResolvedData?.userCredit?.CardId, effectiveResolvedData?.userCredit?.CreditId, effectiveResolvedData?.userCredit?.History]);
+
+  // Prevent rendering stale optimistic data from a previous active credit.
+  useEffect(() => {
+    setLocalUserCredit((prev) => {
+      if (!prev || !activeCreditId) return prev;
+      if (prev.CardId === activeCreditId.cardId && prev.CreditId === activeCreditId.creditId) {
+        return prev;
+      }
+      return null;
+    });
+  }, [activeCreditId]);
 
   // Reset period selection when drawer opens or initialPeriodNumber changes
   useEffect(() => {
@@ -302,8 +371,8 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
 
   // Credit max value
   const creditMaxValue = useMemo(() => {
-    return resolvedData?.cardCredit?.Value || 0;
-  }, [resolvedData?.cardCredit]);
+    return effectiveResolvedData?.cardCredit?.Value || 0;
+  }, [effectiveResolvedData?.cardCredit]);
 
   // Expiration info
   const isExpiring = useMemo(() => {
@@ -331,16 +400,30 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     creditUsage: CreditUsageType;
     valueUsed: number;
   }) => {
-    if (!localUserCredit) return;
+    const activeLocalCredit = (
+      localUserCredit &&
+      activeCreditId &&
+      localUserCredit.CardId === activeCreditId.cardId &&
+      localUserCredit.CreditId === activeCreditId.creditId
+    ) ? localUserCredit : null;
+    const baseUserCredit = activeLocalCredit ?? effectiveResolvedData?.userCredit;
+    if (!baseUserCredit) return;
 
     onAddUpdatingCreditId(update.cardId, update.creditId, update.periodNumber);
 
     // Optimistically update local state
     setLocalUserCredit((prev) => {
-      if (!prev) return prev;
+      const prevMatchesActive = Boolean(
+        prev &&
+        activeCreditId &&
+        prev.CardId === activeCreditId.cardId &&
+        prev.CreditId === activeCreditId.creditId
+      );
+      const sourceCredit = prevMatchesActive ? prev : baseUserCredit;
+      if (!sourceCredit) return prev;
       return {
-        ...prev,
-        History: prev.History.map((h) => {
+        ...sourceCredit,
+        History: sourceCredit.History.map((h) => {
           if (h.PeriodNumber === update.periodNumber) {
             return {
               ...h,
@@ -361,7 +444,7 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
         creditUsage: update.creditUsage,
         valueUsed: update.valueUsed,
         year: year,
-        anniversaryYear: localUserCredit.isAnniversaryBased ? localUserCredit.anniversaryYear : undefined,
+        anniversaryYear: baseUserCredit.isAnniversaryBased ? baseUserCredit.anniversaryYear : undefined,
       });
 
       onUpdateComplete();
@@ -369,8 +452,8 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
       console.error('Failed to update credit history entry:', error);
 
       // Revert optimistic update
-      if (resolvedData?.userCredit) {
-        setLocalUserCredit(resolvedData.userCredit);
+      if (effectiveResolvedData?.userCredit) {
+        setLocalUserCredit(effectiveResolvedData.userCredit);
       }
 
       onRemoveUpdatingCreditId(update.cardId, update.creditId, update.periodNumber);
@@ -382,7 +465,13 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
   if (!isOpen && !activeCreditId) return null;
 
   // Loading state
-  if (isLoading || !resolvedData || !resolvedData.userCredit || !resolvedData.card || !resolvedData.cardCredit) {
+  if (
+    isLoading ||
+    !effectiveResolvedData ||
+    !effectiveResolvedData.userCredit ||
+    !effectiveResolvedData.card ||
+    !effectiveResolvedData.cardCredit
+  ) {
     const loadingContent = (
       <InfoDisplay
         type="loading"
@@ -414,8 +503,16 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     );
   }
 
-  const displayCredit = localUserCredit ?? resolvedData.userCredit;
-  const { card, cardCredit } = resolvedData;
+  const hasLocalForActiveCredit = Boolean(
+    localUserCredit &&
+    activeCreditId &&
+    localUserCredit.CardId === activeCreditId.cardId &&
+    localUserCredit.CreditId === activeCreditId.creditId
+  );
+
+  const activeLocalUserCredit = hasLocalForActiveCredit ? localUserCredit : null;
+  const displayCredit = activeLocalUserCredit ?? effectiveResolvedData.userCredit;
+  const { card, cardCredit } = effectiveResolvedData;
   const isUpdating = isCreditUpdating(
     activeCreditId!.cardId,
     activeCreditId!.creditId,
@@ -453,9 +550,9 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     />
   );
 
-  const modalControls = localUserCredit ? (
+  const modalControls = (
     <CreditModalControls
-      userCredit={localUserCredit}
+      userCredit={displayCredit}
       cardCredit={cardCredit}
       creditMaxValue={creditMaxValue}
       now={now}
@@ -465,7 +562,7 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
       isUpdating={isUpdating}
       onLiveChange={handleLiveChange}
     />
-  ) : null;
+  );
 
   if (isMobile) {
     return (

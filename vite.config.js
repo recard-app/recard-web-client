@@ -14,6 +14,16 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
         navigateFallback: "/index.html",
+        navigateFallbackDenylist: [
+          /^\/api\//,
+          /^\/auth\//,
+          /^\/users\//,
+          /^\/credit-cards\//,
+          /^\/chat\//,
+          /^\/worker\//,
+          /^\/admin\//,
+          /^https:\/\/api(?:-stage)?\.cardzen\.ai\/.*/i,
+        ],
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
@@ -37,19 +47,6 @@ export default defineConfig({
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
-            },
-          },
-          {
-            // Cache API responses for both production and stage API domains.
-            urlPattern: /^https:\/\/api(?:-stage)?\.cardzen\.ai\/.*/i,
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "api-cache",
-              networkTimeoutSeconds: 10,
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24,
               },
             },
           },

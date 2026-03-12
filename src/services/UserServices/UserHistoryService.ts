@@ -79,13 +79,15 @@ export const UserHistoryService = {
      * @param componentBlocks Array of component blocks from agent responses
      * @param signal Optional AbortController signal
      * @param skipTitleGeneration If true, skip AI title generation and use "New Chat"
+     * @param chatId Optional client-generated chat ID for idempotent create
      * @returns Promise containing the created conversation
      */
     async createChatHistory(
         chatHistory: ChatMessage[],
         componentBlocks: ChatComponentBlock[],
         signal?: AbortSignal,
-        skipTitleGeneration?: boolean
+        skipTitleGeneration?: boolean,
+        chatId?: string
     ): Promise<Conversation> {
         const headers = await getAuthHeaders();
         const response = await axios.post<Conversation>(
@@ -93,7 +95,8 @@ export const UserHistoryService = {
             {
                 chatHistory,
                 componentBlocks,
-                skipTitleGeneration
+                skipTitleGeneration,
+                chatId
             },
             { headers, signal }
         );

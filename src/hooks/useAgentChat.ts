@@ -112,7 +112,7 @@ export interface UseAgentChatOptions {
 
 export interface UseAgentChatReturn {
   streamingState: StreamingState;
-  sendMessage: (prompt: string, chatHistory: ChatMessage[]) => Promise<void>;
+  sendMessage: (prompt: string, chatHistory: ChatMessage[], conversationId?: string) => Promise<void>;
   cancelStream: () => void;
   resetState: () => void;
   isProcessing: boolean;
@@ -143,7 +143,11 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
     };
   }, []);
 
-  const sendMessage = useCallback(async (prompt: string, chatHistory: ChatMessage[]) => {
+  const sendMessage = useCallback(async (
+    prompt: string,
+    chatHistory: ChatMessage[],
+    runtimeConversationId?: string
+  ) => {
     // Cancel any existing request
     abortControllerRef.current?.abort();
     cleanupRef.current?.();
@@ -164,7 +168,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       name: userName || NO_DISPLAY_NAME_PLACEHOLDER,
       prompt,
       chatHistory: filterMessagesForApi(chatHistory),
-      conversationId,
+      conversationId: runtimeConversationId ?? conversationId,
       agentMode,
     };
 
@@ -394,7 +398,11 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
     };
   }, []);
 
-  const sendMessage = useCallback(async (prompt: string, chatHistory: ChatMessage[]) => {
+  const sendMessage = useCallback(async (
+    prompt: string,
+    chatHistory: ChatMessage[],
+    runtimeConversationId?: string
+  ) => {
     abortControllerRef.current?.abort();
     abortControllerRef.current = new AbortController();
 
@@ -413,7 +421,7 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
         name: userName || NO_DISPLAY_NAME_PLACEHOLDER,
         prompt,
         chatHistory: filterMessagesForApi(chatHistory),
-        conversationId,
+        conversationId: runtimeConversationId ?? conversationId,
       };
 
       const response = await sendAgentMessage(requestData, abortControllerRef.current.signal);

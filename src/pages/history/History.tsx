@@ -10,7 +10,7 @@ interface HistoryProps {
   currentChatId: string | null;
   returnCurrentChatId: (chatId: string | null) => void;
   onHistoryUpdate: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
-  subscriptionPlan: SubscriptionPlan;
+  subscriptionPlan: SubscriptionPlan | null;
   creditCards: CreditCard[];
   historyRefreshTrigger: number;
 }

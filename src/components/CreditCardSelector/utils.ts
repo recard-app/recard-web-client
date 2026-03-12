@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { CardService, UserCreditCardService, UserCreditService } from '../../services';
 
@@ -84,6 +85,34 @@ export const setDefaultCard = (cards: CreditCard[], cardId: string): CreditCard[
     }));
 };
 
+const getSaveCardsErrorMessage = (error: unknown): string => {
+    if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const responseData = error.response?.data as { error?: unknown } | undefined;
+        const apiMessage = typeof responseData?.error === 'string' ? responseData.error : null;
+
+        if (!status) {
+            return 'Network error while saving cards. Please check your connection and try again.';
+        }
+
+        if (status === 401) {
+            return 'Your session expired. Please sign in again and retry.';
+        }
+
+        if (status === 429) {
+            return 'Too many requests. Please wait a moment and try again.';
+        }
+
+        if (apiMessage) {
+            return apiMessage;
+        }
+
+        return 'Failed to save cards. Please try again.';
+    }
+
+    return 'Failed to save cards. Please try again.';
+};
+
 /**
  * Saves user card selections and returns updated list
  */
@@ -103,7 +132,22 @@ export const saveUserCardSelections = async (cards: CreditCard[]): Promise<{
             console.warn('Failed to sync credit history after card selection:', syncError);
         }
 
-        const updatedCards = await CardService.fetchCreditCards(true);
+        // Refresh from API when possible, but don't report a failed save if
+        // persistence succeeded and only the post-save refresh failed.
+        let updatedCards: CreditCard[];
+        try {
+            updatedCards = await CardService.fetchCreditCards(true);
+        } catch (refreshError) {
+            console.warn('Cards saved but refresh failed; using local selection state:', refreshError);
+            updatedCards = cards.map(card => ({
+                ...card,
+                selected: cardsToSubmit.some(submitted => submitted.cardId === card.id),
+                isDefaultCard: cardsToSubmit.some(
+                    submitted => submitted.cardId === card.id && submitted.isDefaultCard
+                )
+            }));
+        }
+
         return {
             success: true,
             message: 'Cards saved successfully!',
@@ -113,7 +157,7 @@ export const saveUserCardSelections = async (cards: CreditCard[]): Promise<{
         console.error('Error saving cards:', error);
         return {
             success: false,
-            message: 'Error saving cards. Please try again.'
+            message: getSaveCardsErrorMessage(error)
         };
     }
 };

@@ -116,6 +116,7 @@ import { Toaster } from './components/ui/sonner';
 const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 const DEFERRED_CREDITS_IDLE_TIMEOUT_MS = 2000;
 const DEFERRED_CREDITS_TIMEOUT_FALLBACK_MS = 0;
+const ENABLE_PROACTIVE_INSTALL_DRAWER = false;
 const MONTHLY_SUMMARY_QUERY = {
   showRedeemed: true,
   includeHidden: false,
@@ -230,7 +231,7 @@ function AppContent({}: AppContentProps) {
   const [isRegeneratingDigest, setIsRegeneratingDigest] = useState<boolean>(false);
   const digestFetchedRef = useRef<boolean>(false);
   // State for tracking user's subscription plan and status
-  const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan>(SUBSCRIPTION_PLAN.FREE);
+  const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatusType>(SUBSCRIPTION_STATUS.NONE);
   const [subscriptionExpiresAt, setSubscriptionExpiresAt] = useState<string | null>(null);
   // State for managing side panel visibility with localStorage persistence
@@ -287,7 +288,7 @@ function AppContent({}: AppContentProps) {
 
   // Proactive PWA install prompt (one-time, 3s after mount)
   useEffect(() => {
-    if (!shouldProactiveShow || isOnboardingRoute || isAuthRoute) return;
+    if (!ENABLE_PROACTIVE_INSTALL_DRAWER || !shouldProactiveShow || isOnboardingRoute || isAuthRoute) return;
 
     const timer = setTimeout(() => {
       setIsInstallDrawerOpen(true);
@@ -739,7 +740,7 @@ function AppContent({}: AppContentProps) {
         setComponentPreferences(null);
         setUserDetailedCardDetails([]);
         setChatHistory([]);
-        setSubscriptionPlan(SUBSCRIPTION_PLAN.FREE);
+        setSubscriptionPlan(null);
         setSubscriptionStatus(SUBSCRIPTION_STATUS.NONE);
         setSubscriptionExpiresAt(null);
         setPreferencesInstructions('');

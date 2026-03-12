@@ -33,7 +33,7 @@ import {
 import './Account.scss';
 
 interface AccountProps {
-  subscriptionPlan: SubscriptionPlan;
+  subscriptionPlan: SubscriptionPlan | null;
   subscriptionStatus: SubscriptionStatusType;
   subscriptionExpiresAt: string | null;
   creditCardCount: number;
@@ -175,6 +175,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
   };
 
   const getPlanText = () => {
+    if (!subscriptionPlan) return '';
     return subscriptionPlan.charAt(0).toUpperCase() + subscriptionPlan.slice(1);
   };
 
@@ -187,6 +188,8 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
   };
 
   const getSubscriptionValue = () => {
+    if (!subscriptionPlan) return null;
+
     const planName = getPlanText();
     const isActive = subscriptionStatus === SUBSCRIPTION_STATUS.ACTIVE;
     const isExpired = subscriptionStatus === SUBSCRIPTION_STATUS.EXPIRED;
@@ -233,7 +236,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
                       <h2>{user.displayName || 'Account'}</h2>
                       <p className="showcase-email">{user.email}</p>
                       <div className="showcase-badges">
-                        {SHOW_SUBSCRIPTION_MENTIONS && (
+                        {SHOW_SUBSCRIPTION_MENTIONS && subscriptionPlan && (
                           <span className={`badge badge-plan${subscriptionStatus === SUBSCRIPTION_STATUS.EXPIRED ? ' badge-expired' : ''}`}>
                             {subscriptionPlan}{subscriptionStatus === SUBSCRIPTION_STATUS.EXPIRED ? ' (expired)' : ''}
                           </span>
