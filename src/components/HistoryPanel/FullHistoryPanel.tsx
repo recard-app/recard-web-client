@@ -241,6 +241,39 @@ function FullHistoryPanel({
     );
   };
 
+  /**
+   * Renders hidden placeholder pagination to preserve footer height before data loads.
+   */
+  const renderPaginationPlaceholder = () => {
+    return (
+      <Pagination className="history-pagination history-pagination--placeholder" aria-hidden="true">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationLink href="#" tabIndex={-1}>«</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationPrevious href="#" tabIndex={-1} />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" tabIndex={-1}>1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" tabIndex={-1}>2</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" tabIndex={-1}>3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" tabIndex={-1} />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" tabIndex={-1}>»</PaginationLink>
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+  };
+
   return (
     <div className="history-panel full-history">
       {/* Scrollable content area */}
@@ -297,12 +330,10 @@ function FullHistoryPanel({
         )}
       </div>
 
-      {/* Sticky footer with pagination */}
-      {paginationData && (
-        <FooterControls className="history-panel-footer">
-          {renderPagination()}
-        </FooterControls>
-      )}
+      {/* Sticky footer container is always present to avoid layout jank on initial load */}
+      <FooterControls className="history-panel-footer">
+        {paginationData ? renderPagination() : renderPaginationPlaceholder()}
+      </FooterControls>
     </div>
   );
 }
