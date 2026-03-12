@@ -70,6 +70,23 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const hasCards = selectedCards.length > 0;
   const isLastStep = currentStep === TOTAL_STEPS;
   const isFirstStep = currentStep === 1;
+  const bottomCta: {
+    iconName: React.ComponentProps<typeof Icon>['name'];
+    label: string;
+    onClick: () => void;
+  } | null = currentStep === 2
+    ? {
+      iconName: 'card',
+      label: 'Select Cards',
+      onClick: onModalOpen,
+    }
+    : isLastStep
+      ? {
+        iconName: 'chat-bubble',
+        label: 'Start Chatting',
+        onClick: () => onComplete(),
+      }
+      : null;
 
   const stepHint: Record<number, string> = {
     4: 'You can install the app later from your account settings',
@@ -83,7 +100,6 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       case 2:
         return (
           <SelectCardsStep
-            onModalOpen={onModalOpen}
             creditCards={creditCards}
             onCardClick={onCardClick}
           />
@@ -118,11 +134,11 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           {stepHint[currentStep] && (
             <p className="onboarding-wizard__hint">{stepHint[currentStep]}</p>
           )}
-          {isLastStep && (
+          {bottomCta && (
             <div className="onboarding-wizard__start-chatting-wrapper">
-              <button className="onboarding-wizard__start-chatting" onClick={() => onComplete()}>
-                <Icon name="chat-bubble" variant="mini" size={20} />
-                Start Chatting
+              <button className="onboarding-wizard__start-chatting" onClick={bottomCta.onClick}>
+                <Icon name={bottomCta.iconName} variant="mini" size={20} />
+                {bottomCta.label}
               </button>
             </div>
           )}
