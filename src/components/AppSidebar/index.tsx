@@ -237,7 +237,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     ? monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount
     : 0;
   const hasAnyCredits = totalCreditsCount > 0 || hasPrioritizedCredits;
-  const showCreditsSection = isLoadingMonthlyStats || hasAnyCredits;
+  const isCreditsDataPending = !monthlyStats;
+  const showCreditsSection = isCreditsDataPending || hasAnyCredits;
 
   const myCardsSidebarItem = (
     <SidebarItem
@@ -266,7 +267,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <CreditSummary
         variant="sidebar"
         monthlyStats={monthlyStats}
-        loading={isLoadingMonthlyStats}
+        loading={isLoadingMonthlyStats || isCreditsDataPending}
         isUpdating={isUpdatingMonthlyStats}
       />
 

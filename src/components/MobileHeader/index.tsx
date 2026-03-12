@@ -233,7 +233,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     ? monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount
     : 0;
   const hasAnyCredits = totalCreditsCount > 0 || hasPrioritizedCredits;
-  const showCreditsSection = isLoadingMonthlyStats || hasAnyCredits;
+  const isCreditsDataPending = !monthlyStats;
+  const showCreditsSection = isCreditsDataPending || hasAnyCredits;
 
   const myCardsNavLink = !MY_CARDS_IN_ACCOUNT_MENU ? (
     <li key="my-cards-link" className={isActive(PAGES.MY_CARDS.PATH) ? 'active' : ''}>
@@ -290,7 +291,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       <CreditSummary
         variant="sidebar"
         monthlyStats={monthlyStats}
-        loading={isLoadingMonthlyStats}
+        loading={isLoadingMonthlyStats || isCreditsDataPending}
         isUpdating={isUpdatingMonthlyStats}
       />
 

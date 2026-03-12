@@ -1345,7 +1345,7 @@ function AppContent({}: AppContentProps) {
                   }
                   setIsCardSelectorOpen(open);
                 }} direction="bottom">
-                  <DrawerContent className="mobile-card-selector-drawer" fixedHeight="90vh">
+                  <DrawerContent className="mobile-card-selector-drawer" fixedHeight="calc(var(--app-vh, 1vh) * 90)">
                     <DrawerTitle className="sr-only">Select Your Credit Cards</DrawerTitle>
                     <div className="dialog-header drawer-sticky-header">
                       <h2>Select Your Credit Cards</h2>
