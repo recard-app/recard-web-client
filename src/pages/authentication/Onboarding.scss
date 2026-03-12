@@ -248,6 +248,12 @@
   }
 }
 
+.onboarding-select-cards__header-with-edit {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
 // Step 1: Welcome - Value prop cards
 .onboarding-value-cards {
   display: flex;

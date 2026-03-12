@@ -74,7 +74,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     iconName: React.ComponentProps<typeof Icon>['name'];
     label: string;
     onClick: () => void;
-  } | null = currentStep === 2
+  } | null = currentStep === 2 && !hasCards
     ? {
       iconName: 'card',
       label: 'Select Cards',
@@ -100,6 +100,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
       case 2:
         return (
           <SelectCardsStep
+            onModalOpen={onModalOpen}
             creditCards={creditCards}
             onCardClick={onCardClick}
           />
