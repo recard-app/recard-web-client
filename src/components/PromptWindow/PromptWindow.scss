@@ -48,6 +48,7 @@
     max-height: 100%; // Ensure it doesn't exceed container height
 
     .prompt-history-container {
+        position: relative;
         flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
@@ -82,6 +83,18 @@
               padding: $space-3;
             }
         }
+    }
+
+    .chat-switch-loading-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba($neutral-white, 0.75);
+        pointer-events: auto;
+        cursor: progress;
     }
 
 }

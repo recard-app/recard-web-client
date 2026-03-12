@@ -23,7 +23,7 @@ import { AgentModePreference, ChatHistoryPreference } from '../../types';
 import { MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE, CHAT_SOURCE } from '../../types';
 import { UserHistoryService } from '../../services';
-import { ErrorWithRetry } from '../../elements';
+import { ErrorWithRetry, InfoDisplay } from '../../elements';
 import { classifyError } from '../../types/AgentChatTypes';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
@@ -127,6 +127,8 @@ function PromptWindow({
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
     // Error state for when loading an existing chat fails
     const [chatLoadError, setChatLoadError] = useState<string | null>(null);
+    // Shows a loading overlay while switching between existing chats
+    const [isSwitchingChats, setIsSwitchingChats] = useState<boolean>(false);
 
     // Ref to track if we're currently saving to prevent duplicate saves
     const isSavingRef = useRef<boolean>(false);
@@ -143,6 +145,10 @@ function PromptWindow({
     // Metrics refs for submit -> first token latency
     const submitStartedAtRef = useRef<number | null>(null);
     const hasLoggedFirstTokenRef = useRef<boolean>(false);
+    // Guards async chat hydration so only the latest request can update UI
+    const chatHydrationRequestIdRef = useRef<number>(0);
+    const chatHydrationAbortControllerRef = useRef<AbortController | null>(null);
+    const latestUrlChatIdRef = useRef<string | undefined>(urlChatId);
 
     const logMetric = useCallback((name: string, metadata: Record<string, unknown> = {}) => {
         console.info('[PromptWindowMetrics]', { name, ...metadata });
@@ -161,6 +167,24 @@ function PromptWindow({
     const getCurrentChatContext = useCallback(() => {
         return chatIdRef.current || chatId || urlChatId || '';
     }, [chatId, urlChatId]);
+
+    const isAbortError = useCallback((error: unknown): boolean => {
+        const maybeError = error as { name?: string; code?: string };
+        return maybeError?.name === 'AbortError'
+            || maybeError?.name === 'CanceledError'
+            || maybeError?.code === 'ERR_CANCELED';
+    }, []);
+
+    const isHydrationRequestCurrent = useCallback((requestId: number, targetChatId: string): boolean => {
+        return chatHydrationRequestIdRef.current === requestId && latestUrlChatIdRef.current === targetChatId;
+    }, []);
+
+    const cancelChatHydration = useCallback(() => {
+        chatHydrationRequestIdRef.current += 1;
+        chatHydrationAbortControllerRef.current?.abort();
+        chatHydrationAbortControllerRef.current = null;
+        setIsSwitchingChats(false);
+    }, []);
 
     const mergeHistoryWithServerIfNeeded = useCallback(async (
         currentChatId: string,
@@ -668,7 +692,7 @@ function PromptWindow({
     /**
      * Helper function to set chat states when loading existing chat data.
      */
-    const setExistingChatStates = (
+    const setExistingChatStates = useCallback((
         conversation: ChatMessage[],
         newChatId: string
     ) => {
@@ -682,18 +706,17 @@ function PromptWindow({
         hasHydratedCurrentChatRef.current = true;
         hasUserSentInCurrentChatRef.current = false;
         returnCurrentChatId(newChatId);
-    };
+    }, [returnCurrentChatId]);
 
     /**
      * Loads an existing chat from preview data when possible, and falls back to
      * fetching full history when preview payload is metadata-only.
      */
-    const loadExistingChatFromPreview = async (
+    const resolveConversationFromPreview = useCallback(async (
         existingChat: Conversation,
-        targetChatId: string
-    ): Promise<void> => {
-        setChatLoadError(null);
-
+        targetChatId: string,
+        signal: AbortSignal
+    ): Promise<ChatMessage[]> => {
         const previewConversation = Array.isArray(existingChat.conversation)
             ? existingChat.conversation
             : [];
@@ -702,18 +725,21 @@ function PromptWindow({
             : previewConversation.length;
 
         if (previewConversation.length > 0) {
-            setExistingChatStates(previewConversation, targetChatId);
-            return;
+            return previewConversation;
         }
 
         if (previewMessageCount === 0) {
-            setExistingChatStates([], targetChatId);
-            return;
+            return [];
         }
 
-        const response = await UserHistoryService.fetchChatHistoryById(targetChatId);
-        setExistingChatStates(response.conversation, targetChatId);
-    };
+        const response = await UserHistoryService.fetchChatHistoryById(targetChatId, signal);
+        return Array.isArray(response.conversation) ? response.conversation : [];
+    }, []);
+
+    // Keep latest URL chat ID in a ref so async hydration can drop stale responses.
+    useEffect(() => {
+        latestUrlChatIdRef.current = urlChatId;
+    }, [urlChatId]);
 
     /**
      * Seed chat refs from URL as early as possible so submit path is not blocked
@@ -735,107 +761,135 @@ function PromptWindow({
      * Effect hook that synchronizes the URL with the current chat ID.
      */
     useEffect(() => {
-        if (chatId && chatId !== urlChatId) {
+        // Only push URL when creating/selecting a chat from the home route.
+        // When URL already has /chat/:id, treat URL as source of truth to avoid route snap-back.
+        if (chatId && !urlChatId) {
             returnCurrentChatId(chatId);
             navigate(`/chat/${chatId}`, { replace: true });
         }
-    }, [chatId]);
+    }, [chatId, navigate, returnCurrentChatId, urlChatId]);
 
     /**
-     * Effect hook that loads chat history when accessing an existing chat.
+     * Single chat hydration effect with request-id/abort guards.
      */
     useEffect(() => {
-        if (user) {
-            const loadHistory = async () => {
-                if (!user) return;
+        if (!user) return;
 
-                // Skip if we're intentionally clearing the chat
-                if (isClearingRef.current) return;
+        const loadHistory = async () => {
+            if (!user) return;
 
-                // If there's no urlChatId, we're on the home page - clear everything for a new chat
-                if (!urlChatId) {
-                    chatHistoryRef.current = [];
-                    setChatHistory([]);
-                    chatIdRef.current = '';
-                    setChatId('');
-                    setIsNewChat(true);
-                    isChatPersistedRef.current = false;
-                    hasHydratedCurrentChatRef.current = false;
-                    hasUserSentInCurrentChatRef.current = false;
-                    pendingChatCreateRef.current = null;
-                    clearPendingPersistTimeout();
-                    pendingPersistRef.current = null;
-                    returnCurrentChatId('');
-                    return;
-                }
+            // Skip if we're intentionally clearing the chat
+            if (isClearingRef.current) return;
 
-                // If user already started sending on this chat, do not overwrite local state with hydration.
-                if (urlChatId === chatIdRef.current && hasUserSentInCurrentChatRef.current) {
-                    return;
-                }
+            // Home/new chat route
+            if (!urlChatId) {
+                cancelChatHydration();
+                cancelStream();
 
-                // Return early only when this chat is already hydrated locally.
-                if (urlChatId === chatIdRef.current && hasHydratedCurrentChatRef.current) {
-                    return;
-                }
-
-                // Wait for initial history loading to complete before checking for existing chat
-                if (isLoadingHistory && !existingHistoryList.find(chat => chat.chatId === urlChatId)) {
-                    return;
-                }
-
-                // Always reset state when loading a new chat
                 chatHistoryRef.current = [];
                 setChatHistory([]);
+                chatIdRef.current = '';
+                setChatId('');
+                setIsNewChat(true);
+                setIsNewChatPending(false);
+                setChatLoadError(null);
+
+                isChatPersistedRef.current = false;
                 hasHydratedCurrentChatRef.current = false;
                 hasUserSentInCurrentChatRef.current = false;
-                isChatPersistedRef.current = false;
+                pendingChatCreateRef.current = null;
+                clearPendingPersistTimeout();
+                pendingPersistRef.current = null;
+                returnCurrentChatId('');
+                return;
+            }
 
+            const isSwitchingToDifferentChat = urlChatId !== chatIdRef.current;
+            if (isSwitchingToDifferentChat) {
+                // Prevent stream events from a previous chat leaking into this one.
+                cancelStream();
+                submitStartedAtRef.current = null;
+                hasLoggedFirstTokenRef.current = false;
+                hasUserSentInCurrentChatRef.current = false;
+            }
+
+            // If user already started sending on this chat, do not overwrite local state with hydration.
+            if (!isSwitchingToDifferentChat && urlChatId === chatIdRef.current && hasUserSentInCurrentChatRef.current) {
+                setIsSwitchingChats(false);
+                return;
+            }
+
+            // Return early only when this chat is already hydrated locally.
+            if (!isSwitchingToDifferentChat && urlChatId === chatIdRef.current && hasHydratedCurrentChatRef.current) {
+                setIsSwitchingChats(false);
+                return;
+            }
+
+            // Wait for initial history loading to complete before checking for existing chat
+            if (isLoadingHistory && !existingHistoryList.some(chat => chat.chatId === urlChatId)) {
+                setIsSwitchingChats(true);
+                return;
+            }
+
+            setChatLoadError(null);
+            setIsSwitchingChats(true);
+
+            chatHydrationRequestIdRef.current += 1;
+            const requestId = chatHydrationRequestIdRef.current;
+
+            chatHydrationAbortControllerRef.current?.abort();
+            const abortController = new AbortController();
+            chatHydrationAbortControllerRef.current = abortController;
+
+            // Keep previous chat content visible until target chat is loaded.
+            chatIdRef.current = urlChatId;
+            setChatId(urlChatId);
+            setIsNewChat(false);
+            hasHydratedCurrentChatRef.current = false;
+            hasUserSentInCurrentChatRef.current = false;
+            isChatPersistedRef.current = false;
+
+            try {
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
+                const conversation = existingChat
+                    ? await resolveConversationFromPreview(existingChat, urlChatId, abortController.signal)
+                    : (await UserHistoryService.fetchChatHistoryById(urlChatId, abortController.signal)).conversation;
 
-                if (existingChat) {
-                    // Chat found in pre-loaded history (may be full or lightweight preview)
-                    try {
-                        await loadExistingChatFromPreview(existingChat, urlChatId);
-                    } catch (error) {
-                        console.error('Error loading chat from preview data:', error);
-                        setChatLoadError('Failed to load chat. Please try again.');
-                    }
+                if (!isHydrationRequestCurrent(requestId, urlChatId)) {
                     return;
                 }
 
-                // Fallback: Chat not in pre-loaded history, fetch individually
-                try {
-                    setChatLoadError(null);
-                    const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
-                    setExistingChatStates(response.conversation, urlChatId);
-                } catch (error) {
-                    console.error('Error loading chat:', error);
-                    setChatLoadError('Failed to load chat. Please try again.');
+                setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
+            } catch (error) {
+                if (isAbortError(error) || !isHydrationRequestCurrent(requestId, urlChatId)) {
+                    return;
                 }
-            };
-            void loadHistory();
-        }
-    }, [urlChatId, user, isLoadingHistory, existingHistoryList.length, clearPendingPersistTimeout]);
 
-    // Separate effect to handle when chat becomes available in history
-    useEffect(() => {
-        if (!urlChatId || !user || chatId === urlChatId) return;
-
-        // Skip if we're intentionally clearing the chat
-        if (isClearingRef.current) return;
-
-        if (hasUserSentInCurrentChatRef.current) return;
-
-        const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
-        if (existingChat && chatId !== urlChatId) {
-            // Chat just became available and we haven't loaded it yet
-            void loadExistingChatFromPreview(existingChat, urlChatId).catch(error => {
-                console.error('Error loading newly available chat from preview data:', error);
+                console.error('Error loading chat:', error);
                 setChatLoadError('Failed to load chat. Please try again.');
-            });
-        }
-    }, [existingHistoryList, urlChatId, user, chatId]);
+            } finally {
+                if (chatHydrationRequestIdRef.current === requestId) {
+                    chatHydrationAbortControllerRef.current = null;
+                    setIsSwitchingChats(false);
+                }
+            }
+        };
+
+        void loadHistory();
+    }, [
+        cancelChatHydration,
+        cancelStream,
+        clearPendingPersistTimeout,
+        existingHistoryList,
+        isAbortError,
+        isHydrationRequestCurrent,
+        isLoadingHistory,
+        resolveConversationFromPreview,
+        returnCurrentChatId,
+        setExistingChatStates,
+        urlChatId,
+        user
+    ]);
 
     // Handle initial prompt from onboarding navigation state
     const initialPromptHandledRef = useRef(false);
@@ -871,6 +925,9 @@ function PromptWindow({
     useEffect(() => {
         return () => {
             clearPendingPersistTimeout();
+            chatHydrationRequestIdRef.current += 1;
+            chatHydrationAbortControllerRef.current?.abort();
+            chatHydrationAbortControllerRef.current = null;
         };
     }, [clearPendingPersistTimeout]);
 
@@ -923,12 +980,38 @@ function PromptWindow({
         if (!urlChatId || !user) return;
 
         setChatLoadError(null);
+        setIsSwitchingChats(true);
+
+        chatHydrationRequestIdRef.current += 1;
+        const requestId = chatHydrationRequestIdRef.current;
+
+        chatHydrationAbortControllerRef.current?.abort();
+        const abortController = new AbortController();
+        chatHydrationAbortControllerRef.current = abortController;
+
         try {
-            const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
-            setExistingChatStates(response.conversation, urlChatId);
+            const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
+            const conversation = existingChat
+                ? await resolveConversationFromPreview(existingChat, urlChatId, abortController.signal)
+                : (await UserHistoryService.fetchChatHistoryById(urlChatId, abortController.signal)).conversation;
+
+            if (!isHydrationRequestCurrent(requestId, urlChatId)) {
+                return;
+            }
+
+            setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
         } catch (error) {
+            if (isAbortError(error) || !isHydrationRequestCurrent(requestId, urlChatId)) {
+                return;
+            }
+
             console.error('Error loading chat:', error);
             setChatLoadError('Failed to load chat. Please try again.');
+        } finally {
+            if (chatHydrationRequestIdRef.current === requestId) {
+                chatHydrationAbortControllerRef.current = null;
+                setIsSwitchingChats(false);
+            }
         }
     };
 
@@ -948,6 +1031,7 @@ function PromptWindow({
     const handleNewTransaction = () => {
         // Cancel any in-progress streaming
         cancelStream();
+        cancelChatHydration();
 
         // Clear local state
         chatHistoryRef.current = [];
@@ -1034,6 +1118,17 @@ function PromptWindow({
                         onMultiplierClick={handleMultiplierClick}
                     />
                 )}
+                {isSwitchingChats && !chatLoadError && (
+                    <div className="chat-switch-loading-overlay">
+                        <InfoDisplay
+                            type="loading"
+                            message="Loading chat..."
+                            showTitle={false}
+                            transparent={true}
+                            centered
+                        />
+                    </div>
+                )}
             </div>
 
             <div className="prompt-combined-container">
@@ -1042,7 +1137,7 @@ function PromptWindow({
                         returnPrompt={getPrompt}
                         isProcessing={isProcessing}
                         onCancel={handleCancel}
-                        disabled={chatHistory.length >= MAX_CHAT_MESSAGES}
+                        disabled={chatHistory.length >= MAX_CHAT_MESSAGES || isSwitchingChats}
                     />
                 </div>
                 {chatHistory.length >= MAX_CHAT_MESSAGES && (

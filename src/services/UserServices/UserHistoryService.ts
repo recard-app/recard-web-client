@@ -64,11 +64,11 @@ export const UserHistoryService = {
      * @param chatId ID of the chat to fetch
      * @returns Promise containing the conversation data
      */
-    async fetchChatHistoryById(chatId: string): Promise<Conversation> {
+    async fetchChatHistoryById(chatId: string, signal?: AbortSignal): Promise<Conversation> {
         const headers = await getAuthHeaders();
         const response = await axios.get<Conversation>(
             `${apiurl}/users/history/${chatId}`,
-            { headers }
+            { headers, signal }
         );
         return response.data;
     },
