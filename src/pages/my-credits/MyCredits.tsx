@@ -49,7 +49,10 @@ const MyCredits: React.FC<MyCreditsProps> = ({
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [showRedeemed, setShowRedeemed] = useState(false);
   const [stableFilteredCredits, setStableFilteredCredits] = useState<PrioritizedCredit[]>([]);
-  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
+  const [hasRequestedPrioritizedCredits, setHasRequestedPrioritizedCredits] = useState(isLoadingPrioritizedCredits);
+
+  const hasInitiallyLoaded =
+    monthlyStats !== null || (hasRequestedPrioritizedCredits && !isLoadingPrioritizedCredits);
 
   // Helper to get current period number for a credit
   const getCurrentPeriodNumber = (credit: PrioritizedCredit): number => {
@@ -91,12 +94,15 @@ const MyCredits: React.FC<MyCreditsProps> = ({
         });
 
     setStableFilteredCredits(newFilteredCredits);
+  }, [prioritizedCredits, showRedeemed]);
 
-    // Mark as initially loaded once we have credits data (regardless of whether it's empty)
-    if (!isLoadingPrioritizedCredits && !hasInitiallyLoaded) {
-      setHasInitiallyLoaded(true);
+  // Track whether the prioritized credits request has actually started.
+  // This prevents briefly showing the empty state before the first API load begins.
+  useEffect(() => {
+    if (isLoadingPrioritizedCredits) {
+      setHasRequestedPrioritizedCredits(true);
     }
-  }, [prioritizedCredits, showRedeemed, isLoadingPrioritizedCredits, hasInitiallyLoaded]);
+  }, [isLoadingPrioritizedCredits]);
 
   const hasRedeemedCredits = prioritizedCredits.some(credit => {
     const creditUsage = getCurrentPeriodCreditUsage(credit);
@@ -171,7 +177,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                 onRetry={loadUserCards}
                 fillContainer
               />
-            ) : (isLoading || isLoadingPrioritizedCredits) && !hasInitiallyLoaded ? (
+            ) : isLoading || !hasInitiallyLoaded ? (
               <InfoDisplay
                 type="loading"
                 message="Loading credits..."
@@ -241,5 +247,4 @@ const MyCredits: React.FC<MyCreditsProps> = ({
 };
 
 export default MyCredits;
-
 
