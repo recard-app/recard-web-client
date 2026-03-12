@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       strategies: "generateSW",
       manifest: false,
       workbox: {
@@ -24,8 +24,6 @@ export default defineConfig({
           /^\/admin\//,
           /^https:\/\/api(?:-stage)?\.cardzen\.ai\/.*/i,
         ],
-        skipWaiting: true,
-        clientsClaim: true,
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
