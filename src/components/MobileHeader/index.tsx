@@ -7,8 +7,9 @@ import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import CreditSummary from '../CreditSummary';
 import CreditList from '../CreditsDisplay/CreditList';
+import CreditListSkeleton from '../CreditsDisplay/CreditList/CreditListSkeleton';
 import { convertPrioritizedCreditsToUserCredits } from '../../utils/creditTransformers';
-import { useCredits } from '../../contexts/useComponents';
+import { useComponents } from '../../contexts/useComponents';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,7 +83,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Get credits data from context for proper credit matching
-  const credits = useCredits();
+  const { credits, isInitialized: isComponentsInitialized } = useComponents();
 
   const isActive = (path: string): boolean => {
     // Special handling for MY_CREDITS - highlight for all my-credits/* pages
@@ -233,7 +234,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     ? monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount
     : 0;
   const hasAnyCredits = totalCreditsCount > 0 || hasPrioritizedCredits;
-  const isCreditsDataPending = !monthlyStats;
+  const isCreditsDataPending = !monthlyStats || !isComponentsInitialized;
   const showCreditsSection = isCreditsDataPending || hasAnyCredits;
 
   const myCardsNavLink = !MY_CARDS_IN_ACCOUNT_MENU ? (
@@ -296,7 +297,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
       />
 
       {/* Priority Credits List */}
-      {hasPrioritizedCredits ? (
+      {isCreditsDataPending ? (
+        <CreditListSkeleton variant="sidebar" count={3} />
+      ) : hasPrioritizedCredits ? (
         <CreditList
           credits={convertPrioritizedCreditsToUserCredits(prioritizedCredits)}
           now={new Date()}

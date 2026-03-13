@@ -4,6 +4,7 @@ import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR, WARNING } from '../../types/Colors';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 import Icon from '@/icons';
 import UsageBar from '../UsageBar';
+import CreditSummarySkeleton from './CreditSummarySkeleton';
 import './CreditSummary.scss';
 
 // Debug flag to use mock data with expiring credits for design testing
@@ -63,16 +64,13 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   // Use mock data if debug flag is enabled
   const effectiveMonthlyStats = DEBUG_USE_MOCK_EXPIRING_CREDITS ? MOCK_MONTHLY_STATS : monthlyStats;
 
-  // Only show loading spinner if we're loading and have no data yet (initial load)
+  // Only show skeleton/loading if we're loading and have no data yet (initial load)
   if (loading && !effectiveMonthlyStats) {
-    return (
-      <InfoDisplay
-        type="loading"
-        message={variant === 'sidebar' ? "Loading credit details..." : "Loading monthly stats..."}
-        showTitle={false}
-        transparent={true}
-      />
-    );
+    if (variant === 'header') {
+      return <CreditSummarySkeleton />;
+    }
+    // Sidebar: return null while loading -- the CreditListSkeleton below handles the visual placeholder
+    return null;
   }
 
   if (error) {

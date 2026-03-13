@@ -7,6 +7,7 @@ import { ICON_RED, ICON_GRAY, ICON_PRIMARY, LOADING_ICON, LOADING_ICON_SIZE } fr
 import { COLORS } from '../../types/Colors';
 import { CardIcon } from '../../icons';
 import { InfoDisplay, DatePicker } from '../../elements';
+import CardDetailSkeleton from './CardDetailSkeleton';
 import { Icon, createIconVariant } from '../../icons';
 import { UserComponentService } from '../../services/UserServices';
 import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId, useComponents } from '../../contexts/useComponents';
@@ -293,48 +294,8 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     // 3. Loading card details
     // 4. No card selected
 
-    if (isAddingCard && cardBeingAdded) {
-        return (
-            <div className="card-details-loading">
-                <InfoDisplay
-                    type="loading"
-                    message={`Adding ${cardBeingAdded.CardName}...`}
-                    showTitle={false}
-                    transparent={true}
-                    centered={true}
-                    hideOverflow={true}
-                />
-            </div>
-        );
-    }
-
-    if (isRemovingCard && cardBeingRemoved) {
-        return (
-            <div className="card-details-loading">
-                <InfoDisplay
-                    type="loading"
-                    message={`Removing ${cardBeingRemoved.CardName}...`}
-                    showTitle={false}
-                    transparent={true}
-                    centered={true}
-                    hideOverflow={true}
-                />
-            </div>
-        );
-    }
-
-    if (isLoading) {
-        return (
-            <div className="card-details-loading">
-                <InfoDisplay
-                    type="loading"
-                    message="Loading card details..."
-                    showTitle={false}
-                    transparent={true}
-                    centered={true}
-                />
-            </div>
-        );
+    if (isAddingCard || isRemovingCard || isLoading) {
+        return <CardDetailSkeleton />;
     }
 
     if (!cardDetails) {

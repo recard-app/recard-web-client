@@ -1,6 +1,7 @@
 import React from 'react';
 import { CreditCard } from '../../types/CreditCardTypes';
 import CreditCardPreview from './CreditCardPreview';
+import CreditCardPreviewListSkeleton from './CreditCardPreviewListSkeleton';
 import { InfoDisplay } from '../../elements';
 import './CreditCardPreviewList.scss';
 
@@ -50,14 +51,7 @@ const CreditCardPreviewList: React.FC<CreditCardPreviewListProps> = ({
   return (
     <div className="cards-list">
       {loading ? (
-        <div className="loading-cards">
-          <InfoDisplay
-            type="loading"
-            message="Loading cards..."
-            showTitle={false}
-            transparent={true}
-          />
-        </div>
+        <CreditCardPreviewListSkeleton count={3} variant={variant} />
       ) : sortedCards.length === 0 ? (
         <div className="no-cards">
           <InfoDisplay

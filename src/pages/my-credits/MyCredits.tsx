@@ -8,10 +8,12 @@ import { PrioritizedCredit } from '../../types';
 import { MonthlyStatsResponse } from '../../types/CardCreditsTypes';
 import Icon from '../../icons';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
+import CreditsDisplaySkeleton from '../../components/CreditsDisplay/CreditsDisplaySkeleton';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import CreditSummary from '../../components/CreditSummary';
 import CreditsTabFooter from '@/components/PageControls/CreditsTabFooter';
 import { useFullHeight } from '../../hooks/useFullHeight';
+import { useComponents } from '../../contexts/useComponents';
 import './shared-credits-layout.scss';
 import './MyCredits.scss';
 
@@ -50,9 +52,10 @@ const MyCredits: React.FC<MyCreditsProps> = ({
   const [showRedeemed, setShowRedeemed] = useState(false);
   const [stableFilteredCredits, setStableFilteredCredits] = useState<PrioritizedCredit[]>([]);
   const [hasRequestedPrioritizedCredits, setHasRequestedPrioritizedCredits] = useState(isLoadingPrioritizedCredits);
+  const { isInitialized: isComponentsInitialized } = useComponents();
 
   const hasInitiallyLoaded =
-    monthlyStats !== null || (hasRequestedPrioritizedCredits && !isLoadingPrioritizedCredits);
+    isComponentsInitialized && (monthlyStats !== null || (hasRequestedPrioritizedCredits && !isLoadingPrioritizedCredits));
 
   // Helper to get current period number for a credit
   const getCurrentPeriodNumber = (credit: PrioritizedCredit): number => {
@@ -178,13 +181,9 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                 fillContainer
               />
             ) : isLoading || !hasInitiallyLoaded ? (
-              <InfoDisplay
-                type="loading"
-                message="Loading credits..."
-                showTitle={false}
-                transparent={true}
-                centered
-              />
+              <div className="credits-display loading">
+                <CreditsDisplaySkeleton />
+              </div>
             ) : !showRedeemed && hasRedeemedCredits && !calendarUserCredits ? (
               <div className="credits-display empty">
                 <InfoDisplay

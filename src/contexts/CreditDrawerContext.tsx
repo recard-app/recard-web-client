@@ -5,7 +5,7 @@ import CreditShowcase from '@/components/CreditsDisplay/CreditList/CreditEntry/C
 import CreditEntryDetails from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditEntryDetails';
 import CreditModalControls from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditModalControls';
 import CreditUsageTracker from '@/components/CreditsDisplay/CreditList/CreditEntry/CreditEntryDetails/CreditUsageTracker';
-import { InfoDisplay } from '@/elements';
+import { CreditDrawerShowcaseSkeleton, CreditDrawerTrackerSkeleton, CreditDrawerControlsSkeleton } from './CreditDrawerSkeleton';
 import { UserCreditService } from '@/services/UserServices/UserCreditService';
 import {
   CreditUsageType,
@@ -472,22 +472,18 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     !effectiveResolvedData.card ||
     !effectiveResolvedData.cardCredit
   ) {
-    const loadingContent = (
-      <InfoDisplay
-        type="loading"
-        message="Loading credit details..."
-        showTitle={false}
-        transparent={true}
-        centered={true}
-      />
-    );
-
     if (isMobile) {
       return (
         <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
-          <DrawerContent fitContent maxHeight="40vh" className="credit-edit-modal-drawer">
+          <DrawerContent fitContent maxHeight="80vh" className="mobile-credit-details-drawer">
             <DrawerTitle className="sr-only">Loading</DrawerTitle>
-            {loadingContent}
+            <div className="drawer-content-scroll" style={{ padding: '0 8px 16px', overflow: 'auto' }}>
+              <CreditDrawerShowcaseSkeleton />
+            </div>
+            <DrawerFooter>
+              <CreditDrawerTrackerSkeleton />
+              <CreditDrawerControlsSkeleton />
+            </DrawerFooter>
           </DrawerContent>
         </Drawer>
       );
@@ -496,8 +492,16 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     return (
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DialogContent width={CREDIT_MODAL_WIDTH}>
-          <DialogTitle className="sr-only">Loading</DialogTitle>
-          {loadingContent}
+          <DialogHeader>
+            <DialogTitle className="sr-only">Loading</DialogTitle>
+          </DialogHeader>
+          <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
+            <CreditDrawerShowcaseSkeleton />
+            <CreditDrawerTrackerSkeleton />
+          </div>
+          <DialogFooter>
+            <CreditDrawerControlsSkeleton />
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     );

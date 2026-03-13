@@ -399,6 +399,20 @@
     &.active {
       border: 1px solid currentColor !important;
     }
+
+    // Loading state - empty button that maintains the same dimensions as the real button
+    &.loading {
+      min-width: 120px;
+      min-height: 34px;
+      pointer-events: none;
+
+      @media (max-width: $mobile-breakpoint) {
+        width: 100%;
+        min-height: 48px;
+        font-size: $font-base;
+        padding: $space-3 $space-4;
+      }
+    }
   }
 }
 
@@ -462,6 +476,20 @@ body:has(.mobile-credit-details-drawer, .credit-edit-modal-drawer) [data-radix-p
       opacity: 0.5;
       cursor: not-allowed;
     }
+  }
+}
+
+// Skeleton responsive: show text label on desktop, circle icon on mobile
+.credit-usage-label-skeleton {
+  display: block;
+  @media (max-width: $mobile-breakpoint) {
+    display: none !important;
+  }
+}
+.credit-usage-icon-skeleton {
+  display: none !important;
+  @media (max-width: $mobile-breakpoint) {
+    display: block !important;
   }
 }
 

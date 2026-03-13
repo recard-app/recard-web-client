@@ -5,6 +5,7 @@ import { ICON_PRIMARY_MEDIUM } from '@/types/Constants';
 import { CardCredit, CreditCardDetails } from '@/types/CreditCardTypes';
 import { useCredits } from '@/contexts/useComponents';
 import { InfoDisplay, ErrorWithRetry } from '@/elements';
+import CreditPortfolioSkeleton from '../CreditPortfolioSkeleton';
 import { buildYearOptions } from '@/pages/my-credits/utils';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import YearDropdown from '../YearDropdown';
@@ -368,16 +369,20 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   if ((isLoading && !creditData) || isWaitingForCardDetails) {
     return (
       <div className="credit-portfolio-panel">
+        <HeaderControls className="portfolio-header-controls">
+          <button className="button ghost small icon with-text" onClick={() => setIsReportDialogOpen(true)}>
+            <Icon name="chart-bar" variant="micro" size={16} color={ICON_PRIMARY_MEDIUM} />
+            <span>Annual Report</span>
+          </button>
+          <YearDropdown
+            selectedYear={selectedYear}
+            onYearChange={handleYearChange}
+            availableYears={availableYears}
+            loading={true}
+          />
+        </HeaderControls>
         <div className="portfolio-content">
-          <div className="portfolio-loading">
-            <InfoDisplay
-              type="loading"
-              message="Loading credit history..."
-              showTitle={false}
-              transparent={true}
-              centered={true}
-            />
-          </div>
+          <CreditPortfolioSkeleton />
         </div>
       </div>
     );
@@ -387,6 +392,18 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
   if (error) {
     return (
       <div className="credit-portfolio-panel">
+        <HeaderControls className="portfolio-header-controls">
+          <button className="button ghost small icon with-text" onClick={() => setIsReportDialogOpen(true)}>
+            <Icon name="chart-bar" variant="micro" size={16} color={ICON_PRIMARY_MEDIUM} />
+            <span>Annual Report</span>
+          </button>
+          <YearDropdown
+            selectedYear={selectedYear}
+            onYearChange={handleYearChange}
+            availableYears={availableYears}
+            loading={false}
+          />
+        </HeaderControls>
         <div className="portfolio-content">
           <ErrorWithRetry message={error} onRetry={fetchCredits} fillContainer />
         </div>

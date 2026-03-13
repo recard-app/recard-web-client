@@ -6,8 +6,9 @@ import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import CreditSummary from '../CreditSummary';
 import CreditList from '../CreditsDisplay/CreditList';
+import CreditListSkeleton from '../CreditsDisplay/CreditList/CreditListSkeleton';
 import { convertPrioritizedCreditsToUserCredits } from '../../utils/creditTransformers';
-import { useCredits } from '../../contexts/useComponents';
+import { useComponents } from '../../contexts/useComponents';
 import { SidebarItem } from './SidebarItem';
 import {
   DropdownMenu,
@@ -97,7 +98,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const navigate = useNavigate();
 
   // Get credits data from context for proper credit matching
-  const credits = useCredits();
+  const { credits, isInitialized: isComponentsInitialized } = useComponents();
   
   // Helper function to determine if current path is home or chat route
   const isHomeOrChatRoute = (pathname: string) => {
@@ -237,7 +238,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     ? monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount
     : 0;
   const hasAnyCredits = totalCreditsCount > 0 || hasPrioritizedCredits;
-  const isCreditsDataPending = !monthlyStats;
+  const isCreditsDataPending = !monthlyStats || !isComponentsInitialized;
   const showCreditsSection = isCreditsDataPending || hasAnyCredits;
 
   const myCardsSidebarItem = (
@@ -272,7 +273,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       />
 
       {/* Priority Credits List */}
-      {hasPrioritizedCredits ? (
+      {isCreditsDataPending ? (
+        <CreditListSkeleton variant="sidebar" count={3} />
+      ) : hasPrioritizedCredits ? (
         (() => {
           const convertedCredits = convertPrioritizedCreditsToUserCredits(prioritizedCredits);
 

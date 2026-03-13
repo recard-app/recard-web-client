@@ -3,8 +3,9 @@ import './CreditsDisplay.scss';
 import { CalendarUserCredits } from '../../types';
 import CreditGroup from './CreditGroup';
 import { CreditCard, CreditCardDetails, CardCredit } from '../../types/CreditCardTypes';
-import { useCredits } from '../../contexts/useComponents';
+import { useComponents } from '../../contexts/useComponents';
 import { InfoDisplay } from '../../elements';
+import CreditsDisplaySkeleton from './CreditsDisplaySkeleton';
 
 export interface CreditsDisplayProps {
   calendar: CalendarUserCredits | null;
@@ -36,7 +37,7 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
   isCreditUpdating
 }) => {
   const effectiveNow = useMemo(() => now ?? new Date(), [now]);
-  const credits = useCredits(); // Get all credit data from the context
+  const { credits, isInitialized: isComponentsInitialized } = useComponents();
 
   // Build lookup maps for quick resolution in child components
   const cardById = useMemo(() => {
@@ -55,16 +56,10 @@ const CreditsDisplay: React.FC<CreditsDisplayProps> = ({
     return map;
   }, [credits]);
 
-  if (isLoading) {
+  if (isLoading || !isComponentsInitialized) {
     return (
       <div className="credits-display loading">
-        <InfoDisplay
-          type="loading"
-          message="Loading credits..."
-          showTitle={false}
-          transparent={true}
-          centered={true}
-        />
+        <CreditsDisplaySkeleton />
       </div>
     );
   }

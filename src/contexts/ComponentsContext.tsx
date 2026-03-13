@@ -20,6 +20,7 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
   const [credits, setCredits] = useState<CardCredit[]>([]);
   const [multipliers, setMultipliers] = useState<EnrichedMultiplier[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchComponents = async (forceRefresh: boolean = false) => {
@@ -37,6 +38,7 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
       setError(err instanceof Error ? err.message : 'Failed to fetch components');
     } finally {
       setIsLoading(false);
+      setIsInitialized(true);
     }
   };
 
@@ -51,6 +53,7 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
     setMultipliers(componentData.multipliers || []);
     setError(null);
     setIsLoading(false);
+    setIsInitialized(true);
   };
 
   /**
@@ -101,6 +104,7 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
       setCredits([]);
       setMultipliers([]);
       setError(null);
+      setIsInitialized(false);
       ComponentService.clearCache();
       apiCache.clearUserData();
     }
@@ -111,6 +115,7 @@ export const ComponentsProvider: React.FC<ComponentsProviderProps> = ({
     credits,
     multipliers,
     isLoading,
+    isInitialized,
     error,
     refetch,
     hydrate,

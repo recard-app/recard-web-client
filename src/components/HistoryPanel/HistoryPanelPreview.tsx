@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import HistoryEntry from './HistoryEntry';
 import { InfoDisplay } from '../../elements';
 import { TERMINOLOGY } from '../../types';
+import HistoryPanelSkeleton from './HistoryPanelSkeleton';
 import './HistoryPanel.scss';
 import {
   Conversation, 
@@ -77,14 +78,7 @@ function HistoryPanelPreview({
   return (
     <div className="history-panel">
       {loading && displayList.length === 0 ? (
-        <div className="loading-history">
-          <InfoDisplay
-            type="loading"
-            message={TERMINOLOGY.loadingHistory}
-            showTitle={false}
-            transparent={true}
-          />
-        </div>
+        <HistoryPanelSkeleton variant="sidebar" count={3} />
       ) : displayList.length === 0 ? (
         <InfoDisplay
           type="default"

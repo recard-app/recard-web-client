@@ -3,6 +3,7 @@ import { useAuth } from '../../context/useAuth';
 import HistoryEntry from './HistoryEntry';
 import './HistoryPanel.scss';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
+import HistoryPanelSkeleton from './HistoryPanelSkeleton';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
 import {
   Conversation,
@@ -285,15 +286,7 @@ function FullHistoryPanel({
             fillContainer
           />
         ) : isLoading && paginatedList.length === 0 ? (
-          <div className="loading-history">
-            <InfoDisplay
-              type="loading"
-              message={TERMINOLOGY.loadingHistory}
-              showTitle={false}
-              transparent={true}
-              centered
-            />
-          </div>
+          <HistoryPanelSkeleton variant="full-page" />
         ) : paginatedList.length === 0 ? (
           <InfoDisplay
             type="default"
