@@ -14,9 +14,10 @@ import './CardSwitcherDropdown.scss';
 interface CardSelectContentProps {
   selectedCard: CreditCard | null;
   hasCards: boolean;
+  loading?: boolean;
 }
 
-export const CardSelectContent: React.FC<CardSelectContentProps> = ({ selectedCard, hasCards }) => {
+export const CardSelectContent: React.FC<CardSelectContentProps> = ({ selectedCard, hasCards, loading }) => {
   if (selectedCard) {
     return (
       <>
@@ -32,18 +33,19 @@ export const CardSelectContent: React.FC<CardSelectContentProps> = ({ selectedCa
     );
   }
 
+  const label = loading ? 'Loading cards...' : hasCards ? 'Select a card to view' : 'No cards added';
+  const title = loading ? 'Loading cards' : hasCards ? 'Select a card' : 'No cards';
+
   return (
     <>
       <CardIcon
-        title={hasCards ? 'Select a card' : 'No cards'}
+        title={title}
         size={24}
         primary={COLORS.NEUTRAL_GRAY}
         secondary={COLORS.NEUTRAL_LIGHT_GRAY}
         className="select-card-icon"
       />
-      <span className="label-text">
-        {hasCards ? 'Select a card to view' : 'No cards added'}
-      </span>
+      <span className="label-text">{label}</span>
     </>
   );
 };

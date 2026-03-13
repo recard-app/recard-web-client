@@ -585,16 +585,16 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             )}
 
             {/* Mobile sticky sub-header: card selector + add button */}
-            {isMobileViewport && !isLoading && (
+            {isMobileViewport && (
                 <HeaderControls className="mobile-card-selector-header">
                     <div className="footer-row">
                         <button
                             className="view-card-select"
                             onClick={selectedCards.length === 0 ? handleAddCard : handleOpenViewSelector}
                             aria-haspopup="dialog"
-                            disabled={selectedCards.length === 0}
+                            disabled={isLoading || selectedCards.length === 0}
                         >
-                            <CardSelectContent selectedCard={selectedCard} hasCards={selectedCards.length > 0} />
+                            <CardSelectContent selectedCard={selectedCard} hasCards={selectedCards.length > 0} loading={isLoading} />
                         </button>
                         <button className="button icon add-card-button" onClick={handleAddCard} aria-haspopup="dialog" aria-label="Add card">
                             <Icon name="big-plain-plus" variant="solid" size={20} color={COLORS.NEUTRAL_WHITE} />
@@ -636,7 +636,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             </div>
 
             {/* Tab bar footer -- visible on all viewports when cards exist */}
-            {!isLoading && selectedCards.length > 0 && (
+            {(isLoading || selectedCards.length > 0) && (
                 <FooterControls className="card-manager-footer">
                     <TabBar
                         options={CARD_TABS}
