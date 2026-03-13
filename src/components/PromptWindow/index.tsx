@@ -16,7 +16,7 @@ import {
 } from './utils';
 
 // Import types
-import { PAGES } from '../../types';
+import { PAGES, TERMINOLOGY } from '../../types';
 import { ChatMessage, Conversation } from '../../types';
 import { ChatComponentBlock } from '../../types/ChatComponentTypes';
 import { AgentModePreference, ChatHistoryPreference } from '../../types';
@@ -825,9 +825,15 @@ function PromptWindow({
                 return;
             }
 
-            // Wait for initial history loading to complete before checking for existing chat
+            // Wait for initial history loading to complete before checking for existing chat.
+            // Only show the switching overlay when there is already chat content on screen
+            // (i.e. user is navigating between chats). On initial page load the
+            // PromptHistory component already displays its own loading message, so the
+            // overlay would just stack on top and cause overlapping text.
             if (isLoadingHistory && !existingHistoryList.some(chat => chat.chatId === urlChatId)) {
-                setIsSwitchingChats(true);
+                if (chatHistoryRef.current.length > 0) {
+                    setIsSwitchingChats(true);
+                }
                 return;
             }
 
@@ -1122,7 +1128,7 @@ function PromptWindow({
                     <div className="chat-switch-loading-overlay">
                         <InfoDisplay
                             type="loading"
-                            message="Loading chat..."
+                            message={TERMINOLOGY.promptHistoryLoading}
                             showTitle={false}
                             transparent={true}
                             centered

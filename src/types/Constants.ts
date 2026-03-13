@@ -155,7 +155,7 @@ export const TERMINOLOGY = {
     loadingHistory: TERMINOLOGY_MODE === 'chat' ? 'Loading chat history...' : 'Loading transaction history...',
     emptyHistory: TERMINOLOGY_MODE === 'chat' ? 'No chat history available' : 'No transaction history available',
     emptyHistoryForPeriod: TERMINOLOGY_MODE === 'chat' ? 'No chat history available for this period' : 'No transaction history available for this period',
-    promptHistoryLoading: TERMINOLOGY_MODE === 'chat' ? 'Loading chat history...' : 'Loading transaction chat history...',
+    promptHistoryLoading: TERMINOLOGY_MODE === 'chat' ? 'Loading chat...' : 'Loading transaction chat...',
     inlineNewChatReminder: TERMINOLOGY_MODE === 'chat' ? 'create a new chat' : 'create a new transaction chat',
 } as const;
 
