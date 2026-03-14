@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard, UserCredit, CreditCardDetails, CardCredit, CardPerk, EnrichedMultiplier } from './types';
 import { Icon, CardIcon } from './icons';
@@ -977,9 +977,9 @@ function AppContent({}: AppContentProps) {
 
 
   // Function to update current chat ID
-  const getCurrentChatId = (returnCurrentChatId: string | null): void => {
+  const getCurrentChatId = useCallback((returnCurrentChatId: string | null): void => {
     setCurrentChatId(returnCurrentChatId);
-  };
+  }, []);
 
   // Function to handle user logout and reset all states
   const handleLogout = async (): Promise<void> => {

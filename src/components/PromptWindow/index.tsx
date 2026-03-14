@@ -179,6 +179,17 @@ function PromptWindow({
         return chatHydrationRequestIdRef.current === requestId && latestUrlChatIdRef.current === targetChatId;
     }, []);
 
+    const isTransientHydrationMiss = useCallback((error: unknown, targetChatId: string): boolean => {
+        const status = (error as { response?: { status?: number } })?.response?.status;
+        const isPendingNewChatHydration = Boolean(
+            targetChatId === chatIdRef.current
+            && hasUserSentInCurrentChatRef.current
+            && (!isChatPersistedRef.current || pendingChatCreateRef.current !== null)
+        );
+
+        return isPendingNewChatHydration && (status === 404 || status === 500);
+    }, []);
+
     const cancelChatHydration = useCallback(() => {
         chatHydrationRequestIdRef.current += 1;
         chatHydrationAbortControllerRef.current?.abort();
@@ -783,6 +794,19 @@ function PromptWindow({
 
             // Home/new chat route
             if (!urlChatId) {
+                const shouldDeferHomeReset = Boolean(
+                    chatIdRef.current
+                    && hasUserSentInCurrentChatRef.current
+                    && (isNewChatPending || isProcessing || pendingChatCreateRef.current !== null)
+                );
+
+                // During the first-message transition we may still be on "/" for a render.
+                // Do not wipe refs/state until routing catches up to /chat/:chatId.
+                if (shouldDeferHomeReset) {
+                    setIsSwitchingChats(false);
+                    return;
+                }
+
                 cancelChatHydration();
                 cancelStream();
 
@@ -805,6 +829,21 @@ function PromptWindow({
             }
 
             const isSwitchingToDifferentChat = urlChatId !== chatIdRef.current;
+            const isPendingFirstMessageTransition = Boolean(
+                isSwitchingToDifferentChat
+                && hasUserSentInCurrentChatRef.current
+                && (!isChatPersistedRef.current || pendingChatCreateRef.current !== null)
+                && (isNewChatPending || isProcessing || pendingChatCreateRef.current !== null)
+            );
+
+            if (isPendingFirstMessageTransition) {
+                chatIdRef.current = urlChatId;
+                setChatId(urlChatId);
+                setIsNewChat(false);
+                setIsSwitchingChats(false);
+                return;
+            }
+
             if (isSwitchingToDifferentChat) {
                 // Prevent stream events from a previous chat leaking into this one.
                 cancelStream();
@@ -871,6 +910,10 @@ function PromptWindow({
                     return;
                 }
 
+                if (isTransientHydrationMiss(error, urlChatId)) {
+                    return;
+                }
+
                 console.error('Error loading chat:', error);
                 setChatLoadError('Failed to load chat. Please try again.');
             } finally {
@@ -890,6 +933,9 @@ function PromptWindow({
         isAbortError,
         isHydrationRequestCurrent,
         isLoadingHistory,
+        isNewChatPending,
+        isProcessing,
+        isTransientHydrationMiss,
         resolveConversationFromPreview,
         returnCurrentChatId,
         setExistingChatStates,
@@ -1008,6 +1054,10 @@ function PromptWindow({
             setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
         } catch (error) {
             if (isAbortError(error) || !isHydrationRequestCurrent(requestId, urlChatId)) {
+                return;
+            }
+
+            if (isTransientHydrationMiss(error, urlChatId)) {
                 return;
             }
 
