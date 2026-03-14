@@ -2,10 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
 import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, MY_CREDITS_BEFORE_MY_CARDS, MOBILE_SEE_ALL_CHATS_LINK, SUBSCRIPTION_PLAN, COLORS } from '../../types';
+import { WARNING } from '../../types/Colors';
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
-import CreditSummary from '../CreditSummary';
 import CreditList from '../CreditsDisplay/CreditList';
 import CreditListSkeleton from '../CreditsDisplay/CreditList/CreditListSkeleton';
 import { convertPrioritizedCreditsToUserCredits } from '../../utils/creditTransformers';
@@ -326,13 +326,15 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
   const myCreditsSection = (
     <div key="my-credits-section" className="mobile-drawer-section">
-      <div className="section-title">{PAGE_NAMES.MY_CREDITS}</div>
-      <CreditSummary
-        variant="sidebar"
-        monthlyStats={monthlyStats}
-        loading={isLoadingMonthlyStats || isCreditsDataPending}
-        isUpdating={isUpdatingMonthlyStats}
-      />
+      <div className="section-title">
+        <span>{PAGE_NAMES.MY_CREDITS}</span>
+        {monthlyStats && monthlyStats.ExpiringCredits.Total.count > 0 && (
+          <span className="expiring-credits-badge">
+            <Icon name="clock" variant="micro" size={14} color={WARNING} />
+            {monthlyStats.ExpiringCredits.Total.count} expiring
+          </span>
+        )}
+      </div>
 
       {/* Priority Credits List */}
       {isCreditsDataPending ? (
