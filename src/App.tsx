@@ -219,6 +219,7 @@ function AppContent({}: AppContentProps) {
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState<string | null>(null);
   // State to trigger chat clearing functionality
   const [clearChatCallback, setClearChatCallback] = useState<number>(0);
+  const [isChatScrolled, setIsChatScrolled] = useState(false);
   // State for storing user preferences instructions
   const [preferencesInstructions, setPreferencesInstructions] = useState<InstructionsPreference>('');
   // State for managing chat history preference (keep/clear)
@@ -1233,6 +1234,7 @@ function AppContent({}: AppContentProps) {
               digestLoading={digestLoading}
               onRegenerateDigest={handleRegenerateDigest}
               isRegeneratingDigest={isRegeneratingDigest}
+              onChatScrolledChange={setIsChatScrolled}
             />
           </div>
         </div>
@@ -1308,6 +1310,7 @@ function AppContent({}: AppContentProps) {
                 {user && !isAuthRoute && !isDesignSystemPage && !isOnboardingRoute && (
                   <MobileHeader
                     title={PageUtils.getTitleByPath(location.pathname) || APP_NAME}
+                    isChatScrolled={isChatScrolled}
                     onLogout={handleLogout}
                     chatHistory={chatHistory}
                     currentChatId={currentChatId}

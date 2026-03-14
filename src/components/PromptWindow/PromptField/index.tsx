@@ -61,15 +61,6 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false }:
       const initialViewportHeight = initialHeight;
       const keyboardHeight = initialViewportHeight - viewportHeight;
 
-      // First, scroll chat history to bottom so user can see latest messages (mobile only)
-      const chatHistoryContainer = document.querySelector('.prompt-history-container');
-      if (chatHistoryContainer) {
-        chatHistoryContainer.scrollTo({
-          top: chatHistoryContainer.scrollHeight,
-          behavior: 'smooth'
-        });
-      }
-
       // Use adaptive spacing: 4% of viewport height or minimum 18px, maximum 50px
       const adaptiveSpacing = Math.max(18, Math.min(50, viewportHeight * 0.04));
 
@@ -116,15 +107,6 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false }:
 
     const handleFocus = () => {
       // This function only runs on mobile devices (event listener only added on mobile)
-
-      // Immediately scroll chat to bottom so user sees latest messages
-      const chatHistoryContainer = document.querySelector('.prompt-history-container');
-      if (chatHistoryContainer) {
-        chatHistoryContainer.scrollTo({
-          top: chatHistoryContainer.scrollHeight,
-          behavior: 'smooth'
-        });
-      }
 
       // First scroll to bring input into view
       textarea.scrollIntoView({

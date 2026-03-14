@@ -5,20 +5,39 @@
   flex-direction: column;
   gap: $space-2;
   flex: 1;
-  
-  .loading-message {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: $space-8 $space-4;
-    margin: auto;
-    color: $neutral-dark-gray;
+  transition: opacity var(--chat-switch-transition, #{$transition-base});
+
+  &.is-switching {
+    opacity: 0;
   }
 
-  .loading-indicator {
-    font-style: italic;
+  .chat-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    overflow: hidden;
+    pointer-events: none;
   }
+
+  .skeleton-bubble {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    padding: $space-1 $space-3;
+  }
+
+  .skeleton-bubble-assistant {
+    align-self: flex-start;
+    width: 100%;
+  }
+
+  .skeleton-user-bubble {
+    align-self: flex-end;
+    width: 50%;
+    height: 3.25rem;
+    border-radius: $radius-lg $radius-lg 0 $radius-lg;
+  }
+
   
   .welcome-message {
     display: flex;

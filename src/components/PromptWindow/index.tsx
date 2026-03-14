@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
 import { toast } from 'sonner';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import { useAgentChat } from '../../hooks/useAgentChat';
+import { useScrolledFromTop } from '../../hooks/useScrolledFromTop';
 
 import PromptHistory from './PromptHistory';
 import PromptField from './PromptField';
@@ -77,6 +78,8 @@ interface PromptWindowProps {
     onRegenerateDigest?: () => void;
     /** Whether digest is currently being regenerated */
     isRegeneratingDigest?: boolean;
+    /** Callback fired when the chat scroll state changes (scrolled from top or not) */
+    onChatScrolledChange?: (isScrolled: boolean) => void;
 }
 
 /**
@@ -103,11 +106,13 @@ function PromptWindow({
     digestLoading = false,
     onRegenerateDigest,
     isRegeneratingDigest = false,
+    onChatScrolledChange,
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
     const location = useLocation();
     const promptHistoryRef = useRef<HTMLDivElement>(null);
+    useScrolledFromTop(promptHistoryRef, onChatScrolledChange);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     // Ref to track when we're intentionally clearing the chat (prevents loading effects from restoring)
     const isClearingRef = useRef<boolean>(false);
@@ -129,6 +134,11 @@ function PromptWindow({
     const [chatLoadError, setChatLoadError] = useState<string | null>(null);
     // Tracks loading state while switching between existing chats
     const [isSwitchingChats, setIsSwitchingChats] = useState<boolean>(false);
+    const shouldSnapToBottomOnHydrationRef = useRef<boolean>(false);
+    const suppressNextSmoothAutoScrollRef = useRef<boolean>(false);
+    const autoScrollTimeoutRef = useRef<number | null>(null);
+    const clearChatResetTimeoutRef = useRef<number | null>(null);
+    const hydratingChatIdRef = useRef<string | null>(null);
 
     // Ref to track if we're currently saving to prevent duplicate saves
     const isSavingRef = useRef<boolean>(false);
@@ -190,10 +200,94 @@ function PromptWindow({
         return isPendingNewChatHydration && (status === 404 || status === 500);
     }, []);
 
+    const waitForPaintBoundary = useCallback(async (): Promise<void> => {
+        // One rAF can still run before the browser paints the fade-out state.
+        // Double-rAF guarantees at least one paint with `.is-switching` applied.
+        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+        await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    }, []);
+
+    const snapPromptHistoryToBottom = useCallback(() => {
+        const container = promptHistoryRef.current;
+        if (!container) {
+            return;
+        }
+
+        const previousInlineScrollBehavior = container.style.scrollBehavior;
+        container.style.scrollBehavior = 'auto';
+        container.scrollTop = container.scrollHeight;
+        container.style.scrollBehavior = previousInlineScrollBehavior;
+    }, []);
+
+    const clearAutoScrollTimeout = useCallback(() => {
+        if (autoScrollTimeoutRef.current === null) {
+            return;
+        }
+
+        window.clearTimeout(autoScrollTimeoutRef.current);
+        autoScrollTimeoutRef.current = null;
+    }, []);
+
+    const parseCssTimeToMs = useCallback((rawValue: string): number => {
+        const value = rawValue.trim().toLowerCase();
+        if (!value) {
+            return 0;
+        }
+
+        if (value.endsWith('ms')) {
+            const parsed = Number.parseFloat(value.slice(0, -2));
+            return Number.isFinite(parsed) ? parsed : 0;
+        }
+
+        if (value.endsWith('s')) {
+            const parsed = Number.parseFloat(value.slice(0, -1));
+            return Number.isFinite(parsed) ? parsed * 1000 : 0;
+        }
+
+        return 0;
+    }, []);
+
+    const getChatSwitchAnimationDurationMs = useCallback((): number => {
+        if (typeof window === 'undefined') {
+            return 0;
+        }
+
+        const container = promptHistoryRef.current;
+        if (!container) {
+            return 0;
+        }
+
+        const rawTransition = window
+            .getComputedStyle(container)
+            .getPropertyValue('--chat-switch-transition')
+            .trim();
+
+        if (rawTransition) {
+            const timeTokenMatch = rawTransition.match(/\d*\.?\d+m?s/i);
+            if (timeTokenMatch) {
+                return parseCssTimeToMs(timeTokenMatch[0]);
+            }
+        }
+
+        const promptHistoryNode = container.querySelector('.prompt-history');
+        if (!promptHistoryNode) {
+            return 0;
+        }
+
+        const durationToken = window
+            .getComputedStyle(promptHistoryNode)
+            .transitionDuration
+            .split(',')[0]
+            ?.trim() ?? '';
+
+        return parseCssTimeToMs(durationToken);
+    }, [parseCssTimeToMs]);
+
     const cancelChatHydration = useCallback(() => {
         chatHydrationRequestIdRef.current += 1;
         chatHydrationAbortControllerRef.current?.abort();
         chatHydrationAbortControllerRef.current = null;
+        hydratingChatIdRef.current = null;
         setIsSwitchingChats(false);
     }, []);
 
@@ -642,6 +736,7 @@ function PromptWindow({
         // Update ref immediately (synchronous) for use in callbacks
         chatHistoryRef.current = [...chatHistoryRef.current, userMessage];
         setChatHistory(prev => [...prev, userMessage]);
+        setShouldAutoScroll(true);
 
         submitStartedAtRef.current = performance.now();
         hasLoggedFirstTokenRef.current = false;
@@ -831,6 +926,13 @@ function PromptWindow({
                 return;
             }
 
+            if (
+                hydratingChatIdRef.current === urlChatId
+                && chatHydrationAbortControllerRef.current !== null
+            ) {
+                return;
+            }
+
             const isSwitchingToDifferentChat = urlChatId !== chatIdRef.current;
             const isPendingFirstMessageTransition = Boolean(
                 isSwitchingToDifferentChat
@@ -854,10 +956,6 @@ function PromptWindow({
                 hasLoggedFirstTokenRef.current = false;
                 hasUserSentInCurrentChatRef.current = false;
 
-                // Clear previous chat content immediately so stale messages are
-                // never shown while the next conversation hydrates.
-                chatHistoryRef.current = [];
-                setChatHistory([]);
                 setChatLoadError(null);
                 setIsSwitchingChats(true);
             }
@@ -885,7 +983,12 @@ function PromptWindow({
             }
 
             setChatLoadError(null);
-            setIsSwitchingChats(true);
+            // For chat-to-chat switches, transition starts immediately (fade out old chat).
+            // For cold skeleton hydration, transition starts right before content swap.
+            let transitionStartedAt: number | null = isSwitchingToDifferentChat ? performance.now() : null;
+            const minimumSwitchAnimationMs = isSwitchingToDifferentChat
+                ? getChatSwitchAnimationDurationMs()
+                : 0;
 
             chatHydrationRequestIdRef.current += 1;
             const requestId = chatHydrationRequestIdRef.current;
@@ -893,14 +996,22 @@ function PromptWindow({
             chatHydrationAbortControllerRef.current?.abort();
             const abortController = new AbortController();
             chatHydrationAbortControllerRef.current = abortController;
+            hydratingChatIdRef.current = urlChatId;
 
             // Set active context to the target chat while hydration is in flight.
-            chatIdRef.current = urlChatId;
             setChatId(urlChatId);
             setIsNewChat(false);
             hasHydratedCurrentChatRef.current = false;
             hasUserSentInCurrentChatRef.current = false;
             isChatPersistedRef.current = false;
+
+            if (isSwitchingToDifferentChat) {
+                // Ensure fade-out is actually painted before swapping messages.
+                await waitForPaintBoundary();
+                if (chatHydrationRequestIdRef.current !== requestId) {
+                    return;
+                }
+            }
 
             try {
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
@@ -912,6 +1023,34 @@ function PromptWindow({
                     return;
                 }
 
+                if (!isSwitchingToDifferentChat && chatHistoryRef.current.length === 0) {
+                    // Cold load path: skeleton has been shown while loading.
+                    // Start reveal transition now so hydrated chat fades in.
+                    setIsSwitchingChats(true);
+                    transitionStartedAt = performance.now();
+                    await waitForPaintBoundary();
+
+                    if (!isHydrationRequestCurrent(requestId, urlChatId)) {
+                        return;
+                    }
+                }
+
+                if (isSwitchingToDifferentChat && transitionStartedAt !== null) {
+                    const elapsedMs = performance.now() - transitionStartedAt;
+                    const remainingMs = minimumSwitchAnimationMs - elapsedMs;
+                    if (remainingMs > 0) {
+                        await new Promise<void>((resolve) => {
+                            window.setTimeout(() => resolve(), remainingMs);
+                        });
+                    }
+
+                    if (!isHydrationRequestCurrent(requestId, urlChatId)) {
+                        return;
+                    }
+                }
+
+                shouldSnapToBottomOnHydrationRef.current = true;
+                suppressNextSmoothAutoScrollRef.current = true;
                 setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
             } catch (error) {
                 if (isAbortError(error) || !isHydrationRequestCurrent(requestId, urlChatId)) {
@@ -927,6 +1066,7 @@ function PromptWindow({
             } finally {
                 if (chatHydrationRequestIdRef.current === requestId) {
                     chatHydrationAbortControllerRef.current = null;
+                    hydratingChatIdRef.current = null;
                     setIsSwitchingChats(false);
                 }
             }
@@ -944,7 +1084,9 @@ function PromptWindow({
         isNewChatPending,
         isProcessing,
         isTransientHydrationMiss,
+        getChatSwitchAnimationDurationMs,
         resolveConversationFromPreview,
+        waitForPaintBoundary,
         returnCurrentChatId,
         setExistingChatStates,
         urlChatId,
@@ -976,37 +1118,72 @@ function PromptWindow({
             setClearChatCallback(0);
 
             // Reset the flag after navigation completes
-            setTimeout(() => {
+            if (clearChatResetTimeoutRef.current !== null) {
+                window.clearTimeout(clearChatResetTimeoutRef.current);
+            }
+            clearChatResetTimeoutRef.current = window.setTimeout(() => {
                 isClearingRef.current = false;
+                clearChatResetTimeoutRef.current = null;
             }, 150);
         }
     }, [clearChatCallback, setClearChatCallback]);
 
     useEffect(() => {
         return () => {
+            clearAutoScrollTimeout();
+            if (clearChatResetTimeoutRef.current !== null) {
+                window.clearTimeout(clearChatResetTimeoutRef.current);
+                clearChatResetTimeoutRef.current = null;
+            }
             clearPendingPersistTimeout();
             chatHydrationRequestIdRef.current += 1;
             chatHydrationAbortControllerRef.current?.abort();
             chatHydrationAbortControllerRef.current = null;
+            hydratingChatIdRef.current = null;
         };
-    }, [clearPendingPersistTimeout]);
+    }, [clearAutoScrollTimeout, clearPendingPersistTimeout]);
+
+    useLayoutEffect(() => {
+        if (!shouldSnapToBottomOnHydrationRef.current) {
+            return;
+        }
+
+        // Ensure hydrated/switch-loaded chats render at the bottom before paint
+        // so users do not see a top->bottom animation on long threads.
+        snapPromptHistoryToBottom();
+        shouldSnapToBottomOnHydrationRef.current = false;
+    }, [chatHistory, snapPromptHistoryToBottom]);
 
     // Auto-scroll effect
     useEffect(() => {
-        if (promptHistoryRef.current && shouldAutoScroll) {
-            const scrollToBottom = () => {
-                const container = promptHistoryRef.current;
-                if (container) {
-                    container.scrollTo({
-                        top: container.scrollHeight,
-                        behavior: 'smooth'
-                    });
-                }
-            };
-
-            // Small delay to ensure content is rendered
-            setTimeout(scrollToBottom, 100);
+        clearAutoScrollTimeout();
+        if (!promptHistoryRef.current || !shouldAutoScroll) {
+            return;
         }
+
+        if (suppressNextSmoothAutoScrollRef.current) {
+            suppressNextSmoothAutoScrollRef.current = false;
+            snapPromptHistoryToBottom();
+            return;
+        }
+
+        const scrollToBottom = () => {
+            const container = promptHistoryRef.current;
+            if (container) {
+                container.scrollTo({
+                    top: container.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+            autoScrollTimeoutRef.current = null;
+        };
+
+        // Small delay to ensure content is rendered
+        autoScrollTimeoutRef.current = window.setTimeout(scrollToBottom, 100);
+
+        return () => {
+            clearAutoScrollTimeout();
+        };
     }, [
         chatHistory,
         streamingState.streamedText,
@@ -1014,7 +1191,9 @@ function PromptWindow({
         streamingState.timeline.nodes,   // Scroll when timeline nodes update
         streamingState.activeNode,       // Scroll when active node changes
         streamingState.activeTool,       // Scroll when active tool changes
-        shouldAutoScroll
+        clearAutoScrollTimeout,
+        shouldAutoScroll,
+        snapPromptHistoryToBottom
     ]);
 
     // Add scroll event listener to track when user is near bottom
@@ -1048,6 +1227,7 @@ function PromptWindow({
         chatHydrationAbortControllerRef.current?.abort();
         const abortController = new AbortController();
         chatHydrationAbortControllerRef.current = abortController;
+        hydratingChatIdRef.current = urlChatId;
 
         try {
             const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
@@ -1059,6 +1239,8 @@ function PromptWindow({
                 return;
             }
 
+            shouldSnapToBottomOnHydrationRef.current = true;
+            suppressNextSmoothAutoScrollRef.current = true;
             setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
         } catch (error) {
             if (isAbortError(error) || !isHydrationRequestCurrent(requestId, urlChatId)) {
@@ -1074,6 +1256,7 @@ function PromptWindow({
         } finally {
             if (chatHydrationRequestIdRef.current === requestId) {
                 chatHydrationAbortControllerRef.current = null;
+                hydratingChatIdRef.current = null;
                 setIsSwitchingChats(false);
             }
         }
@@ -1157,6 +1340,14 @@ function PromptWindow({
         }
     }, [urlChatId, chatHistory.length]);
 
+    // Reset scroll state when welcome screen is active (no scrollable content)
+    const isWelcomeActive = isNewChat && chatHistory.length === 0 && !streamingState?.isStreaming && !chatLoadError;
+    useEffect(() => {
+        if (isWelcomeActive) {
+            onChatScrolledChange?.(false);
+        }
+    }, [isWelcomeActive, onChatScrolledChange]);
+
     return (
         <div className='prompt-window'>
             <div ref={promptHistoryRef} className={`prompt-history-container${isNewChat && chatHistory.length === 0 && !streamingState?.isStreaming && !chatLoadError ? ' welcome-active' : ''}`}>
@@ -1171,6 +1362,7 @@ function PromptWindow({
                         chatHistory={chatHistory}
                         streamingState={streamingState}
                         isNewChat={isNewChat}
+                        isSwitchingChats={isSwitchingChats}
                         chatId={chatId}
                         digest={digest}
                         digestLoading={digestLoading}

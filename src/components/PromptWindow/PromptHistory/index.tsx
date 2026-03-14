@@ -7,6 +7,7 @@ import { StreamingState } from '../../../types/AgentChatTypes';
 import AgentTimeline from '../AgentTimeline';
 import { ChatErrorBoundary } from '../ErrorBoundary';
 import { DailyDigest } from '../DailyDigest';
+import { Skeleton } from '../../ui/skeleton';
 import './PromptHistory.scss';
 import { CHAT_SOURCE, DAILY_ZEN_FEATURE_NAME } from '../../../types';
 import { COLORS } from '../../../types/Colors';
@@ -52,6 +53,7 @@ interface PromptHistoryProps {
   chatHistory: ChatMessage[];
   streamingState?: StreamingState;
   isNewChat?: boolean;
+  isSwitchingChats?: boolean;
   // Daily digest props
   digest?: DigestData | null;
   digestLoading?: boolean;
@@ -65,10 +67,39 @@ interface PromptHistoryProps {
   onMultiplierClick?: (cardId: string, multiplierId: string) => void;
 }
 
+const SKELETON_RESPONSE_BARS = [
+  '95%', '85%', '90%', '70%', '95%', '80%', '88%', '75%', '65%', '50%', '40%', '30%',
+];
+
+function ChatSkeleton(): React.ReactElement {
+  const totalBars = SKELETON_RESPONSE_BARS.length;
+  return (
+    <div className="chat-skeleton">
+      <Skeleton className="skeleton-user-bubble" />
+      <div className="skeleton-bubble skeleton-bubble-assistant">
+        {SKELETON_RESPONSE_BARS.map((w, i) => {
+          const alpha = 1 - (i / (totalBars - 1));
+          return (
+            <div
+              key={`${i}-${w}`}
+              className="h-4 rounded-sm animate-pulse"
+              style={{
+                width: w,
+                backgroundColor: `rgba(0, 0, 0, ${(0.08 * alpha).toFixed(3)})`,
+              }}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function PromptHistory({
   chatHistory,
   streamingState,
   isNewChat = false,
+  isSwitchingChats = false,
   digest,
   digestLoading = false,
   onRegenerateDigest,
@@ -167,7 +198,7 @@ function PromptHistory({
   };
 
   return (
-    <div className='prompt-history'>
+    <div className={`prompt-history${isSwitchingChats ? ' is-switching' : ''}`}>
       {chatEntries.length === 0 && !streamingState?.isStreaming ? (
         isNewChat ? (
           <div className="welcome-message">
@@ -193,14 +224,7 @@ function PromptHistory({
             )}
           </div>
         ) : (
-          <div className="loading-message">
-            <InfoDisplay
-              type="loading"
-              message={'Loading chat...'}
-              showTitle={false}
-              transparent={true}
-            />
-          </div>
+          <ChatSkeleton />
         )
       ) : (
         <>

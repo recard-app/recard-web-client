@@ -49,6 +49,7 @@ interface MobileHeaderProps {
   onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
+  isChatScrolled?: boolean;
 }
 
 const MobileHeader: React.FC<MobileHeaderProps> = ({
@@ -76,7 +77,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   onRefreshMonthlyStats,
   onAddUpdatingCreditId,
   onRemoveUpdatingCreditId,
-  isCreditUpdating
+  isCreditUpdating,
+  isChatScrolled = false
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -369,7 +371,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
   return (
     <>
-      <header className="mobile-header" role="banner">
+      <header className={`mobile-header${isHomeOrChatRoute(location.pathname) ? ' chat-page' : ''}${isHomeOrChatRoute(location.pathname) && isChatScrolled ? ' header-scrolled' : ''}`} role="banner">
         <Drawer.Root direction="left" open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <div className="mobile-header__left">
             <Drawer.Trigger asChild>

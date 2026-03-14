@@ -15,7 +15,7 @@
   display: none;
   align-items: center;
   justify-content: space-between;
-  box-shadow: $container-shadow-bottom;
+  transition: box-shadow $transition-base;
 
   .mobile-header__title {
     font-size: $font-h6;
@@ -155,6 +155,15 @@
 @media (max-width: $mobile-breakpoint) {
   .mobile-header {
     display: flex; // show on mobile
+    box-shadow: $container-shadow-bottom; // static shadow for non-chat pages
+
+    &.chat-page {
+      box-shadow: none; // no shadow at top on chat pages
+    }
+
+    &.header-scrolled {
+      box-shadow: $container-shadow-bottom-bigger; // shadow when scrolled
+    }
   }
 }
 
