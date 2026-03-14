@@ -761,7 +761,10 @@ function PromptWindow({
             return;
         }
 
-        if (chatIdRef.current !== urlChatId) {
+        // Seed refs only when there is no active local chat context yet.
+        // If we overwrite this on every URL change, switch detection cannot
+        // tell that the user moved from one existing chat to another.
+        if (!chatIdRef.current) {
             chatIdRef.current = urlChatId;
             setChatId(urlChatId);
         }
