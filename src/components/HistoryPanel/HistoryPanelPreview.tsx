@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import HistoryEntry from './HistoryEntry';
 import { InfoDisplay } from '../../elements';
-import { TERMINOLOGY } from '../../types';
 import HistoryPanelSkeleton from './HistoryPanelSkeleton';
 import './HistoryPanel.scss';
 import {
@@ -82,7 +81,7 @@ function HistoryPanelPreview({
       ) : displayList.length === 0 ? (
         <InfoDisplay
           type="default"
-          message={TERMINOLOGY.emptyHistory}
+          message={'No chat history available'}
           showTitle={false}
           transparent={true}
           showIcon={false}

@@ -218,12 +218,7 @@
         color: $neutral-dark-gray;
         
         span {
-          font-size: $font-xs;
-          
-          // Hide text on mobile, keep icon and chevron
-          @media (max-width: $mobile-breakpoint) {
-            display: none;
-          }
+          display: none;
         }
       }
       
@@ -367,6 +362,10 @@
     color: $neutral-dark-gray;
     font-weight: $font-medium;
     text-transform: uppercase;
+  }
+
+  .amount-display {
+    margin-left: auto;
   }
 }
 

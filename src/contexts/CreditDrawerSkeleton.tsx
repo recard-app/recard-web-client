@@ -3,6 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CardIcon } from '@/icons';
 import { PLACEHOLDER_CARD_PRIMARY_COLOR, PLACEHOLDER_CARD_SECONDARY_COLOR } from '@/types';
 import { CREDIT_USAGE_DISPLAY_COLORS } from '@/types/CardCreditsTypes';
+import { SHOW_PERIOD_NAME_IN_CREDIT_MODAL } from '@/types/FeatureFlags';
 
 const PLACEHOLDER_SHOWCASE_GRADIENT = `linear-gradient(to bottom, color-mix(in srgb, ${PLACEHOLDER_CARD_PRIMARY_COLOR} 12%, white), white)`;
 
@@ -85,8 +86,10 @@ export const CreditDrawerTrackerSkeleton: React.FC = () => (
 export const CreditDrawerControlsSkeleton: React.FC = () => (
     <div className="credit-modal-controls">
         <div className="credit-period-row">
-            <Skeleton className="h-[14px] w-[100px] rounded" />
-            <Skeleton className="h-[14px] w-[80px] rounded" />
+            {SHOW_PERIOD_NAME_IN_CREDIT_MODAL && <Skeleton className="h-[14px] w-[100px] rounded" />}
+            <div className="amount-display">
+                <Skeleton className="h-[14px] w-[80px] rounded" />
+            </div>
         </div>
         <div className="credit-modal-slider">
             <Skeleton className="h-2 w-full rounded-full" />

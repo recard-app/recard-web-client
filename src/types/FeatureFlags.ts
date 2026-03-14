@@ -49,3 +49,13 @@ export const MY_CARDS_DROPDOWN_LABEL = 'Manage Cards';
 // TRUE: My Credits appears before My Cards
 // FALSE: My Cards appears before My Credits (default behavior)
 export const MY_CREDITS_BEFORE_MY_CARDS = true;
+
+// Replace "Previous Chats" nav link in mobile drawer with a "See all chats" link below Recent Chats
+// TRUE: Hides "Previous Chats" from mobile primary nav, shows "See all chats" link under recent chats list
+// FALSE: Shows "Previous Chats" in mobile primary nav (default behavior), no "See all chats" link
+export const MOBILE_SEE_ALL_CHATS_LINK = true;
+
+// Show the period name (e.g., "January", "Q1 (Jan-Mar)") in the credit drawer/dialog footer row
+// TRUE: Period name is visible alongside the amount display
+// FALSE: Period name is hidden; only the amount display is shown in the period row
+export const SHOW_PERIOD_NAME_IN_CREDIT_MODAL = false;

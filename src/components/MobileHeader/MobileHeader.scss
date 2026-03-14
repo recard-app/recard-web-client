@@ -206,9 +206,13 @@
     min-height: 56px;
     padding: 0 $space-2;
     border-bottom: $border-half solid $neutral-light-gray;
-    box-shadow: $container-shadow-bottom-bigger;
     position: relative;
     z-index: 1;
+    transition: box-shadow $transition-base;
+
+    &.scrolled {
+      box-shadow: $container-shadow-bottom-bigger;
+    }
   }
 
   .mobile-drawer-title {
@@ -336,12 +340,39 @@
     padding: $space-2;
     margin-bottom: $space-2;
     .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: $space-2;
+      padding-right: $space-2;
       font-family: $font-inter;
       font-weight: $font-bold;
       font-size: $font-xs;
       color: $neutral-medium-gray;
       margin-bottom: $space-1;
       text-transform: uppercase;
+    }
+
+    .see-all-chats-link {
+      display: inline-flex;
+      align-items: center;
+      gap: $space-1;
+      font-family: $font-inter;
+      font-size: $font-xs;
+      font-weight: $font-bold;
+      color: $primary-medium;
+      text-decoration: none;
+      text-transform: none;
+      padding: $space-2 $space-2;
+      margin: (-$space-2) (-$space-2);
+
+      .see-all-arrow {
+        transform: scaleX(-1);
+      }
+
+      @include hover {
+        color: $primary-medium;
+      }
     }
   }
 
@@ -364,9 +395,13 @@
     padding: $space-1;
     padding-bottom: $space-1;
     background: $neutral-white;
-    box-shadow: $container-shadow-top-bigger;
     position: relative;
     z-index: 1;
+    transition: box-shadow $transition-base;
+
+    &.scrolled {
+      box-shadow: $container-shadow-top-bigger;
+    }
     .user-profile-section {
       // mirror expanded sidebar profile section
       .profile-trigger-button {

@@ -16,7 +16,7 @@ import {
 } from './utils';
 
 // Import types
-import { PAGES, TERMINOLOGY } from '../../types';
+import { PAGES } from '../../types';
 import { ChatMessage, Conversation } from '../../types';
 import { ChatComponentBlock } from '../../types/ChatComponentTypes';
 import { AgentModePreference, ChatHistoryPreference } from '../../types';
@@ -1178,7 +1178,7 @@ function PromptWindow({
                     <div className="chat-switch-loading-overlay">
                         <InfoDisplay
                             type="loading"
-                            message={TERMINOLOGY.promptHistoryLoading}
+                            message={'Loading chat...'}
                             showTitle={false}
                             transparent={true}
                             centered

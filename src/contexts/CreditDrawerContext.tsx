@@ -38,7 +38,7 @@ interface CreditDrawerProviderProps {
 // --- Hook: useIsMobile ---
 
 const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BREAKPOINT);
 
   useEffect(() => {
     const checkScreenSize = () => {

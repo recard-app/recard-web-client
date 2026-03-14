@@ -357,12 +357,6 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                   ) : (
                     <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usage === CREDIT_USAGE.USED ? usageColor : COLORS.NEUTRAL_BLACK }} />
                   )}
-                  <span>
-                    {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
-                    {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
-                    {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
-                    {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
-                  </span>
                 </div>
               </div>
             ) : (
@@ -386,13 +380,6 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                       ) : (
                         <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usage === CREDIT_USAGE.USED ? usageColor : COLORS.NEUTRAL_BLACK }} />
                       )}
-                      <span>
-                        {usage === CREDIT_USAGE.USED && CREDIT_USAGE_DISPLAY_NAMES.USED}
-                        {usage === CREDIT_USAGE.PARTIALLY_USED && CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED}
-                        {usage === CREDIT_USAGE.NOT_USED && CREDIT_USAGE_DISPLAY_NAMES.NOT_USED}
-                        {usage === CREDIT_USAGE.INACTIVE && CREDIT_USAGE_DISPLAY_NAMES.INACTIVE}
-                      </span>
-                      <Icon name="chevron-down" variant="micro" size={12} />
                     </div>
                   </button>
                 }

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, TERMINOLOGY, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, MY_CREDITS_BEFORE_MY_CARDS, SUBSCRIPTION_PLAN, COLORS } from '../../types';
+import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, MY_CREDITS_BEFORE_MY_CARDS, MOBILE_SEE_ALL_CHATS_LINK, SUBSCRIPTION_PLAN, COLORS } from '../../types';
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
@@ -81,6 +81,42 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerBodyEl, setDrawerBodyEl] = useState<HTMLDivElement | null>(null);
+  const [isScrolledTop, setIsScrolledTop] = useState(false);
+  const [hasOverflowBelow, setHasOverflowBelow] = useState(false);
+
+  // Callback ref: fires when Portal mounts/unmounts the element
+  const drawerBodyRef = useCallback((node: HTMLDivElement | null) => {
+    setDrawerBodyEl(node);
+  }, []);
+
+  useEffect(() => {
+    if (!drawerBodyEl) {
+      setIsScrolledTop(false);
+      setHasOverflowBelow(false);
+      return;
+    }
+
+    const checkScroll = () => {
+      setIsScrolledTop(drawerBodyEl.scrollTop > 0);
+      setHasOverflowBelow(
+        drawerBodyEl.scrollTop + drawerBodyEl.clientHeight < drawerBodyEl.scrollHeight - 1
+      );
+    };
+
+    // Check initial state after layout settles
+    requestAnimationFrame(checkScroll);
+
+    drawerBodyEl.addEventListener('scroll', checkScroll, { passive: true });
+
+    const ro = new ResizeObserver(checkScroll);
+    ro.observe(drawerBodyEl);
+
+    return () => {
+      drawerBodyEl.removeEventListener('scroll', checkScroll);
+      ro.disconnect();
+    };
+  }, [drawerBodyEl]);
 
   // Get credits data from context for proper credit matching
   const { credits, isInitialized: isComponentsInitialized } = useComponents();
@@ -409,7 +445,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
             <Drawer.Overlay className="mobile-drawer-overlay" />
             <Drawer.Content className="mobile-drawer-content" aria-label={`${APP_NAME} mobile navigation`} aria-describedby={undefined}>
               <div className="mobile-drawer-container">
-              <div className="mobile-drawer-header">
+              <div className={`mobile-drawer-header${isScrolledTop ? ' scrolled' : ''}`}>
                 <Drawer.Close asChild>
                   <button className="mobile-drawer-close button no-outline small icon-gray-hover-fill" aria-label="Close menu">
                     <Icon name="arrow-left" variant="mini" size={22} color={SIDEBAR_TOGGLE_ICON_COLOR} />
@@ -425,7 +461,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 <Drawer.Description className="visually-hidden">Mobile navigation drawer</Drawer.Description>
               </div>
 
-                <div className="mobile-drawer-body">
+                <div className="mobile-drawer-body" ref={drawerBodyRef}>
                   <nav className="mobile-drawer-nav" role="navigation">
                     <ul className="primary-links">
                       {/* Always show new chat button in mobile drawer (acts like sidebar) */}
@@ -437,6 +473,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                           </button>
                         </Drawer.Close>
                       </li>
+                      {!MOBILE_SEE_ALL_CHATS_LINK && (
                       <li className={isActive(PAGES.HISTORY.PATH) ? 'active' : ''}>
                         <Drawer.Close asChild>
                           <Link to={PAGES.HISTORY.PATH}>
@@ -450,12 +487,23 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                           </Link>
                         </Drawer.Close>
                       </li>
+                      )}
                       {orderedPrimaryLinks}
                     </ul>
                   </nav>
 
                   <div className="mobile-drawer-section">
-                    <div className="section-title">{TERMINOLOGY.recentSectionTitle}</div>
+                    <div className="section-title">
+                      <span>{'Recent Chats'}</span>
+                      {MOBILE_SEE_ALL_CHATS_LINK && (
+                        <Drawer.Close asChild>
+                          <Link to={PAGES.HISTORY.PATH} className="see-all-chats-link">
+                            See all
+                            <Icon name="arrow-left" variant="mini" size={14} className="see-all-arrow" />
+                          </Link>
+                        </Drawer.Close>
+                      )}
+                    </div>
                     <div
                       onClick={(e) => {
                         const target = e.target as HTMLElement;
@@ -463,7 +511,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                         setIsDrawerOpen(false);
                       }}
                     >
-                      <HistoryPanelPreview 
+                      <HistoryPanelPreview
                         existingHistoryList={chatHistory}
                         listSize={quickHistorySize}
                         currentChatId={currentChatId}
@@ -481,7 +529,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                 </div>
 
                 {user && (
-                  <div className="mobile-drawer-bottom">
+                  <div className={`mobile-drawer-bottom${hasOverflowBelow ? ' scrolled' : ''}`}>
                     <div className="user-profile-section">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

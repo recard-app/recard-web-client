@@ -8,7 +8,7 @@ import AgentTimeline from '../AgentTimeline';
 import { ChatErrorBoundary } from '../ErrorBoundary';
 import { DailyDigest } from '../DailyDigest';
 import './PromptHistory.scss';
-import { TERMINOLOGY, CHAT_SOURCE, DAILY_ZEN_FEATURE_NAME } from '../../../types';
+import { CHAT_SOURCE, DAILY_ZEN_FEATURE_NAME } from '../../../types';
 import { COLORS } from '../../../types/Colors';
 import { Icon } from '../../../icons';
 import { sanitizeMarkdownHtml } from '../../../utils/sanitizeMarkdown';
@@ -196,7 +196,7 @@ function PromptHistory({
           <div className="loading-message">
             <InfoDisplay
               type="loading"
-              message={TERMINOLOGY.promptHistoryLoading}
+              message={'Loading chat...'}
               showTitle={false}
               transparent={true}
             />

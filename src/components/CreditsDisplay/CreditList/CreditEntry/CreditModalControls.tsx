@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useLayoutEffect } from 'react';
 import { CREDIT_PERIODS, CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, CreditUsageType, MOBILE_BREAKPOINT } from '../../../../types';
 import { CardCredit } from '../../../../types/CreditCardTypes';
 import { MONTH_ABBREVIATIONS, MONTH_NAMES } from '../../../../types/Constants';
@@ -9,6 +9,7 @@ import Icon from '@/icons';
 import { getMaxValue, clampValue, getUsageForValue, getValueForUsage, formatCreditDollars } from './utils';
 import { generateSmartSteps, snapToClosestStep } from '../../../../utils/slider-steps';
 import UsageDropdown from './UsageDropdown';
+import { SHOW_PERIOD_NAME_IN_CREDIT_MODAL } from '../../../../types/FeatureFlags';
 
 interface CreditModalControlsProps {
   userCredit: UserCredit;
@@ -68,8 +69,10 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   const [usage, setUsage] = useState<CreditUsageType>(CREDIT_USAGE.INACTIVE);
   const [valueUsed, setValueUsed] = useState<number>(0);
 
-  // Update local state when selected period changes
-  useEffect(() => {
+  // Sync state from history before paint to avoid a visible flash from
+  // INACTIVE styling on mount. useLayoutEffect fires after DOM mutations
+  // but before the browser paints, so the user never sees the default state.
+  useLayoutEffect(() => {
     if (selectedHistory) {
       const newUsage = selectedHistory.CreditUsage as CreditUsageType;
       const newValueUsed = selectedHistory.ValueUsed ?? 0;
@@ -89,8 +92,8 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   // Generate smart steps for this credit's maximum value
   const smartSteps = useMemo(() => generateSmartSteps(maxValue, 1), [maxValue]);
   
-  // Mobile detection
-  const [isMobile, setIsMobile] = useState(false);
+  // Mobile detection — initialize from window width to avoid a frame at desktop size
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BREAKPOINT);
   
   useEffect(() => {
     const checkScreenSize = () => {
@@ -294,7 +297,7 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
     >
       {/* Period and amount display */}
       <div className="credit-period-row">
-        <div className="period-name">{getCurrentPeriodName()}</div>
+        {SHOW_PERIOD_NAME_IN_CREDIT_MODAL && <div className="period-name">{getCurrentPeriodName()}</div>}
         <div className="amount-display">
           <span className="amount-text">{formatCreditDollars(valueUsed)} / {formatCreditDollars(maxValue)}</span>
         </div>

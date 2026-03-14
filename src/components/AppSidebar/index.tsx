@@ -26,7 +26,6 @@ import {
   DROPDOWN_ICONS,
   SIDEBAR_TOGGLE_ICON_COLOR,
   ICON_GRAY,
-  TERMINOLOGY,
   PAGES,
   MY_CARDS_IN_ACCOUNT_MENU,
   MY_CARDS_DROPDOWN_LABEL,
@@ -390,7 +389,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               {/* Recent Chats/Transactions (expanded sidebar) */}
               <SidebarItem 
                 icon={PAGE_ICONS.TRANSACTION_HISTORY.INACTIVE}
-                name={TERMINOLOGY.recentSectionTitle} 
+                name={'Recent Chats'}
                 isDropdown={true}
               >
                 <HistoryPanelPreview 

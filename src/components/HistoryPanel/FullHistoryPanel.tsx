@@ -10,7 +10,6 @@ import {
   LightweightConversation,
   PaginationData,
   CreditCard,
-  TERMINOLOGY,
   HISTORY_PAGE_SIZE
 } from '../../types';
 import {
@@ -290,7 +289,7 @@ function FullHistoryPanel({
         ) : paginatedList.length === 0 ? (
           <InfoDisplay
             type="default"
-            message={TERMINOLOGY.emptyHistoryForPeriod}
+            message={'No chat history available for this period'}
             showTitle={false}
             transparent={true}
             showIcon={false}

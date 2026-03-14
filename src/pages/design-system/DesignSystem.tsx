@@ -14,7 +14,6 @@ import ChatComponentsSection from './sections/ChatComponentsSection';
 
 // Import UI components for viewport toggle
 import { ToggleBar, ToggleBarButton } from '@/components/ui/toggle-bar/toggle-bar';
-import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 type ViewportMode = 'desktop' | 'mobile';
 
@@ -37,7 +36,6 @@ const DesignSystem: React.FC = () => {
       <header className="ds-header">
         <h1>Design System</h1>
         <div className="ds-header-actions">
-          <ThemeSwitcher />
           <div className="ds-viewport-toggle">
           <span className="ds-toggle-label">Viewport:</span>
           <ToggleBar>
