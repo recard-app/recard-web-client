@@ -976,7 +976,7 @@ function PromptWindow({
             // On route switches, keep switching state active so PromptHistory can show
             // a clean loading surface with no stale content.
             if (isLoadingHistory && !existingHistoryList.some(chat => chat.chatId === urlChatId)) {
-                if (isSwitchingToDifferentChat || chatHistoryRef.current.length > 0) {
+                if (isSwitchingToDifferentChat) {
                     setIsSwitchingChats(true);
                 }
                 return;
@@ -1052,6 +1052,12 @@ function PromptWindow({
                 shouldSnapToBottomOnHydrationRef.current = true;
                 suppressNextSmoothAutoScrollRef.current = true;
                 setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
+
+                // Paint once with new content while opacity is still 0, then reveal.
+                await waitForPaintBoundary();
+                if (!isHydrationRequestCurrent(requestId, urlChatId)) {
+                    return;
+                }
             } catch (error) {
                 if (isAbortError(error) || !isHydrationRequestCurrent(requestId, urlChatId)) {
                     return;
@@ -1242,6 +1248,12 @@ function PromptWindow({
             shouldSnapToBottomOnHydrationRef.current = true;
             suppressNextSmoothAutoScrollRef.current = true;
             setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
+
+            // Keep reveal ordering consistent with main hydration flow.
+            await waitForPaintBoundary();
+            if (!isHydrationRequestCurrent(requestId, urlChatId)) {
+                return;
+            }
         } catch (error) {
             if (isAbortError(error) || !isHydrationRequestCurrent(requestId, urlChatId)) {
                 return;
