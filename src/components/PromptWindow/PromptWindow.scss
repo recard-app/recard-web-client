@@ -85,18 +85,6 @@
         }
     }
 
-    .chat-switch-loading-overlay {
-        position: absolute;
-        inset: 0;
-        z-index: 2;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba($neutral-white, 0.75);
-        pointer-events: auto;
-        cursor: progress;
-    }
-
 }
 
 .prompt-combined-container {

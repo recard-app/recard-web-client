@@ -23,7 +23,7 @@ import { AgentModePreference, ChatHistoryPreference } from '../../types';
 import { MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE, CHAT_SOURCE } from '../../types';
 import { UserHistoryService } from '../../services';
-import { ErrorWithRetry, InfoDisplay } from '../../elements';
+import { ErrorWithRetry } from '../../elements';
 import { classifyError } from '../../types/AgentChatTypes';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
@@ -127,7 +127,7 @@ function PromptWindow({
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
     // Error state for when loading an existing chat fails
     const [chatLoadError, setChatLoadError] = useState<string | null>(null);
-    // Shows a loading overlay while switching between existing chats
+    // Tracks loading state while switching between existing chats
     const [isSwitchingChats, setIsSwitchingChats] = useState<boolean>(false);
 
     // Ref to track if we're currently saving to prevent duplicate saves
@@ -853,6 +853,13 @@ function PromptWindow({
                 submitStartedAtRef.current = null;
                 hasLoggedFirstTokenRef.current = false;
                 hasUserSentInCurrentChatRef.current = false;
+
+                // Clear previous chat content immediately so stale messages are
+                // never shown while the next conversation hydrates.
+                chatHistoryRef.current = [];
+                setChatHistory([]);
+                setChatLoadError(null);
+                setIsSwitchingChats(true);
             }
 
             // If user already started sending on this chat, do not overwrite local state with hydration.
@@ -868,12 +875,10 @@ function PromptWindow({
             }
 
             // Wait for initial history loading to complete before checking for existing chat.
-            // Only show the switching overlay when there is already chat content on screen
-            // (i.e. user is navigating between chats). On initial page load the
-            // PromptHistory component already displays its own loading message, so the
-            // overlay would just stack on top and cause overlapping text.
+            // On route switches, keep switching state active so PromptHistory can show
+            // a clean loading surface with no stale content.
             if (isLoadingHistory && !existingHistoryList.some(chat => chat.chatId === urlChatId)) {
-                if (chatHistoryRef.current.length > 0) {
+                if (isSwitchingToDifferentChat || chatHistoryRef.current.length > 0) {
                     setIsSwitchingChats(true);
                 }
                 return;
@@ -889,7 +894,7 @@ function PromptWindow({
             const abortController = new AbortController();
             chatHydrationAbortControllerRef.current = abortController;
 
-            // Keep previous chat content visible until target chat is loaded.
+            // Set active context to the target chat while hydration is in flight.
             chatIdRef.current = urlChatId;
             setChatId(urlChatId);
             setIsNewChat(false);
@@ -1176,17 +1181,6 @@ function PromptWindow({
                         onPerkClick={handlePerkClick}
                         onMultiplierClick={handleMultiplierClick}
                     />
-                )}
-                {isSwitchingChats && !chatLoadError && (
-                    <div className="chat-switch-loading-overlay">
-                        <InfoDisplay
-                            type="loading"
-                            message={'Loading chat...'}
-                            showTitle={false}
-                            transparent={true}
-                            centered
-                        />
-                    </div>
                 )}
             </div>
 
