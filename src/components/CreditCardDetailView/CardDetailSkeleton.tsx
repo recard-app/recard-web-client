@@ -56,7 +56,12 @@ const CardDetailSkeleton: React.FC = () => {
             </div>
 
             {/* Card Description */}
-            <Skeleton className="rounded" style={{ width: '100%', height: 120, marginBottom: 12 }} />
+            <div className="rounded" style={{ width: '100%', marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 10, padding: '4px 0' }}>
+                <Skeleton className="h-4 w-full rounded" />
+                <Skeleton className="h-4 w-full rounded" />
+                <Skeleton className="h-4 w-[92%] rounded" />
+                <Skeleton className="h-4 w-[75%] rounded" />
+            </div>
 
             {/* Stats Grid */}
             <div className="card-stats-grid">
