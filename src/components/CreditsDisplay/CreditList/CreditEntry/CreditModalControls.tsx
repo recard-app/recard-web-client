@@ -91,13 +91,19 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
 
   // Generate smart steps for this credit's maximum value
   const smartSteps = useMemo(() => generateSmartSteps(maxValue, 1), [maxValue]);
-  
-  // Mobile detection — initialize from window width to avoid a frame at desktop size
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BREAKPOINT);
+
+  const getIsMobile = () => (
+    typeof window !== 'undefined' && window.innerWidth <= MOBILE_BREAKPOINT
+  );
+
+  // Mobile detection — initialize from window width when available to avoid a frame at desktop size
+  const [isMobile, setIsMobile] = useState(getIsMobile);
   
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+      setIsMobile(getIsMobile());
     };
 
     checkScreenSize();
