@@ -107,7 +107,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
 
   // Calculate stats
   const totalMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount + effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount + effectiveMonthlyStats.MonthlyCredits.unusedCount;
-  const usedMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount;
+  const usedMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount + effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount;
   const hasExpiringCredits = effectiveMonthlyStats.ExpiringCredits.Total.count > 0;
   const showExpiringRow = ALWAYS_SHOW_EXPIRING_CREDITS || hasExpiringCredits;
 
@@ -138,13 +138,13 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
         valuePrefix="$"
       />
 
-      {/* Supporting row: "[icon] you have used X/X credits worth up to $XXX this month" */}
+      {/* Supporting row: "[icon] you have used X/X credits worth $XXX this month" */}
       <div className="supporting-row">
         <span className="supporting-icon">
           <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
         </span>
         <span className="supporting-text">
-          You have fully used <span className="supporting-value">{usedMonthlyCredits}/{totalMonthlyCredits}</span> monthly credits worth <span className="supporting-value">${effectiveMonthlyStats.MonthlyCredits.possibleValue}</span>
+          You have used <span className="supporting-value">{usedMonthlyCredits}/{totalMonthlyCredits}</span> monthly credits worth <span className="supporting-value">${effectiveMonthlyStats.MonthlyCredits.usedValue}</span>
         </span>
       </div>
     </>
