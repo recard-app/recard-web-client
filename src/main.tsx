@@ -16,6 +16,7 @@ function showUpdateOverlay() {
     <div style="
       position: fixed; inset: 0; z-index: 999999;
       display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
       background:
         radial-gradient(ellipse at 20% 20%, #EBF6EE 0%, transparent 50%),
         radial-gradient(ellipse at 80% 80%, #EBF6EE 0%, transparent 50%),
