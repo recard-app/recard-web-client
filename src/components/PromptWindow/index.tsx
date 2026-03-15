@@ -1035,9 +1035,12 @@ function PromptWindow({
                     }
                 }
 
-                if (isSwitchingToDifferentChat && transitionStartedAt !== null) {
+                if (transitionStartedAt !== null) {
+                    const minimumAnimationMs = minimumSwitchAnimationMs > 0
+                        ? minimumSwitchAnimationMs
+                        : getChatSwitchAnimationDurationMs();
                     const elapsedMs = performance.now() - transitionStartedAt;
-                    const remainingMs = minimumSwitchAnimationMs - elapsedMs;
+                    const remainingMs = minimumAnimationMs - elapsedMs;
                     if (remainingMs > 0) {
                         await new Promise<void>((resolve) => {
                             window.setTimeout(() => resolve(), remainingMs);
