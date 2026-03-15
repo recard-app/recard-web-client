@@ -6,16 +6,13 @@ import { InfoDisplay, ErrorWithRetry } from '../../elements';
 import HistoryPanelSkeleton from './HistoryPanelSkeleton';
 import { useScrollHeight } from '../../hooks/useScrollHeight';
 import {
-  Conversation,
   LightweightConversation,
   PaginationData,
-  CreditCard,
   HISTORY_PAGE_SIZE
 } from '../../types';
 import {
   organizeHistoryByDate,
-  fetchPagedHistory,
-  handleHistoryDelete
+  fetchPagedHistory
 } from './utils';
 import {
   Pagination,
@@ -38,16 +35,16 @@ const PAGE_SIZE_LIMIT = HISTORY_PAGE_SIZE;
 export interface FullHistoryPanelProps {
   currentChatId: string | null;
   returnCurrentChatId: (chatId: string | null) => void;
-  onHistoryUpdate: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
-  creditCards: CreditCard[];
+  onHistoryDelete: (chatId: string) => Promise<void> | void;
+  onHistoryRefresh: () => Promise<void> | void;
   historyRefreshTrigger: number;
 }
 
 function FullHistoryPanel({
   currentChatId,
   returnCurrentChatId,
-  onHistoryUpdate,
-  creditCards,
+  onHistoryDelete,
+  onHistoryRefresh,
   historyRefreshTrigger
 }: FullHistoryPanelProps) {
   const { user } = useAuth();
@@ -109,7 +106,7 @@ function FullHistoryPanel({
    * Wrapper function to handle deletion
    */
   const handleDelete = async (deletedChatId: string) => {
-    handleHistoryDelete(deletedChatId, currentChatId, returnCurrentChatId, onHistoryUpdate);
+    await onHistoryDelete(deletedChatId);
   };
 
   /**
@@ -117,8 +114,7 @@ function FullHistoryPanel({
    */
   const forceHistoryRefresh = async () => {
     try {
-      // Trigger history refresh via onHistoryUpdate
-      onHistoryUpdate(prevHistory => [...prevHistory]);
+      await onHistoryRefresh();
       return true; // Return success
     } catch (error) {
       console.error('Failed to refresh history:', error);
@@ -311,7 +307,6 @@ function FullHistoryPanel({
                       onDelete={handleDelete}
                       refreshHistory={forceHistoryRefresh}
                       returnCurrentChatId={returnCurrentChatId}
-                      creditCards={creditCards}
                       variant="full-page"
                     />
                   ))}

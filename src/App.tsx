@@ -718,7 +718,7 @@ function AppContent({}: AppContentProps) {
       setUserCardsMetadata(buildUserCardMetadataMap(userCardsData));
       hydrateComponents(componentsData);
 
-      const chatHistoryList = historyResponse.chatHistory || [];
+      const chatHistoryList: Conversation[] = [...(historyResponse.chatHistory || [])];
       if (urlChatId && priorityChat) {
         const existingPriorityIndex = chatHistoryList.findIndex(chat => chat.chatId === urlChatId);
         if (existingPriorityIndex >= 0) {
@@ -1006,48 +1006,55 @@ function AppContent({}: AppContentProps) {
     navigate(PAGES.SIGN_IN.PATH);
   };
 
-  // Function to handle chat history updates and deletions
-  const handleHistoryUpdate = async (updatedChat: Conversation | ((prevHistory: Conversation[]) => Conversation[])): Promise<void> => {
-    // Return early if updatedChat is undefined
+  // Upsert a chat entry in local history state.
+  const handleHistoryUpsert = async (updatedChat: Conversation): Promise<void> => {
     if (!updatedChat) return;
 
-    // Track whether this is an update to an existing chat (vs new chat creation)
     let isExistingChatUpdate = false;
 
-    // If updatedChat is a function, it's a delete operation
-    if (typeof updatedChat === 'function') {
-      setChatHistory(updatedChat);  // Apply the filter function directly
-      handleClearChat();
-      isExistingChatUpdate = true; // Deletions count as updates to existing chats
-    } else {
-      // Handle normal chat updates
-      setChatHistory(prevHistory => {
-        const newHistory = [...prevHistory];
-        const existingIndex = newHistory.findIndex(chat => chat.chatId === updatedChat.chatId);
+    setChatHistory(prevHistory => {
+      const existingIndex = prevHistory.findIndex(chat => chat.chatId === updatedChat.chatId);
+      if (existingIndex === -1) {
+        return [updatedChat, ...prevHistory];
+      }
 
-        if (existingIndex !== -1) {
-          newHistory[existingIndex] = {
-            ...updatedChat,
-            chatDescription: updatedChat.chatDescription || newHistory[existingIndex].chatDescription,
-          };
-          isExistingChatUpdate = true;
-        } else {
-          // New chat - just add to history, no refresh needed
-          newHistory.unshift(updatedChat);
-        }
-
-        return newHistory;
-      });
-    }
+      isExistingChatUpdate = true;
+      const nextHistory = [...prevHistory];
+      nextHistory[existingIndex] = {
+        ...updatedChat,
+        chatDescription: updatedChat.chatDescription || prevHistory[existingIndex].chatDescription,
+      };
+      return nextHistory;
+    });
 
     setLastUpdateTimestamp(new Date().toISOString());
 
-    // Only trigger history refresh for updates to existing chats, not new chat creation.
-    // New chats are already added to state directly above, so refetching would cause
-    // a race condition where isLoadingHistory=true blocks the chat from loading.
+    // Existing chats should refetch lightweight history metadata.
     if (isExistingChatUpdate) {
       setHistoryRefreshTrigger(prev => prev + 1);
     }
+  };
+
+  // Delete a chat entry and only clear the active prompt if it was the active chat.
+  const handleHistoryDelete = async (deletedChatId: string): Promise<void> => {
+    if (!deletedChatId) return;
+
+    setChatHistory(prevHistory => (
+      prevHistory.filter(chat => chat.chatId !== deletedChatId)
+    ));
+
+    if (deletedChatId === currentChatId) {
+      handleClearChat();
+    }
+
+    setLastUpdateTimestamp(new Date().toISOString());
+    setHistoryRefreshTrigger(prev => prev + 1);
+  };
+
+  // Trigger a history refetch without mutating local chat list state.
+  const handleHistoryRefresh = async (): Promise<void> => {
+    setLastUpdateTimestamp(new Date().toISOString());
+    setHistoryRefreshTrigger(prev => prev + 1);
   };
 
   // Function to trigger chat clearing
@@ -1217,7 +1224,7 @@ function AppContent({}: AppContentProps) {
             <PromptWindow
               user={user}
               returnCurrentChatId={getCurrentChatId}
-              onHistoryUpdate={handleHistoryUpdate}
+              onHistoryUpsert={handleHistoryUpsert}
               clearChatCallback={clearChatCallback}
               setClearChatCallback={setClearChatCallback}
               existingHistoryList={chatHistory}
@@ -1284,10 +1291,10 @@ function AppContent({}: AppContentProps) {
               chatHistory={chatHistory}
               currentChatId={currentChatId}
               onCurrentChatIdChange={getCurrentChatId}
-              onHistoryUpdate={handleHistoryUpdate}
+              onHistoryDelete={handleHistoryDelete}
+              onHistoryRefresh={handleHistoryRefresh}
               subscriptionPlan={subscriptionPlan}
               creditCards={creditCards}
-              historyRefreshTrigger={historyRefreshTrigger}
               isLoadingCreditCards={isLoadingCreditCards}
               isLoadingHistory={isLoadingHistory}
               onCardSelect={handleCardSelect}
@@ -1315,7 +1322,8 @@ function AppContent({}: AppContentProps) {
                     chatHistory={chatHistory}
                     currentChatId={currentChatId}
                     onCurrentChatIdChange={getCurrentChatId}
-                    onHistoryUpdate={handleHistoryUpdate}
+                    onHistoryDelete={handleHistoryDelete}
+                    onHistoryRefresh={handleHistoryRefresh}
                     subscriptionPlan={subscriptionPlan}
                     creditCards={creditCards}
                     isLoadingCreditCards={isLoadingCreditCards}
@@ -1625,12 +1633,10 @@ function AppContent({}: AppContentProps) {
                   } />
                   <Route path={PAGES.HISTORY.PATH} element={
                     <History
-                      existingHistoryList={chatHistory}
                       currentChatId={currentChatId}
                       returnCurrentChatId={getCurrentChatId}
-                      onHistoryUpdate={handleHistoryUpdate}
-                      subscriptionPlan={subscriptionPlan}
-                      creditCards={creditCards}
+                      onHistoryDelete={handleHistoryDelete}
+                      onHistoryRefresh={handleHistoryRefresh}
                       historyRefreshTrigger={historyRefreshTrigger}
                     />
                   } />

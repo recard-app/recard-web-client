@@ -45,10 +45,12 @@ const HIDE_TIMESTAMP_ON_MOBILE_SIDEBAR = true;
  * @property returnCurrentChatId - Callback to update the current chat ID
  * @property variant - Optional variant for different styling contexts ('sidebar' | 'full-page')
  */
+export type HistoryEntryData = Pick<Conversation, 'chatId' | 'chatDescription' | 'timestamp'>;
+
 interface HistoryEntryProps {
-  chatEntry: Conversation;
+  chatEntry: HistoryEntryData;
   currentChatId: string | null;
-  onDelete?: (chatId: string) => void;
+  onDelete?: (chatId: string) => Promise<void> | void;
   refreshHistory?: () => Promise<boolean>;
   returnCurrentChatId: (chatId: string | null) => void;
   variant?: 'sidebar' | 'full-page';

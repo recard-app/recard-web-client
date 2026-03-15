@@ -1,27 +1,23 @@
 import React from 'react';
 import FullHistoryPanel from '../../components/HistoryPanel/FullHistoryPanel';
-import { Conversation, CreditCard, PAGE_NAMES, PAGE_ICONS, SubscriptionPlan } from '../../types';
+import { PAGE_NAMES, PAGE_ICONS } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import './History.scss';
 
 interface HistoryProps {
-  existingHistoryList: Conversation[];
   currentChatId: string | null;
   returnCurrentChatId: (chatId: string | null) => void;
-  onHistoryUpdate: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
-  subscriptionPlan: SubscriptionPlan | null;
-  creditCards: CreditCard[];
+  onHistoryDelete: (chatId: string) => Promise<void> | void;
+  onHistoryRefresh: () => Promise<void> | void;
   historyRefreshTrigger: number;
 }
 
 function History({
-  existingHistoryList,
   currentChatId,
   returnCurrentChatId,
-  onHistoryUpdate,
-  subscriptionPlan,
-  creditCards,
+  onHistoryDelete,
+  onHistoryRefresh,
   historyRefreshTrigger
 }: HistoryProps): React.ReactElement {
   // Use the full height hook for this page
@@ -37,8 +33,8 @@ function History({
         <FullHistoryPanel
           currentChatId={currentChatId}
           returnCurrentChatId={returnCurrentChatId}
-          onHistoryUpdate={onHistoryUpdate}
-          creditCards={creditCards}
+          onHistoryDelete={onHistoryDelete}
+          onHistoryRefresh={onHistoryRefresh}
           historyRefreshTrigger={historyRefreshTrigger}
         />
       </div>

@@ -55,7 +55,7 @@ interface DigestData {
 interface PromptWindowProps {
     user: FirebaseUser | null;
     returnCurrentChatId: (chatId: string) => void;
-    onHistoryUpdate: (chat: Conversation) => void;
+    onHistoryUpsert: (chat: Conversation) => void;
     clearChatCallback: number;
     setClearChatCallback: (value: number) => void;
     existingHistoryList: Conversation[];
@@ -89,7 +89,7 @@ interface PromptWindowProps {
 function PromptWindow({
     user,
     returnCurrentChatId,
-    onHistoryUpdate,
+    onHistoryUpsert,
     clearChatCallback,
     setClearChatCallback,
     existingHistoryList,
@@ -386,7 +386,7 @@ function PromptWindow({
                 source: 'persist_flow',
             });
 
-            onHistoryUpdate(createdChat);
+            onHistoryUpsert(createdChat);
 
             // Always follow create with update to guarantee persistence when create is idempotent.
             await UserHistoryService.updateChatHistory(
@@ -410,12 +410,12 @@ function PromptWindow({
             chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
             componentBlocks: mergedBlocks
         };
-        onHistoryUpdate(updatedChat);
+        onHistoryUpsert(updatedChat);
 
         if (!existingChat?.chatDescription || existingChat.chatDescription === DEFAULT_CHAT_NAME_PLACEHOLDER) {
             try {
                 const newTitle = await UserHistoryService.generateChatTitle(currentChatId);
-                onHistoryUpdate({
+                onHistoryUpsert({
                     ...updatedChat,
                     chatDescription: newTitle
                 });
@@ -428,7 +428,7 @@ function PromptWindow({
         chatHistoryPreference,
         mergeHistoryWithServerIfNeeded,
         logMetric,
-        onHistoryUpdate,
+        onHistoryUpsert,
         existingHistoryList
     ]);
 
@@ -770,7 +770,7 @@ function PromptWindow({
                     durationMs: Math.round(performance.now() - createStart),
                     source: 'initial_parallel_create',
                 });
-                onHistoryUpdate(response);
+                onHistoryUpsert(response);
             }).catch((error) => {
                 isChatPersistedRef.current = false;
                 schedulePersistRetry(

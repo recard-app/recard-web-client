@@ -46,7 +46,7 @@ export const deleteChatEntry = async (
   chatId: string,
   currentChatId: string | null,
   callbacks: {
-    onDelete?: (chatId: string) => void,
+    onDelete?: (chatId: string) => Promise<void> | void,
     returnCurrentChatId: (chatId: string | null) => void,
     navigate: (path: string, options: { replace: boolean }) => void,
     currentPath: string
@@ -55,7 +55,7 @@ export const deleteChatEntry = async (
   await UserHistoryService.deleteHistoryEntry(chatId);
   
   if (callbacks.onDelete) {
-    callbacks.onDelete(chatId);
+    await callbacks.onDelete(chatId);
   }
 
   // Cancels the renavigation if the user is on the history page.

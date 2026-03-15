@@ -12,7 +12,7 @@ import { UserHistoryService } from '../../services';
  */
 export interface HistorySection {
   title: string;
-  entries: Conversation[] | LightweightConversation[];
+  entries: Array<Conversation | LightweightConversation>;
   key?: string | number;
 }
 
@@ -26,50 +26,20 @@ export const fetchPagedHistory = async (
     }
   ): Promise<{
     chatHistory: LightweightConversation[],
-    pagination: PaginationData | null,
-    error?: Error
+    pagination: PaginationData | null
   }> => {
-    try {
-      // Build API parameters with proper types
-      const apiParams: HistoryParams = {
-        page: params.currentPage,
-        page_size: params.pageSize
-      };
+    // Build API parameters with proper types
+    const apiParams: HistoryParams = {
+      page: params.currentPage,
+      page_size: params.pageSize
+    };
 
-      const response = await UserHistoryService.fetchPagedHistory(apiParams);
+    const response = await UserHistoryService.fetchPagedHistory(apiParams);
 
-      return {
-        chatHistory: response.chatHistory || [],
-        pagination: response.pagination
-      };
-    } catch (error) {
-      console.error('Error fetching chat history:', error);
-      return {
-        chatHistory: [],
-        pagination: null,
-        error: error instanceof Error ? error : new Error('Unknown error occurred')
-      };
-    }
-  };
-  
-  /**
-   * Handles deletion of a chat entry by updating the history state
-   */
-  export const handleHistoryDelete = (
-    deletedChatId: string,
-    currentChatId: string | null,
-    returnCurrentChatId: (chatId: string | null) => void,
-    onHistoryUpdate?: (updater: (prevHistory: Conversation[]) => Conversation[]) => void
-  ): void => {
-    // If we're deleting the current chat, clear it first
-    if (deletedChatId === currentChatId) {
-      returnCurrentChatId(null);
-    }
-    
-    // Update chatHistory by filtering out the deleted chat
-    if (onHistoryUpdate) {
-      onHistoryUpdate(prevHistory => prevHistory.filter(chat => chat.chatId !== deletedChatId));
-    }
+    return {
+      chatHistory: response.chatHistory || [],
+      pagination: response.pagination
+    };
   };
 
 /**

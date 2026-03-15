@@ -48,7 +48,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "echo \"Add your test runner here (e.g. vitest, jest)\" && exit 1"
+    "test": "npm run test:typecheck",
+    "test:typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "browserslist": {
     "production": [

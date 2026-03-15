@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react';
 import HistoryEntry from './HistoryEntry';
 import { InfoDisplay } from '../../elements';
 import HistoryPanelSkeleton from './HistoryPanelSkeleton';
 import './HistoryPanel.scss';
 import {
-  Conversation, 
-  CreditCard,
+  Conversation,
 } from '../../types';
 
 /**
@@ -16,9 +14,8 @@ export interface HistoryPanelPreviewProps {
   listSize?: number;
   currentChatId: string | null;
   returnCurrentChatId: (chatId: string | null) => void;
-  onHistoryUpdate: (updater: (prevHistory: Conversation[]) => Conversation[]) => void;
-  creditCards: CreditCard[];
-  historyRefreshTrigger: number;
+  onHistoryDelete: (chatId: string) => Promise<void> | void;
+  onHistoryRefresh: () => Promise<void> | void;
   loading?: boolean;
 }
 
@@ -27,26 +24,17 @@ function HistoryPanelPreview({
   listSize, 
   currentChatId,
   returnCurrentChatId,
-  onHistoryUpdate,
-  creditCards,
-  historyRefreshTrigger,
+  onHistoryDelete,
+  onHistoryRefresh,
   loading = false
 }: HistoryPanelPreviewProps) {
-
-  // Effect to handle history refresh triggers
-  useEffect(() => {
-    // This effect runs when historyRefreshTrigger changes
-    // The actual data refresh is handled by the parent component
-    // This is just to ensure the component re-renders when needed
-  }, [historyRefreshTrigger]);
 
   /**
    * Forces a refresh of the history data
    */
   const forceHistoryRefresh = async () => {
     try {
-      // Trigger history refresh via onHistoryUpdate
-      onHistoryUpdate(prevHistory => [...prevHistory]);
+      await onHistoryRefresh();
       return true; // Return success
     } catch (error) {
       console.error('Failed to refresh history:', error);
@@ -58,19 +46,11 @@ function HistoryPanelPreview({
    * Wrapper function to handle deletion
    */
   const handleDelete = async (deletedChatId: string) => {
-    // Remove the deleted conversation from the list
-    onHistoryUpdate(prevHistory => 
-      prevHistory.filter(conversation => conversation.chatId !== deletedChatId)
-    );
-    
-    // If the deleted chat was the current chat, clear the current chat
-    if (deletedChatId === currentChatId) {
-      returnCurrentChatId(null);
-    }
+    await onHistoryDelete(deletedChatId);
   };
 
   // Simple list for preview/sidebar view - sorted and sliced
-  const displayList = existingHistoryList
+  const displayList = [...existingHistoryList]
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     .slice(0, listSize);
 
@@ -95,7 +75,6 @@ function HistoryPanelPreview({
             onDelete={handleDelete}
             refreshHistory={forceHistoryRefresh}
             returnCurrentChatId={returnCurrentChatId}
-            creditCards={creditCards}
             variant="sidebar"
           />
         ))

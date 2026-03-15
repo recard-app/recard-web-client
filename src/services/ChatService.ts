@@ -11,6 +11,7 @@ import {
 import { ChatComponentBlock } from '../types/ChatComponentTypes';
 import { MAX_CHAT_MESSAGES } from '../types/Constants';
 import { getSSEClient } from './SSEClient';
+import { getToolActiveMessage } from '../constants/toolMessages';
 
 // ============================================
 // Agent API Methods
@@ -42,38 +43,6 @@ export async function sendAgentMessage(
   );
 
   return response.data;
-}
-
-/**
- * Tool name to human-readable message mapping
- */
-function getToolMessage(toolName: string): string {
-  const messages: Record<string, string> = {
-    get_all_cards: 'Loading cards...',
-    get_card_details: 'Loading card details...',
-    get_user_cards: 'Loading your cards...',
-    get_user_cards_details: 'Loading card details...',
-    get_user_components: 'Loading components...',
-    add_card: 'Adding card...',
-    remove_card: 'Removing card...',
-    set_card_frozen: 'Updating card status...',
-    set_card_preferred: 'Setting preferred card...',
-    set_card_open_date: 'Updating start date...',
-    get_user_credits: 'Loading your credits...',
-    get_prioritized_credits: 'Loading prioritized credits...',
-    get_expiring_credits: 'Checking expiring credits...',
-    get_credit_history: 'Loading credit history...',
-    get_monthly_stats: 'Calculating monthly stats...',
-    get_annual_stats: 'Calculating annual stats...',
-    get_to_date_stats: 'Calculating to-date stats...',
-    get_expiring_stats: 'Checking expiring stats...',
-    get_roi_stats: 'Calculating ROI...',
-    get_lost_stats: 'Checking lost credits...',
-    get_category_stats: 'Calculating category stats...',
-    update_credit_usage: 'Updating credit usage...',
-    update_component_tracking: 'Updating tracking...',
-  };
-  return messages[toolName] || 'Processing...';
 }
 
 /**
@@ -162,7 +131,7 @@ export function sendAgentMessageStreaming(
             case 'tool_start':
               callbacks.onToolStart?.(
                 event.data.tool as string,
-                getToolMessage(event.data.tool as string)
+                getToolActiveMessage(event.data.tool as string)
               );
               break;
 

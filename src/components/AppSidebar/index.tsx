@@ -8,6 +8,7 @@ import CreditSummary from '../CreditSummary';
 import CreditList from '../CreditsDisplay/CreditList';
 import CreditListSkeleton from '../CreditsDisplay/CreditList/CreditListSkeleton';
 import { convertPrioritizedCreditsToUserCredits } from '../../utils/creditTransformers';
+import { buildCardByIdMap, buildCreditByPairMap, orderSidebarSections } from '../../utils/sidebarData';
 import { useComponents } from '../../contexts/useComponents';
 import { SidebarItem } from './SidebarItem';
 import {
@@ -45,10 +46,10 @@ interface AppSidebarProps {
   chatHistory: Conversation[];
   currentChatId: string | null;
   onCurrentChatIdChange: (chatId: string | null) => void;
-  onHistoryUpdate: (updatedChat: Conversation | ((prevHistory: Conversation[]) => Conversation[])) => Promise<void>;
+  onHistoryDelete: (chatId: string) => Promise<void> | void;
+  onHistoryRefresh: () => Promise<void> | void;
   subscriptionPlan: SubscriptionPlan | null;
   creditCards: CreditCard[];
-  historyRefreshTrigger: number;
   isLoadingCreditCards: boolean;
   isLoadingHistory: boolean;
   onCardSelect: (card: CreditCard) => void;
@@ -72,10 +73,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   chatHistory,
   currentChatId,
   onCurrentChatIdChange,
-  onHistoryUpdate,
+  onHistoryDelete,
+  onHistoryRefresh,
   subscriptionPlan,
   creditCards,
-  historyRefreshTrigger,
   isLoadingCreditCards,
   isLoadingHistory,
   onCardSelect,
@@ -127,28 +128,6 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     return isRouteActive(routePath) ? iconVariants.ACTIVE : iconVariants.INACTIVE;
   };
 
-  // Check if current chat has messages to determine if new chat button should be visible
-  const shouldShowNewChatButton = () => {
-    if (!currentChatId) {
-      // No current chat selected, so we're in a "new" state - hide button
-      return false;
-    }
-    
-    // Find the current chat in history
-    const currentChat = chatHistory.find(chat => chat.chatId === currentChatId);
-    if (!currentChat) {
-      // Current chat not found in history (new chat) - hide button
-      return false;
-    }
-    
-    const messageCount = typeof currentChat.messageCount === 'number'
-      ? currentChat.messageCount
-      : (currentChat.conversation?.length || 0);
-
-    // Show button if current chat has at least one message
-    return messageCount > 0;
-  };
-  
   // Centralized tooltip state
   const [activeTooltip, setActiveTooltip] = React.useState<{
     name: string;
@@ -239,6 +218,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const hasAnyCredits = totalCreditsCount > 0 || hasPrioritizedCredits;
   const isCreditsDataPending = !monthlyStats || !isComponentsInitialized;
   const showCreditsSection = isCreditsDataPending || hasAnyCredits;
+  const cardById = React.useMemo(() => buildCardByIdMap(creditCards), [creditCards]);
+  const creditByPair = React.useMemo(() => buildCreditByPairMap(credits), [credits]);
 
   const myCardsSidebarItem = (
     <SidebarItem
@@ -275,44 +256,28 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       {isCreditsDataPending ? (
         <CreditListSkeleton variant="sidebar" count={3} />
       ) : hasPrioritizedCredits ? (
-        (() => {
-          const convertedCredits = convertPrioritizedCreditsToUserCredits(prioritizedCredits);
-
-          // Create the cardById map from creditCards array
-          const cardById = new Map(creditCards.map(card => [card.id, card]));
-
-          // Create creditByPair map using the same logic as CreditsDisplay
-          const creditByPair = new Map();
-          for (const credit of credits) {
-            // Use ReferenceCardId to map credits to cards
-            creditByPair.set(`${credit.ReferenceCardId}:${credit.id}`, credit);
-          }
-
-          return (
-            <CreditList
-              credits={convertedCredits}
-              now={new Date()}
-              cardById={cardById}
-              creditByPair={creditByPair}
-              variant="sidebar"
-              limit={5}
-              displayPeriod={false}
-              onUpdateComplete={onRefreshMonthlyStats}
-              isUpdating={isUpdatingMonthlyStats}
-              onAddUpdatingCreditId={onAddUpdatingCreditId}
-              onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
-              isCreditUpdating={isCreditUpdating}
-            />
-          );
-        })()
+        <CreditList
+          credits={convertPrioritizedCreditsToUserCredits(prioritizedCredits)}
+          now={new Date()}
+          cardById={cardById}
+          creditByPair={creditByPair}
+          variant="sidebar"
+          limit={5}
+          displayPeriod={false}
+          onUpdateComplete={onRefreshMonthlyStats}
+          isUpdating={isUpdatingMonthlyStats}
+          onAddUpdatingCreditId={onAddUpdatingCreditId}
+          onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+          isCreditUpdating={isCreditUpdating}
+        />
       ) : null}
     </SidebarItem>
   );
 
-  const orderedSidebarSections = (MY_CREDITS_BEFORE_MY_CARDS
-    ? [showCreditsSection ? myCreditsSidebarItem : null, myCardsSidebarItem]
-    : [myCardsSidebarItem, showCreditsSection ? myCreditsSidebarItem : null]
-  ).filter(Boolean) as React.ReactNode[];
+  const orderedSidebarSections = orderSidebarSections(
+    myCardsSidebarItem,
+    showCreditsSection ? myCreditsSidebarItem : null
+  ) as React.ReactNode[];
 
   return (
     <div 
@@ -397,9 +362,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   listSize={quickHistorySize}
                   currentChatId={currentChatId}
                   returnCurrentChatId={onCurrentChatIdChange}
-                  onHistoryUpdate={onHistoryUpdate}
-                  creditCards={creditCards}
-                  historyRefreshTrigger={historyRefreshTrigger}
+                  onHistoryDelete={onHistoryDelete}
+                  onHistoryRefresh={onHistoryRefresh}
                   loading={isLoadingHistory}
                 />
               </SidebarItem>

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Drawer } from 'vaul';
-import { APP_NAME, PAGE_ICONS, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, MY_CREDITS_BEFORE_MY_CARDS, MOBILE_SEE_ALL_CHATS_LINK, SUBSCRIPTION_PLAN, COLORS } from '../../types';
+import { APP_NAME, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, MY_CREDITS_BEFORE_MY_CARDS, MOBILE_SEE_ALL_CHATS_LINK, SUBSCRIPTION_PLAN, COLORS } from '../../types';
 import { WARNING } from '../../types/Colors';
 import { Icon } from '../../icons';
 import { HistoryPanelPreview } from '../HistoryPanel';
@@ -9,6 +9,7 @@ import CreditCardPreviewList from '../CreditCardPreviewList';
 import CreditList from '../CreditsDisplay/CreditList';
 import CreditListSkeleton from '../CreditsDisplay/CreditList/CreditListSkeleton';
 import { convertPrioritizedCreditsToUserCredits } from '../../utils/creditTransformers';
+import { buildCardByIdMap, buildCreditByPairMap, orderSidebarSections, shouldShowNewChatButton } from '../../utils/sidebarData';
 import { useComponents } from '../../contexts/useComponents';
 import {
   DropdownMenu,
@@ -31,7 +32,8 @@ interface MobileHeaderProps {
   chatHistory?: Conversation[];
   currentChatId?: string | null;
   onCurrentChatIdChange?: (chatId: string | null) => void;
-  onHistoryUpdate?: (updatedChat: Conversation | ((prevHistory: Conversation[]) => Conversation[])) => Promise<void> | void;
+  onHistoryDelete?: (chatId: string) => Promise<void> | void;
+  onHistoryRefresh?: () => Promise<void> | void;
   subscriptionPlan?: SubscriptionPlan | null;
   creditCards?: CreditCard[];
   isLoadingCreditCards?: boolean;
@@ -60,7 +62,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   chatHistory = [],
   currentChatId = null,
   onCurrentChatIdChange,
-  onHistoryUpdate,
+  onHistoryDelete,
+  onHistoryRefresh,
   subscriptionPlan = null,
   creditCards = [],
   isLoadingCreditCards = false,
@@ -134,36 +137,15 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     return pathname === PAGES.HOME.PATH || pathname.startsWith('/chat/');
   };
 
-  // Check if current chat has messages to determine if new chat button should be visible
-  const shouldShowNewChatButton = () => {
-    if (!currentChatId) {
-      // No current chat selected, so we're in a "new" state - hide button
-      return false;
-    }
-    
-    // Find the current chat in history
-    const currentChat = chatHistory?.find(chat => chat.chatId === currentChatId);
-    if (!currentChat) {
-      // Current chat not found in history (new chat) - hide button
-      return false;
-    }
-    
-    const messageCount = typeof currentChat.messageCount === 'number'
-      ? currentChat.messageCount
-      : (currentChat.conversation?.length || 0);
-
-    // Show button if current chat has at least one message
-    return messageCount > 0;
-  };
-
   // Determine if user has any selected cards (fallback to length > 0)
   const hasSelectedCards = Array.isArray(creditCards)
     ? creditCards.some((c: any) => c && c.selected === true)
     : false;
+  const canStartNewChat = shouldShowNewChatButton(chatHistory, currentChatId);
   
   // Separate logic for each button type
   // New chat button: show if user has cards AND current chat has messages
-  const shouldShowNewChatButton_Mobile = (isLoadingCreditCards || hasSelectedCards) && shouldShowNewChatButton();
+  const shouldShowNewChatButton_Mobile = (isLoadingCreditCards || hasSelectedCards) && canStartNewChat;
   
   // Add cards button: show if user has no cards selected (regardless of chat state)
   const shouldShowAddCardsButton = !isLoadingCreditCards && !hasSelectedCards;
@@ -272,8 +254,10 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     ? monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount
     : 0;
   const hasAnyCredits = totalCreditsCount > 0 || hasPrioritizedCredits;
-  const isCreditsDataPending = !monthlyStats || !isComponentsInitialized;
+  const isCreditsDataPending = isLoadingMonthlyStats || !monthlyStats || !isComponentsInitialized;
   const showCreditsSection = isCreditsDataPending || hasAnyCredits;
+  const cardById = useMemo(() => buildCardByIdMap(creditCards), [creditCards]);
+  const creditByPair = useMemo(() => buildCreditByPairMap(credits), [credits]);
 
   const myCardsNavLink = !MY_CARDS_IN_ACCOUNT_MENU ? (
     <li key="my-cards-link" className={isActive(PAGES.MY_CARDS.PATH) ? 'active' : ''}>
@@ -343,14 +327,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
         <CreditList
           credits={convertPrioritizedCreditsToUserCredits(prioritizedCredits)}
           now={new Date()}
-          cardById={new Map(creditCards.map(card => [card.id, card]))}
-          creditByPair={(() => {
-            const map = new Map();
-            for (const credit of credits) {
-              map.set(`${credit.ReferenceCardId}:${credit.id}`, credit);
-            }
-            return map;
-          })()}
+          cardById={cardById}
+          creditByPair={creditByPair}
           variant="sidebar"
           limit={5}
           displayPeriod={false}
@@ -364,10 +342,10 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     </div>
   );
 
-  const orderedSidebarSections = (MY_CREDITS_BEFORE_MY_CARDS
-    ? [showCreditsSection ? myCreditsSection : null, myCardsSection]
-    : [myCardsSection, showCreditsSection ? myCreditsSection : null]
-  ).filter(Boolean) as React.ReactNode[];
+  const orderedSidebarSections = orderSidebarSections(
+    myCardsSection,
+    showCreditsSection ? myCreditsSection : null
+  ) as React.ReactNode[];
 
   // We no longer render a dynamic title in the mobile header
 
@@ -520,9 +498,8 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
                         listSize={quickHistorySize}
                         currentChatId={currentChatId}
                         returnCurrentChatId={onCurrentChatIdChange!}
-                        onHistoryUpdate={onHistoryUpdate!}
-                        creditCards={creditCards}
-                        historyRefreshTrigger={0}
+                        onHistoryDelete={onHistoryDelete!}
+                        onHistoryRefresh={onHistoryRefresh!}
                         loading={isLoadingHistory}
                       />
                     </div>

@@ -61,7 +61,7 @@ export const extractComponentBlocks = (messages: ChatMessage[]): ChatComponentBl
  * @param {string} chatId - Current chat ID
  * @param {Conversation[]} existingHistoryList - List of existing chat histories
  * @param {Function} setIsNewChatPending - Function to update new chat pending state
- * @param {Function} onHistoryUpdate - Callback for history updates
+ * @param {Function} onHistoryUpsert - Callback for upserting history entries
  * @param {Function} setChatId - Function to update chat ID state
  * @param {Function} returnCurrentChatId - Callback to return current chat ID
  * @param {Function} setIsNewChat - Function to update new chat state
@@ -76,7 +76,7 @@ export const handleHistoryStorage = async (
     chatId: string,
     existingHistoryList: Conversation[],
     setIsNewChatPending: (pending: boolean) => void,
-    onHistoryUpdate: (chat: Conversation) => void,
+    onHistoryUpsert: (chat: Conversation) => void,
     setChatId: (id: string) => void,
     returnCurrentChatId: (id: string) => void,
     setIsNewChat: (isNew: boolean) => void
@@ -103,7 +103,7 @@ export const handleHistoryStorage = async (
             chatDescription: response.chatDescription || DEFAULT_CHAT_NAME,
             componentBlocks: componentBlocks
         };
-        onHistoryUpdate(newChat);
+        onHistoryUpsert(newChat);
 
         setChatId(response.chatId);
         returnCurrentChatId(response.chatId);
@@ -126,7 +126,7 @@ export const handleHistoryStorage = async (
             chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME,
             componentBlocks: componentBlocks
         };
-        onHistoryUpdate(updatedChat);
+        onHistoryUpsert(updatedChat);
     }
 };
 
