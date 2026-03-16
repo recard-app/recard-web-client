@@ -147,6 +147,7 @@ function PromptWindow({
     const suppressNextSmoothAutoScrollRef = useRef<boolean>(false);
     const autoScrollTimeoutRef = useRef<number | null>(null);
     const clearChatResetTimeoutRef = useRef<number | null>(null);
+    const titleRefreshTimeoutRef = useRef<number | null>(null);
     const hydratingChatIdRef = useRef<string | null>(null);
 
     // In-flight create promise for first-message send + parallel persistence
@@ -339,10 +340,34 @@ function PromptWindow({
             // Clear server-side streamingStatus (fire-and-forget)
             UserHistoryService.clearStreamingStatus(currentChatId).catch(() => {});
 
-            // Refresh sidebar after a short delay to pick up the server-generated
-            // title. The server generates titles fire-and-forget after persistence,
-            // so we wait a moment for it to complete.
-            setTimeout(() => onHistoryRefresh?.(), 2000);
+            // Refresh sidebar with staggered retries to pick up the server-generated
+            // title. The server generates titles fire-and-forget after persistence
+            // (AI call + Firestore write), which can take 2-8s. We retry at increasing
+            // intervals and stop early once the title is no longer the default.
+            if (titleRefreshTimeoutRef.current !== null) {
+                window.clearTimeout(titleRefreshTimeoutRef.current);
+            }
+            const titleRetryDelays = [2000, 5000, 10000];
+            let retryIndex = 0;
+            const scheduleTitleRetry = () => {
+                if (retryIndex >= titleRetryDelays.length) {
+                    titleRefreshTimeoutRef.current = null;
+                    return;
+                }
+                const delay = titleRetryDelays[retryIndex];
+                retryIndex++;
+                titleRefreshTimeoutRef.current = window.setTimeout(() => {
+                    titleRefreshTimeoutRef.current = null;
+                    onHistoryRefresh?.();
+
+                    // Check if the title is still the default -- if so, retry
+                    const chat = existingHistoryListRef.current.find(c => c.chatId === currentChatId);
+                    if (!chat?.chatDescription || chat.chatDescription === DEFAULT_CHAT_NAME_PLACEHOLDER) {
+                        scheduleTitleRetry();
+                    }
+                }, delay);
+            };
+            scheduleTitleRetry();
         }
 
         hasUserSentInCurrentChatRef.current = false;
@@ -410,6 +435,13 @@ function PromptWindow({
         onError: handleStreamError,
         onDataChanged: handleDataChanged,
     });
+
+    // Ref mirrors for isProcessing / streamingState.isStreaming so polling
+    // interval reads fresh values without being in the effect dep array.
+    const isProcessingRef = useRef(isProcessing);
+    const isStreamingRef = useRef(streamingState.isStreaming);
+    useEffect(() => { isProcessingRef.current = isProcessing; }, [isProcessing]);
+    useEffect(() => { isStreamingRef.current = streamingState.isStreaming; }, [streamingState.isStreaming]);
 
     // Declare that this component needs full height behavior
     useFullHeight(true);
@@ -904,8 +936,8 @@ function PromptWindow({
         const interval = setInterval(async () => {
             if (stopped || pollInFlight) return;
 
-            // Read guards at call-time (not captured at effect-mount time)
-            if (isProcessing || streamingState.isStreaming) return;
+            // Read guards at call-time via refs (not captured at effect-mount time)
+            if (isProcessingRef.current || isStreamingRef.current) return;
 
             const existingChat = existingHistoryListRef.current?.find(c => c.chatId === urlChatId);
             if (!existingChat?.streamingStatus || existingChat.streamingStatus !== STREAMING_STATUS.STREAMING) return;
@@ -1016,6 +1048,10 @@ function PromptWindow({
             if (clearChatResetTimeoutRef.current !== null) {
                 window.clearTimeout(clearChatResetTimeoutRef.current);
                 clearChatResetTimeoutRef.current = null;
+            }
+            if (titleRefreshTimeoutRef.current !== null) {
+                window.clearTimeout(titleRefreshTimeoutRef.current);
+                titleRefreshTimeoutRef.current = null;
             }
             chatHydrationRequestIdRef.current += 1;
             chatHydrationAbortControllerRef.current?.abort();
