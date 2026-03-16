@@ -18,10 +18,11 @@ import {
 
 // Import types
 import { PAGES } from '../../types';
-import { ChatMessage, Conversation, ChatComponentBlock } from '../../types';
+import { ChatMessage, Conversation } from '../../types';
+import { ChatComponentBlock } from '../../types/ChatComponentTypes';
 
 import { AgentModePreference, ChatHistoryPreference } from '../../types';
-import { MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
+import { MAX_CHAT_MESSAGES, MAX_CHAT_THREAD_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE, CHAT_SOURCE, STREAMING_STATUS } from '../../types';
 import { UserHistoryService } from '../../services';
 import { ErrorWithRetry } from '../../elements';
@@ -329,11 +330,16 @@ function PromptWindow({
 
             // Clear server-side streamingStatus (fire-and-forget)
             UserHistoryService.clearStreamingStatus(currentChatId).catch(() => {});
+
+            // Refresh sidebar after a short delay to pick up the server-generated
+            // title. The server generates titles fire-and-forget after persistence,
+            // so we wait a moment for it to complete.
+            setTimeout(() => onHistoryRefresh?.(), 2000);
         }
 
         hasUserSentInCurrentChatRef.current = false;
         setIsNewChatPending(false);
-    }, [onHistoryUpsert, existingHistoryList]);
+    }, [onHistoryUpsert, existingHistoryList, onHistoryRefresh]);
 
     // Handler for stream errors
     const handleStreamError = useCallback((error: string) => {
@@ -481,14 +487,17 @@ function PromptWindow({
                 true,
                 currentChatId,
                 STREAMING_STATUS.STREAMING
-            ).then((response) => {
+            ).then(() => {
                 isChatPersistedRef.current = true;
                 logMetric('chat_create_latency', {
                     chatId: currentChatId,
                     durationMs: Math.round(performance.now() - createStart),
                     source: 'initial_parallel_create',
                 });
-                onHistoryUpsert(response);
+                // Don't upsert the create response -- it contains stale data
+                // (just the user message + streamingStatus: 'streaming').
+                // By the time this resolves, local state may already have
+                // a richer snapshot from getPrompt or handleMessageComplete.
             }).catch((error) => {
                 // Server handles persistence via upsert -- parallel create failure is non-critical
                 isChatPersistedRef.current = false;
@@ -1275,11 +1284,11 @@ function PromptWindow({
                         returnPrompt={getPrompt}
                         isProcessing={isProcessing}
                         onCancel={handleCancel}
-                        disabled={chatHistory.length >= MAX_CHAT_MESSAGES || isSwitchingChats}
-                        chatLimitReached={chatHistory.length >= MAX_CHAT_MESSAGES}
+                        disabled={chatHistory.length >= MAX_CHAT_THREAD_MESSAGES || isSwitchingChats}
+                        chatLimitReached={chatHistory.length >= MAX_CHAT_THREAD_MESSAGES}
                     />
                 </div>
-                {chatHistory.length >= MAX_CHAT_MESSAGES && (
+                {chatHistory.length >= MAX_CHAT_THREAD_MESSAGES && (
                     <div className="below-prompt-field-text">
                         This chat has reached its message limit. <button onClick={onNewChat} className="inline-button">Create a new chat</button> to continue.
                     </div>

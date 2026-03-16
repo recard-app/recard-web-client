@@ -1093,13 +1093,15 @@ function AppContent({}: AppContentProps) {
   // `skipRefresh` is used for local status-only updates (for example, clearing
   // streamingStatus) so a stale server fetch does not immediately overwrite
   // the optimistic local value.
-  const handleHistoryUpsert = useCallback(async (
+  const handleHistoryUpsert = useCallback((
     updatedChat: Conversation,
     skipRefresh: boolean = false
-  ): Promise<void> => {
+  ): void => {
     if (!updatedChat) return;
 
-    let isExistingChatUpdate = false;
+    // Check existence synchronously before the state update so the refresh
+    // decision doesn't rely on a mutable flag set inside the updater.
+    const isExisting = chatHistory.some(chat => chat.chatId === updatedChat.chatId);
 
     setChatHistory(prevHistory => {
       const existingIndex = prevHistory.findIndex(chat => chat.chatId === updatedChat.chatId);
@@ -1107,19 +1109,15 @@ function AppContent({}: AppContentProps) {
         return [updatedChat, ...prevHistory];
       }
 
-      isExistingChatUpdate = true;
       const nextHistory = [...prevHistory];
       const existing = prevHistory[existingIndex];
       nextHistory[existingIndex] = {
         ...updatedChat,
         // Keep the existing title if the incoming one is the default placeholder.
-        // This prevents "New Chat" from overwriting a real server-generated title
-        // when status-only upserts don't have access to the chat's actual name.
         chatDescription: (updatedChat.chatDescription && updatedChat.chatDescription !== 'New Chat')
           ? updatedChat.chatDescription
           : (existing.chatDescription || updatedChat.chatDescription),
         // Preserve whichever timestamp is newer so chat ordering stays stable.
-        // This prevents status-only upserts from bouncing the sort order.
         timestamp: updatedChat.timestamp > existing.timestamp
           ? updatedChat.timestamp
           : existing.timestamp,
@@ -1129,10 +1127,10 @@ function AppContent({}: AppContentProps) {
 
     setLastUpdateTimestamp(new Date().toISOString());
 
-    if (isExistingChatUpdate && !skipRefresh) {
+    if (isExisting && !skipRefresh) {
       setHistoryRefreshTrigger(prev => prev + 1);
     }
-  }, []);
+  }, [chatHistory]);
 
   // Delete a chat entry and only clear the active prompt if it was the active chat.
   const handleHistoryDelete = async (deletedChatId: string): Promise<void> => {
