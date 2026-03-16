@@ -18,14 +18,12 @@ export function useScrolledFromTop(
     const el = ref.current;
     if (!el) return;
     const scrolled = el.scrollTop > 0;
-    setIsScrolled(prev => {
-      if (prev !== scrolled) {
-        onChange?.(scrolled);
-        return scrolled;
-      }
-      return prev;
-    });
-  }, [ref, onChange]);
+    setIsScrolled(scrolled);
+  }, [ref]);
+
+  useEffect(() => {
+    onChange?.(isScrolled);
+  }, [isScrolled, onChange]);
 
   useEffect(() => {
     const el = ref.current;

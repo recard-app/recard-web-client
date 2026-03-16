@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'sonner';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_RED } from '../../../types';
+import { Conversation, StreamingStatus, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_RED } from '../../../types';
 import { Icon, createIconVariant } from '../../../icons';
 import { formatDate, deleteChatEntry } from './utils';
 import {
@@ -45,7 +45,9 @@ const HIDE_TIMESTAMP_ON_MOBILE_SIDEBAR = true;
  * @property returnCurrentChatId - Callback to update the current chat ID
  * @property variant - Optional variant for different styling contexts ('sidebar' | 'full-page')
  */
-export type HistoryEntryData = Pick<Conversation, 'chatId' | 'chatDescription' | 'timestamp'>;
+export type HistoryEntryData = Pick<Conversation, 'chatId' | 'chatDescription' | 'timestamp'> & {
+  streamingStatus?: StreamingStatus;
+};
 
 interface HistoryEntryProps {
   chatEntry: HistoryEntryData;
@@ -180,7 +182,19 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
       >
         <div className="entry-content">
           <div className="entry-info">
-            <p className="entry-title">{chatEntry.chatDescription}</p>
+            <div className="entry-title-row">
+              {variant === 'sidebar' && chatEntry.streamingStatus === 'streaming' && (
+                <span className="streaming-status-icon" title="Generating response...">
+                  <Icon name="arrow-refresh" variant="mini" size={14} />
+                </span>
+              )}
+              {variant === 'sidebar' && chatEntry.streamingStatus === 'complete' && (
+                <span className="streaming-status-icon complete" title="New response ready">
+                  <Icon name="check-circle" variant="mini" size={14} />
+                </span>
+              )}
+              <p className="entry-title">{chatEntry.chatDescription}</p>
+            </div>
             <p className="timestamp">{formatDate(chatEntry.timestamp)}</p>
           </div>
         </div>

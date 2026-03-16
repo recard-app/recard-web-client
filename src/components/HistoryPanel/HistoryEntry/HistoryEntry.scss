@@ -53,6 +53,14 @@
         .entry-info {
             margin-bottom: $space-1;
             margin-top: $space-1;
+
+            .entry-title-row {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                min-width: 0; // Allow text truncation
+            }
+
             .entry-title {
                 font-weight: $font-semibold;
                 font-size: $font-sm;
@@ -162,4 +170,32 @@
   color: $neutral-dark-gray;
   text-align: right;
   font-family: $font-inter;
+}
+
+// Streaming status indicator (sidebar only)
+.streaming-status-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: $primary-color;
+  line-height: 1;
+
+  // Spin animation for streaming state (arrow-refresh icon)
+  svg {
+    animation: streaming-spin 1s linear infinite;
+  }
+
+  // Complete state -- success color, no spin
+  &.complete {
+    color: $success;
+
+    svg {
+      animation: none;
+    }
+  }
+}
+
+@keyframes streaming-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

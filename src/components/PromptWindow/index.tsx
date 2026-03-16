@@ -270,6 +270,25 @@ function PromptWindow({
         setIsSwitchingChats(false);
     }, []);
 
+    /**
+     * Clears streamingStatus for a completed chat: updates sidebar locally and
+     * fires a server-side clear. Used after hydration and retry-hydration.
+     */
+    const clearCompletedStreamingStatus = useCallback((
+        targetChatId: string,
+        chatDescription: string,
+        conversation: ChatMessage[]
+    ) => {
+        UserHistoryService.clearStreamingStatus(targetChatId).catch(() => {});
+        onHistoryUpsert({
+            chatId: targetChatId,
+            chatDescription,
+            timestamp: new Date().toISOString(),
+            conversation,
+            streamingStatus: null,
+        });
+    }, [onHistoryUpsert]);
+
     // Handler for completed messages - updates local state only (server handles persistence)
     const handleMessageComplete = useCallback((message: ChatMessage) => {
         // Update local state only -- server handles persistence
@@ -739,14 +758,11 @@ function PromptWindow({
                 // 'streaming' is NOT cleared here -- the polling effect (Phase 4) handles
                 // that case by waiting for the server to finish, then clearing.
                 if (loadedStreamingStatus === 'complete') {
-                    UserHistoryService.clearStreamingStatus(urlChatId).catch(() => {});
-                    onHistoryUpsert({
-                        chatId: urlChatId,
-                        chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
-                        timestamp: new Date().toISOString(),
-                        conversation: Array.isArray(conversation) ? conversation : [],
-                        streamingStatus: null,
-                    });
+                    clearCompletedStreamingStatus(
+                        urlChatId,
+                        existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
+                        Array.isArray(conversation) ? conversation : []
+                    );
                 }
 
                 // Paint once with new content while opacity is still 0, then reveal.
@@ -788,6 +804,7 @@ function PromptWindow({
         getChatSwitchAnimationDurationMs,
         resolveConversationFromPreview,
         waitForPaintBoundary,
+        clearCompletedStreamingStatus,
         onHistoryUpsert,
         returnCurrentChatId,
         setExistingChatStates,
@@ -804,9 +821,11 @@ function PromptWindow({
         if (!existingChat?.streamingStatus || existingChat.streamingStatus !== 'streaming') return;
 
         let stopped = false;
+        let pollInFlight = false;
 
         const interval = setInterval(async () => {
-            if (stopped) return;
+            if (stopped || pollInFlight) return;
+            pollInFlight = true;
             try {
                 const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
                 const serverHistory = response.conversation || [];
@@ -833,6 +852,8 @@ function PromptWindow({
                 }
             } catch {
                 // Silently continue polling
+            } finally {
+                pollInFlight = false;
             }
         }, POLL_INTERVAL_MS);
 
@@ -1007,14 +1028,11 @@ function PromptWindow({
 
             // Clear streamingStatus on retry hydration (same logic as main hydration flow)
             if (loadedStreamingStatus === 'complete') {
-                UserHistoryService.clearStreamingStatus(urlChatId).catch(() => {});
-                onHistoryUpsert({
-                    chatId: urlChatId,
-                    chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
-                    timestamp: new Date().toISOString(),
-                    conversation: Array.isArray(conversation) ? conversation : [],
-                    streamingStatus: null,
-                });
+                clearCompletedStreamingStatus(
+                    urlChatId,
+                    existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
+                    Array.isArray(conversation) ? conversation : []
+                );
             }
 
             // Keep reveal ordering consistent with main hydration flow.
