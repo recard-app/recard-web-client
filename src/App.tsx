@@ -1110,9 +1110,8 @@ function AppContent({}: AppContentProps) {
         return [updatedChat, ...prevHistory];
       }
 
-      const nextHistory = [...prevHistory];
       const existing = prevHistory[existingIndex];
-      nextHistory[existingIndex] = {
+      const merged = {
         ...updatedChat,
         // Keep the existing title if the incoming one is the default placeholder.
         chatDescription: (updatedChat.chatDescription && updatedChat.chatDescription !== 'New Chat')
@@ -1123,6 +1122,20 @@ function AppContent({}: AppContentProps) {
           ? updatedChat.timestamp
           : existing.timestamp,
       };
+
+      // Move to front if the conversation grew (new message sent/received).
+      // This ensures chats with new activity appear at the top of the sidebar.
+      const existingMsgCount = existing.conversation?.length ?? 0;
+      const updatedMsgCount = updatedChat.conversation?.length ?? 0;
+      const hasNewMessages = updatedMsgCount > existingMsgCount;
+
+      if (hasNewMessages && existingIndex > 0) {
+        const nextHistory = prevHistory.filter((_, i) => i !== existingIndex);
+        return [merged, ...nextHistory];
+      }
+
+      const nextHistory = [...prevHistory];
+      nextHistory[existingIndex] = merged;
       return nextHistory;
     });
 

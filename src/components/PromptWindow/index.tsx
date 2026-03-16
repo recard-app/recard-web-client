@@ -141,6 +141,9 @@ function PromptWindow({
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
     // Error state for when loading an existing chat fails
     const [chatLoadError, setChatLoadError] = useState<string | null>(null);
+    // Counter-tagged string to restore into PromptField after cancel.
+    // The nonce ensures the effect fires even when cancelling the same text twice.
+    const [cancelRestoreValue, setCancelRestoreValue] = useState<string>('');
     // Tracks loading state while switching between existing chats
     const [isSwitchingChats, setIsSwitchingChats] = useState<boolean>(false);
     const shouldSnapToBottomOnHydrationRef = useRef<boolean>(false);
@@ -158,6 +161,8 @@ function PromptWindow({
     const hasHydratedCurrentChatRef = useRef<boolean>(false);
     // Tracks if user sent a message on current chat before hydration finished
     const hasUserSentInCurrentChatRef = useRef<boolean>(false);
+    // Tracks the last submitted prompt text so it can be restored on cancel
+    const lastSubmittedPromptRef = useRef<string>('');
     // Metrics refs for submit -> first token latency
     const submitStartedAtRef = useRef<number | null>(null);
     const hasLoggedFirstTokenRef = useRef<boolean>(false);
@@ -371,6 +376,7 @@ function PromptWindow({
         }
 
         hasUserSentInCurrentChatRef.current = false;
+        lastSubmittedPromptRef.current = '';
         setIsNewChatPending(false);
     }, [onHistoryUpsert, onHistoryRefresh]);
 
@@ -494,6 +500,7 @@ function PromptWindow({
 
         // Create user message and add to history
         const userMessage = createUserMessage(returnPromptStr);
+        lastSubmittedPromptRef.current = returnPromptStr;
         hasUserSentInCurrentChatRef.current = true;
 
         // Update ref immediately (synchronous) for use in callbacks
@@ -1209,6 +1216,8 @@ function PromptWindow({
 
     /**
      * Cancels ongoing streaming and resets state.
+     * Removes the pending user message, clears the sidebar streaming indicator,
+     * and restores the user's text to the input field.
      */
     const handleCancel = () => {
         stopAndDiscardStream();
@@ -1216,15 +1225,54 @@ function PromptWindow({
         submitStartedAtRef.current = null;
         hasLoggedFirstTokenRef.current = false;
 
+        const cancelledChatId = chatIdRef.current;
+
+        // Restore the user's prompt text to the input field
+        const promptToRestore = lastSubmittedPromptRef.current;
+        if (promptToRestore) {
+            setCancelRestoreValue(`${promptToRestore}\0${Date.now()}`);
+            lastSubmittedPromptRef.current = '';
+        }
+
+        // Remove the pending user message from local chat history.
+        // The last message should be the user's (assistant hasn't responded yet).
+        const currentHistory = chatHistoryRef.current;
+        const lastMsg = currentHistory[currentHistory.length - 1];
+        if (lastMsg && lastMsg.chatSource === CHAT_SOURCE.USER) {
+            const restored = currentHistory.slice(0, -1);
+            chatHistoryRef.current = restored;
+            setChatHistory(restored);
+        }
+
+        // Clean up streaming snapshot
+        if (cancelledChatId) {
+            streamingSnapshotsRef.current.delete(cancelledChatId);
+        }
+
+        // Clear streamingStatus locally in the sidebar so the avatar stops.
+        if (cancelledChatId) {
+            const existingChat = existingHistoryListRef.current.find(c => c.chatId === cancelledChatId);
+            if (existingChat) {
+                onHistoryUpsert({
+                    chatId: cancelledChatId,
+                    chatDescription: existingChat.chatDescription || chatDescriptionRef.current || DEFAULT_CHAT_NAME_PLACEHOLDER,
+                    timestamp: existingChat.timestamp || new Date().toISOString(),
+                    conversation: chatHistoryRef.current,
+                    streamingStatus: null,
+                }, true);
+            }
+        }
+
         // If a parallel create is still in flight, wait for it to complete
         // then clear streamingStatus. Without this, the create writes 'streaming'
         // after the cancel endpoint tried to clear it (doc didn't exist yet).
-        const cancelledChatId = chatIdRef.current;
         if (cancelledChatId && pendingChatCreateRef.current) {
             pendingChatCreateRef.current
                 .then(() => UserHistoryService.clearStreamingStatus(cancelledChatId))
                 .catch(() => {});
         }
+
+        hasUserSentInCurrentChatRef.current = false;
     };
 
     /**
@@ -1341,6 +1389,7 @@ function PromptWindow({
                         onCancel={handleCancel}
                         disabled={chatHistory.length >= MAX_CHAT_THREAD_MESSAGES || isSwitchingChats}
                         chatLimitReached={chatHistory.length >= MAX_CHAT_THREAD_MESSAGES}
+                        restoreValue={cancelRestoreValue}
                     />
                 </div>
                 {chatHistory.length >= MAX_CHAT_THREAD_MESSAGES && (
