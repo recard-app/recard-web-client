@@ -55,29 +55,88 @@ export interface UseAgentChatReturn {
 export type { StreamingState };
 
 // ============================================
+// Shared base hook
+// ============================================
+
+interface UseAgentChatBaseReturn {
+  streamingState: StreamingState;
+  setStreamingState: React.Dispatch<React.SetStateAction<StreamingState>>;
+  abortControllerRef: React.MutableRefObject<AbortController | null>;
+  cleanupRef: React.MutableRefObject<(() => void) | null>;
+  activeConversationIdRef: React.MutableRefObject<string | null>;
+  cancelStream: () => void;
+  stopAndDiscardStream: () => void;
+  resetState: () => void;
+}
+
+function useAgentChatBase(): UseAgentChatBaseReturn {
+  const [streamingState, setStreamingState] = useState<StreamingState>(initialStreamingState);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
+  const activeConversationIdRef = useRef<string | null>(null);
+
+  // Cleanup on unmount -- don't abort, let the server finish and persist.
+  useEffect(() => {
+    return () => {
+      cleanupRef.current?.();
+    };
+  }, []);
+
+  const cancelStream = useCallback(() => {
+    abortControllerRef.current?.abort();
+    cleanupRef.current?.();
+    setStreamingState(prev => ({
+      ...prev,
+      isStreaming: false,
+      activeNode: null,
+      activeTool: null,
+    }));
+  }, []);
+
+  const stopAndDiscardStream = useCallback(() => {
+    cancelStream();
+    if (activeConversationIdRef.current) {
+      cancelServerStream(activeConversationIdRef.current).catch(() => {});
+      activeConversationIdRef.current = null;
+    }
+  }, [cancelStream]);
+
+  const resetState = useCallback(() => {
+    setStreamingState(initialStreamingState);
+  }, []);
+
+  return {
+    streamingState,
+    setStreamingState,
+    abortControllerRef,
+    cleanupRef,
+    activeConversationIdRef,
+    cancelStream,
+    stopAndDiscardStream,
+    resetState,
+  };
+}
+
+// ============================================
 // Hook Implementation
 // ============================================
 
 export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatReturn {
   const { userName, conversationId, agentMode, onMessageComplete, onError, onDataChanged } = options;
 
-  const [streamingState, setStreamingState] = useState<StreamingState>(initialStreamingState);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const cleanupRef = useRef<(() => void) | null>(null);
+  const {
+    streamingState,
+    setStreamingState,
+    abortControllerRef,
+    cleanupRef,
+    activeConversationIdRef,
+    cancelStream,
+    stopAndDiscardStream,
+    resetState,
+  } = useAgentChatBase();
 
-  // Track accumulated text for final message
+  // Track accumulated text for final message (SSE-specific)
   const accumulatedTextRef = useRef('');
-
-  // Track active conversation ID for server-side cancellation
-  const activeConversationIdRef = useRef<string | null>(null);
-
-  // Cleanup on unmount -- don't abort, let the server finish and persist.
-  // Only clean up local state references.
-  useEffect(() => {
-    return () => {
-      cleanupRef.current?.();
-    };
-  }, []);
 
   const sendMessage = useCallback(async (
     prompt: string,
@@ -102,7 +161,6 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
     });
 
     // Prepare request data
-    // Note: filterMessagesForApi removes error messages, backend accepts frontend format directly
     const requestData: AgentRequestData = {
       name: userName || NO_DISPLAY_NAME_PLACEHOLDER,
       prompt,
@@ -228,7 +286,6 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
         },
 
         onFinal: (textResponse, componentBlock, agentType, messageId, timestamp, dataChanged) => {
-          // Store received values
           receivedComponentBlock = componentBlock || null;
           receivedMessageId = messageId;
           receivedTimestamp = timestamp;
@@ -239,7 +296,6 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
             isStreaming: false,
             activeNode: null,
             activeTool: null,
-            // Use final text response (may be composed from multiple agents)
             streamedText: textResponse,
             componentBlock: receivedComponentBlock,
             messageId: receivedMessageId,
@@ -252,13 +308,10 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
             },
           }));
 
-          // Notify about data changes (for UI refresh)
           if (dataChanged && onDataChanged) {
             onDataChanged(dataChanged);
           }
 
-          // Create final message and notify, passing the conversation ID
-          // so the caller can verify this response belongs to the active chat.
           if (onMessageComplete) {
             const message: ChatMessage = {
               id: receivedMessageId!,
@@ -282,7 +335,6 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
               ...prev.timeline,
               isComplete: true,
               isCollapsed: true,
-              // Mark any active nodes as error
               nodes: prev.timeline.nodes.map(n =>
                 n.status === 'active'
                   ? { ...n, status: 'error' as const, endTime: Date.now() }
@@ -295,34 +347,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       },
       abortControllerRef.current.signal
     );
-  }, [userName, conversationId, agentMode, onMessageComplete, onError, onDataChanged]);
-
-  // Abort the local SSE connection only. Server continues processing and persists.
-  // Used by navigation, chat switching, and component cleanup.
-  const cancelStream = useCallback(() => {
-    abortControllerRef.current?.abort();
-    cleanupRef.current?.();
-    setStreamingState(prev => ({
-      ...prev,
-      isStreaming: false,
-      activeNode: null,
-      activeTool: null,
-    }));
-  }, []);
-
-  // Abort local SSE AND tell the server to stop processing + discard the response.
-  // Used ONLY for explicit user "Stop generating" action.
-  const stopAndDiscardStream = useCallback(() => {
-    cancelStream();
-    if (activeConversationIdRef.current) {
-      cancelServerStream(activeConversationIdRef.current).catch(() => {});
-      activeConversationIdRef.current = null;
-    }
-  }, [cancelStream]);
-
-  const resetState = useCallback(() => {
-    setStreamingState(initialStreamingState);
-  }, []);
+  }, [userName, conversationId, agentMode, onMessageComplete, onError, onDataChanged, abortControllerRef, cleanupRef, activeConversationIdRef, setStreamingState]);
 
   return {
     streamingState,
@@ -345,14 +370,21 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
 export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgentChatReturn {
   const { userName, conversationId, onMessageComplete, onError } = options;
 
-  const [streamingState, setStreamingState] = useState<StreamingState>(initialStreamingState);
-  const abortControllerRef = useRef<AbortController | null>(null);
+  const {
+    streamingState,
+    setStreamingState,
+    abortControllerRef,
+    cancelStream,
+    resetState,
+  } = useAgentChatBase();
 
+  // Fallback uses regular fetch (not SSE), so abort on unmount to prevent
+  // stale responses from calling setState after the component is gone.
   useEffect(() => {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, []);
+  }, [abortControllerRef]);
 
   const sendMessage = useCallback(async (
     prompt: string,
@@ -422,21 +454,7 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
       }));
       onError?.(errorMessage);
     }
-  }, [userName, conversationId, onMessageComplete, onError]);
-
-  const cancelStream = useCallback(() => {
-    abortControllerRef.current?.abort();
-    setStreamingState(prev => ({
-      ...prev,
-      isStreaming: false,
-      activeNode: null,
-      activeTool: null,
-    }));
-  }, []);
-
-  const resetState = useCallback(() => {
-    setStreamingState(initialStreamingState);
-  }, []);
+  }, [userName, conversationId, onMessageComplete, onError, abortControllerRef, setStreamingState]);
 
   return {
     streamingState,

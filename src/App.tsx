@@ -114,7 +114,6 @@ import { ScrollHeightContext } from './hooks/useScrollHeight';
 import { toast } from 'sonner';
 import { Toaster } from './components/ui/sonner';
 
-const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 const DEFERRED_CREDITS_IDLE_TIMEOUT_MS = 2000;
 const DEFERRED_CREDITS_TIMEOUT_FALLBACK_MS = 0;
 const ENABLE_PROACTIVE_INSTALL_DRAWER = false;
@@ -692,7 +691,7 @@ function AppContent({}: AppContentProps) {
           console.error('Error fetching user cards metadata:', error);
           return [];
         }),
-        UserHistoryService.fetchChatHistoryPreview(quick_history_size).catch(error => {
+        UserHistoryService.fetchChatHistoryPreview(GLOBAL_QUICK_HISTORY_SIZE).catch(error => {
           console.error('Error fetching chat history preview:', error);
           return { chatHistory: [] };
         }),
@@ -778,7 +777,7 @@ function AppContent({}: AppContentProps) {
 
         try {
           const bootstrapResponse = await BootstrapService.fetchBootstrap({
-            historySize: quick_history_size,
+            historySize: GLOBAL_QUICK_HISTORY_SIZE,
             chatId: urlChatId,
           });
 
@@ -1410,7 +1409,7 @@ function AppContent({}: AppContentProps) {
               isLoadingCreditCards={isLoadingCreditCards}
               isLoadingHistory={isLoadingHistory}
               onCardSelect={handleCardSelect}
-              quickHistorySize={quick_history_size}
+              quickHistorySize={GLOBAL_QUICK_HISTORY_SIZE}
               user={user}
               onLogout={handleLogout}
               onNewChat={handleClearChat}
@@ -1441,7 +1440,7 @@ function AppContent({}: AppContentProps) {
                     isLoadingCreditCards={isLoadingCreditCards}
                     isLoadingHistory={isLoadingHistory}
                     onCardSelect={handleCardSelect}
-                    quickHistorySize={quick_history_size}
+                    quickHistorySize={GLOBAL_QUICK_HISTORY_SIZE}
                     user={user}
                     onNewChat={handleClearChat}
                     onOpenCardSelector={() => setIsCardSelectorOpen(true)}

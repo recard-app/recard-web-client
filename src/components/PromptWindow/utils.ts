@@ -43,8 +43,7 @@ export const createErrorMessage = (errorText: string): ChatMessage => ({
 export const extractComponentBlocks = (messages: ChatMessage[]): ChatComponentBlock[] => {
     return messages
         .filter(msg => msg.componentBlock)
-        .map(msg => msg.componentBlock!)
-        .filter(Boolean);
+        .map(msg => msg.componentBlock!);
 };
 
 /**
@@ -83,39 +82,5 @@ export const limitChatHistory = (chatHistory: ChatMessage[]): ChatMessage[] => {
     return Array.isArray(chatHistory) ? chatHistory.slice(-MAX_CHAT_MESSAGES) : [];
 };
 
-/**
- * Filters chat history to only include successful exchanges.
- * Removes error messages and user messages that didn't get a successful assistant response.
- * This ensures only successful user+assistant pairs are saved to the database.
- *
- * @param {ChatMessage[]} history - The full chat history including errors
- * @returns {ChatMessage[]} Filtered chat history with only successful exchanges
- */
-export const getSuccessfulMessages = (history: ChatMessage[]): ChatMessage[] => {
-    const result: ChatMessage[] = [];
 
-    for (let i = 0; i < history.length; i++) {
-        const msg = history[i];
-
-        // Skip error messages entirely
-        if (msg.chatSource === CHAT_SOURCE.ERROR || msg.isError) continue;
-
-        // For user messages, only include if followed by assistant response (not error)
-        if (msg.chatSource === CHAT_SOURCE.USER) {
-            const nextMsg = history[i + 1];
-            if (nextMsg && nextMsg.chatSource === CHAT_SOURCE.ASSISTANT) {
-                result.push(msg);
-            }
-            // Skip user messages followed by error or nothing
-            continue;
-        }
-
-        // Include assistant messages (they only exist for successful responses)
-        if (msg.chatSource === CHAT_SOURCE.ASSISTANT) {
-            result.push(msg);
-        }
-    }
-
-    return result;
-};
 

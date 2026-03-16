@@ -4,10 +4,6 @@ import { Icon } from '../../../icons';
 import './PromptField.scss';
 import { CHAT_MAX_FIELD_HEIGHT, MOBILE_BREAKPOINT } from '../../../types';
 
-/**
- * Maximum height of the textarea.
- */
-const TEXT_AREA_MAX_HEIGHT = CHAT_MAX_FIELD_HEIGHT;
 
 /**
  * Props for the PromptField component.
@@ -34,7 +30,7 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
    * and whenever the prompt value changes.
    */
   useEffect(() => {
-    adjustTextareaHeight(textareaRef.current, TEXT_AREA_MAX_HEIGHT);
+    adjustTextareaHeight(textareaRef.current, CHAT_MAX_FIELD_HEIGHT);
   }, [promptValue]);
 
   /**
@@ -148,7 +144,6 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
    */
   const inputChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void => {
     setPromptValue(event.target.value);
-    adjustTextareaHeight(textareaRef.current, TEXT_AREA_MAX_HEIGHT);
   };
 
   /**

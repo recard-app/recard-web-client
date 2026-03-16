@@ -31,6 +31,9 @@ import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 const POLL_INTERVAL_MS = 3000;
 const POLL_TIMEOUT_MS = 20 * 1000;
+const TITLE_RETRY_DELAYS_MS = [2000, 5000, 10000];
+const NEAR_BOTTOM_THRESHOLD_PX = 400;
+const SCROLL_DELAY_MS = 100;
 
 /**
  * Data structure for daily digest
@@ -365,14 +368,13 @@ function PromptWindow({
             if (titleRefreshTimeoutRef.current !== null) {
                 window.clearTimeout(titleRefreshTimeoutRef.current);
             }
-            const titleRetryDelays = [2000, 5000, 10000];
             let retryIndex = 0;
             const scheduleTitleRetry = () => {
-                if (retryIndex >= titleRetryDelays.length) {
+                if (retryIndex >= TITLE_RETRY_DELAYS_MS.length) {
                     titleRefreshTimeoutRef.current = null;
                     return;
                 }
-                const delay = titleRetryDelays[retryIndex];
+                const delay = TITLE_RETRY_DELAYS_MS[retryIndex];
                 retryIndex++;
                 titleRefreshTimeoutRef.current = window.setTimeout(() => {
                     titleRefreshTimeoutRef.current = null;
@@ -658,6 +660,51 @@ function PromptWindow({
         return attachComponentBlocks(messages, response.componentBlocks);
     }, []);
 
+    /**
+     * Fetches chat data from preview or server, returning conversation, description,
+     * and streaming status. Shared by the main hydration effect and retryLoadChat.
+     */
+    const fetchChatData = useCallback(async (
+        targetChatId: string,
+        signal: AbortSignal,
+        existingChat?: Conversation
+    ): Promise<{ conversation: ChatMessage[]; description?: string; streamingStatus?: string | null }> => {
+        if (existingChat) {
+            const conversation = await resolveConversationFromPreview(existingChat, targetChatId, signal);
+            return { conversation, description: existingChat.chatDescription, streamingStatus: existingChat.streamingStatus };
+        }
+        const fullChat = await UserHistoryService.fetchChatHistoryById(targetChatId, signal);
+        const messages = Array.isArray(fullChat.conversation) ? fullChat.conversation : [];
+        const conversation = attachComponentBlocks(messages, fullChat.componentBlocks);
+        return { conversation, description: fullChat.chatDescription, streamingStatus: fullChat.streamingStatus };
+    }, [resolveConversationFromPreview]);
+
+    /**
+     * After fetching and setting chat states, clears streaming status if the server
+     * is done (status is 'complete', or status is 'streaming' but last message is
+     * from the assistant). Shared by the main hydration effect and retryLoadChat.
+     */
+    const clearStreamingStatusIfDone = useCallback((
+        targetChatId: string,
+        conversation: ChatMessage[],
+        streamingStatus: string | null | undefined,
+        description?: string,
+        timestamp?: string
+    ) => {
+        const lastMsg = conversation[conversation.length - 1];
+        const serverDone = streamingStatus === STREAMING_STATUS.STREAMING
+            && lastMsg?.chatSource === CHAT_SOURCE.ASSISTANT;
+
+        if (streamingStatus === STREAMING_STATUS.COMPLETE || serverDone) {
+            clearCompletedStreamingStatus(
+                targetChatId,
+                description || DEFAULT_CHAT_NAME_PLACEHOLDER,
+                conversation,
+                timestamp
+            );
+        }
+    }, [clearCompletedStreamingStatus]);
+
     // Keep latest URL chat ID in a ref so async hydration can drop stale responses.
     useEffect(() => {
         latestUrlChatIdRef.current = urlChatId;
@@ -843,18 +890,7 @@ function PromptWindow({
                     // Don't clear status -- polling will handle completion
                 } else {
                     // Normal hydration: fetch from server
-                    let conversation: ChatMessage[];
-                    let fetchedDescription: string | undefined;
-
-                    if (existingChat) {
-                        conversation = await resolveConversationFromPreview(existingChat, urlChatId, abortController.signal);
-                        fetchedDescription = existingChat.chatDescription;
-                    } else {
-                        const fullChat = await UserHistoryService.fetchChatHistoryById(urlChatId, abortController.signal);
-                        const messages = Array.isArray(fullChat.conversation) ? fullChat.conversation : [];
-                        conversation = attachComponentBlocks(messages, fullChat.componentBlocks);
-                        fetchedDescription = fullChat.chatDescription;
-                    }
+                    const chatData = await fetchChatData(urlChatId, abortController.signal, existingChat);
 
                     if (!isHydrationRequestCurrent(requestId, urlChatId)) {
                         return;
@@ -889,17 +925,15 @@ function PromptWindow({
 
                     shouldSnapToBottomOnHydrationRef.current = true;
                     suppressNextSmoothAutoScrollRef.current = true;
-                    setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId, fetchedDescription);
+                    setExistingChatStates(chatData.conversation, urlChatId, chatData.description);
 
-                    // Clear 'complete' status (server finished, response is loaded)
-                    if (loadedStreamingStatus === STREAMING_STATUS.COMPLETE) {
-                        clearCompletedStreamingStatus(
-                            urlChatId,
-                            existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
-                            Array.isArray(conversation) ? conversation : [],
-                            existingChat?.timestamp
-                        );
-                    }
+                    clearStreamingStatusIfDone(
+                        urlChatId,
+                        chatData.conversation,
+                        chatData.streamingStatus,
+                        chatData.description,
+                        existingChat?.timestamp
+                    );
                 }
 
                 // Paint once with new content while opacity is still 0, then reveal.
@@ -928,9 +962,10 @@ function PromptWindow({
         };
 
         void loadHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- existingHistoryList and
-    // clearCompletedStreamingStatus intentionally read via refs to avoid re-running
-    // hydration on every sidebar refresh / onHistoryUpsert identity change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- existingHistoryList,
+    // clearCompletedStreamingStatus, and clearStreamingStatusIfDone intentionally read
+    // via refs/stable closures to avoid re-running hydration on every sidebar refresh
+    // or onHistoryUpsert identity change.
     }, [
         cancelChatHydration,
         cancelStream,
@@ -941,7 +976,7 @@ function PromptWindow({
         isProcessing,
         isTransientHydrationMiss,
         getChatSwitchAnimationDurationMs,
-        resolveConversationFromPreview,
+        fetchChatData,
         waitForPaintBoundary,
         returnCurrentChatId,
         setExistingChatStates,
@@ -1122,8 +1157,7 @@ function PromptWindow({
             autoScrollTimeoutRef.current = null;
         };
 
-        // Small delay to ensure content is rendered
-        autoScrollTimeoutRef.current = window.setTimeout(scrollToBottom, 100);
+        autoScrollTimeoutRef.current = window.setTimeout(scrollToBottom, SCROLL_DELAY_MS);
 
         return () => {
             clearAutoScrollTimeout();
@@ -1147,8 +1181,7 @@ function PromptWindow({
 
         const handleScroll = () => {
             const { scrollTop, scrollHeight, clientHeight } = container;
-            // Consider "near bottom" to be within 400px of the bottom
-            const isNearBottom = scrollHeight - (scrollTop + clientHeight) < 400;
+            const isNearBottom = scrollHeight - (scrollTop + clientHeight) < NEAR_BOTTOM_THRESHOLD_PX;
             setShouldAutoScroll(isNearBottom);
         };
 
@@ -1175,17 +1208,7 @@ function PromptWindow({
 
         try {
             const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
-            let conversation: ChatMessage[];
-            let loadedStreamingStatus = existingChat?.streamingStatus;
-
-            if (existingChat) {
-                conversation = await resolveConversationFromPreview(existingChat, urlChatId, abortController.signal);
-            } else {
-                const fullChat = await UserHistoryService.fetchChatHistoryById(urlChatId, abortController.signal);
-                const messages = Array.isArray(fullChat.conversation) ? fullChat.conversation : [];
-                conversation = attachComponentBlocks(messages, fullChat.componentBlocks);
-                loadedStreamingStatus = fullChat.streamingStatus;
-            }
+            const chatData = await fetchChatData(urlChatId, abortController.signal, existingChat);
 
             if (!isHydrationRequestCurrent(requestId, urlChatId)) {
                 return;
@@ -1193,23 +1216,16 @@ function PromptWindow({
 
             shouldSnapToBottomOnHydrationRef.current = true;
             suppressNextSmoothAutoScrollRef.current = true;
-            setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId, existingChat?.chatDescription);
+            setExistingChatStates(chatData.conversation, urlChatId, chatData.description);
 
-            // Clear streamingStatus on retry hydration (same logic as main hydration flow)
-            const retryLastMsg = conversation[conversation.length - 1];
-            const retryServerDone = loadedStreamingStatus === STREAMING_STATUS.STREAMING
-                && retryLastMsg?.chatSource === CHAT_SOURCE.ASSISTANT;
+            clearStreamingStatusIfDone(
+                urlChatId,
+                chatData.conversation,
+                chatData.streamingStatus,
+                chatData.description,
+                existingChat?.timestamp
+            );
 
-            if (loadedStreamingStatus === STREAMING_STATUS.COMPLETE || retryServerDone) {
-                clearCompletedStreamingStatus(
-                    urlChatId,
-                    existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
-                    Array.isArray(conversation) ? conversation : [],
-                    existingChat?.timestamp
-                );
-            }
-
-            // Keep reveal ordering consistent with main hydration flow.
             await waitForPaintBoundary();
             if (!isHydrationRequestCurrent(requestId, urlChatId)) {
                 return;
@@ -1368,6 +1384,11 @@ function PromptWindow({
         }
     }, [isWelcomeActive, onChatScrolledChange]);
 
+    const currentChatStreamingStatus = existingHistoryList.find(c => c.chatId === chatId)?.streamingStatus;
+    const isWaitingForResponse = !isProcessing
+        && !streamingState.isStreaming
+        && currentChatStreamingStatus === STREAMING_STATUS.STREAMING;
+
     return (
         <div className='prompt-window'>
             <div ref={promptHistoryRef} className={`prompt-history-container${isNewChat && chatHistory.length === 0 && !streamingState?.isStreaming && !chatLoadError ? ' welcome-active' : ''}`}>
@@ -1384,12 +1405,7 @@ function PromptWindow({
                         isNewChat={isNewChat}
                         isSwitchingChats={isSwitchingChats}
                         chatId={chatId}
-                        isWaitingForResponse={
-                            !isProcessing
-                            && !streamingState.isStreaming
-                            && !!existingHistoryList.find(c => c.chatId === chatId)?.streamingStatus
-                            && existingHistoryList.find(c => c.chatId === chatId)?.streamingStatus === STREAMING_STATUS.STREAMING
-                        }
+                        isWaitingForResponse={isWaitingForResponse}
                         digest={digest}
                         digestLoading={digestLoading}
                         onRegenerateDigest={onRegenerateDigest}
