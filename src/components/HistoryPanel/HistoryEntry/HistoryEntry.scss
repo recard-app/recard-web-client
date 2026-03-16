@@ -177,25 +177,10 @@
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  color: $primary-color;
   line-height: 1;
 
-  // Spin animation for streaming state (arrow-refresh icon)
-  svg {
-    animation: streaming-spin 1s linear infinite;
-  }
-
-  // Complete state -- success color, no spin
+  // Complete state -- success color
   &.complete {
     color: $success;
-
-    svg {
-      animation: none;
-    }
   }
-}
-
-@keyframes streaming-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }

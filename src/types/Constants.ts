@@ -27,6 +27,13 @@ export const CHAT_HISTORY_PREFERENCE = {
 } as const;
 export type ChatHistoryPreferenceType = typeof CHAT_HISTORY_PREFERENCE[keyof typeof CHAT_HISTORY_PREFERENCE];
 
+export const STREAMING_STATUS = {
+    STREAMING: 'streaming',
+    COMPLETE: 'complete',
+    ERROR: 'error',
+} as const;
+export type StreamingStatusType = typeof STREAMING_STATUS[keyof typeof STREAMING_STATUS];
+
 export const AGENT_MODE_PREFERENCE = {
     ORCHESTRATED: 'orchestrated',
     SIMPLIFIED: 'simplified'

@@ -94,6 +94,7 @@ import {
   SUBSCRIPTION_STATUS,
   LOADING_ICON,
   LOADING_ICON_SIZE,
+  STREAMING_STATUS,
   Conversation,
   ChatHistoryPreference,
   AgentModePreference,
@@ -894,7 +895,67 @@ function AppContent({}: AppContentProps) {
       try {
         const response = await UserHistoryService.fetchChatHistoryPreview(GLOBAL_QUICK_HISTORY_SIZE);
 
-        setChatHistory(response.chatHistory);
+        // Merge server data but prevent the specific race where:
+        // local just set 'null' (handleMessageComplete) but server still has 'streaming'
+        // because the server-side clear hasn't propagated yet.
+        // Allow 'complete' from server to come through (it's a real state transition).
+        setChatHistory(prevHistory => {
+          const localByChat = new Map<string, Conversation>();
+          for (const chat of prevHistory) {
+            localByChat.set(chat.chatId, chat);
+          }
+
+          // Merge each server entry with local overrides
+          const serverChatIds = new Set<string>();
+          const merged = response.chatHistory.map(serverChat => {
+            serverChatIds.add(serverChat.chatId);
+            const local = localByChat.get(serverChat.chatId);
+            let entry = serverChat;
+
+            if (local) {
+              // Preserve local conversation/componentBlocks when the server
+              // returns empty (lightweight preview has no conversation data).
+              if ((!entry.conversation || entry.conversation.length === 0)
+                  && local.conversation && local.conversation.length > 0) {
+                entry = {
+                  ...entry,
+                  conversation: local.conversation,
+                  componentBlocks: local.componentBlocks,
+                };
+              }
+
+              // Keep local timestamp if newer
+              if (local.timestamp > serverChat.timestamp) {
+                entry = { ...entry, timestamp: local.timestamp };
+              }
+
+              const ls = local.streamingStatus;
+              const ss = entry.streamingStatus;
+
+              if (ls === STREAMING_STATUS.STREAMING && !ss) {
+                entry = { ...entry, streamingStatus: STREAMING_STATUS.STREAMING };
+              } else if ((ls === null || ls === undefined) && ss === STREAMING_STATUS.STREAMING) {
+                entry = { ...entry, streamingStatus: null };
+              }
+            }
+
+            if (entry.chatId === currentChatId
+                && entry.streamingStatus === STREAMING_STATUS.COMPLETE) {
+              entry = { ...entry, streamingStatus: null };
+            }
+            return entry;
+          });
+
+          // Keep local-only entries that aren't in the server response
+          // (e.g. chats that fell out of the 3-entry preview but are still streaming)
+          for (const local of prevHistory) {
+            if (!serverChatIds.has(local.chatId) && local.streamingStatus === STREAMING_STATUS.STREAMING) {
+              merged.push(local);
+            }
+          }
+
+          return merged;
+        });
         setLastUpdateTimestamp(new Date().toISOString());
       } catch (error) {
         console.error('Error refreshing chat history:', error);
@@ -905,6 +966,28 @@ function AppContent({}: AppContentProps) {
 
     refreshHistory();
   }, [historyRefreshTrigger, chatHistoryPreference]);
+
+  // Poll sidebar when any chat is streaming so the indicator updates
+  // when the server finishes (writes 'complete' or null) even if the user
+  // is viewing a different page. Stops when no chats are streaming or
+  // after 20 seconds to avoid indefinite polling.
+  useEffect(() => {
+    const hasStreaming = chatHistory.some(c => c.streamingStatus === STREAMING_STATUS.STREAMING);
+    if (!hasStreaming || !user) return;
+
+    const interval = setInterval(() => {
+      setHistoryRefreshTrigger(prev => prev + 1);
+    }, 3000);
+
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+    }, 20000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [chatHistory, user]);
 
   // Effect to handle monthly stats refresh triggers (for updates from other components)
   useEffect(() => {
@@ -1007,7 +1090,13 @@ function AppContent({}: AppContentProps) {
   };
 
   // Upsert a chat entry in local history state.
-  const handleHistoryUpsert = async (updatedChat: Conversation): Promise<void> => {
+  // `skipRefresh` is used for local status-only updates (for example, clearing
+  // streamingStatus) so a stale server fetch does not immediately overwrite
+  // the optimistic local value.
+  const handleHistoryUpsert = useCallback(async (
+    updatedChat: Conversation,
+    skipRefresh: boolean = false
+  ): Promise<void> => {
     if (!updatedChat) return;
 
     let isExistingChatUpdate = false;
@@ -1020,20 +1109,30 @@ function AppContent({}: AppContentProps) {
 
       isExistingChatUpdate = true;
       const nextHistory = [...prevHistory];
+      const existing = prevHistory[existingIndex];
       nextHistory[existingIndex] = {
         ...updatedChat,
-        chatDescription: updatedChat.chatDescription || prevHistory[existingIndex].chatDescription,
+        // Keep the existing title if the incoming one is the default placeholder.
+        // This prevents "New Chat" from overwriting a real server-generated title
+        // when status-only upserts don't have access to the chat's actual name.
+        chatDescription: (updatedChat.chatDescription && updatedChat.chatDescription !== 'New Chat')
+          ? updatedChat.chatDescription
+          : (existing.chatDescription || updatedChat.chatDescription),
+        // Preserve whichever timestamp is newer so chat ordering stays stable.
+        // This prevents status-only upserts from bouncing the sort order.
+        timestamp: updatedChat.timestamp > existing.timestamp
+          ? updatedChat.timestamp
+          : existing.timestamp,
       };
       return nextHistory;
     });
 
     setLastUpdateTimestamp(new Date().toISOString());
 
-    // Existing chats should refetch lightweight history metadata.
-    if (isExistingChatUpdate) {
+    if (isExistingChatUpdate && !skipRefresh) {
       setHistoryRefreshTrigger(prev => prev + 1);
     }
-  };
+  }, []);
 
   // Delete a chat entry and only clear the active prompt if it was the active chat.
   const handleHistoryDelete = async (deletedChatId: string): Promise<void> => {
@@ -1052,10 +1151,10 @@ function AppContent({}: AppContentProps) {
   };
 
   // Trigger a history refetch without mutating local chat list state.
-  const handleHistoryRefresh = async (): Promise<void> => {
+  const handleHistoryRefresh = useCallback(async (): Promise<void> => {
     setLastUpdateTimestamp(new Date().toISOString());
     setHistoryRefreshTrigger(prev => prev + 1);
-  };
+  }, []);
 
   // Function to trigger chat clearing
   const handleClearChat = (): void => {

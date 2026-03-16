@@ -43,7 +43,10 @@ export interface UseAgentChatOptions {
 export interface UseAgentChatReturn {
   streamingState: StreamingState;
   sendMessage: (prompt: string, chatHistory: ChatMessage[], conversationId?: string) => Promise<void>;
+  /** Abort the local SSE connection. Server continues processing and persists. */
   cancelStream: () => void;
+  /** Abort local SSE AND tell the server to stop + discard. Use for explicit "Stop generating" only. */
+  stopAndDiscardStream: () => void;
   resetState: () => void;
   isProcessing: boolean;
 }
@@ -290,8 +293,9 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
     );
   }, [userName, conversationId, agentMode, onMessageComplete, onError, onDataChanged]);
 
+  // Abort the local SSE connection only. Server continues processing and persists.
+  // Used by navigation, chat switching, and component cleanup.
   const cancelStream = useCallback(() => {
-    // Abort the SSE connection (stops UI streaming)
     abortControllerRef.current?.abort();
     cleanupRef.current?.();
     setStreamingState(prev => ({
@@ -300,13 +304,17 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       activeNode: null,
       activeTool: null,
     }));
+  }, []);
 
-    // Tell server to stop processing and discard (fire-and-forget)
+  // Abort local SSE AND tell the server to stop processing + discard the response.
+  // Used ONLY for explicit user "Stop generating" action.
+  const stopAndDiscardStream = useCallback(() => {
+    cancelStream();
     if (activeConversationIdRef.current) {
       cancelServerStream(activeConversationIdRef.current).catch(() => {});
       activeConversationIdRef.current = null;
     }
-  }, []);
+  }, [cancelStream]);
 
   const resetState = useCallback(() => {
     setStreamingState(initialStreamingState);
@@ -316,6 +324,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
     streamingState,
     sendMessage,
     cancelStream,
+    stopAndDiscardStream,
     resetState,
     isProcessing: streamingState.isStreaming,
   };
@@ -429,6 +438,7 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
     streamingState,
     sendMessage,
     cancelStream,
+    stopAndDiscardStream: cancelStream, // Fallback has no server-side stream to cancel
     resetState,
     isProcessing: streamingState.isStreaming,
   };

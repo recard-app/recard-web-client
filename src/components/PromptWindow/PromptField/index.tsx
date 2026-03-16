@@ -20,9 +20,10 @@ interface PromptFieldProps {
   isProcessing: boolean;
   onCancel: () => void;
   disabled?: boolean;
+  chatLimitReached?: boolean;
 }
 
-function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false }: PromptFieldProps): JSX.Element {
+function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, chatLimitReached = false }: PromptFieldProps): JSX.Element {
   // Stores the current value of the prompt textarea
   const [promptValue, setPromptValue] = useState<string>('');
   // Reference to the textarea element for dynamic height adjustment
@@ -178,7 +179,7 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false }:
         value={promptValue}
         onChange={inputChange}
         onKeyDown={handleKeyDown}
-        placeholder={disabled ? 'Chat limit reached' : 'Where are you shopping today?'}
+        placeholder={chatLimitReached ? 'Chat limit reached' : 'Where are you shopping today?'}
         rows={1}
         data-virtualkeyboard="true"
         disabled={disabled}

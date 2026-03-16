@@ -2,7 +2,7 @@ import React from 'react';
 import { toast } from 'sonner';
 import './HistoryEntry.scss';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Conversation, StreamingStatus, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_RED } from '../../../types';
+import { Conversation, StreamingStatus, CHAT_DESCRIPTION_MAX_LENGTH, LOADING_ICON, LOADING_ICON_SIZE, ICON_GRAY, ICON_GRAY_DARK, ICON_RED, STREAMING_STATUS } from '../../../types';
 import { Icon, createIconVariant } from '../../../icons';
 import { formatDate, deleteChatEntry } from './utils';
 import {
@@ -183,12 +183,12 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
         <div className="entry-content">
           <div className="entry-info">
             <div className="entry-title-row">
-              {variant === 'sidebar' && chatEntry.streamingStatus === 'streaming' && (
+              {variant === 'sidebar' && chatEntry.streamingStatus === STREAMING_STATUS.STREAMING && (
                 <span className="streaming-status-icon" title="Generating response...">
-                  <Icon name="arrow-refresh" variant="mini" size={14} />
+                  <LOADING_ICON size={LOADING_ICON_SIZE} color={ICON_GRAY_DARK} />
                 </span>
               )}
-              {variant === 'sidebar' && chatEntry.streamingStatus === 'complete' && (
+              {variant === 'sidebar' && chatEntry.streamingStatus === STREAMING_STATUS.COMPLETE && (
                 <span className="streaming-status-icon complete" title="New response ready">
                   <Icon name="check-circle" variant="mini" size={14} />
                 </span>

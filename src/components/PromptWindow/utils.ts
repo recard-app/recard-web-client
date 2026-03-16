@@ -49,6 +49,32 @@ export const extractComponentBlocks = (messages: ChatMessage[]): ChatComponentBl
 };
 
 /**
+ * Re-attach component blocks from the conversation-level array onto their
+ * corresponding ChatMessage objects (matched by messageId).
+ * Server stores componentBlocks separately; the client needs them on each message.
+ */
+export const attachComponentBlocks = (
+    messages: ChatMessage[],
+    componentBlocks?: ChatComponentBlock[]
+): ChatMessage[] => {
+    if (!componentBlocks || componentBlocks.length === 0) return messages;
+
+    const blocksByMessageId = new Map<string, ChatComponentBlock>();
+    for (const block of componentBlocks) {
+        blocksByMessageId.set(block.messageId, block);
+    }
+
+    return messages.map(msg => {
+        if (msg.componentBlock) return msg; // Already has one
+        const block = blocksByMessageId.get(msg.id);
+        if (block) {
+            return { ...msg, componentBlock: block };
+        }
+        return msg;
+    });
+};
+
+/**
  * Handles the storage and updating of chat history.
  * Creates new chat sessions or updates existing ones based on user preferences.
  *

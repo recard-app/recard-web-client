@@ -60,6 +60,8 @@ interface PromptHistoryProps {
   onRegenerateDigest?: () => void;
   isRegeneratingDigest?: boolean;
   chatId?: string;
+  /** True when the server is still processing a response (user returned to a streaming chat) */
+  isWaitingForResponse?: boolean;
   // Component click handlers
   onCardClick?: (cardId: string) => void;
   onCreditClick?: (cardId: string, creditId: string) => void;
@@ -105,6 +107,7 @@ function PromptHistory({
   onRegenerateDigest,
   isRegeneratingDigest = false,
   chatId = '',
+  isWaitingForResponse = false,
   onCardClick,
   onCreditClick,
   onPerkClick,
@@ -278,6 +281,13 @@ function PromptHistory({
 
           {/* Render streaming content at the end */}
           {renderStreamingContent()}
+
+          {/* Show animated avatar when waiting for server response (returned to streaming chat) */}
+          {isWaitingForResponse && !streamingState?.isStreaming && (
+            <div className="streaming-content">
+              <Icon name={assistantIconName} variant="solid" className={`assistant-avatar avatar-anim-${AVATAR_ANIMATIONS[assistantIconName]}`} />
+            </div>
+          )}
         </>
       )}
     </div>
