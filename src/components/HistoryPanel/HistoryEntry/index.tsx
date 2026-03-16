@@ -189,9 +189,7 @@ function HistoryEntry({ chatEntry, currentChatId, onDelete, refreshHistory, retu
                 </span>
               )}
               {variant === 'sidebar' && chatEntry.streamingStatus === STREAMING_STATUS.COMPLETE && (
-                <span className="streaming-status-icon complete" title="New response ready">
-                  <Icon name="check-circle" variant="mini" size={14} />
-                </span>
+                <span className="streaming-status-dot" title="New response ready" />
               )}
               <p className="entry-title">{chatEntry.chatDescription}</p>
             </div>

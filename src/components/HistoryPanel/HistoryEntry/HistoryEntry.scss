@@ -57,13 +57,17 @@
             .entry-title-row {
                 display: flex;
                 align-items: center;
-                gap: 6px;
+                gap: $space-1;
                 min-width: 0; // Allow text truncation
             }
 
             .entry-title {
                 font-weight: $font-semibold;
                 font-size: $font-sm;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                min-width: 0;
             }
 
             .timestamp {
@@ -178,9 +182,23 @@
   align-items: center;
   flex-shrink: 0;
   line-height: 1;
+}
 
-  // Complete state -- success color
-  &.complete {
-    color: $success;
+// Green dot for completed chats (response ready)
+// Container matches the 12px spinner size to prevent layout shift
+.streaming-status-dot {
+  width: 12px;
+  height: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: $success;
   }
 }
