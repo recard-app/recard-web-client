@@ -21,11 +21,14 @@ import { ChatMessage, Conversation } from '../../types';
 
 import { AgentModePreference, ChatHistoryPreference } from '../../types';
 import { MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
-import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE } from '../../types';
+import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE, CHAT_SOURCE } from '../../types';
 import { UserHistoryService } from '../../services';
 import { ErrorWithRetry } from '../../elements';
 import { classifyError } from '../../types/AgentChatTypes';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
+
+const POLL_INTERVAL_MS = 3000;
+const POLL_TIMEOUT_MS = 5 * 60 * 1000;
 
 /**
  * Data structure for daily digest
@@ -67,6 +70,8 @@ interface PromptWindowProps {
     isRegeneratingDigest?: boolean;
     /** Callback fired when the chat scroll state changes (scrolled from top or not) */
     onChatScrolledChange?: (isScrolled: boolean) => void;
+    /** Callback to refresh the sidebar history list (picks up new titles + status) */
+    onHistoryRefresh?: () => void;
 }
 
 /**
@@ -94,6 +99,7 @@ function PromptWindow({
     onRegenerateDigest,
     isRegeneratingDigest = false,
     onChatScrolledChange,
+    onHistoryRefresh,
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
@@ -729,10 +735,10 @@ function PromptWindow({
                 suppressNextSmoothAutoScrollRef.current = true;
                 setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
 
-                // Clear streamingStatus if chat was completed or still streaming.
-                // Server clear ensures next lightweight fetch returns null.
-                // Local onHistoryUpsert ensures sidebar updates immediately.
-                if (loadedStreamingStatus === 'complete' || loadedStreamingStatus === 'streaming') {
+                // Clear streamingStatus if chat response is complete (server finished).
+                // 'streaming' is NOT cleared here -- the polling effect (Phase 4) handles
+                // that case by waiting for the server to finish, then clearing.
+                if (loadedStreamingStatus === 'complete') {
                     UserHistoryService.clearStreamingStatus(urlChatId).catch(() => {});
                     onHistoryUpsert({
                         chatId: urlChatId,
@@ -788,6 +794,60 @@ function PromptWindow({
         urlChatId,
         user
     ]);
+
+    // Poll for server completion when user returns to a chat that is still processing.
+    // Triggered by streamingStatus === 'streaming' in the lightweight history list.
+    useEffect(() => {
+        if (!urlChatId || !user) return;
+
+        const existingChat = existingHistoryList?.find(c => c.chatId === urlChatId);
+        if (!existingChat?.streamingStatus || existingChat.streamingStatus !== 'streaming') return;
+
+        let stopped = false;
+
+        const interval = setInterval(async () => {
+            if (stopped) return;
+            try {
+                const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
+                const serverHistory = response.conversation || [];
+                const lastServerMsg = serverHistory[serverHistory.length - 1];
+
+                // Server has an assistant response -- it's done
+                if (lastServerMsg && lastServerMsg.chatSource === CHAT_SOURCE.ASSISTANT) {
+                    stopped = true;
+                    clearInterval(interval);
+
+                    chatHistoryRef.current = serverHistory;
+                    setChatHistory(limitChatHistory(serverHistory));
+
+                    // Clear streamingStatus locally + server-side
+                    onHistoryUpsert({
+                        ...response,
+                        chatId: urlChatId,
+                        streamingStatus: null,
+                    });
+                    UserHistoryService.clearStreamingStatus(urlChatId).catch(() => {});
+
+                    // Refresh sidebar to pick up new title + cleared status
+                    onHistoryRefresh?.();
+                }
+            } catch {
+                // Silently continue polling
+            }
+        }, POLL_INTERVAL_MS);
+
+        // Stop polling after timeout (server should be done by then)
+        const timeout = setTimeout(() => {
+            stopped = true;
+            clearInterval(interval);
+        }, POLL_TIMEOUT_MS);
+
+        return () => {
+            stopped = true;
+            clearInterval(interval);
+            clearTimeout(timeout);
+        };
+    }, [urlChatId, existingHistoryList, user, onHistoryUpsert, onHistoryRefresh]);
 
     // Handle initial prompt from onboarding navigation state
     const initialPromptHandledRef = useRef(false);
@@ -946,7 +1006,7 @@ function PromptWindow({
             setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
 
             // Clear streamingStatus on retry hydration (same logic as main hydration flow)
-            if (loadedStreamingStatus === 'complete' || loadedStreamingStatus === 'streaming') {
+            if (loadedStreamingStatus === 'complete') {
                 UserHistoryService.clearStreamingStatus(urlChatId).catch(() => {});
                 onHistoryUpsert({
                     chatId: urlChatId,

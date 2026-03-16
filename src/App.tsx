@@ -1242,6 +1242,7 @@ function AppContent({}: AppContentProps) {
               onRegenerateDigest={handleRegenerateDigest}
               isRegeneratingDigest={isRegeneratingDigest}
               onChatScrolledChange={setIsChatScrolled}
+              onHistoryRefresh={handleHistoryRefresh}
             />
           </div>
         </div>
