@@ -125,6 +125,7 @@ export interface SubscriptionPlanResponse {
  */
 export type LightweightConversation = Pick<Conversation, 'chatId' | 'chatDescription' | 'timestamp'> & {
     messageCount: number;
+    streamingStatus?: Conversation['streamingStatus'];
 };
 
 /**

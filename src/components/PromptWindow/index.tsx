@@ -1,7 +1,6 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
-import { toast } from 'sonner';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import { useAgentChat } from '../../hooks/useAgentChat';
 import { useScrolledFromTop } from '../../hooks/useScrolledFromTop';
@@ -19,26 +18,14 @@ import {
 // Import types
 import { PAGES } from '../../types';
 import { ChatMessage, Conversation } from '../../types';
-import { ChatComponentBlock } from '../../types/ChatComponentTypes';
+
 import { AgentModePreference, ChatHistoryPreference } from '../../types';
 import { MAX_CHAT_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
-import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE, CHAT_SOURCE } from '../../types';
+import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE } from '../../types';
 import { UserHistoryService } from '../../services';
 import { ErrorWithRetry } from '../../elements';
 import { classifyError } from '../../types/AgentChatTypes';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
-
-const PERSIST_RETRY_DELAYS_MS = [1000, 3000, 10000] as const;
-const PERSIST_FAILURE_TOAST_MESSAGE = 'We could not save this chat yet. Your messages are still visible in this session.';
-
-interface PendingPersistState {
-    chatId: string;
-    historyToSave: ChatMessage[];
-    componentBlocks: ChatComponentBlock[];
-    retryIndex: number;
-    timeoutId: number | null;
-    notifiedFailure: boolean;
-}
 
 /**
  * Data structure for daily digest
@@ -140,14 +127,10 @@ function PromptWindow({
     const clearChatResetTimeoutRef = useRef<number | null>(null);
     const hydratingChatIdRef = useRef<string | null>(null);
 
-    // Ref to track if we're currently saving to prevent duplicate saves
-    const isSavingRef = useRef<boolean>(false);
     // In-flight create promise for first-message send + parallel persistence
     const pendingChatCreateRef = useRef<Promise<void> | null>(null);
     // Tracks whether the current chat document is known to exist in persistence
     const isChatPersistedRef = useRef<boolean>(false);
-    // Retry state for failed persistence (create/update)
-    const pendingPersistRef = useRef<PendingPersistState | null>(null);
     // Tracks whether existing chat history has been hydrated locally
     const hasHydratedCurrentChatRef = useRef<boolean>(false);
     // Tracks if user sent a message on current chat before hydration finished
@@ -162,16 +145,6 @@ function PromptWindow({
 
     const logMetric = useCallback((name: string, metadata: Record<string, unknown> = {}) => {
         console.info('[PromptWindowMetrics]', { name, ...metadata });
-    }, []);
-
-    const clearPendingPersistTimeout = useCallback(() => {
-        const pendingPersist = pendingPersistRef.current;
-        if (!pendingPersist || pendingPersist.timeoutId === null) {
-            return;
-        }
-
-        window.clearTimeout(pendingPersist.timeoutId);
-        pendingPersist.timeoutId = null;
     }, []);
 
     const getCurrentChatContext = useCallback(() => {
@@ -291,334 +264,34 @@ function PromptWindow({
         setIsSwitchingChats(false);
     }, []);
 
-    const mergeHistoryWithServerIfNeeded = useCallback(async (
-        currentChatId: string,
-        historyToSave: ChatMessage[],
-        componentBlocks: ChatComponentBlock[]
-    ): Promise<{ mergedHistory: ChatMessage[]; mergedBlocks: ChatComponentBlock[] }> => {
-        const shouldMergeExistingChat = Boolean(
-            urlChatId
-            && currentChatId === urlChatId
-            && !hasHydratedCurrentChatRef.current
-        );
-
-        if (!shouldMergeExistingChat) {
-            return {
-                mergedHistory: historyToSave,
-                mergedBlocks: componentBlocks,
-            };
-        }
-
-        try {
-            const existingChat = await UserHistoryService.fetchChatHistoryById(currentChatId);
-            const existingConversation = Array.isArray(existingChat.conversation)
-                ? existingChat.conversation
-                : [];
-            const existingMessageIds = new Set(existingConversation.map(message => message.id));
-            const unsavedMessages = historyToSave.filter(message => !existingMessageIds.has(message.id));
-            const mergedHistory = limitChatHistory([...existingConversation, ...unsavedMessages]);
-
-            const existingBlocks = Array.isArray(existingChat.componentBlocks)
-                ? existingChat.componentBlocks
-                : [];
-            const existingBlockIds = new Set(existingBlocks.map(block => block.id));
-            const mergedBlocks = [
-                ...existingBlocks,
-                ...componentBlocks.filter(block => !existingBlockIds.has(block.id)),
-            ];
-
-            // Once merged, local state becomes authoritative and we avoid losing context.
-            chatHistoryRef.current = mergedHistory;
-            setChatHistory(mergedHistory);
-            hasHydratedCurrentChatRef.current = true;
-
-            return { mergedHistory, mergedBlocks };
-        } catch (error) {
-            const status = (error as { response?: { status?: number } })?.response?.status;
-
-            // If the URL references a chat that does not exist, treat it as a new persisted chat.
-            if (status === 404) {
-                console.warn('History merge source not found; persisting local conversation as a new chat:', currentChatId);
-                return {
-                    mergedHistory: historyToSave,
-                    mergedBlocks: componentBlocks,
-                };
-            }
-
-            // Any non-404 merge failure is potentially transient and unsafe to overwrite with local-only state.
-            throw error;
-        }
-    }, [urlChatId]);
-
-    const persistConversation = useCallback(async (
-        currentChatId: string,
-        historyToSave: ChatMessage[],
-        componentBlocks: ChatComponentBlock[]
-    ): Promise<void> => {
-        if (!user || chatHistoryPreference === CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
-            return;
-        }
-
-        if (!currentChatId) {
-            return;
-        }
-
-        const { mergedHistory, mergedBlocks } = await mergeHistoryWithServerIfNeeded(
-            currentChatId,
-            historyToSave,
-            componentBlocks
-        );
-
-        if (!isChatPersistedRef.current) {
-            const createStart = performance.now();
-            const createdChat = await UserHistoryService.createChatHistory(
-                mergedHistory,
-                mergedBlocks,
-                undefined,
-                true,
-                currentChatId
-            );
-            isChatPersistedRef.current = true;
-
-            logMetric('chat_create_latency', {
-                chatId: currentChatId,
-                durationMs: Math.round(performance.now() - createStart),
-                source: 'persist_flow',
-            });
-
-            onHistoryUpsert(createdChat);
-
-            // Always follow create with update to guarantee persistence when create is idempotent.
-            await UserHistoryService.updateChatHistory(
-                currentChatId,
-                mergedHistory,
-                mergedBlocks
-            );
-        } else {
-            await UserHistoryService.updateChatHistory(
-                currentChatId,
-                mergedHistory,
-                mergedBlocks
-            );
-        }
-
-        const existingChat = existingHistoryList.find(chat => chat.chatId === currentChatId);
-        const updatedChat: Conversation = {
-            chatId: currentChatId,
-            timestamp: new Date().toISOString(),
-            conversation: mergedHistory,
-            chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
-            componentBlocks: mergedBlocks
-        };
-        onHistoryUpsert(updatedChat);
-
-        if (!existingChat?.chatDescription || existingChat.chatDescription === DEFAULT_CHAT_NAME_PLACEHOLDER) {
-            try {
-                const newTitle = await UserHistoryService.generateChatTitle(currentChatId);
-                onHistoryUpsert({
-                    ...updatedChat,
-                    chatDescription: newTitle
-                });
-            } catch (titleError) {
-                console.error('Failed to generate title:', titleError);
-            }
-        }
-    }, [
-        user,
-        chatHistoryPreference,
-        mergeHistoryWithServerIfNeeded,
-        logMetric,
-        onHistoryUpsert,
-        existingHistoryList
-    ]);
-
-    const runPersistRetryAttempt = useCallback(async () => {
-        const pendingPersist = pendingPersistRef.current;
-        if (!pendingPersist) {
-            return;
-        }
-
-        pendingPersist.timeoutId = null;
-        const retryAttempt = pendingPersist.retryIndex + 1;
-
-        logMetric('persistence_retry_attempt', {
-            chatId: pendingPersist.chatId,
-            retryAttempt,
-        });
-
-        try {
-            await persistConversation(
-                pendingPersist.chatId,
-                pendingPersist.historyToSave,
-                pendingPersist.componentBlocks
-            );
-
-            pendingPersistRef.current = null;
-            setIsNewChatPending(false);
-        } catch (error) {
-            pendingPersist.retryIndex += 1;
-
-            logMetric('persistence_retry_failure', {
-                chatId: pendingPersist.chatId,
-                retryAttempt,
-                error: error instanceof Error ? error.message : String(error),
-            });
-
-            if (pendingPersist.retryIndex >= PERSIST_RETRY_DELAYS_MS.length) {
-                if (!pendingPersist.notifiedFailure) {
-                    pendingPersist.notifiedFailure = true;
-                    toast.error(PERSIST_FAILURE_TOAST_MESSAGE);
-                }
-
-                logMetric('persistence_terminal_failure', {
-                    chatId: pendingPersist.chatId,
-                    retries: pendingPersist.retryIndex,
-                });
-                setIsNewChatPending(false);
-                return;
-            }
-
-            const delayMs = PERSIST_RETRY_DELAYS_MS[pendingPersist.retryIndex];
-            pendingPersist.timeoutId = window.setTimeout(() => {
-                void runPersistRetryAttempt();
-            }, delayMs);
-        }
-    }, [logMetric, persistConversation]);
-
-    const schedulePersistRetry = useCallback((
-        payload: Pick<PendingPersistState, 'chatId' | 'historyToSave' | 'componentBlocks'>,
-        error: unknown
-    ) => {
-        const existingPending = pendingPersistRef.current;
-
-        if (!existingPending) {
-            pendingPersistRef.current = {
-                ...payload,
-                retryIndex: 0,
-                timeoutId: null,
-                notifiedFailure: false,
-            };
-        } else {
-            existingPending.chatId = payload.chatId;
-            existingPending.historyToSave = payload.historyToSave;
-            existingPending.componentBlocks = payload.componentBlocks;
-
-            // After a terminal failure, a new failed persist attempt should start a fresh retry window.
-            if (
-                existingPending.timeoutId === null
-                && existingPending.retryIndex >= PERSIST_RETRY_DELAYS_MS.length
-            ) {
-                existingPending.retryIndex = 0;
-                existingPending.notifiedFailure = false;
-            }
-        }
-
-        const pendingPersist = pendingPersistRef.current;
-        if (!pendingPersist) {
-            return;
-        }
-
-        logMetric('persistence_retry_scheduled', {
-            chatId: pendingPersist.chatId,
-            retryAttempt: pendingPersist.retryIndex + 1,
-            error: error instanceof Error ? error.message : String(error),
-        });
-
-        if (pendingPersist.timeoutId !== null) {
-            return;
-        }
-
-        if (pendingPersist.retryIndex >= PERSIST_RETRY_DELAYS_MS.length) {
-            if (!pendingPersist.notifiedFailure) {
-                pendingPersist.notifiedFailure = true;
-                toast.error(PERSIST_FAILURE_TOAST_MESSAGE);
-            }
-            return;
-        }
-
-        const delayMs = PERSIST_RETRY_DELAYS_MS[pendingPersist.retryIndex];
-        pendingPersist.timeoutId = window.setTimeout(() => {
-            void runPersistRetryAttempt();
-        }, delayMs);
-    }, [logMetric, runPersistRetryAttempt]);
-
-    // Handler for completed messages - updates chat and generates title
-    const handleMessageComplete = useCallback((
-        message: ChatMessage
-    ) => {
-        if (isSavingRef.current) {
-            return;
-        }
-        isSavingRef.current = true;
-
-        const historyForStorage = [...chatHistoryRef.current, message];
-        chatHistoryRef.current = historyForStorage;
+    // Handler for completed messages - updates local state only (server handles persistence)
+    const handleMessageComplete = useCallback((message: ChatMessage) => {
+        // Update local state only -- server handles persistence
+        const updatedHistory = [...chatHistoryRef.current, message];
+        chatHistoryRef.current = updatedHistory;
         setChatHistory(prev => limitChatHistory([...prev, message]));
 
-        (async () => {
-            const currentChatId = getCurrentChatContext();
+        // Update history panel with new message count and clear streamingStatus.
+        // Connected client clears streamingStatus so the sidebar indicator disappears
+        // immediately rather than briefly showing 'complete'.
+        const currentChatId = chatIdRef.current;
+        if (currentChatId) {
+            const existingChat = existingHistoryList.find(chat => chat.chatId === currentChatId);
+            onHistoryUpsert({
+                chatId: currentChatId,
+                timestamp: new Date().toISOString(),
+                conversation: updatedHistory,
+                chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
+                componentBlocks: extractComponentBlocks(updatedHistory),
+                streamingStatus: null,
+            });
 
-            try {
-                if (!user || chatHistoryPreference === CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
-                    setIsNewChatPending(false);
-                    return;
-                }
+            // Clear server-side streamingStatus (fire-and-forget)
+            UserHistoryService.clearStreamingStatus(currentChatId).catch(() => {});
+        }
 
-                if (!currentChatId) {
-                    setIsNewChatPending(false);
-                    return;
-                }
-
-                if (pendingChatCreateRef.current) {
-                    try {
-                        await pendingChatCreateRef.current;
-                    } catch (createError) {
-                        console.warn('Initial chat create failed, continuing with persistence retry flow:', createError);
-                    } finally {
-                        pendingChatCreateRef.current = null;
-                    }
-                }
-
-                const historyToSave = historyForStorage.filter(
-                    m => m.chatSource !== CHAT_SOURCE.ERROR && !m.isError
-                );
-                const componentBlocks = extractComponentBlocks(historyForStorage);
-
-                await persistConversation(
-                    currentChatId,
-                    historyToSave,
-                    componentBlocks
-                );
-
-                clearPendingPersistTimeout();
-                pendingPersistRef.current = null;
-                setIsNewChatPending(false);
-            } catch (error) {
-                const historyToSave = historyForStorage.filter(
-                    m => m.chatSource !== CHAT_SOURCE.ERROR && !m.isError
-                );
-                const componentBlocks = extractComponentBlocks(historyForStorage);
-
-                schedulePersistRetry(
-                    {
-                        chatId: currentChatId,
-                        historyToSave,
-                        componentBlocks,
-                    },
-                    error
-                );
-            } finally {
-                isSavingRef.current = false;
-            }
-        })();
-    }, [
-        user,
-        chatHistoryPreference,
-        getCurrentChatContext,
-        persistConversation,
-        clearPendingPersistTimeout,
-        schedulePersistRetry
-    ]);
+        setIsNewChatPending(false);
+    }, [onHistoryUpsert, existingHistoryList]);
 
     // Handler for stream errors
     const handleStreamError = useCallback((error: string) => {
@@ -762,7 +435,8 @@ function PromptWindow({
                 [],
                 undefined,
                 true,
-                currentChatId
+                currentChatId,
+                'streaming'
             ).then((response) => {
                 isChatPersistedRef.current = true;
                 logMetric('chat_create_latency', {
@@ -772,15 +446,9 @@ function PromptWindow({
                 });
                 onHistoryUpsert(response);
             }).catch((error) => {
+                // Server handles persistence via upsert -- parallel create failure is non-critical
                 isChatPersistedRef.current = false;
-                schedulePersistRetry(
-                    {
-                        chatId: currentChatId,
-                        historyToSave: [userMessage],
-                        componentBlocks: [],
-                    },
-                    error
-                );
+                console.warn('Parallel chat create failed (server will persist):', error);
             }).finally(() => {
                 setIsNewChatPending(false);
             });
@@ -920,8 +588,6 @@ function PromptWindow({
                 hasHydratedCurrentChatRef.current = false;
                 hasUserSentInCurrentChatRef.current = false;
                 pendingChatCreateRef.current = null;
-                clearPendingPersistTimeout();
-                pendingPersistRef.current = null;
                 returnCurrentChatId('');
                 return;
             }
@@ -1015,9 +681,16 @@ function PromptWindow({
 
             try {
                 const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
-                const conversation = existingChat
-                    ? await resolveConversationFromPreview(existingChat, urlChatId, abortController.signal)
-                    : (await UserHistoryService.fetchChatHistoryById(urlChatId, abortController.signal)).conversation;
+                let conversation: ChatMessage[];
+                let loadedStreamingStatus = existingChat?.streamingStatus;
+
+                if (existingChat) {
+                    conversation = await resolveConversationFromPreview(existingChat, urlChatId, abortController.signal);
+                } else {
+                    const fullChat = await UserHistoryService.fetchChatHistoryById(urlChatId, abortController.signal);
+                    conversation = Array.isArray(fullChat.conversation) ? fullChat.conversation : [];
+                    loadedStreamingStatus = fullChat.streamingStatus;
+                }
 
                 if (!isHydrationRequestCurrent(requestId, urlChatId)) {
                     return;
@@ -1056,6 +729,20 @@ function PromptWindow({
                 suppressNextSmoothAutoScrollRef.current = true;
                 setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
 
+                // Clear streamingStatus if chat was completed or still streaming.
+                // Server clear ensures next lightweight fetch returns null.
+                // Local onHistoryUpsert ensures sidebar updates immediately.
+                if (loadedStreamingStatus === 'complete' || loadedStreamingStatus === 'streaming') {
+                    UserHistoryService.clearStreamingStatus(urlChatId).catch(() => {});
+                    onHistoryUpsert({
+                        chatId: urlChatId,
+                        chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
+                        timestamp: new Date().toISOString(),
+                        conversation: Array.isArray(conversation) ? conversation : [],
+                        streamingStatus: null,
+                    });
+                }
+
                 // Paint once with new content while opacity is still 0, then reveal.
                 await waitForPaintBoundary();
                 if (!isHydrationRequestCurrent(requestId, urlChatId)) {
@@ -1085,7 +772,6 @@ function PromptWindow({
     }, [
         cancelChatHydration,
         cancelStream,
-        clearPendingPersistTimeout,
         existingHistoryList,
         isAbortError,
         isHydrationRequestCurrent,
@@ -1096,6 +782,7 @@ function PromptWindow({
         getChatSwitchAnimationDurationMs,
         resolveConversationFromPreview,
         waitForPaintBoundary,
+        onHistoryUpsert,
         returnCurrentChatId,
         setExistingChatStates,
         urlChatId,
@@ -1144,13 +831,12 @@ function PromptWindow({
                 window.clearTimeout(clearChatResetTimeoutRef.current);
                 clearChatResetTimeoutRef.current = null;
             }
-            clearPendingPersistTimeout();
             chatHydrationRequestIdRef.current += 1;
             chatHydrationAbortControllerRef.current?.abort();
             chatHydrationAbortControllerRef.current = null;
             hydratingChatIdRef.current = null;
         };
-    }, [clearAutoScrollTimeout, clearPendingPersistTimeout]);
+    }, [clearAutoScrollTimeout]);
 
     useLayoutEffect(() => {
         if (!shouldSnapToBottomOnHydrationRef.current) {
@@ -1240,9 +926,16 @@ function PromptWindow({
 
         try {
             const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
-            const conversation = existingChat
-                ? await resolveConversationFromPreview(existingChat, urlChatId, abortController.signal)
-                : (await UserHistoryService.fetchChatHistoryById(urlChatId, abortController.signal)).conversation;
+            let conversation: ChatMessage[];
+            let loadedStreamingStatus = existingChat?.streamingStatus;
+
+            if (existingChat) {
+                conversation = await resolveConversationFromPreview(existingChat, urlChatId, abortController.signal);
+            } else {
+                const fullChat = await UserHistoryService.fetchChatHistoryById(urlChatId, abortController.signal);
+                conversation = Array.isArray(fullChat.conversation) ? fullChat.conversation : [];
+                loadedStreamingStatus = fullChat.streamingStatus;
+            }
 
             if (!isHydrationRequestCurrent(requestId, urlChatId)) {
                 return;
@@ -1251,6 +944,18 @@ function PromptWindow({
             shouldSnapToBottomOnHydrationRef.current = true;
             suppressNextSmoothAutoScrollRef.current = true;
             setExistingChatStates(Array.isArray(conversation) ? conversation : [], urlChatId);
+
+            // Clear streamingStatus on retry hydration (same logic as main hydration flow)
+            if (loadedStreamingStatus === 'complete' || loadedStreamingStatus === 'streaming') {
+                UserHistoryService.clearStreamingStatus(urlChatId).catch(() => {});
+                onHistoryUpsert({
+                    chatId: urlChatId,
+                    chatDescription: existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
+                    timestamp: new Date().toISOString(),
+                    conversation: Array.isArray(conversation) ? conversation : [],
+                    streamingStatus: null,
+                });
+            }
 
             // Keep reveal ordering consistent with main hydration flow.
             await waitForPaintBoundary();
@@ -1306,13 +1011,8 @@ function PromptWindow({
         hasUserSentInCurrentChatRef.current = false;
         isChatPersistedRef.current = false;
         pendingChatCreateRef.current = null;
-        clearPendingPersistTimeout();
-        pendingPersistRef.current = null;
         submitStartedAtRef.current = null;
         hasLoggedFirstTokenRef.current = false;
-
-        // Reset saving flag for the new chat
-        isSavingRef.current = false;
 
         // Navigate to home
         navigate(PAGES.HOME.PATH);

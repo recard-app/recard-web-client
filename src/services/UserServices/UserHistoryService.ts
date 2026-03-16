@@ -6,6 +6,7 @@ import {
     HistoryParams,
     PagedHistoryResponse,
     ChatMessage,
+    StreamingStatus,
 } from '../../types';
 import { ChatComponentBlock } from '../../types/ChatComponentTypes';
 
@@ -87,7 +88,8 @@ export const UserHistoryService = {
         componentBlocks: ChatComponentBlock[],
         signal?: AbortSignal,
         skipTitleGeneration?: boolean,
-        chatId?: string
+        chatId?: string,
+        streamingStatus?: StreamingStatus
     ): Promise<Conversation> {
         const headers = await getAuthHeaders();
         const response = await axios.post<Conversation>(
@@ -96,7 +98,8 @@ export const UserHistoryService = {
                 chatHistory,
                 componentBlocks,
                 skipTitleGeneration,
-                chatId
+                chatId,
+                ...(streamingStatus && { streamingStatus }),
             },
             { headers, signal }
         );
@@ -157,6 +160,19 @@ export const UserHistoryService = {
         await axios.put(
             `${apiurl}/users/history/${chatId}/chat_description`,
             { chatDescription },
+            { headers }
+        );
+    },
+
+    /**
+     * Clears the streamingStatus field on a chat document.
+     * Called after hydrating a completed/streaming chat so the sidebar indicator disappears.
+     * @param chatId ID of the chat to clear streaming status for
+     */
+    async clearStreamingStatus(chatId: string): Promise<void> {
+        const headers = await getAuthHeaders();
+        await axios.delete(
+            `${apiurl}/users/history/${chatId}/streaming-status`,
             { headers }
         );
     },

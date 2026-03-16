@@ -64,10 +64,10 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
   // Track accumulated text for final message
   const accumulatedTextRef = useRef('');
 
-  // Cleanup on unmount
+  // Cleanup on unmount -- don't abort, let the server finish and persist.
+  // Only clean up local state references.
   useEffect(() => {
     return () => {
-      abortControllerRef.current?.abort();
       cleanupRef.current?.();
     };
   }, []);

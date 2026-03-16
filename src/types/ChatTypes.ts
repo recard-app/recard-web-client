@@ -18,6 +18,8 @@ export interface ChatMessage {
     timestamp?: string;  // Message timestamp (ISO format)
 }
 
+export type StreamingStatus = 'streaming' | 'complete' | 'error' | null;
+
 export interface Conversation {
     chatId: string;
     chatDescription: string;
@@ -25,6 +27,7 @@ export interface Conversation {
     conversation: ChatMessage[];
     componentBlocks?: ChatComponentBlock[];  // Agent component blocks
     messageCount?: number;  // Available on lightweight history preview payloads
+    streamingStatus?: StreamingStatus;
 }
 
 /**
