@@ -30,7 +30,7 @@ import { classifyError } from '../../types/AgentChatTypes';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
 const POLL_INTERVAL_MS = 3000;
-const POLL_TIMEOUT_MS = 5 * 60 * 1000;
+const POLL_TIMEOUT_MS = 20 * 1000;
 
 /**
  * Data structure for daily digest
@@ -132,6 +132,9 @@ function PromptWindow({
     // Ref to store chatHistory immediately (synchronous) for use in callbacks
     // This avoids React state timing issues on mobile Safari
     const chatHistoryRef = useRef<ChatMessage[]>([]);
+    // Ref mirror of existingHistoryList for stable closures (avoids re-creating callbacks
+    // on every sidebar refresh). Updated via sync effect below.
+    const existingHistoryListRef = useRef<Conversation[]>(existingHistoryList);
     // Tracks whether this is a new chat conversation (true) or loading an existing one (false)
     const [isNewChat, setIsNewChat] = useState<boolean>(false);
     // Indicates whether a new chat creation request is in progress
@@ -161,6 +164,11 @@ function PromptWindow({
     const chatHydrationRequestIdRef = useRef<number>(0);
     const chatHydrationAbortControllerRef = useRef<AbortController | null>(null);
     const latestUrlChatIdRef = useRef<string | undefined>(urlChatId);
+
+    // Keep existingHistoryListRef in sync with the prop
+    useEffect(() => {
+        existingHistoryListRef.current = existingHistoryList;
+    }, [existingHistoryList]);
 
     const logMetric = useCallback((name: string, metadata: Record<string, unknown> = {}) => {
         console.info('[PromptWindowMetrics]', { name, ...metadata });
@@ -318,7 +326,7 @@ function PromptWindow({
             // Clean up streaming snapshot -- response is complete
             streamingSnapshotsRef.current.delete(currentChatId);
 
-            const existingChat = existingHistoryList.find(chat => chat.chatId === currentChatId);
+            const existingChat = existingHistoryListRef.current.find(chat => chat.chatId === currentChatId);
             onHistoryUpsert({
                 chatId: currentChatId,
                 timestamp: existingChat?.timestamp || new Date().toISOString(),
@@ -339,7 +347,7 @@ function PromptWindow({
 
         hasUserSentInCurrentChatRef.current = false;
         setIsNewChatPending(false);
-    }, [onHistoryUpsert, existingHistoryList, onHistoryRefresh]);
+    }, [onHistoryUpsert, onHistoryRefresh]);
 
     // Handler for stream errors
     const handleStreamError = useCallback((error: string) => {
@@ -510,7 +518,7 @@ function PromptWindow({
 
         // Update sidebar immediately: show the user message and set streaming indicator.
         if (currentChatId && user && chatHistoryPreference !== CHAT_HISTORY_PREFERENCE.DO_NOT_TRACK_HISTORY) {
-            const existingChat = existingHistoryList.find(chat => chat.chatId === currentChatId);
+            const existingChat = existingHistoryListRef.current.find(chat => chat.chatId === currentChatId);
             const description = existingChat?.chatDescription || chatDescriptionRef.current || DEFAULT_CHAT_NAME_PLACEHOLDER;
 
             // Save a snapshot so we can restore this conversation if the user
@@ -718,7 +726,7 @@ function PromptWindow({
             // Wait for initial history loading to complete before checking for existing chat.
             // On route switches, keep switching state active so PromptHistory can show
             // a clean loading surface with no stale content.
-            if (isLoadingHistory && !existingHistoryList.some(chat => chat.chatId === urlChatId)) {
+            if (isLoadingHistory && !existingHistoryListRef.current.some(chat => chat.chatId === urlChatId)) {
                 if (isSwitchingToDifferentChat) {
                     setIsSwitchingChats(true);
                 }
@@ -757,12 +765,12 @@ function PromptWindow({
             }
 
             try {
-                const existingChat = existingHistoryList.find(chat => chat.chatId === urlChatId);
+                const existingChat = existingHistoryListRef.current.find(chat => chat.chatId === urlChatId);
                 const loadedStreamingStatus = existingChat?.streamingStatus;
 
                 // If the chat is still streaming (server processing), restore from
                 // the snapshot ref (stable, not affected by sidebar refreshes).
-                // Falls back to existingHistoryList, then server fetch.
+                // Falls back to existingHistoryListRef, then server fetch.
                 const snapshot = streamingSnapshotsRef.current.get(urlChatId);
                 if (loadedStreamingStatus === STREAMING_STATUS.STREAMING && snapshot) {
                     const localConversation = attachComponentBlocks(
@@ -861,10 +869,12 @@ function PromptWindow({
         };
 
         void loadHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- existingHistoryList and
+    // clearCompletedStreamingStatus intentionally read via refs to avoid re-running
+    // hydration on every sidebar refresh / onHistoryUpsert identity change.
     }, [
         cancelChatHydration,
         cancelStream,
-        existingHistoryList,
         isAbortError,
         isHydrationRequestCurrent,
         isLoadingHistory,
@@ -874,7 +884,6 @@ function PromptWindow({
         getChatSwitchAnimationDurationMs,
         resolveConversationFromPreview,
         waitForPaintBoundary,
-        clearCompletedStreamingStatus,
         returnCurrentChatId,
         setExistingChatStates,
         urlChatId,
@@ -883,24 +892,39 @@ function PromptWindow({
 
     // Poll for server completion when user returns to a chat that is still processing.
     // Triggered by streamingStatus === 'streaming' in the lightweight history list.
+    // Guards (isProcessing, streamingState, existingHistoryList) are read at call-time
+    // inside the interval callback via refs so the effect only re-mounts when the
+    // active chat or user changes.
     useEffect(() => {
         if (!urlChatId || !user) return;
-        if (isProcessing || streamingState.isStreaming) return;
-
-        const existingChat = existingHistoryList?.find(c => c.chatId === urlChatId);
-        if (!existingChat?.streamingStatus || existingChat.streamingStatus !== STREAMING_STATUS.STREAMING) return;
-
-        const lastLocalMessage = chatHistoryRef.current[chatHistoryRef.current.length - 1];
-        if (lastLocalMessage?.chatSource === CHAT_SOURCE.ASSISTANT) return;
 
         let stopped = false;
         let pollInFlight = false;
 
         const interval = setInterval(async () => {
             if (stopped || pollInFlight) return;
+
+            // Read guards at call-time (not captured at effect-mount time)
+            if (isProcessing || streamingState.isStreaming) return;
+
+            const existingChat = existingHistoryListRef.current?.find(c => c.chatId === urlChatId);
+            if (!existingChat?.streamingStatus || existingChat.streamingStatus !== STREAMING_STATUS.STREAMING) return;
+
+            const lastLocalMessage = chatHistoryRef.current[chatHistoryRef.current.length - 1];
+            if (lastLocalMessage?.chatSource === CHAT_SOURCE.ASSISTANT) return;
+
             pollInFlight = true;
             try {
                 const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
+
+                // Navigation guard: if user moved to a different chat while the fetch
+                // was in flight, discard this stale response.
+                if (latestUrlChatIdRef.current !== urlChatId) {
+                    stopped = true;
+                    clearInterval(interval);
+                    return;
+                }
+
                 const serverHistory = response.conversation || [];
                 const lastServerMsg = serverHistory[serverHistory.length - 1];
 
@@ -945,16 +969,11 @@ function PromptWindow({
             clearInterval(interval);
             clearTimeout(timeout);
         };
-    }, [
-        chatHistoryRef,
-        existingHistoryList,
-        isProcessing,
-        onHistoryRefresh,
-        onHistoryUpsert,
-        streamingState.isStreaming,
-        urlChatId,
-        user
-    ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Guards (isProcessing,
+    // streamingState, existingHistoryList, onHistoryUpsert, onHistoryRefresh) are read
+    // at call-time inside the interval callback via refs/closures. Only urlChatId and
+    // user control when polling starts/stops.
+    }, [urlChatId, user]);
 
     // Handle initial prompt from onboarding navigation state
     const initialPromptHandledRef = useRef(false);

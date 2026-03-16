@@ -118,6 +118,7 @@ const quick_history_size = GLOBAL_QUICK_HISTORY_SIZE;
 const DEFERRED_CREDITS_IDLE_TIMEOUT_MS = 2000;
 const DEFERRED_CREDITS_TIMEOUT_FALLBACK_MS = 0;
 const ENABLE_PROACTIVE_INSTALL_DRAWER = false;
+const SIDEBAR_POLL_TIMEOUT_MS = 20 * 1000;
 const MONTHLY_SUMMARY_QUERY = {
   showRedeemed: true,
   includeHidden: false,
@@ -981,7 +982,7 @@ function AppContent({}: AppContentProps) {
 
     const timeout = setTimeout(() => {
       clearInterval(interval);
-    }, 20000);
+    }, SIDEBAR_POLL_TIMEOUT_MS);
 
     return () => {
       clearInterval(interval);
