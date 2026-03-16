@@ -22,7 +22,7 @@ import { ChatMessage, Conversation } from '../../types';
 import { ChatComponentBlock } from '../../types/ChatComponentTypes';
 
 import { AgentModePreference, ChatHistoryPreference } from '../../types';
-import { MAX_CHAT_MESSAGES, MAX_CHAT_THREAD_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
+import { MAX_CHAT_THREAD_MESSAGES, CHAT_HISTORY_MESSAGES } from './utils';
 import { NO_DISPLAY_NAME_PLACEHOLDER, DEFAULT_CHAT_NAME_PLACEHOLDER, CHAT_HISTORY_PREFERENCE, CHAT_SOURCE, STREAMING_STATUS } from '../../types';
 import { UserHistoryService } from '../../services';
 import { ErrorWithRetry } from '../../elements';
@@ -141,9 +141,6 @@ function PromptWindow({
     const [isNewChatPending, setIsNewChatPending] = useState<boolean>(false);
     // Error state for when loading an existing chat fails
     const [chatLoadError, setChatLoadError] = useState<string | null>(null);
-    // Counter-tagged string to restore into PromptField after cancel.
-    // The nonce ensures the effect fires even when cancelling the same text twice.
-    const [cancelRestoreValue, setCancelRestoreValue] = useState<string>('');
     // Tracks loading state while switching between existing chats
     const [isSwitchingChats, setIsSwitchingChats] = useState<boolean>(false);
     const shouldSnapToBottomOnHydrationRef = useRef<boolean>(false);
@@ -161,8 +158,6 @@ function PromptWindow({
     const hasHydratedCurrentChatRef = useRef<boolean>(false);
     // Tracks if user sent a message on current chat before hydration finished
     const hasUserSentInCurrentChatRef = useRef<boolean>(false);
-    // Tracks the last submitted prompt text so it can be restored on cancel
-    const lastSubmittedPromptRef = useRef<string>('');
     // Metrics refs for submit -> first token latency
     const submitStartedAtRef = useRef<number | null>(null);
     const hasLoggedFirstTokenRef = useRef<boolean>(false);
@@ -317,17 +312,38 @@ function PromptWindow({
         }, true);
     }, [onHistoryUpsert]);
 
-    // Handler for completed messages - updates local state only (server handles persistence)
-    const handleMessageComplete = useCallback((message: ChatMessage) => {
-        // Update local state only -- server handles persistence
+    // Handler for completed messages - updates local state only (server handles persistence).
+    // `streamChatId` is the conversation ID the stream was started for — used to verify
+    // the response belongs to the chat the user is currently viewing.
+    const handleMessageComplete = useCallback((message: ChatMessage, _componentBlock?: ChatComponentBlock, streamChatId?: string) => {
+        const currentChatId = chatIdRef.current;
+        const targetChatId = streamChatId || currentChatId;
+
+        // If the response is for a DIFFERENT chat than the one currently viewed,
+        // don't touch local chatHistory — just update the sidebar entry and let
+        // hydration pick up the full conversation when the user switches to it.
+        if (targetChatId && targetChatId !== currentChatId) {
+            streamingSnapshotsRef.current.delete(targetChatId);
+            const existingChat = existingHistoryListRef.current.find(chat => chat.chatId === targetChatId);
+            if (existingChat) {
+                onHistoryUpsert({
+                    chatId: targetChatId,
+                    timestamp: existingChat.timestamp || new Date().toISOString(),
+                    conversation: existingChat.conversation || [],
+                    chatDescription: existingChat.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
+                    streamingStatus: null,
+                }, true);
+            }
+            UserHistoryService.clearStreamingStatus(targetChatId).catch(() => {});
+            onHistoryRefresh?.();
+            return;
+        }
+
+        // Response is for the active chat — apply to local state
         const updatedHistory = [...chatHistoryRef.current, message];
         chatHistoryRef.current = updatedHistory;
         setChatHistory(prev => limitChatHistory([...prev, message]));
 
-        // Update history panel with new message count and clear streamingStatus.
-        // Connected client clears streamingStatus so the sidebar indicator disappears
-        // immediately rather than briefly showing 'complete'.
-        const currentChatId = chatIdRef.current;
         if (currentChatId) {
             // Clean up streaming snapshot -- response is complete
             streamingSnapshotsRef.current.delete(currentChatId);
@@ -345,10 +361,7 @@ function PromptWindow({
             // Clear server-side streamingStatus (fire-and-forget)
             UserHistoryService.clearStreamingStatus(currentChatId).catch(() => {});
 
-            // Refresh sidebar with staggered retries to pick up the server-generated
-            // title. The server generates titles fire-and-forget after persistence
-            // (AI call + Firestore write), which can take 2-8s. We retry at increasing
-            // intervals and stop early once the title is no longer the default.
+            // Refresh sidebar with staggered retries to pick up the server-generated title.
             if (titleRefreshTimeoutRef.current !== null) {
                 window.clearTimeout(titleRefreshTimeoutRef.current);
             }
@@ -365,7 +378,6 @@ function PromptWindow({
                     titleRefreshTimeoutRef.current = null;
                     onHistoryRefresh?.();
 
-                    // Check if the title is still the default -- if so, retry
                     const chat = existingHistoryListRef.current.find(c => c.chatId === currentChatId);
                     if (!chat?.chatDescription || chat.chatDescription === DEFAULT_CHAT_NAME_PLACEHOLDER) {
                         scheduleTitleRetry();
@@ -376,7 +388,6 @@ function PromptWindow({
         }
 
         hasUserSentInCurrentChatRef.current = false;
-        lastSubmittedPromptRef.current = '';
         setIsNewChatPending(false);
     }, [onHistoryUpsert, onHistoryRefresh]);
 
@@ -500,7 +511,6 @@ function PromptWindow({
 
         // Create user message and add to history
         const userMessage = createUserMessage(returnPromptStr);
-        lastSubmittedPromptRef.current = returnPromptStr;
         hasUserSentInCurrentChatRef.current = true;
 
         // Update ref immediately (synchronous) for use in callbacks
@@ -756,10 +766,20 @@ function PromptWindow({
                 return;
             }
 
-            // Return early only when this chat is already hydrated locally.
+            // Return early only when this chat is already hydrated locally
+            // AND it's not waiting for a server response. If the sidebar shows
+            // 'streaming' for this chat, force a re-fetch to pick up the response
+            // that may have arrived while the user was viewing another chat.
             if (!isSwitchingToDifferentChat && urlChatId === chatIdRef.current && hasHydratedCurrentChatRef.current) {
-                setIsSwitchingChats(false);
-                return;
+                const sidebarEntry = existingHistoryListRef.current.find(c => c.chatId === urlChatId);
+                const stillStreaming = sidebarEntry?.streamingStatus === STREAMING_STATUS.STREAMING;
+                const lastLocal = chatHistoryRef.current[chatHistoryRef.current.length - 1];
+                const missingResponse = lastLocal?.chatSource !== CHAT_SOURCE.ASSISTANT;
+                if (!stillStreaming || !missingResponse) {
+                    setIsSwitchingChats(false);
+                    return;
+                }
+                // Fall through to re-fetch from server
             }
 
             // Wait for initial history loading to complete before checking for existing chat.
@@ -1220,29 +1240,30 @@ function PromptWindow({
      * and restores the user's text to the input field.
      */
     const handleCancel = () => {
+        // Capture any partially streamed text BEFORE stopping the stream,
+        // because stopAndDiscardStream resets isStreaming which hides the
+        // streaming content from the render tree.
+        const partialText = streamingState.streamedText || '';
+
         stopAndDiscardStream();
         setIsNewChatPending(false);
         submitStartedAtRef.current = null;
         hasLoggedFirstTokenRef.current = false;
 
+        // If there was partially streamed text, commit it as an assistant
+        // message so it stays visible in the chat history.
+        if (partialText.trim()) {
+            const partialMessage: ChatMessage = {
+                id: `msg-cancelled-${Date.now()}`,
+                chatSource: CHAT_SOURCE.ASSISTANT,
+                chatMessage: partialText,
+                timestamp: new Date().toISOString(),
+            };
+            chatHistoryRef.current = [...chatHistoryRef.current, partialMessage];
+            setChatHistory(prev => [...prev, partialMessage]);
+        }
+
         const cancelledChatId = chatIdRef.current;
-
-        // Restore the user's prompt text to the input field
-        const promptToRestore = lastSubmittedPromptRef.current;
-        if (promptToRestore) {
-            setCancelRestoreValue(`${promptToRestore}\0${Date.now()}`);
-            lastSubmittedPromptRef.current = '';
-        }
-
-        // Remove the pending user message from local chat history.
-        // The last message should be the user's (assistant hasn't responded yet).
-        const currentHistory = chatHistoryRef.current;
-        const lastMsg = currentHistory[currentHistory.length - 1];
-        if (lastMsg && lastMsg.chatSource === CHAT_SOURCE.USER) {
-            const restored = currentHistory.slice(0, -1);
-            chatHistoryRef.current = restored;
-            setChatHistory(restored);
-        }
 
         // Clean up streaming snapshot
         if (cancelledChatId) {
@@ -1389,7 +1410,6 @@ function PromptWindow({
                         onCancel={handleCancel}
                         disabled={chatHistory.length >= MAX_CHAT_THREAD_MESSAGES || isSwitchingChats}
                         chatLimitReached={chatHistory.length >= MAX_CHAT_THREAD_MESSAGES}
-                        restoreValue={cancelRestoreValue}
                     />
                 </div>
                 {chatHistory.length >= MAX_CHAT_THREAD_MESSAGES && (

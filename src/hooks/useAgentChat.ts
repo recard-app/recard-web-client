@@ -35,7 +35,7 @@ export interface UseAgentChatOptions {
   userName?: string;
   conversationId?: string;
   agentMode?: string;
-  onMessageComplete?: (message: ChatMessage, componentBlock?: ChatComponentBlock) => void;
+  onMessageComplete?: (message: ChatMessage, componentBlock?: ChatComponentBlock, conversationId?: string) => void;
   onError?: (error: string) => void;
   onDataChanged?: (dataChanged: DataChangedFlags) => void;
 }
@@ -116,6 +116,9 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
     let receivedMessageId: string | null = null;
     let receivedTimestamp: string | null = null;
     let receivedAgentType: string | null = null;
+
+    // Capture the conversation ID at send time so onFinal can pass it through
+    const streamConversationId = runtimeConversationId ?? conversationId;
 
     // Start streaming
     cleanupRef.current = sendAgentMessageStreaming(
@@ -254,7 +257,8 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
             onDataChanged(dataChanged);
           }
 
-          // Create final message and notify
+          // Create final message and notify, passing the conversation ID
+          // so the caller can verify this response belongs to the active chat.
           if (onMessageComplete) {
             const message: ChatMessage = {
               id: receivedMessageId!,
@@ -263,7 +267,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
               timestamp: receivedTimestamp!,
               componentBlock: receivedComponentBlock || undefined,
             };
-            onMessageComplete(message, receivedComponentBlock || undefined);
+            onMessageComplete(message, receivedComponentBlock || undefined, streamConversationId);
           }
         },
 
@@ -405,7 +409,7 @@ export function useAgentChatFallback(options: UseAgentChatOptions = {}): UseAgen
           timestamp: normalized.timestamp,
           componentBlock: normalized.componentBlock,
         };
-        onMessageComplete(message, normalized.componentBlock);
+        onMessageComplete(message, normalized.componentBlock, runtimeConversationId ?? conversationId);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Request failed';

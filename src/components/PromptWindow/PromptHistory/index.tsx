@@ -271,7 +271,7 @@ function PromptHistory({
                       </ChatErrorBoundary>
                     )}
                   </div>
-                  {chatEntry.chatSource === CHAT_SOURCE.ASSISTANT && index === lastAssistantIndex && !streamingState?.isStreaming && (
+                  {chatEntry.chatSource === CHAT_SOURCE.ASSISTANT && index === lastAssistantIndex && !streamingState?.isStreaming && !isWaitingForResponse && (
                     <Icon name={assistantIconName} variant="solid" color={COLORS.PRIMARY_MEDIUM} className="assistant-avatar" />
                   )}
                 </div>

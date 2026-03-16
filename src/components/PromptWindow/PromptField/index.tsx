@@ -21,29 +21,13 @@ interface PromptFieldProps {
   onCancel: () => void;
   disabled?: boolean;
   chatLimitReached?: boolean;
-  /** When set, restores this text into the textarea (used after cancel). */
-  restoreValue?: string;
 }
 
-function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, chatLimitReached = false, restoreValue }: PromptFieldProps): JSX.Element {
+function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, chatLimitReached = false }: PromptFieldProps): JSX.Element {
   // Stores the current value of the prompt textarea
   const [promptValue, setPromptValue] = useState<string>('');
   // Reference to the textarea element for dynamic height adjustment
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
-  /**
-   * Restore prompt text after cancel (driven by parent via restoreValue prop).
-   * The value contains a nonce suffix after \0 to ensure the effect fires
-   * even when cancelling the same text twice.
-   */
-  useEffect(() => {
-    if (restoreValue && !promptValue.trim()) {
-      const text = restoreValue.split('\0')[0];
-      setPromptValue(text);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- Only trigger on restoreValue change,
-  // not on every keystroke. promptValue is read at call-time to check emptiness.
-  }, [restoreValue]);
 
   /**
    * Effect hook to adjust textarea height on initial render
