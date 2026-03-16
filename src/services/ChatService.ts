@@ -172,3 +172,12 @@ export function normalizeAgentResponse(response: AgentResponse): AgentResponseDa
   }
   return response;
 }
+
+/**
+ * Cancel an active server-side stream. Tells the server to stop processing
+ * and discard the response for the given chat.
+ */
+export async function cancelServerStream(chatId: string): Promise<void> {
+  const headers = await getAuthHeaders();
+  await axios.post(`${apiurl}/chat/${chatId}/cancel`, {}, { headers });
+}

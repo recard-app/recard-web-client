@@ -22,6 +22,7 @@ import {
   sendAgentMessageStreaming,
   normalizeAgentResponse,
   sendAgentMessage,
+  cancelServerStream,
 } from '../services/ChatService';
 import { CHAT_SOURCE, NO_DISPLAY_NAME_PLACEHOLDER } from '../types/Constants';
 import { getToolActiveMessage, getToolResultMessage } from '../constants/toolMessages';
@@ -64,6 +65,9 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
   // Track accumulated text for final message
   const accumulatedTextRef = useRef('');
 
+  // Track active conversation ID for server-side cancellation
+  const activeConversationIdRef = useRef<string | null>(null);
+
   // Cleanup on unmount -- don't abort, let the server finish and persist.
   // Only clean up local state references.
   useEffect(() => {
@@ -83,6 +87,9 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
 
     // Create new abort controller
     abortControllerRef.current = new AbortController();
+
+    // Track active conversation for cancel
+    activeConversationIdRef.current = runtimeConversationId ?? conversationId ?? null;
 
     // Reset state and start streaming
     accumulatedTextRef.current = '';
@@ -284,6 +291,7 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
   }, [userName, conversationId, agentMode, onMessageComplete, onError, onDataChanged]);
 
   const cancelStream = useCallback(() => {
+    // Abort the SSE connection (stops UI streaming)
     abortControllerRef.current?.abort();
     cleanupRef.current?.();
     setStreamingState(prev => ({
@@ -292,6 +300,12 @@ export function useAgentChat(options: UseAgentChatOptions = {}): UseAgentChatRet
       activeNode: null,
       activeTool: null,
     }));
+
+    // Tell server to stop processing and discard (fire-and-forget)
+    if (activeConversationIdRef.current) {
+      cancelServerStream(activeConversationIdRef.current).catch(() => {});
+      activeConversationIdRef.current = null;
+    }
   }, []);
 
   const resetState = useCallback(() => {
