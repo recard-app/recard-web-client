@@ -96,6 +96,8 @@ Most font references use the semantic SCSS variables `$font-heading` and `$font-
 
 Most font-weight declarations use the SCSS variables defined in `variables.scss`. The remaining items below are **intentionally hardcoded** because they live in static HTML or inline JS strings where SCSS variables are unavailable.
 
+**Note:** The original weight scale was one level lighter (e.g. `$font-regular` was 400, `$font-bold` was 700). It was bumped up by 100 each because Plus Jakarta Sans rendered too thin at the lower weights.
+
 ### Variable Mapping
 
 | Variable | Weight | Role |
