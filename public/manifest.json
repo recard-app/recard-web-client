@@ -1,6 +1,6 @@
 {
-  "name": "Cardzen",
-  "short_name": "Cardzen",
+  "name": "cardzen",
+  "short_name": "cardzen",
   "description": "The calm way to maximize rewards. AI-powered credit card recommendations tailored to your spending habits.",
   "id": "/",
   "start_url": "/",

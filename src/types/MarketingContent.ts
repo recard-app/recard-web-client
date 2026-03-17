@@ -21,7 +21,7 @@ export const PAGE_META_DESCRIPTIONS: Record<string, string> = {
   '/privacy': `${APP_NAME} Privacy Policy - learn how we handle your data.`,
 };
 
-/** Title template: "Page Title | Cardzen" */
+/** Title template: "Page Title | cardzen" */
 export const formatPageTitle = (pageTitle: string): string =>
   `${pageTitle} | ${APP_NAME}`;
 

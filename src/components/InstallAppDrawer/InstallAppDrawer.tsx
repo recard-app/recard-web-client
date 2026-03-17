@@ -55,7 +55,7 @@ const IOSContent: React.FC = () => (
 
 const AndroidContent: React.FC = () => (
   <p className="install-app-drawer__message">
-    Tap Install below to add Cardzen to your home screen for quick access.
+    Tap Install below to add cardzen to your home screen for quick access.
   </p>
 );
 
@@ -70,7 +70,7 @@ const InstallAppDrawer: React.FC<InstallAppDrawerProps> = ({
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent fitContent className="install-app-drawer">
         <DrawerHeader>
-          <DrawerTitle>Install Cardzen</DrawerTitle>
+          <DrawerTitle>Install cardzen</DrawerTitle>
           <DrawerDescription>Add to your home screen for the best experience</DrawerDescription>
         </DrawerHeader>
         <div className="install-app-drawer__body">

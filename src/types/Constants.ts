@@ -133,7 +133,7 @@ export const CREDIT_EXPIRATION_THRESHOLDS = {
  * ------------------------------------------------------------------------------------------------
  */
 
-export const APP_NAME = 'Cardzen';
+export const APP_NAME = 'cardzen';
 export const SUPPORT_EMAIL = 'support@cardzen.ai';
 export const GENERAL_EMAIL = 'hello@cardzen.ai';
 export const APP_LOGO = '/cardzen_logo.svg';
