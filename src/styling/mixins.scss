@@ -37,7 +37,7 @@
 
 @mixin heading-5 {
   font-family: $font-heading;
-  font-weight: $font-medium;
+  font-weight: $font-semibold;
   font-size: $font-h5;
   line-height: $leading-normal;
   margin-bottom: $space-2;
@@ -45,7 +45,7 @@
 
 @mixin heading-6 {
   font-family: $font-heading;
-  font-weight: $font-medium;
+  font-weight: $font-semibold;
   font-size: $font-h6;
   line-height: $leading-normal;
   margin-bottom: $space-2;

@@ -19,7 +19,7 @@
 
   .mobile-header__title {
     font-size: $font-h6;
-    font-weight: $font-medium;
+    font-weight: $font-semibold;
     color: $neutral-black;
     overflow: hidden;
     white-space: nowrap;
@@ -406,6 +406,7 @@
     img { width: $icon-medium; height: $icon-medium; }
     .brand-name {
       font-family: $font-heading;
+      font-weight: $font-bold;
       color: $neutral-black;
       font-size: $font-h4;
     }

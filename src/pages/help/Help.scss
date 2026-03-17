@@ -281,6 +281,7 @@ button.help-nav-section__header {
 
   &__title {
     font-family: $font-heading;
+    font-weight: $font-semibold;
     font-size: $font-h5;
     color: $neutral-black;
     margin: 0 0 $space-4;
@@ -305,6 +306,7 @@ button.help-nav-section__header {
 
   h2:not(.help-content__title) {
     font-family: $font-heading;
+    font-weight: $font-semibold;
     font-size: $font-base;
     color: $neutral-black;
     margin: $space-6 0 $space-3;
@@ -320,6 +322,7 @@ button.help-nav-section__header {
 
   h3 {
     font-family: $font-heading;
+    font-weight: $font-semibold;
     font-size: $font-base;
     color: $neutral-black;
     margin: $space-6 0 $space-3;
@@ -335,6 +338,7 @@ button.help-nav-section__header {
 
   h4 {
     font-family: $font-heading;
+    font-weight: $font-semibold;
     font-size: $font-sm;
     color: $neutral-dark-gray;
     margin: $space-4 0 $space-2;
@@ -552,6 +556,7 @@ button.help-nav-section__header {
     padding: $space-4;
     background: $neutral-light-gray;
     font-family: $font-heading;
+    font-weight: $font-semibold;
     font-size: $font-base;
     color: $neutral-black;
     cursor: pointer;
