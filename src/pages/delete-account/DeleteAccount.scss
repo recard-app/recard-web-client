@@ -18,7 +18,7 @@
 
   .warning-text {
     color: $error;
-    font-weight: 500;
+    font-weight: $font-medium;
   }
 
   .button-group {
@@ -40,7 +40,7 @@
 
     label {
       font-size: $font-sm;
-      font-weight: 500;
+      font-weight: $font-medium;
     }
   }
 }

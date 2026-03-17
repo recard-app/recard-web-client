@@ -41,7 +41,7 @@ function showUpdateOverlay() {
       <span style="
         position: absolute; bottom: 48px; left: 0; right: 0; text-align: center;
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 13px; font-weight: 400; color: ${tc.neutralDarkGray};
+        font-size: 13px; font-weight: 500; color: ${tc.neutralDarkGray};
       ">App Updating...</span>
     </div>
     <style>@keyframes pwa-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
