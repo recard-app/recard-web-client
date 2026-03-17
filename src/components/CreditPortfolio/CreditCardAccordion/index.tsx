@@ -154,7 +154,7 @@ const CreditCardAccordion: React.FC<CreditCardAccordionProps> = ({
           <div className="usage-stat-bar">
             <UsageBar
               segments={[
-                { label: CREDIT_USAGE_DISPLAY_NAMES.USED, value: summary.totalUsedValue, color: COLORS.PRIMARY_MEDIUM }
+                { label: CREDIT_USAGE_DISPLAY_NAMES.USED, value: summary.totalUsedValue, color: COLORS.PRIMARY_COLOR }
               ]}
               maxValue={summary.totalPossibleValue}
               showLabels={false}

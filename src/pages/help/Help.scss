@@ -505,18 +505,18 @@ button.help-nav-section__header {
     }
 
     &--info {
-      background: color-mix(in srgb, $accent-color 10%, $neutral-white);
-      border-left: 3px solid $accent-color;
+      background: $info-blue-bg;
+      border: $border-full solid $info-blue-border;
     }
 
     &--tip {
-      background: $primary-lightest;
-      border-left: 3px solid $primary-color;
+      background: $info-success-bg;
+      border: $border-full solid $info-success-border;
     }
 
     &--warning {
-      background: color-mix(in srgb, $warning 15%, $neutral-white);
-      border-left: 3px solid $warning;
+      background: $info-warning-bg;
+      border: $border-full solid $info-warning-border;
     }
   }
 

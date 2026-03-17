@@ -63,7 +63,7 @@ const CreditSection: React.FC<CreditSectionProps> = ({
           <div className="credit-usage-bar">
             <UsageBar
               segments={[
-                { label: CREDIT_USAGE_DISPLAY_NAMES.USED, value: usageStats.totalUsed, color: COLORS.PRIMARY_MEDIUM }
+                { label: CREDIT_USAGE_DISPLAY_NAMES.USED, value: usageStats.totalUsed, color: COLORS.PRIMARY_COLOR }
               ]}
               maxValue={usageStats.totalPossible}
               showLabels={false}
