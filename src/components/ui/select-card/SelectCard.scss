@@ -33,7 +33,7 @@ $collapse-transition-duration: 0.15s;
   
   .selection-label {
     font-size: $font-xs;
-    font-family: $font-inter;
+    font-family: $font-body;
     font-weight: $font-medium;
     color: $neutral-dark-gray;
     margin-right: $space-2;
@@ -46,7 +46,7 @@ $collapse-transition-duration: 0.15s;
     border-radius: $radius-base;
     cursor: pointer;
     font-size: $font-xs;
-    font-family: $font-inter;
+    font-family: $font-body;
     font-weight: $font-medium;
     color: $neutral-black;
     transition: all $transition-base;
@@ -100,7 +100,7 @@ $collapse-transition-duration: 0.15s;
     cursor: pointer;
     transition: all $transition-base;
     gap: $space-1;
-    font-family: $font-inter;
+    font-family: $font-body;
     
     @media (hover: hover) {
       &:hover {

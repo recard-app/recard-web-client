@@ -16,7 +16,7 @@
 
 html, body {
   height: 100%;
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-base;
   line-height: $leading-normal;
   color: $neutral-black;
@@ -315,7 +315,7 @@ button {
   font-weight: $font-semibold;
   text-transform: uppercase;
   color: $neutral-dark-gray;
-  font-family: $font-inter;
+  font-family: $font-body;
   margin: 0;
 }
 

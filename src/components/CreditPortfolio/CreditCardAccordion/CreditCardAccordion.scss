@@ -77,7 +77,7 @@
       min-width: 0;
 
       .card-name {
-        font-family: $font-inter;
+        font-family: $font-body;
         font-size: $font-sm;
         font-weight: $font-semibold;
         line-height: 1.2;
@@ -102,7 +102,7 @@
       }
 
       .card-meta {
-        font-family: $font-inter;
+        font-family: $font-body;
         font-size: $font-xs;
         line-height: 1.2;
         color: $neutral-dark-gray;
@@ -134,7 +134,7 @@
     flex-direction: column;
     width: 100%;
     margin-top: $space-2;
-    font-family: $font-inter;
+    font-family: $font-body;
     font-size: $font-xs;
 
     &.updating {
@@ -175,7 +175,7 @@
     padding: $space-4;
     text-align: center;
     color: $neutral-medium-gray;
-    font-family: $font-inter;
+    font-family: $font-body;
     font-size: $font-sm;
   }
 

@@ -10,7 +10,7 @@
   button#{&}__back-link {
     all: unset !important;
     box-sizing: border-box !important;
-    font-family: $font-inter !important;
+    font-family: $font-body !important;
     font-size: $font-sm !important;
     color: $neutral-dark-gray !important;
     background: transparent !important;
@@ -37,7 +37,7 @@
   }
 
   &__title {
-    font-family: $font-cal-sans;
+    font-family: $font-heading;
     font-size: $font-h3;
     color: $neutral-black;
     margin: 0 0 $space-2;
@@ -48,7 +48,7 @@
   }
 
   &__updated {
-    font-family: $font-inter;
+    font-family: $font-body;
     font-size: $font-xs;
     color: $neutral-medium-gray;
     margin: 0 0 $space-6;

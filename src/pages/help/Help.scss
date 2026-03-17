@@ -66,7 +66,7 @@ button.help-layout__mobile-toggle {
   background-color: $neutral-light-gray !important;
   border: $border-full solid $neutral-gray !important;
   border-radius: $radius-lg !important;
-  font-family: $font-inter !important;
+  font-family: $font-body !important;
   font-size: $font-sm !important;
   font-weight: $font-medium !important;
   color: $neutral-dark-gray !important;
@@ -147,7 +147,7 @@ button.help-nav-section__header {
   background-color: transparent !important;
   border: none !important;
   border-radius: $radius-base !important;
-  font-family: $font-inter !important;
+  font-family: $font-body !important;
   font-size: $font-xs !important;
   font-weight: $font-semibold !important;
   color: $neutral-dark-gray !important;
@@ -226,7 +226,7 @@ button.help-nav-section__header {
 .help-nav-item {
   display: block;
   padding: $space-2 $space-3;
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-sm;
   font-weight: $font-regular;
   color: $neutral-dark-gray;
@@ -274,13 +274,13 @@ button.help-nav-section__header {
 
 // Help content typography
 .help-content {
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-sm;
   line-height: $leading-relaxed;
   color: $neutral-dark-gray;
 
   &__title {
-    font-family: $font-cal-sans;
+    font-family: $font-heading;
     font-size: $font-h5;
     color: $neutral-black;
     margin: 0 0 $space-4;
@@ -304,7 +304,7 @@ button.help-nav-section__header {
   }
 
   h2:not(.help-content__title) {
-    font-family: $font-cal-sans;
+    font-family: $font-heading;
     font-size: $font-base;
     color: $neutral-black;
     margin: $space-6 0 $space-3;
@@ -319,7 +319,7 @@ button.help-nav-section__header {
   }
 
   h3 {
-    font-family: $font-cal-sans;
+    font-family: $font-heading;
     font-size: $font-base;
     color: $neutral-black;
     margin: $space-6 0 $space-3;
@@ -334,7 +334,7 @@ button.help-nav-section__header {
   }
 
   h4 {
-    font-family: $font-cal-sans;
+    font-family: $font-heading;
     font-size: $font-sm;
     color: $neutral-dark-gray;
     margin: $space-4 0 $space-2;
@@ -551,7 +551,7 @@ button.help-nav-section__header {
     align-items: center;
     padding: $space-4;
     background: $neutral-light-gray;
-    font-family: $font-cal-sans;
+    font-family: $font-heading;
     font-size: $font-base;
     color: $neutral-black;
     cursor: pointer;
@@ -647,7 +647,7 @@ button.help-nav-section__header {
 // Sidebar loading state
 .help-sidebar__loading {
   padding: $space-3;
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-xs;
   color: $neutral-medium-gray;
   text-align: center;

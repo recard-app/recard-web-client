@@ -79,3 +79,15 @@ The PWA update overlay renders before `ThemeProvider` mounts, so CSS vars are un
 | File | Values | Theme Property | Purpose |
 |------|--------|----------------|---------|
 | `public/assistant_icons/*.svg` | `fill="black"` | ~`neutralBlack` (`#0B0D0C`) | ~19 assistant icon SVGs (static files, no variable support) |
+
+## Hardcoded Font Reference
+
+Most font references use the semantic SCSS variables `$font-heading` and `$font-body`. The remaining items below are **intentionally hardcoded** because they cannot reference SCSS variables.
+
+| File | Values | Semantic Role | Why hardcoded |
+|------|--------|---------------|---------------|
+| `index.html` lines 16-18 | Google Fonts `<link>` loading Cal Sans + Inter | heading + body | Static HTML, parsed before JS |
+| `src/main.tsx` line 43 | `'Inter', -apple-system, ...` | body | PWA overlay renders before ThemeProvider, inline HTML string |
+| `src/pages/landing/LandingPage.tsx` | `'"Cal Sans", sans-serif'` (2 occurrences) | heading | Inline React style, no SCSS access |
+| `src/pages/landing/LandingPage.tsx` | `'"Inter", sans-serif'` (7 occurrences) | body | Inline React style, no SCSS access |
+| `src/main.css` | `source-code-pro, Menlo, ...` | monospace/code | CSS fallback for `<code>` elements |

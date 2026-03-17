@@ -354,7 +354,7 @@
       justify-content: space-between;
       padding-left: $space-2;
       padding-right: $space-2;
-      font-family: $font-inter;
+      font-family: $font-body;
       font-weight: $font-bold;
       font-size: $font-xs;
       color: $neutral-medium-gray;
@@ -366,7 +366,7 @@
       display: inline-flex;
       align-items: center;
       gap: $space-1;
-      font-family: $font-inter;
+      font-family: $font-body;
       font-size: $font-xs;
       font-weight: $font-bold;
       color: $warning;
@@ -378,7 +378,7 @@
       display: inline-flex;
       align-items: center;
       gap: $space-1;
-      font-family: $font-inter;
+      font-family: $font-body;
       font-size: $font-xs;
       font-weight: $font-bold;
       color: $neutral-dark-gray;
@@ -405,7 +405,7 @@
     color: inherit;
     img { width: $icon-medium; height: $icon-medium; }
     .brand-name {
-      font-family: $font-cal-sans;
+      font-family: $font-heading;
       color: $neutral-black;
       font-size: $font-h4;
     }

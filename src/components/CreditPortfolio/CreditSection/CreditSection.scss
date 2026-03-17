@@ -24,7 +24,7 @@
     margin-bottom: $space-2;
 
     .credit-title {
-      font-family: $font-inter;
+      font-family: $font-body;
       font-size: $font-sm;
       font-weight: $font-semibold;
       color: $neutral-black;
@@ -32,7 +32,7 @@
     }
 
     .credit-period {
-      font-family: $font-inter;
+      font-family: $font-body;
       font-size: $font-xs;
       color: $neutral-dark-gray;
       display: flex;
@@ -61,7 +61,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-family: $font-inter;
+    font-family: $font-body;
     font-size: $font-xs;
     color: $neutral-dark-gray;
     margin-top: $space-1;

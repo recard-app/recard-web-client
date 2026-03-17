@@ -22,7 +22,7 @@
   border-bottom: 1px solid $neutral-gray;
 
   h1 {
-    font-family: $font-cal-sans;
+    font-family: $font-heading;
     font-size: $font-h2;
     color: $neutral-black;
     margin: 0;
@@ -161,7 +161,7 @@
 }
 
 .ds-section-title {
-  font-family: $font-cal-sans;
+  font-family: $font-heading;
   font-size: $font-h4;
   color: $neutral-black;
   margin: 0 0 $space-2 0;
@@ -187,7 +187,7 @@
 }
 
 .ds-variant-label {
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-sm;
   font-weight: $font-semibold;
   color: $neutral-dark-gray;

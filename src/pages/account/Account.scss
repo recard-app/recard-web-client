@@ -22,7 +22,7 @@
   background: linear-gradient(to bottom, color-mix(in srgb, var(--color-primary-color) 12%, white), white);
   border: $border-full solid color-mix(in srgb, $neutral-gray 50%, transparent);
   border-bottom: none;
-  font-family: $font-inter;
+  font-family: $font-body;
 
   .showcase-identity {
     display: flex;
@@ -37,7 +37,7 @@
     h2 {
       margin: 0;
       font-size: $font-h4;
-      font-family: $font-inter;
+      font-family: $font-body;
       font-weight: $font-bold;
       color: $neutral-black;
       line-height: 1.2;
@@ -108,7 +108,7 @@
   background-color: $neutral-lightest-gray;
   border: $border-full solid color-mix(in srgb, $neutral-gray 50%, transparent);
   border-radius: 0 0 $radius-lg $radius-lg;
-  font-family: $font-inter;
+  font-family: $font-body;
 
   .meta-item {
     display: flex;

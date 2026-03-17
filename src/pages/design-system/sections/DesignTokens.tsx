@@ -68,8 +68,8 @@ const typography = [
 ];
 
 const fontFamilies = [
-  { name: 'Cal Sans', variable: '$font-cal-sans', sample: 'The quick brown fox jumps over the lazy dog' },
-  { name: 'Inter', variable: '$font-inter', sample: 'The quick brown fox jumps over the lazy dog' },
+  { name: 'Cal Sans', variable: '$font-heading', sample: 'The quick brown fox jumps over the lazy dog' },
+  { name: 'Inter', variable: '$font-body', sample: 'The quick brown fox jumps over the lazy dog' },
 ];
 
 const spacing = [

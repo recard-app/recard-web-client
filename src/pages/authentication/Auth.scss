@@ -45,7 +45,7 @@
   }
 
   .subtitle {
-    font-family: $font-inter;
+    font-family: $font-body;
     font-size: $font-sm;
     color: $neutral-dark-gray;
   }
@@ -141,7 +141,7 @@
 }
 
 .auth-legal-text {
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-xs;
   color: $neutral-dark-gray;
   text-align: center;
@@ -229,7 +229,7 @@
 
 // Compact copy in forgot password
 .helper-text {
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-sm;
   color: $neutral-dark-gray;
   margin-bottom: $space-4;

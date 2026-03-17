@@ -78,7 +78,7 @@
           .card-name {
             margin: 0 0 $space-half 0;
             font-size: $font-sm;
-            font-family: $font-inter;
+            font-family: $font-body;
             font-weight: $font-medium;
             color: $neutral-black;
             display: flex;
@@ -91,7 +91,7 @@
               color: $primary-dark;
               border: $border-full solid $primary-medium;
               font-size: $font-xxs;
-              font-family: $font-inter;
+              font-family: $font-body;
               font-weight: $font-semibold;
               padding: $space-half $space-1-5;
               border-radius: $radius-full;
@@ -104,7 +104,7 @@
           .card-type {
             margin: 0;
             font-size: $font-xs;
-            font-family: $font-inter;
+            font-family: $font-body;
             color: $neutral-dark-gray;
             line-height: $leading-normal;
             text-transform: capitalize;
@@ -212,7 +212,7 @@
       background: $neutral-light-gray;
       border: $border-full solid $neutral-gray;
       border-radius: $radius-full;
-      font-family: $font-inter;
+      font-family: $font-body;
       font-size: $font-xs;
       font-weight: $font-medium;
       color: $neutral-dark-gray;
@@ -422,7 +422,7 @@
             .card-name {
               margin: 0 0 $space-half 0;
               font-size: $font-sm;
-              font-family: $font-inter;
+              font-family: $font-body;
               font-weight: $font-medium;
               color: $neutral-black;
 
@@ -444,7 +444,7 @@
             .card-type {
               margin: 0;
               font-size: $font-xs;
-              font-family: $font-inter;
+              font-family: $font-body;
               color: $neutral-dark-gray;
               line-height: $leading-normal;
               text-transform: capitalize;

@@ -4,42 +4,42 @@
 
 // Heading styles
 @mixin heading-1 {
-  font-family: $font-cal-sans;
+  font-family: $font-heading;
   font-size: $font-h1;
   line-height: $leading-tight;
   margin-bottom: $space-6;
 }
 
 @mixin heading-2 {
-  font-family: $font-cal-sans;
+  font-family: $font-heading;
   font-size: $font-h2;
   line-height: $leading-tight;
   margin-bottom: $space-5;
 }
 
 @mixin heading-3 {
-  font-family: $font-cal-sans;
+  font-family: $font-heading;
   font-size: $font-h3;
   line-height: $leading-tight;
   margin-bottom: $space-4;
 }
 
 @mixin heading-4 {
-  font-family: $font-cal-sans;
+  font-family: $font-heading;
   font-size: $font-h4;
   line-height: $leading-tight;
   margin-bottom: $space-3;
 }
 
 @mixin heading-5 {
-  font-family: $font-cal-sans;
+  font-family: $font-heading;
   font-size: $font-h5;
   line-height: $leading-normal;
   margin-bottom: $space-2;
 }
 
 @mixin heading-6 {
-  font-family: $font-cal-sans;
+  font-family: $font-heading;
   font-size: $font-h6;
   line-height: $leading-normal;
   margin-bottom: $space-2;
@@ -67,21 +67,21 @@
 
 // Body text styles
 @mixin body-large {
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-base;
   font-weight: $font-regular;
   line-height: $leading-relaxed;
 }
 
 @mixin body-regular {
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-base;
   font-weight: $font-regular;
   line-height: $leading-normal;
 }
 
 @mixin caption {
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-xs;
   font-weight: $font-regular;
   line-height: $leading-normal;
@@ -89,14 +89,14 @@
 }
 
 @mixin label {
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-sm;
   font-weight: $font-regular;
   line-height: $leading-normal;
 }
 
 @mixin sub-label {
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-xs;
   font-weight: $font-regular;
   line-height: $leading-normal;
@@ -121,7 +121,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: $font-inter;
+  font-family: $font-body;
   font-weight: $font-semibold;
   font-size: $font-sm;
   line-height: 1;
@@ -366,7 +366,7 @@
 // === FORM ELEMENTS ===
 
 @mixin input-field {
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-chat;
   color: $neutral-black;
   background-color: $neutral-white;
@@ -402,7 +402,7 @@
 
 @mixin form-label {
   display: block;
-  font-family: $font-inter;
+  font-family: $font-body;
   font-size: $font-sm;
   font-weight: $font-medium;
   color: $neutral-dark-gray;
