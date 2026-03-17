@@ -40,7 +40,7 @@ function showUpdateOverlay() {
       </div>
       <span style="
         position: absolute; bottom: 48px; left: 0; right: 0; text-align: center;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         font-size: 13px; font-weight: 400; color: ${tc.neutralDarkGray};
       ">App Updating...</span>
     </div>

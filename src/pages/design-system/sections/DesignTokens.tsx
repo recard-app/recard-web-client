@@ -68,8 +68,8 @@ const typography = [
 ];
 
 const fontFamilies = [
-  { name: 'Cal Sans', variable: '$font-heading', sample: 'The quick brown fox jumps over the lazy dog' },
-  { name: 'Inter', variable: '$font-body', sample: 'The quick brown fox jumps over the lazy dog' },
+  { name: 'Outfit', variable: '$font-heading', sample: 'The quick brown fox jumps over the lazy dog' },
+  { name: 'Plus Jakarta Sans', variable: '$font-body', sample: 'The quick brown fox jumps over the lazy dog' },
 ];
 
 const spacing = [
@@ -143,8 +143,8 @@ const DesignTokens: React.FC = () => {
               <span 
                 className="ds-typography-text" 
                 style={{ 
-                  fontFamily: font.name === 'Cal Sans' ? '"Cal Sans", sans-serif' :
-                              '"Inter", sans-serif',
+                  fontFamily: font.name === 'Outfit' ? '"Outfit", sans-serif' :
+                              '"Plus Jakarta Sans", sans-serif',
                   fontSize: '1.25rem'
                 }}
               >

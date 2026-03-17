@@ -10,7 +10,7 @@ const features = [
 ];
 
 const btnBase: React.CSSProperties = {
-  fontFamily: '"Inter", sans-serif',
+  fontFamily: '"Plus Jakarta Sans", sans-serif',
   fontWeight: 600,
   fontSize: '0.9375rem',
   padding: '12px 32px',
@@ -78,13 +78,13 @@ export default function LandingPage() {
         <Icon name="cardzen-logo" variant="solid" size={40} color={COLORS.PRIMARY_COLOR} />
         <span
           className="text-2xl tracking-tight"
-          style={{ fontFamily: '"Cal Sans", sans-serif', color: COLORS.NEUTRAL_BLACK, fontWeight: 600 }}
+          style={{ fontFamily: '"Outfit", sans-serif', color: COLORS.NEUTRAL_BLACK, fontWeight: 700 }}
         >
           {APP_NAME}
         </span>
         <span
           style={{
-            fontFamily: '"Inter", sans-serif',
+            fontFamily: '"Plus Jakarta Sans", sans-serif',
             fontSize: '0.6875rem',
             fontWeight: 600,
             letterSpacing: '0.04em',
@@ -104,13 +104,13 @@ export default function LandingPage() {
       {/* Hero */}
       <h1
         className="text-4xl sm:text-5xl"
-        style={{ fontFamily: '"Cal Sans", sans-serif', color: COLORS.NEUTRAL_BLACK, fontWeight: 700, lineHeight: 1.15, marginBottom: 12 }}
+        style={{ fontFamily: '"Outfit", sans-serif', color: COLORS.NEUTRAL_BLACK, fontWeight: 700, lineHeight: 1.15, marginBottom: 12 }}
       >
         Your credit cards, optimized.
       </h1>
       <p
         className="text-lg sm:text-xl max-w-md"
-        style={{ fontFamily: '"Inter", sans-serif', color: COLORS.NEUTRAL_DARK_GRAY, marginBottom: 28 }}
+        style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: COLORS.NEUTRAL_DARK_GRAY, marginBottom: 28 }}
       >
         AI-powered recommendations so you always use the best card for every purchase.
       </p>
@@ -144,7 +144,7 @@ export default function LandingPage() {
           Sign In
         </Link>
         <span
-          style={{ fontFamily: '"Inter", sans-serif', fontSize: '0.8125rem', color: COLORS.NEUTRAL_MEDIUM_GRAY, marginLeft: 4 }}
+          style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', fontSize: '0.8125rem', color: COLORS.NEUTRAL_MEDIUM_GRAY, marginLeft: 4 }}
         >
           Free while in beta
         </span>
@@ -177,13 +177,13 @@ export default function LandingPage() {
             </div>
             <h3
               className="font-semibold mb-1"
-              style={{ fontFamily: '"Inter", sans-serif', color: COLORS.NEUTRAL_BLACK, fontSize: '0.9375rem' }}
+              style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: COLORS.NEUTRAL_BLACK, fontSize: '0.9375rem' }}
             >
               {f.title}
             </h3>
             <p
               className="text-sm leading-relaxed"
-              style={{ fontFamily: '"Inter", sans-serif', color: COLORS.NEUTRAL_DARK_GRAY }}
+              style={{ fontFamily: '"Plus Jakarta Sans", sans-serif', color: COLORS.NEUTRAL_DARK_GRAY }}
             >
               {f.description}
             </p>
@@ -197,7 +197,7 @@ export default function LandingPage() {
         style={{
           paddingTop: 24,
           paddingBottom: 32,
-          fontFamily: '"Inter", sans-serif',
+          fontFamily: '"Plus Jakarta Sans", sans-serif',
           fontSize: '0.8125rem',
           color: COLORS.NEUTRAL_MEDIUM_GRAY,
           display: 'flex',

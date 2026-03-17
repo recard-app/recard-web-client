@@ -86,8 +86,8 @@ Most font references use the semantic SCSS variables `$font-heading` and `$font-
 
 | File | Values | Semantic Role | Why hardcoded |
 |------|--------|---------------|---------------|
-| `index.html` lines 16-18 | Google Fonts `<link>` loading Cal Sans + Inter | heading + body | Static HTML, parsed before JS |
-| `src/main.tsx` line 43 | `'Inter', -apple-system, ...` | body | PWA overlay renders before ThemeProvider, inline HTML string |
-| `src/pages/landing/LandingPage.tsx` | `'"Cal Sans", sans-serif'` (2 occurrences) | heading | Inline React style, no SCSS access |
-| `src/pages/landing/LandingPage.tsx` | `'"Inter", sans-serif'` (7 occurrences) | body | Inline React style, no SCSS access |
+| `index.html` lines 16-18 | Google Fonts `<link>` loading Outfit + Plus Jakarta Sans | heading + body | Static HTML, parsed before JS |
+| `src/main.tsx` line 43 | `'Plus Jakarta Sans', -apple-system, ...` | body | PWA overlay renders before ThemeProvider, inline HTML string |
+| `src/pages/landing/LandingPage.tsx` | `'"Outfit", sans-serif'` (2 occurrences) | heading | Inline React style, no SCSS access |
+| `src/pages/landing/LandingPage.tsx` | `'"Plus Jakarta Sans", sans-serif'` (7 occurrences) | body | Inline React style, no SCSS access |
 | `src/main.css` | `source-code-pro, Menlo, ...` | monospace/code | CSS fallback for `<code>` elements |

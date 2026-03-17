@@ -5,6 +5,7 @@
 // Heading styles
 @mixin heading-1 {
   font-family: $font-heading;
+  font-weight: $font-bold;
   font-size: $font-h1;
   line-height: $leading-tight;
   margin-bottom: $space-6;
@@ -12,6 +13,7 @@
 
 @mixin heading-2 {
   font-family: $font-heading;
+  font-weight: $font-bold;
   font-size: $font-h2;
   line-height: $leading-tight;
   margin-bottom: $space-5;
@@ -19,6 +21,7 @@
 
 @mixin heading-3 {
   font-family: $font-heading;
+  font-weight: $font-semibold;
   font-size: $font-h3;
   line-height: $leading-tight;
   margin-bottom: $space-4;
@@ -26,6 +29,7 @@
 
 @mixin heading-4 {
   font-family: $font-heading;
+  font-weight: $font-semibold;
   font-size: $font-h4;
   line-height: $leading-tight;
   margin-bottom: $space-3;
@@ -33,6 +37,7 @@
 
 @mixin heading-5 {
   font-family: $font-heading;
+  font-weight: $font-medium;
   font-size: $font-h5;
   line-height: $leading-normal;
   margin-bottom: $space-2;
@@ -40,6 +45,7 @@
 
 @mixin heading-6 {
   font-family: $font-heading;
+  font-weight: $font-medium;
   font-size: $font-h6;
   line-height: $leading-normal;
   margin-bottom: $space-2;
