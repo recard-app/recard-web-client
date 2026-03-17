@@ -547,7 +547,6 @@ body:has(.mobile-credit-details-drawer, .credit-edit-modal-drawer) [data-radix-p
 
     .credit-name {
       font-weight: $font-semibold;
-      color: $neutral-dark-gray;
       font-size: $font-sm; // Match entry-title and card-name classes
       line-height: 1.2;
       flex: 1;
