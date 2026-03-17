@@ -46,7 +46,7 @@
 
 .not-found-heading {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: $font-bold;
   color: $neutral-black;
   margin: 0;
 }
@@ -61,7 +61,7 @@
 
 .not-found-link {
   font-family: $font-body;
-  font-weight: 600;
+  font-weight: $font-semibold;
   font-size: 0.9375rem;
   padding: 12px 32px;
   border-radius: 10px;

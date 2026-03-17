@@ -96,7 +96,7 @@
 .current-year-credits, .current-month-credits {
   h2 {
     font-size: 1.25rem;
-    font-weight: 600;
+    font-weight: $font-semibold;
     color: var(--color-text-primary);
     margin-bottom: 16px;
     margin-top: 0;
