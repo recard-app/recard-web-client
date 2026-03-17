@@ -731,7 +731,7 @@ const ButtonsShowcase: React.FC = () => {
             <UsageDetails usages={BUTTON_USAGE['credit-usage-button']} />
             <div className="credit-entry-row">
               <div className="credit-controls">
-                <div className="credit-usage" style={{ '--button-hover-bg': 'rgba(34, 204, 157, 0.1)' } as React.CSSProperties}>
+                <div className="credit-usage" style={{ '--button-hover-bg': `color-mix(in srgb, ${COLORS.PRIMARY_COLOR} 10%, transparent)` } as React.CSSProperties}>
                   <button className="credit-usage-button" type="button">
                     <div className="credit-amount-large">$250 / $300</div>
                     <div className="credit-usage-label">
@@ -764,7 +764,7 @@ const ButtonsShowcase: React.FC = () => {
           <div className="bs-item bs-item-wide">
             <span className="bs-item-label">Modal controls button</span>
             <UsageDetails usages={BUTTON_USAGE['credit-modal-controls']} />
-            <div className="credit-modal-controls" style={{ '--usage-tint-hover': 'rgba(34, 204, 157, 0.15)' } as React.CSSProperties}>
+            <div className="credit-modal-controls" style={{ '--usage-tint-hover': `color-mix(in srgb, ${COLORS.PRIMARY_COLOR} 15%, transparent)` } as React.CSSProperties}>
               <div className="credit-usage">
                 <button type="button">$150</button>
               </div>

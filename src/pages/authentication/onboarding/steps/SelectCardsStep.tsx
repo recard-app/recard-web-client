@@ -6,6 +6,7 @@ import { CHAT_COMPONENT_TYPES } from '../../../../types/ChatComponentTypes';
 import type { CardComponentItem } from '../../../../types/ChatComponentTypes';
 import type { CreditCard } from '../../../../types/CreditCardTypes';
 import { Icon } from '../../../../icons';
+import { COLORS } from '../../../../types/Colors';
 
 interface SelectCardsStepProps {
   onModalOpen: () => void;
@@ -22,8 +23,8 @@ function toCardComponentItem(card: CreditCard, index: number): CardComponentItem
       id: card.id,
       CardName: card.CardName,
       CardNetwork: card.CardNetwork,
-      CardPrimaryColor: card.CardPrimaryColor || '#5A5F66',
-      CardSecondaryColor: card.CardSecondaryColor || '#F2F4F6',
+      CardPrimaryColor: card.CardPrimaryColor || COLORS.NEUTRAL_DARK_GRAY,
+      CardSecondaryColor: card.CardSecondaryColor || COLORS.NEUTRAL_LIGHT_GRAY,
       frozen: card.isFrozen,
       preferred: card.isDefaultCard,
     },

@@ -8,6 +8,7 @@ import { CHAT_COMPONENT_TYPES } from '../../../../types/ChatComponentTypes';
 import type { CreditComponentItem } from '../../../../types/ChatComponentTypes';
 import type { CreditCard } from '../../../../types/CreditCardTypes';
 import type { PrioritizedCredit } from '../../../../types/CardCreditsTypes';
+import { COLORS } from '../../../../types/Colors';
 
 interface CreditsPreviewStepProps {
   prioritizedCredits: PrioritizedCredit[];
@@ -28,8 +29,8 @@ function toCreditComponentItem(credit: PrioritizedCredit, card: CreditCard | und
     card: {
       id: credit.cardId,
       CardName: credit.cardName,
-      CardPrimaryColor: card?.CardPrimaryColor || '#5A5F66',
-      CardSecondaryColor: card?.CardSecondaryColor || '#F2F4F6',
+      CardPrimaryColor: card?.CardPrimaryColor || COLORS.NEUTRAL_DARK_GRAY,
+      CardSecondaryColor: card?.CardSecondaryColor || COLORS.NEUTRAL_LIGHT_GRAY,
     },
     cardCredit: {
       id: credit.CreditId,

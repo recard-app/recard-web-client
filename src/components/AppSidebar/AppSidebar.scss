@@ -250,8 +250,8 @@
     }
 
     &.new-chat-plus {
-      background-color: rgba(34, 204, 157, 0.1); // Light green background to help visibility
-      border: 1px solid rgba(34, 204, 157, 0.3); // Light border
+      background-color: color-mix(in srgb, $primary-color 10%, transparent); // Light green background to help visibility
+      border: 1px solid color-mix(in srgb, $primary-color 30%, transparent); // Light border
 
       svg {
         fill: $primary-color !important; // Force the icon color
@@ -555,8 +555,8 @@
   position: fixed;
   left: calc($mini-sidebar-width + $space-2);
   transform: translateY(-50%);
-  background-color: black;
-  color: white;
+  background-color: $neutral-black;
+  color: $neutral-white;
   padding: 8px 12px;
   border-radius: 4px;
   font-size: 14px;

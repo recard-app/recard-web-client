@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { COLORS } from '@/types/Colors';
 
 const FormElements: React.FC = () => {
   const [toggleStates, setToggleStates] = useState({
@@ -123,7 +124,7 @@ const FormElements: React.FC = () => {
                 step={1}
               />
             </div>
-            <span style={{ fontSize: '12px', color: '#666' }}>Value: {sliderValues.single[0]}</span>
+            <span style={{ fontSize: '12px', color: COLORS.TEXT_MUTED_GRAY }}>Value: {sliderValues.single[0]}</span>
           </div>
           <div className="ds-component-item" style={{ minWidth: '250px' }}>
             <span className="ds-component-name">Range (two thumbs)</span>
@@ -135,7 +136,7 @@ const FormElements: React.FC = () => {
                 step={1}
               />
             </div>
-            <span style={{ fontSize: '12px', color: '#666' }}>
+            <span style={{ fontSize: '12px', color: COLORS.TEXT_MUTED_GRAY }}>
               Range: {sliderValues.range[0]} - {sliderValues.range[1]}
             </span>
           </div>
@@ -146,7 +147,7 @@ const FormElements: React.FC = () => {
                 defaultValue={[60]}
                 max={100}
                 step={1}
-                style={{ '--slider-range-color': '#22CC9D' } as React.CSSProperties}
+                style={{ '--slider-range-color': COLORS.PRIMARY_COLOR } as React.CSSProperties}
               />
             </div>
           </div>

@@ -87,7 +87,7 @@ function ChatSkeleton(): React.ReactElement {
               className="h-4 rounded-sm animate-pulse"
               style={{
                 width: w,
-                backgroundColor: `rgba(0, 0, 0, ${(0.08 * alpha).toFixed(3)})`,
+                backgroundColor: `color-mix(in srgb, ${COLORS.NEUTRAL_BLACK} ${(8 * alpha).toFixed(1)}%, transparent)`,
               }}
             />
           );

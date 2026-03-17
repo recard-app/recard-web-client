@@ -115,7 +115,7 @@
   box-shadow: $shadow-md;
   padding: $space-6;
   transition: $transition-base;
-  --primary: #22CC9D;
+  --primary: #{$primary-color};
   --primary-foreground: #ffffff;
   --secondary: #2563EB;
   --secondary-foreground: #ffffff;

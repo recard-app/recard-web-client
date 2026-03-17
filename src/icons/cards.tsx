@@ -1,4 +1,5 @@
 import React from 'react';
+import { COLORS } from '../types/Colors';
 
 // ===================== TYPES =====================
 export interface CardIconProps extends Omit<React.SVGProps<SVGSVGElement>, 'color' | 'fill'> {
@@ -98,8 +99,8 @@ const cardIconRegistry: { [size: number]: CardIconData } = {
 const CardIcon: React.FC<CardIconProps> = ({
   title,
   size,
-  primary = '#5A5F66',
-  secondary = '#F2F4F6',
+  primary = COLORS.NEUTRAL_DARK_GRAY,
+  secondary = COLORS.NEUTRAL_LIGHT_GRAY,
   className = '',
   ...props
 }) => {

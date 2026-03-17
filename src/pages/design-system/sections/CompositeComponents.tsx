@@ -3,6 +3,7 @@ import PageHeader from '@/components/PageHeader';
 import UsageBar from '@/components/UsageBar';
 import { Icon } from '@/icons';
 import { ICON_PRIMARY } from '@/types';
+import { COLORS } from '@/types/Colors';
 import '@/components/CreditCardDetailView/CreditCardDetailView.scss';
 
 const CompositeComponents: React.FC = () => {
@@ -89,7 +90,7 @@ const CompositeComponents: React.FC = () => {
             <span className="ds-component-name">Single segment</span>
             <div className="ds-usage-bar-demo">
               <UsageBar
-                segments={[{ label: 'Used', value: 65, color: '#22CC9D' }]}
+                segments={[{ label: 'Used', value: 65, color: COLORS.PRIMARY_COLOR }]}
                 maxValue={100}
               />
             </div>
@@ -99,9 +100,9 @@ const CompositeComponents: React.FC = () => {
             <div className="ds-usage-bar-demo">
               <UsageBar
                 segments={[
-                  { label: 'Groceries', value: 150, color: '#22CC9D' },
-                  { label: 'Dining', value: 75, color: '#2563EB' },
-                  { label: 'Gas', value: 50, color: '#F59E0B' },
+                  { label: 'Groceries', value: 150, color: COLORS.PRIMARY_COLOR },
+                  { label: 'Dining', value: 75, color: COLORS.ACCENT_COLOR },
+                  { label: 'Gas', value: 50, color: COLORS.WARNING },
                 ]}
                 maxValue={500}
               />
@@ -112,8 +113,8 @@ const CompositeComponents: React.FC = () => {
             <div className="ds-usage-bar-demo">
               <UsageBar
                 segments={[
-                  { label: 'Completed', value: 8, color: '#22CC9D' },
-                  { label: 'Pending', value: 3, color: '#F59E0B' },
+                  { label: 'Completed', value: 8, color: COLORS.PRIMARY_COLOR },
+                  { label: 'Pending', value: 3, color: COLORS.WARNING },
                 ]}
                 maxValue={15}
                 showLabels
@@ -125,9 +126,9 @@ const CompositeComponents: React.FC = () => {
             <div className="ds-usage-bar-demo">
               <UsageBar
                 segments={[
-                  { label: 'Travel', value: 500, color: '#22CC9D' },
-                  { label: 'Shopping', value: 300, color: '#2563EB' },
-                  { label: 'Entertainment', value: 200, color: '#EF4444' },
+                  { label: 'Travel', value: 500, color: COLORS.PRIMARY_COLOR },
+                  { label: 'Shopping', value: 300, color: COLORS.ACCENT_COLOR },
+                  { label: 'Entertainment', value: 200, color: COLORS.ERROR },
                 ]}
                 maxValue={1500}
                 showLabels
@@ -139,7 +140,7 @@ const CompositeComponents: React.FC = () => {
             <span className="ds-component-name">Custom height (thickness=12)</span>
             <div className="ds-usage-bar-demo">
               <UsageBar
-                segments={[{ label: 'Progress', value: 75, color: '#2563EB' }]}
+                segments={[{ label: 'Progress', value: 75, color: COLORS.ACCENT_COLOR }]}
                 maxValue={100}
                 thickness={12}
               />
@@ -149,7 +150,7 @@ const CompositeComponents: React.FC = () => {
             <span className="ds-component-name">Custom border radius (borderRadius=0)</span>
             <div className="ds-usage-bar-demo">
               <UsageBar
-                segments={[{ label: 'Progress', value: 60, color: '#22CC9D' }]}
+                segments={[{ label: 'Progress', value: 60, color: COLORS.PRIMARY_COLOR }]}
                 maxValue={100}
                 borderRadius={0}
               />
@@ -159,7 +160,7 @@ const CompositeComponents: React.FC = () => {
             <span className="ds-component-name">No animation (animate=false)</span>
             <div className="ds-usage-bar-demo">
               <UsageBar
-                segments={[{ label: 'Static', value: 45, color: '#F59E0B' }]}
+                segments={[{ label: 'Static', value: 45, color: COLORS.WARNING }]}
                 maxValue={100}
                 animate={false}
               />
@@ -169,7 +170,7 @@ const CompositeComponents: React.FC = () => {
             <span className="ds-component-name">Exceeded max (overflow)</span>
             <div className="ds-usage-bar-demo">
               <UsageBar
-                segments={[{ label: 'Over limit', value: 120, color: '#EF4444' }]}
+                segments={[{ label: 'Over limit', value: 120, color: COLORS.ERROR }]}
                 maxValue={100}
                 showLabels
               />
@@ -203,7 +204,7 @@ const CompositeComponents: React.FC = () => {
           <div className="ds-component-item" style={{ minWidth: '300px' }}>
             <span className="ds-component-name">Before credit title</span>
             <div className="card-details">
-              <span style={{ fontWeight: 500, color: '#1a1a1a', fontSize: '14px' }}>
+              <span style={{ fontWeight: 500, color: COLORS.NEUTRAL_BLACK, fontSize: '14px' }}>
                 <span className="disabled-pill">Disabled</span>
                 Uber Cash Credit
               </span>
@@ -212,7 +213,7 @@ const CompositeComponents: React.FC = () => {
           <div className="ds-component-item" style={{ minWidth: '300px' }}>
             <span className="ds-component-name">Before multiplier name</span>
             <div className="card-details">
-              <span style={{ fontWeight: 600, color: '#1a1a1a', fontSize: '14px' }}>
+              <span style={{ fontWeight: 600, color: COLORS.NEUTRAL_BLACK, fontSize: '14px' }}>
                 <span className="disabled-pill">Disabled</span>
                 Dining
               </span>
@@ -221,7 +222,7 @@ const CompositeComponents: React.FC = () => {
           <div className="ds-component-item" style={{ minWidth: '300px' }}>
             <span className="ds-component-name">Before perk title</span>
             <div className="card-details">
-              <span style={{ fontWeight: 500, color: '#1a1a1a', fontSize: '14px' }}>
+              <span style={{ fontWeight: 500, color: COLORS.NEUTRAL_BLACK, fontSize: '14px' }}>
                 <span className="disabled-pill">Disabled</span>
                 Priority Pass Lounge Access
               </span>
@@ -290,7 +291,7 @@ const CompositeComponents: React.FC = () => {
                 />
                 <span className="toggle-slider"></span>
               </label>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: toggleStates.perk ? '#22CC9D' : '#666' }}>
+              <span style={{ fontSize: '12px', fontWeight: 500, color: toggleStates.perk ? COLORS.PRIMARY_COLOR : COLORS.TEXT_MUTED_GRAY }}>
                 {toggleStates.perk ? 'Enabled' : 'Disabled'}
               </span>
             </div>
