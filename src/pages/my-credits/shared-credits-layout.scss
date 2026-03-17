@@ -92,6 +92,53 @@
   margin-bottom: 24px;
 }
 
+// Filter chips row
+.credits-filter-chips {
+  display: flex;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border-bottom: $border-half solid $neutral-light-gray;
+}
+
+// Individual chip - based on .category-badge pattern
+.credits-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: $space-1 $space-3;
+  font-size: $font-xxs;
+  font-weight: $font-semibold;
+  font-family: $font-body;
+  line-height: 1;
+  white-space: nowrap;
+  color: $neutral-dark-gray;
+  background-color: $neutral-white;
+  border: $border-full solid $neutral-gray;
+  border-radius: $radius-full;
+  text-transform: uppercase;
+  letter-spacing: $letter-spacing-caps;
+  cursor: pointer;
+  transition: all $transition-fast;
+  user-select: none;
+
+  &--active {
+    color: $neutral-white;
+    background-color: $primary-color;
+    border-color: $primary-color;
+  }
+}
+
+// Section header for grouped credit lists
+.credits-section-label {
+  font-size: $font-xs;
+  font-weight: $font-semibold;
+  font-family: $font-body;
+  text-transform: uppercase;
+  color: $neutral-dark-gray;
+  letter-spacing: $letter-spacing-caps;
+  padding: $space-2 $space-4 $space-1;
+  margin: 0 0 (-$space-1) 0;
+}
+
 // Shared styles for credits content sections
 .current-year-credits, .current-month-credits {
   h2 {

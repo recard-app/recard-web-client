@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PageHeader from '../../components/PageHeader';
 import { PAGE_ICONS, PAGE_NAMES, CalendarUserCredits, UserCredit, CREDIT_USAGE, CREDIT_INTERVALS, CREDIT_PERIODS } from '../../types';
 import { UserCreditCardService } from '../../services';
@@ -14,6 +14,7 @@ import CreditSummary from '../../components/CreditSummary';
 import CreditsTabFooter from '@/components/PageControls/CreditsTabFooter';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import { useComponents } from '../../contexts/useComponents';
+import FilterChips, { CreditFilter } from './FilterChips';
 import './shared-credits-layout.scss';
 import './MyCredits.scss';
 
@@ -52,7 +53,8 @@ const MyCredits: React.FC<MyCreditsProps> = ({
   const [showRedeemed, setShowRedeemed] = useState(false);
   const [stableFilteredCredits, setStableFilteredCredits] = useState<PrioritizedCredit[]>([]);
   const [hasRequestedPrioritizedCredits, setHasRequestedPrioritizedCredits] = useState(isLoadingPrioritizedCredits);
-  const { isInitialized: isComponentsInitialized } = useComponents();
+  const [activeFilter, setActiveFilter] = useState<CreditFilter | null>(null);
+  const { isInitialized: isComponentsInitialized, credits: componentCredits } = useComponents();
 
   const hasInitiallyLoaded =
     isComponentsInitialized && (monthlyStats !== null || (hasRequestedPrioritizedCredits && !isLoadingPrioritizedCredits));
@@ -112,23 +114,78 @@ const MyCredits: React.FC<MyCreditsProps> = ({
     return creditUsage === CREDIT_USAGE.USED;
   });
 
+  // Helper to convert PrioritizedCredit[] to CalendarUserCredits
+  const toCalendarCredits = (credits: PrioritizedCredit[]): CalendarUserCredits | null => {
+    if (credits.length === 0) return null;
+    return {
+      Credits: credits.map(credit => ({
+        CardId: credit.cardId,
+        CreditId: credit.id,
+        AssociatedPeriod: credit.period,
+        History: credit.History || [],
+        ActiveMonths: undefined,
+        isExpiring: credit.isExpiring,
+        daysUntilExpiration: credit.daysUntilExpiration,
+        isAnniversaryBased: credit.isAnniversaryBased,
+        anniversaryDate: credit.anniversaryDate,
+        anniversaryYear: credit.anniversaryYear,
+      } as UserCredit)),
+      Year: new Date().getFullYear(),
+    };
+  };
+
   // Convert prioritized credits to CalendarUserCredits format for CreditsDisplay
-  const calendarUserCredits: CalendarUserCredits | null = stableFilteredCredits.length > 0 ? {
-    Credits: stableFilteredCredits.map(credit => ({
-      CardId: credit.cardId,
-      CreditId: credit.id,
-      AssociatedPeriod: credit.period,
-      History: credit.History || [],
-      ActiveMonths: undefined, // Not needed for prioritized view
-      isExpiring: credit.isExpiring, // Include expiration flag
-      daysUntilExpiration: credit.daysUntilExpiration, // Include days until expiration
-      // Anniversary credit fields for proper expiration calculation
-      isAnniversaryBased: credit.isAnniversaryBased,
-      anniversaryDate: credit.anniversaryDate,
-      anniversaryYear: credit.anniversaryYear
-    } as UserCredit)),
-    Year: new Date().getFullYear()
-  } : null;
+  const calendarUserCredits = toCalendarCredits(stableFilteredCredits);
+
+  // Category lookup from component credits
+  const categoryByCredit = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const c of componentCredits) {
+      map.set(`${c.ReferenceCardId}:${c.id}`, c.Category);
+    }
+    return map;
+  }, [componentCredits]);
+
+  // Count expiring credits for chip visibility
+  const expiringCount = useMemo(
+    () => stableFilteredCredits.filter(c => c.isExpiring).length,
+    [stableFilteredCredits]
+  );
+
+  // Compute grouped sections when a filter is active
+  const groupedSections = useMemo(() => {
+    if (!activeFilter) return null;
+
+    if (activeFilter === 'expiring') {
+      const expiring = stableFilteredCredits
+        .filter(c => c.isExpiring)
+        .sort((a, b) => a.daysUntilExpiration - b.daysUntilExpiration);
+      return expiring.length > 0
+        ? [{ label: 'Expiring Soon', credits: expiring }]
+        : null;
+    }
+
+    const groups = new Map<string, PrioritizedCredit[]>();
+    for (const credit of stableFilteredCredits) {
+      const key = activeFilter === 'card'
+        ? credit.cardName
+        : (categoryByCredit.get(`${credit.cardId}:${credit.id}`) || 'Other');
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key)!.push(credit);
+    }
+
+    const result = Array.from(groups.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([label, credits]) => ({ label, credits }));
+    return result.length > 0 ? result : null;
+  }, [activeFilter, stableFilteredCredits, categoryByCredit]);
+
+  // Reset expiring filter when no expiring credits remain
+  useEffect(() => {
+    if (activeFilter === 'expiring' && expiringCount === 0) {
+      setActiveFilter(null);
+    }
+  }, [activeFilter, expiringCount]);
 
 
   // Handler for toggling showRedeemed (client-side only)
@@ -184,8 +241,13 @@ const MyCredits: React.FC<MyCreditsProps> = ({
               <div className="credits-display loading">
                 <CreditsDisplaySkeleton />
               </div>
-            ) : !showRedeemed && hasRedeemedCredits && !calendarUserCredits ? (
+            ) : !showRedeemed && hasRedeemedCredits && !calendarUserCredits && !groupedSections ? (
               <div className="credits-display empty">
+                <FilterChips
+                  activeFilter={activeFilter}
+                  onFilterChange={setActiveFilter}
+                  expiringCount={expiringCount}
+                />
                 <InfoDisplay
                   type="success"
                   message="All active credits have been redeemed."
@@ -202,40 +264,90 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                 </div>
               </div>
             ) : (
-              <CreditsDisplay
-                key={`credits-display-${showRedeemed}-${stableFilteredCredits.length}`}
-                calendar={calendarUserCredits}
-                isLoading={false}
-                userCards={userCards}
-                now={new Date()}
-                onUpdateComplete={onRefreshMonthlyStats}
-                isUpdating={isUpdatingMonthlyStats}
-                onAddUpdatingCreditId={onAddUpdatingCreditId}
-                onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
-                isCreditUpdating={isCreditUpdating}
-              >
-                {hasRedeemedCredits && (
-                  <div className="redeemed-credits-toggle-container">
-                    {!showRedeemed ? (
-                      <button
-                        className="button ghost icon with-text"
-                        onClick={() => handleToggleRedeemed(true)}
-                      >
-                        <Icon name="visibility-on" variant="micro" size={14} />
-                        Show redeemed credits
-                      </button>
-                    ) : (
-                      <button
-                        className="button ghost icon with-text"
-                        onClick={() => handleToggleRedeemed(false)}
-                      >
-                        <Icon name="visibility-off" variant="micro" size={14} />
-                        Hide redeemed credits
-                      </button>
+              <>
+                <FilterChips
+                  activeFilter={activeFilter}
+                  onFilterChange={setActiveFilter}
+                  expiringCount={expiringCount}
+                />
+                {groupedSections ? (
+                  <>
+                    {groupedSections.map(section => (
+                      <React.Fragment key={section.label}>
+                        <div className="credits-section-label">{section.label}</div>
+                        <CreditsDisplay
+                          key={`credits-display-${section.label}-${showRedeemed}`}
+                          calendar={toCalendarCredits(section.credits)}
+                          isLoading={false}
+                          userCards={userCards}
+                          now={new Date()}
+                          onUpdateComplete={onRefreshMonthlyStats}
+                          isUpdating={isUpdatingMonthlyStats}
+                          onAddUpdatingCreditId={onAddUpdatingCreditId}
+                          onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+                          isCreditUpdating={isCreditUpdating}
+                        />
+                      </React.Fragment>
+                    ))}
+                    {hasRedeemedCredits && (
+                      <div className="redeemed-credits-toggle-container">
+                        {!showRedeemed ? (
+                          <button
+                            className="button ghost icon with-text"
+                            onClick={() => handleToggleRedeemed(true)}
+                          >
+                            <Icon name="visibility-on" variant="micro" size={14} />
+                            Show redeemed credits
+                          </button>
+                        ) : (
+                          <button
+                            className="button ghost icon with-text"
+                            onClick={() => handleToggleRedeemed(false)}
+                          >
+                            <Icon name="visibility-off" variant="micro" size={14} />
+                            Hide redeemed credits
+                          </button>
+                        )}
+                      </div>
                     )}
-                  </div>
+                  </>
+                ) : (
+                  <CreditsDisplay
+                    key={`credits-display-${showRedeemed}-${stableFilteredCredits.length}`}
+                    calendar={calendarUserCredits}
+                    isLoading={false}
+                    userCards={userCards}
+                    now={new Date()}
+                    onUpdateComplete={onRefreshMonthlyStats}
+                    isUpdating={isUpdatingMonthlyStats}
+                    onAddUpdatingCreditId={onAddUpdatingCreditId}
+                    onRemoveUpdatingCreditId={onRemoveUpdatingCreditId}
+                    isCreditUpdating={isCreditUpdating}
+                  >
+                    {hasRedeemedCredits && (
+                      <div className="redeemed-credits-toggle-container">
+                        {!showRedeemed ? (
+                          <button
+                            className="button ghost icon with-text"
+                            onClick={() => handleToggleRedeemed(true)}
+                          >
+                            <Icon name="visibility-on" variant="micro" size={14} />
+                            Show redeemed credits
+                          </button>
+                        ) : (
+                          <button
+                            className="button ghost icon with-text"
+                            onClick={() => handleToggleRedeemed(false)}
+                          >
+                            <Icon name="visibility-off" variant="micro" size={14} />
+                            Hide redeemed credits
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </CreditsDisplay>
                 )}
-              </CreditsDisplay>
+              </>
             )}
           </div>
           <CreditsTabFooter />
