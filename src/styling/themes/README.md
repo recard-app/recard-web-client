@@ -53,8 +53,8 @@ Most previously-hardcoded colors have been replaced with theme variables. The re
 
 | File | Values | Theme Property | Purpose |
 |------|--------|----------------|---------|
-| `index.html` | `#FFFFFF` | `neutralWhite` | `<meta name="theme-color">` (browser chrome) |
-| `public/manifest.json` | `#FFFFFF` | `neutralWhite` | PWA theme_color and background_color |
+| `index.html` | `#FAFCFB` | `neutralWhite` | `<meta name="theme-color">` (browser chrome) |
+| `public/manifest.json` | `#FAFCFB` | `neutralWhite` | PWA theme_color and background_color |
 
 ### PWA Overlay (`src/main.tsx`)
 
@@ -62,10 +62,10 @@ The PWA update overlay renders before `ThemeProvider` mounts, so CSS vars are un
 
 | Interpolation | Theme Property | Purpose |
 |---------------|----------------|---------|
-| `tc.primaryLightest` | `primaryLightest` (`#EBF6EE`) | Background gradient radials |
-| `tc.neutralLightGray` | `neutralLightGray` (`#F2F4F6`) | Background gradient base |
-| `tc.primaryColor` | `primaryColor` (`#22CC9D`) | Logo SVG fill |
-| `tc.neutralDarkGray` | `neutralDarkGray` (`#5A5F66`) | Spinner stroke + "App Updating..." text |
+| `tc.primaryLightest` | `primaryLightest` (`#EAF4EF`) | Background gradient radials |
+| `tc.neutralLightGray` | `neutralLightGray` (`#EEF1EF`) | Background gradient base |
+| `tc.primaryColor` | `primaryColor` (`#1A9E7A`) | Logo SVG fill |
+| `tc.neutralDarkGray` | `neutralDarkGray` (`#565C59`) | Spinner stroke + "App Updating..." text |
 
 ### Third-Party Branding (mandated by brand guidelines)
 
@@ -78,4 +78,4 @@ The PWA update overlay renders before `ThemeProvider` mounts, so CSS vars are un
 
 | File | Values | Theme Property | Purpose |
 |------|--------|----------------|---------|
-| `public/assistant_icons/*.svg` | `fill="black"` | ~`neutralBlack` (`#0B0D0F`) | ~19 assistant icon SVGs (static files, no variable support) |
+| `public/assistant_icons/*.svg` | `fill="black"` | ~`neutralBlack` (`#0B0D0C`) | ~19 assistant icon SVGs (static files, no variable support) |

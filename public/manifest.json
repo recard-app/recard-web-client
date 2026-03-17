@@ -6,8 +6,8 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "theme_color": "#FFFFFF",
-  "background_color": "#FFFFFF",
+  "theme_color": "#FAFCFB",
+  "background_color": "#FAFCFB",
   "categories": ["finance", "productivity", "ai"],
   "icons": [
     {
