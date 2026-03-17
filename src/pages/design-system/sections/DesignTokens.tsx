@@ -23,6 +23,34 @@ const colorGroups: { label: string; keys: (keyof ThemeColors)[] }[] = [
     label: 'Semantic Colors',
     keys: ['success', 'warningYellow', 'warning', 'error', 'info'],
   },
+  {
+    label: 'Misc Colors',
+    keys: ['borderLightGray', 'backgroundLighterGray', 'textMediumGray', 'textDarkGray', 'borderLighterGray', 'textSubtleGray', 'textMutedGray', 'borderMediumGray', 'disabledGray'],
+  },
+  {
+    label: 'Warning & Status Colors',
+    keys: ['warningBadgeBackground', 'warningBadgeText', 'warningBadgeLight', 'alertRedBackground'],
+  },
+  {
+    label: 'Info Component Colors',
+    keys: ['infoErrorRed', 'infoBlue', 'infoWarningOrange', 'infoSuccessGreen', 'infoLoadingGray'],
+  },
+  {
+    label: 'Info Component Backgrounds',
+    keys: ['infoErrorBg', 'infoBlueBg', 'infoWarningBg', 'infoSuccessBg'],
+  },
+  {
+    label: 'Info Component Borders',
+    keys: ['infoErrorBorder', 'infoBlueBorder', 'infoWarningBorder', 'infoSuccessBorder'],
+  },
+  {
+    label: 'Component-Specific Colors',
+    keys: ['creditEntryBorder', 'creditEntryBackground', 'dropdownWhite'],
+  },
+  {
+    label: 'Button Colors',
+    keys: ['buttonRed', 'buttonRedDark', 'buttonBlue', 'buttonBlueDark'],
+  },
 ];
 
 const typography = [
