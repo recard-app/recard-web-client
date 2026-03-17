@@ -95,8 +95,10 @@
 // Filter chips row
 .credits-filter-chips {
   display: flex;
-  gap: $space-2;
+  align-items: center;
+  gap: $space-1-5;
   padding: $space-2 $space-4;
+  height: 2.5rem; // Fixed height to prevent jitter on filter toggle
   border-bottom: $border-half solid $neutral-light-gray;
 }
 
@@ -104,7 +106,7 @@
 .credits-filter-chip {
   display: inline-flex;
   align-items: center;
-  padding: $space-1 $space-3;
+  padding: $space-2 $space-2;
   font-size: $font-xxs;
   font-weight: $font-semibold;
   font-family: $font-body;
@@ -137,6 +139,16 @@
       border-color: $primary-color !important;
       color: $neutral-white !important;
     }
+  }
+
+  &--clear {
+    padding: $space-2;
+    border-radius: $radius-full;
+    color: $neutral-dark-gray;
+    border-color: $neutral-gray;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

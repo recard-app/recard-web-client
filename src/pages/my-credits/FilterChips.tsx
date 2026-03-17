@@ -1,4 +1,5 @@
 import React from 'react';
+import Icon from '../../icons';
 
 export type CreditFilter = 'card' | 'category' | 'expiring';
 
@@ -32,6 +33,15 @@ const FilterChips: React.FC<FilterChipsProps> = ({ activeFilter, onFilterChange,
           </button>
         );
       })}
+      {activeFilter && (
+        <button
+          className="credits-filter-chip credits-filter-chip--clear"
+          onClick={() => onFilterChange(null)}
+          type="button"
+        >
+          <Icon name="x-mark" variant="micro" size={12} />
+        </button>
+      )}
     </div>
   );
 };
