@@ -120,10 +120,23 @@
   transition: all $transition-fast;
   user-select: none;
 
+  &:not(&--active) {
+    @include hover {
+      color: $neutral-black;
+      border-color: $neutral-medium-gray;
+    }
+  }
+
   &--active {
     color: $neutral-white;
     background-color: $primary-color;
     border-color: $primary-color;
+
+    @include hover {
+      background-color: $primary-color !important;
+      border-color: $primary-color !important;
+      color: $neutral-white !important;
+    }
   }
 }
 
