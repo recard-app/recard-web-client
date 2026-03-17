@@ -91,3 +91,24 @@ Most font references use the semantic SCSS variables `$font-heading` and `$font-
 | `src/pages/landing/LandingPage.tsx` | `'"Outfit", sans-serif'` (2 occurrences) | heading | Inline React style, no SCSS access |
 | `src/pages/landing/LandingPage.tsx` | `'"Plus Jakarta Sans", sans-serif'` (7 occurrences) | body | Inline React style, no SCSS access |
 | `src/main.css` | `source-code-pro, Menlo, ...` | monospace/code | CSS fallback for `<code>` elements |
+
+## Hardcoded Font Weight Reference
+
+Most font-weight declarations use the SCSS variables defined in `variables.scss`. The remaining items below are **intentionally hardcoded** because they live in static HTML or inline JS strings where SCSS variables are unavailable.
+
+### Variable Mapping
+
+| Variable | Weight | Role |
+|----------|--------|------|
+| `$font-light` | 400 | Light / thin text |
+| `$font-regular` | 500 | Default body text |
+| `$font-medium` | 600 | Medium emphasis |
+| `$font-semibold` | 700 | Strong emphasis, labels |
+| `$font-bold` | 800 | Headings, bold text |
+
+### Hardcoded Instances
+
+| File | Hardcoded Value | Equivalent Variable | Why hardcoded |
+|------|-----------------|---------------------|---------------|
+| `src/main.tsx` line 44 | `500` | `$font-regular` | PWA overlay renders before ThemeProvider, inline HTML string |
+| `public/offline.html` line 49 | `800` | `$font-bold` | Static HTML fallback page, no SCSS access |
