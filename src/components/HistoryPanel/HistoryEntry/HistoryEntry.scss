@@ -8,7 +8,6 @@
     @include card-base-borderless;
     padding: $space-1-5;
     padding-left: $space-2;
-    margin-bottom: 1px;
     position: relative;
     display: flex;
     align-items: center;
@@ -128,15 +127,11 @@
         .actions-dropdown { }
     }
 
-    // FULL-PAGE VARIANT - More detailed styling with interactive card pattern
+    // FULL-PAGE VARIANT - More detailed styling with space-separated pattern
     &.full-page-variant {
-      box-shadow: $shadow-xs;
-      @include interactive-card;
+      @include space-list-item;
 
-      // Override mobile border color to be more subtle
       @media (max-width: $mobile-breakpoint) {
-        border-color: $neutral-lightest-gray;
-
         .entry-info {
           .entry-title {
             font-weight: $font-medium;
