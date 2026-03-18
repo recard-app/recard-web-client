@@ -54,8 +54,9 @@ const DatePicker: React.FC<DatePickerProps> = ({
       onChange(null);
       return;
     }
-    // Enforce min/max for keyboard input (picker already respects these)
-    if (min && nativeValue < min) return;
+    // Don't enforce min via JS -- the native picker grays out invalid dates,
+    // and save-time validation shows a toast. Blocking on keystroke resets
+    // the field while the user is still typing the year.
     if (max && nativeValue > max) return;
     onChange(toDisplayFormat(nativeValue));
   };

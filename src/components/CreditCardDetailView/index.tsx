@@ -264,8 +264,8 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 toast.error('Please enter a valid calendar date.');
                 return;
             }
-            if (year < 2000) {
-                toast.error('Start date must be year 2000 or later.');
+            if (year < 2024) {
+                toast.error('Start date must be year 2024 or later.');
                 return;
             }
             const today = new Date();
@@ -968,7 +968,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                 onChange={setEditingOpenDateValue}
                                 placeholder="MM/DD/YYYY"
                                 disabled={false}
-                                min="2000-01-01"
+                                min="2024-01-01"
                                 max={new Date().toISOString().split('T')[0]}
                             />
                             {editingOpenDateValue && (

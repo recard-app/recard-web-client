@@ -413,7 +413,7 @@
 
     .profile-name {
       font-size: 0.9rem;
-      font-weight: 500;
+      font-weight: $font-semibold;
       color: $neutral-dark-gray;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -422,7 +422,7 @@
 
     .profile-plan {
       font-size: 0.75rem;
-      font-weight: 400;
+      font-weight: $font-medium;
       color: $neutral-medium-gray;
       overflow: hidden;
       text-overflow: ellipsis;
