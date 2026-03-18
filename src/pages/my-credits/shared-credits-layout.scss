@@ -99,6 +99,7 @@
 // Filter chips row
 .credits-filter-chips {
   display: flex;
+  align-items: center;
   gap: $space-2;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -115,6 +116,7 @@
 // Individual chip - based on .category-badge pattern
 .credits-filter-chip {
   flex-shrink: 0;
+  min-height: 30px;
   display: inline-flex;
   align-items: center;
   padding: $space-2 $space-3;
