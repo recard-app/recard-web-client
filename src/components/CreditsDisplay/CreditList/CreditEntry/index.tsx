@@ -358,8 +358,8 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           <div className="credit-usage">
             {disableDropdown ? (
               <div className="credit-usage-button static">
-                <div className="credit-amount-remaining" style={{ color: usageColor }}>{formatCreditDollars(remainingValue)} left</div>
-                <div className="credit-amount-total">of {formatCreditDollars(maxValue)}</div>
+                <div className="credit-amount-remaining" style={{ color: usageColor }}>{formatCreditDollars(remainingValue)}</div>
+                <div className="credit-amount-total">left</div>
               </div>
             ) : (
               <UsageDropdown
