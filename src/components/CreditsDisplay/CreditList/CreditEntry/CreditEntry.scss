@@ -4,18 +4,16 @@
 
 // New row-based layout - matches history entry pattern
 .credit-entry-row {
-  @include interactive-card;
+  @include divider-list-item;
 
   & {
     padding: $space-2;
-    margin-bottom: 1px;
     position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: $space-3;
     min-height: 42px;
-    box-shadow: $shadow-xs;
   }
 
   &:not(.updating) {
@@ -25,7 +23,6 @@
   @media (hover: hover) {
     &:hover:not(.updating) {
       background-color: $neutral-lightest-gray;
-      border-color: $neutral-gray;
     }
   }
 
