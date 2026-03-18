@@ -4,7 +4,7 @@
 
 // New row-based layout - matches history entry pattern
 .credit-entry-row {
-  @include divider-list-item;
+  @include space-list-item;
 
   & {
     padding: $space-2 $space-4;
@@ -35,6 +35,15 @@
   @media (max-width: $mobile-breakpoint) {
     padding: $space-1-5 $space-4;
   }
+}
+
+.credit-donut {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
 }
 
 .credit-info {
@@ -206,6 +215,24 @@
         color: $neutral-black;
       }
 
+      .credit-amount-remaining {
+        font-size: $font-sm;
+        font-weight: $font-bold;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.4;
+        white-space: nowrap;
+        // color set via inline style
+      }
+
+      .credit-amount-total {
+        font-size: $font-xs;
+        font-weight: $font-medium;
+        color: $neutral-medium-gray;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
+        white-space: nowrap;
+      }
+
       .credit-usage-label {
         display: flex;
         align-items: center;
@@ -213,7 +240,7 @@
         font-size: $font-xs;
         font-weight: $font-medium;
         color: $neutral-dark-gray;
-        
+
         span {
           display: none;
         }

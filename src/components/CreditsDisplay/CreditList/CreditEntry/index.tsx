@@ -13,13 +13,13 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import './CreditEntry.scss';
-import { CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, CreditPeriodType, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS, ICON_GRAY } from '../../../../types';
+import { CREDIT_USAGE, CREDIT_USAGE_DISPLAY_NAMES, UserCredit, UserCreditWithExpiration, CreditUsageType, CreditPeriodType, SHOW_CARD_NAME_BUBBLE_IN_CREDITS, COLORS, ICON_GRAY, CREDIT_PERIODS } from '../../../../types';
 import { CreditCard, CardCredit } from '../../../../types/CreditCardTypes';
 import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../../types/CardCreditsTypes';
 import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
 import UsagePieIcon from '@/icons/UsagePieIcon';
-import { getMaxValue, getValueForUsage, getDateRangeText, getCurrentPeriodIndex, PERIOD_DISPLAY_NAMES } from './utils';
+import { getMaxValue, getValueForUsage, getDateRangeText, getCurrentPeriodIndex, PERIOD_DISPLAY_NAMES, formatCreditDollars } from './utils';
 import { getEasternYear } from '../../../../utils';
 import { UserCreditService } from '../../../../services/UserServices/UserCreditService';
 import UsageDropdown from './UsageDropdown';
@@ -168,6 +168,11 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
 
   const usageColor = USAGE_COLOR_BY_STATE[usage] || CREDIT_USAGE_DISPLAY_COLORS.INACTIVE;
 
+  const remainingValue = Math.max(0, maxValue - valueUsed);
+  const remainingPercentage = maxValue > 0 ? (remainingValue / maxValue) * 100 : 0;
+  const isMonthly = userCredit.AssociatedPeriod.toLowerCase() === CREDIT_PERIODS.Monthly;
+  const shouldShowPeriod = displayPeriod && !isMonthly;
+
   // Open the centralized credit drawer
   const handleOpenDrawer = () => {
     openDrawer({ cardId: userCredit.CardId, creditId: userCredit.CreditId });
@@ -271,7 +276,16 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   // Default variant - full display
   return (
     <div className={`credit-entry-row ${isUpdating ? 'updating' : ''}`} data-period={userCredit.AssociatedPeriod} onClick={handleOpenDrawer} style={{ cursor: 'pointer' }}>
-      {/* Left side: Credit info */}
+      {/* Column 1: Donut ring */}
+      <div className="credit-donut">
+        <UsagePieIcon
+          percentage={remainingPercentage}
+          size={40}
+          color={usageColor}
+        />
+      </div>
+
+      {/* Column 2: Credit info */}
       <div className="credit-info">
         <div className="credit-name">
           {card && !SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
@@ -315,15 +329,15 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           </>
         )}
         {card && !SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
-          <div className="card-info-inline">
-            <div className="card-period-group">
-              <Icon name="calendar" variant="micro" size={14} color={ICON_GRAY} />
-              {displayPeriod && (
+          <div className="card-info-inline" style={!(shouldShowPeriod || isExpiring) ? { visibility: 'hidden' } : undefined}>
+            {(shouldShowPeriod || !isExpiring) && (
+              <div className="card-period-group">
+                <Icon name="calendar" variant="micro" size={14} color={ICON_GRAY} />
                 <span className="period-text-inline">
-                  {getPeriodDisplayText()}
+                  {shouldShowPeriod ? getPeriodDisplayText() : '\u00A0'}
                 </span>
-              )}
-            </div>
+              </div>
+            )}
             {isExpiring && (
               <span className="expiring-text-inline">
                 <Icon name="clock" variant="micro" size={12} />
@@ -334,7 +348,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         )}
       </div>
 
-      {/* Right side: Usage dropdown (interactive for list view) or static display */}
+      {/* Column 3: Usage controls */}
       <div className="credit-controls">
         {isUpdating ? (
           <div className="credit-updating-text" style={{ color: COLORS.DISABLED_GRAY, fontSize: '14px', textAlign: 'center', padding: '8px' }}>
@@ -343,21 +357,9 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
         ) : (
           <div className="credit-usage">
             {disableDropdown ? (
-              <div
-                className="credit-usage-button static"
-              >
-                <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
-                <div className="credit-usage-label">
-                  {(usage === CREDIT_USAGE.NOT_USED || usage === CREDIT_USAGE.PARTIALLY_USED) ? (
-                    <UsagePieIcon
-                      percentage={maxValue > 0 ? (valueUsed / maxValue) * 100 : 0}
-                      size={14}
-                      color={COLORS.NEUTRAL_BLACK}
-                    />
-                  ) : (
-                    <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usage === CREDIT_USAGE.USED ? usageColor : COLORS.NEUTRAL_BLACK }} />
-                  )}
-                </div>
+              <div className="credit-usage-button static">
+                <div className="credit-amount-remaining" style={{ color: usageColor }}>{formatCreditDollars(remainingValue)} left</div>
+                <div className="credit-amount-total">of {formatCreditDollars(maxValue)}</div>
               </div>
             ) : (
               <UsageDropdown
@@ -369,18 +371,8 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
                     className="credit-usage-button"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <div className="credit-amount-large">${valueUsed} / ${maxValue}</div>
-                    <div className="credit-usage-label">
-                      {(usage === CREDIT_USAGE.NOT_USED || usage === CREDIT_USAGE.PARTIALLY_USED) ? (
-                        <UsagePieIcon
-                          percentage={maxValue > 0 ? (valueUsed / maxValue) * 100 : 0}
-                          size={14}
-                          color={COLORS.NEUTRAL_BLACK}
-                        />
-                      ) : (
-                        <Icon name={USAGE_ICON_NAME[usage]} variant="micro" size={14} style={{ color: usage === CREDIT_USAGE.USED ? usageColor : COLORS.NEUTRAL_BLACK }} />
-                      )}
-                    </div>
+                    <div className="credit-amount-remaining" style={{ color: usageColor }}>{formatCreditDollars(remainingValue)} left</div>
+                    <div className="credit-amount-total">of {formatCreditDollars(maxValue)}</div>
                   </button>
                 }
               />

@@ -43,26 +43,26 @@ const CreditListSkeleton: React.FC<CreditListSkeletonProps> = ({
                     className="credit-entry-row"
                     style={{ pointerEvents: 'none' }}
                 >
-                    {/* Credit info (left side) */}
+                    {/* Column 1: Donut ring placeholder */}
+                    <div className="credit-donut">
+                        <Skeleton className="rounded-full" style={{ width: 40, height: 40 }} />
+                    </div>
+                    {/* Column 2: Credit info */}
                     <div className="credit-info" style={{ gap: 8 }}>
                         <div className="credit-name">
-                            {/* 1: Card icon (rounded rectangle) */}
                             <Skeleton className="rounded" style={{ width: 16, height: 12, flexShrink: 0 }} />
-                            {/* 2: Credit title */}
                             <Skeleton className="h-4 rounded" style={{ width: DEFAULT_NAME_WIDTHS[i % DEFAULT_NAME_WIDTHS.length] }} />
                         </div>
-                        {/* 3: Card period */}
-                        <Skeleton className="h-3 rounded" style={{ width: DEFAULT_PERIOD_WIDTHS[i % DEFAULT_PERIOD_WIDTHS.length] }} />
+                        {i % 2 === 0 && (
+                            <Skeleton className="h-3 rounded" style={{ width: DEFAULT_PERIOD_WIDTHS[i % DEFAULT_PERIOD_WIDTHS.length] }} />
+                        )}
                     </div>
-                    {/* Credit controls (right side) */}
+                    {/* Column 3: Amount display */}
                     <div className="credit-controls">
                         <div className="credit-usage">
                             <div className="credit-usage-button static">
-                                {/* 4: Credit amount */}
-                                <Skeleton className="h-4 w-[60px] rounded" />
-                                {/* 5: Usage label (text on desktop, circle icon on mobile) */}
-                                <Skeleton className="h-3 w-[50px] rounded credit-usage-label-skeleton" />
-                                <Skeleton className="h-[14px] w-[14px] rounded-full credit-usage-icon-skeleton" />
+                                <Skeleton className="h-4 rounded" style={{ width: 55 }} />
+                                <Skeleton className="h-3 rounded" style={{ width: 40 }} />
                             </div>
                         </div>
                     </div>
