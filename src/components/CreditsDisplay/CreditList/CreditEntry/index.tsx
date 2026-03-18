@@ -19,7 +19,7 @@ import { CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_ICON_NAMES } from '../../../.
 import { CardIcon } from '../../../../icons';
 import Icon from '@/icons';
 import UsagePieIcon from '@/icons/UsagePieIcon';
-import { getMaxValue, getValueForUsage, getDateRangeText, getCurrentPeriodIndex, PERIOD_DISPLAY_NAMES, formatCreditDollars } from './utils';
+import { getMaxValue, getValueForUsage, getDateRangeText, getCurrentPeriodIndex, PERIOD_DISPLAY_NAMES, formatCreditDollars, formatCreditDollarsCompact } from './utils';
 import { getEasternYear } from '../../../../utils';
 import { UserCreditService } from '../../../../services/UserServices/UserCreditService';
 import UsageDropdown from './UsageDropdown';
@@ -169,9 +169,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   const usageColor = USAGE_COLOR_BY_STATE[usage] || CREDIT_USAGE_DISPLAY_COLORS.INACTIVE;
 
   const remainingValue = Math.max(0, maxValue - valueUsed);
-  const remainingPercentage = maxValue > 0 ? (remainingValue / maxValue) * 100 : 0;
-  const isMonthly = userCredit.AssociatedPeriod.toLowerCase() === CREDIT_PERIODS.Monthly;
-  const shouldShowPeriod = displayPeriod && !isMonthly;
+  const usedPercentage = maxValue > 0 ? (valueUsed / maxValue) * 100 : 0;
 
   // Open the centralized credit drawer
   const handleOpenDrawer = () => {
@@ -276,16 +274,19 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
   // Default variant - full display
   return (
     <div className={`credit-entry-row ${isUpdating ? 'updating' : ''}`} data-period={userCredit.AssociatedPeriod} onClick={handleOpenDrawer} style={{ cursor: 'pointer' }}>
-      {/* Column 1: Donut ring */}
       <div className="credit-donut">
         <UsagePieIcon
-          percentage={remainingPercentage}
-          size={40}
+          percentage={usedPercentage}
+          size={72}
           color={usageColor}
+          trackColor={CREDIT_USAGE_DISPLAY_COLORS.NOT_USED}
+          centerText={formatCreditDollarsCompact(remainingValue)}
+          centerTextColor={COLORS.NEUTRAL_BLACK}
+          centerSubText="LEFT"
+          centerSubTextColor={COLORS.NEUTRAL_MEDIUM_GRAY}
         />
       </div>
 
-      {/* Column 2: Credit info */}
       <div className="credit-info">
         <div className="credit-name">
           {card && !SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
@@ -311,74 +312,22 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               />
               <span className="card-name">{card.CardName}</span>
             </div>
-            {(displayPeriod || isExpiring) && (
-              <div className="period-expiring-text">
-                {displayPeriod && (
-                  <span className="period-text">
-                    {getPeriodDisplayText()}
-                  </span>
-                )}
-                {isExpiring && (
-                  <span className="expiring-text">
-                    <Icon name="clock" variant="micro" size={12} />
-                    {getExpirationText(daysUntilExpiration)}
-                  </span>
-                )}
-              </div>
-            )}
           </>
         )}
-        {card && !SHOW_CARD_NAME_BUBBLE_IN_CREDITS && (
-          <div className="card-info-inline" style={!(shouldShowPeriod || isExpiring) ? { visibility: 'hidden' } : undefined}>
-            {(shouldShowPeriod || !isExpiring) && (
-              <div className="card-period-group">
-                <Icon name="calendar" variant="micro" size={14} color={ICON_GRAY} />
-                <span className="period-text-inline">
-                  {shouldShowPeriod ? getPeriodDisplayText() : '\u00A0'}
-                </span>
-              </div>
-            )}
-            {isExpiring && (
-              <span className="expiring-text-inline">
-                <Icon name="clock" variant="micro" size={12} />
-                {getExpirationText(daysUntilExpiration)}
-              </span>
-            )}
+        <div className="card-info-inline">
+          <div className="card-period-group">
+            <Icon name="calendar" variant="micro" size={14} color={ICON_GRAY} />
+            <span className="period-text-inline">
+              {getPeriodDisplayText()}
+            </span>
           </div>
-        )}
-      </div>
-
-      {/* Column 3: Usage controls */}
-      <div className="credit-controls">
-        {isUpdating ? (
-          <div className="credit-updating-text" style={{ color: COLORS.DISABLED_GRAY, fontSize: '14px', textAlign: 'center', padding: '8px' }}>
-            Updating...
-          </div>
-        ) : (
-          <div className="credit-usage">
-            {disableDropdown ? (
-              <div className="credit-usage-button static">
-                <div className="credit-amount-remaining" style={{ color: usageColor }}>{formatCreditDollars(remainingValue)}</div>
-                <div className="credit-amount-total">left</div>
-              </div>
-            ) : (
-              <UsageDropdown
-                usage={usage}
-                usageColor={usageColor}
-                onUsageSelect={handleCardUsageSelect}
-                trigger={
-                  <button
-                    className="credit-usage-button"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="credit-amount-remaining" style={{ color: usageColor }}>{formatCreditDollars(remainingValue)} left</div>
-                    <div className="credit-amount-total">of {formatCreditDollars(maxValue)}</div>
-                  </button>
-                }
-              />
-            )}
-          </div>
-        )}
+          {isExpiring && (
+            <span className="expiring-text-inline">
+              <Icon name="clock" variant="micro" size={12} />
+              {getExpirationText(daysUntilExpiration)}
+            </span>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -11,7 +11,6 @@
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: $space-3;
     min-height: 42px;
   }
@@ -42,8 +41,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 72px;
+  height: 72px;
 }
 
 .credit-info {
@@ -51,8 +50,33 @@
   display: flex;
   flex-direction: column;
   gap: $space-1;
-  min-width: 0; // Allow text truncation and shrinking
-  overflow: hidden; // Prevent content from overflowing
+  min-width: 0;
+  overflow: hidden;
+
+  .credit-amount-remaining {
+    font-size: $font-sm;
+    font-weight: $font-bold;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  .credit-usage-button-inline {
+    all: unset;
+    cursor: pointer;
+    border-radius: $radius-base;
+    padding: 0;
+    display: inline-flex;
+    align-self: flex-start;
+
+    @include hover {
+      background-color: var(--button-hover-bg) !important;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
   
   .credit-name {
     display: flex;

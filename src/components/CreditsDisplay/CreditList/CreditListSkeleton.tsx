@@ -43,28 +43,15 @@ const CreditListSkeleton: React.FC<CreditListSkeletonProps> = ({
                     className="credit-entry-row"
                     style={{ pointerEvents: 'none' }}
                 >
-                    {/* Column 1: Donut ring placeholder */}
                     <div className="credit-donut">
-                        <Skeleton className="rounded-full" style={{ width: 40, height: 40 }} />
+                        <Skeleton className="rounded-full" style={{ width: 72, height: 72 }} />
                     </div>
-                    {/* Column 2: Credit info */}
                     <div className="credit-info" style={{ gap: 8 }}>
                         <div className="credit-name">
                             <Skeleton className="rounded" style={{ width: 16, height: 12, flexShrink: 0 }} />
                             <Skeleton className="h-4 rounded" style={{ width: DEFAULT_NAME_WIDTHS[i % DEFAULT_NAME_WIDTHS.length] }} />
                         </div>
-                        {i % 2 === 0 && (
-                            <Skeleton className="h-3 rounded" style={{ width: DEFAULT_PERIOD_WIDTHS[i % DEFAULT_PERIOD_WIDTHS.length] }} />
-                        )}
-                    </div>
-                    {/* Column 3: Amount display */}
-                    <div className="credit-controls">
-                        <div className="credit-usage">
-                            <div className="credit-usage-button static">
-                                <Skeleton className="h-4 rounded" style={{ width: 55 }} />
-                                <Skeleton className="h-3 rounded" style={{ width: 40 }} />
-                            </div>
-                        </div>
+                        <Skeleton className="h-3 rounded" style={{ width: DEFAULT_PERIOD_WIDTHS[i % DEFAULT_PERIOD_WIDTHS.length] }} />
                     </div>
                 </div>
             ))}

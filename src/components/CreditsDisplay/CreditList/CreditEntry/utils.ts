@@ -5,6 +5,13 @@ export function formatCreditDollars(value: number): string {
   return rounded % 1 === 0 ? `$${rounded}` : `$${rounded.toFixed(2)}`;
 }
 
+export function formatCreditDollarsCompact(value: number): string {
+  const rounded = Math.round(value);
+  if (rounded < 1000) return `$${rounded}`;
+  const k = rounded / 1000;
+  return k % 1 === 0 ? `$${k}k` : `$${k.toFixed(1)}k`;
+}
+
 export function parseCreditValue(raw: string | number | null | undefined): number | undefined {
   if (raw == null) return undefined;
   if (typeof raw === 'number' && isFinite(raw) && raw > 0) return Math.floor(raw);
