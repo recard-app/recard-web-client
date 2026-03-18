@@ -75,12 +75,13 @@
               padding: $space-3 $space-4;
             }
 
-            // Edge-to-edge: remove padding so list items span full width
+            // Edge-to-edge: remove horizontal padding so list items span full width
+            // Preserve top padding for breathing room below the page header
             .edge-to-edge & {
-              padding: 0;
+              padding: $space-4 0 0;
 
               @media (max-width: $mobile-breakpoint) {
-                padding: 0;
+                padding: $space-3 0 0;
               }
             }
 

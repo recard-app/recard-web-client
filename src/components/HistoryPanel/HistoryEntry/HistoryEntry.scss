@@ -8,13 +8,12 @@
     @include card-base-borderless;
     padding: $space-1-5;
     padding-left: $space-2;
-    position: relative;
     display: flex;
     align-items: center;
+    gap: $space-2;
     cursor: pointer;
     transition: all 0.2s ease;
     min-height: 42px;
-    line-height: 42px;
 
     p {
         margin: 0;
@@ -46,7 +45,6 @@
         display: flex;
         flex-direction: column;
         flex-grow: 1;
-        padding-right: 32px;
         min-width: 0;
 
         .entry-info {
@@ -82,12 +80,8 @@
     
     // Base actions dropdown styles
     .actions-dropdown {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1;
-        
+        flex-shrink: 0;
+
         .action-icon {
             cursor: pointer;
         }
@@ -105,6 +99,8 @@
 
     // SIDEBAR VARIANT - More compact styling
     &.sidebar-variant {
+      padding-right: $space-2;
+
       @media (max-width: $mobile-breakpoint) {
         padding-left: $space-1-5;
       }
