@@ -281,7 +281,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           color={usageColor}
           trackColor={CREDIT_USAGE_DISPLAY_COLORS.NOT_USED}
           centerText={formatCreditDollarsCompact(remainingValue)}
-          centerTextColor={COLORS.NEUTRAL_BLACK}
+          centerTextColor={usage === CREDIT_USAGE.USED ? usageColor : COLORS.NEUTRAL_BLACK}
           centerSubText="LEFT"
           centerSubTextColor={COLORS.NEUTRAL_MEDIUM_GRAY}
         />
