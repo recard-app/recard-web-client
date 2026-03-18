@@ -9,6 +9,7 @@ import { MonthlyStatsResponse } from '../../types/CardCreditsTypes';
 import Icon from '../../icons';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 import CreditsDisplaySkeleton from '../../components/CreditsDisplay/CreditsDisplaySkeleton';
+import { Skeleton } from '../../components/ui/skeleton';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import CreditSummary from '../../components/CreditSummary';
 import CreditsTabFooter from '@/components/PageControls/CreditsTabFooter';
@@ -263,6 +264,12 @@ const MyCredits: React.FC<MyCreditsProps> = ({
               />
             ) : isLoading || !hasInitiallyLoaded ? (
               <div className="credits-display loading">
+                <div className="credits-filter-chips">
+                  <Skeleton className="rounded-full" style={{ width: 70, height: 28 }} />
+                  <Skeleton className="rounded-full" style={{ width: 100, height: 28 }} />
+                  <Skeleton className="rounded-full" style={{ width: 80, height: 28 }} />
+                  <Skeleton className="rounded-full" style={{ width: 75, height: 28 }} />
+                </div>
                 <CreditsDisplaySkeleton />
               </div>
             ) : !showRedeemed && hasRedeemedCredits && !calendarUserCredits && !groupedSections ? (
