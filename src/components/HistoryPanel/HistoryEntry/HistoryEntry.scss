@@ -127,9 +127,14 @@
         .actions-dropdown { }
     }
 
-    // FULL-PAGE VARIANT - More detailed styling with space-separated pattern
+    // FULL-PAGE VARIANT - Flat list items, no card appearance
     &.full-page-variant {
       @include space-list-item;
+
+      & {
+        background-color: transparent;
+        border-radius: 0;
+      }
 
       @media (max-width: $mobile-breakpoint) {
         .entry-info {
