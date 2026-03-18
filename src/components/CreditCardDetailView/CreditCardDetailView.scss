@@ -318,8 +318,6 @@
   // Multipliers, Credits, Perks content styling (inside tab content)
   .credits-content,
   .perks-content {
-    @include card-panel;
-
     h3 { @include section-header; }
   }
 
@@ -333,10 +331,7 @@
       gap: $space-3;
 
       .category-group {
-        @include card-base;
-        background-color: $neutral-lightest-gray;
-        overflow: hidden;
-        box-shadow: $shadow-sm;
+        background-color: transparent;
 
         .category-title {
           display: flex;
@@ -344,9 +339,8 @@
           gap: $space-1-5;
           width: 100%;
           position: relative;
-          padding: $space-1 $space-2;
-          border-bottom: $border-full solid $neutral-light-gray;
-          background-color: $neutral-white;
+          padding: $space-3 0 $space-1 0;
+          background-color: transparent;
           text-transform: uppercase;
           letter-spacing: $letter-spacing-caps;
           font-size: $font-xxs;
@@ -361,7 +355,6 @@
             display: flex;
             flex-direction: column;
             border-bottom: $border-half solid $neutral-light-gray;
-            background-color: $neutral-white;
             font-size: $font-sm;
             color: $neutral-dark-gray;
 
@@ -370,16 +363,10 @@
             }
 
             &.main-row {
-              background-color: $neutral-white;
-
               .cell.subcategory {
                 font-weight: $font-semibold;
                 color: $neutral-black;
               }
-            }
-
-            &.sub-row {
-              background-color: $neutral-white;
             }
 
             // Expandable row structure
@@ -815,22 +802,21 @@
   .credits-grid,
   .perks-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: $space-3;
+    grid-template-columns: 1fr;
+    gap: 0;
     align-items: start;
   }
 
   // Unified Component Card Styles
   .component-card {
-    @include card-base;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: $shadow-sm;
-    transition: box-shadow $transition-base;
+    border-bottom: $border-half solid $neutral-light-gray;
+    border-radius: 0;
 
-    @include hover {
-      box-shadow: $shadow-base;
+    &:last-child {
+      border-bottom: none;
     }
 
     &.disabled {
@@ -924,20 +910,6 @@
       font-size: $font-sm;
       color: $neutral-dark-gray;
       line-height: $leading-normal;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-height: calc(3 * $font-sm * $leading-normal);
-    }
-
-    &.expanded .component-description {
-      display: block;
-      -webkit-line-clamp: unset;
-      overflow: visible;
-      text-overflow: unset;
-      min-height: unset;
     }
 
     .component-details-section {
@@ -1038,21 +1010,6 @@
         align-items: center;
         text-align: center;
       }
-    }
-
-    // Switch grids to single column on mobile
-    .credits-grid,
-    .perks-grid {
-      grid-template-columns: 1fr;
-    }
-
-    // Remove 3-line clamp on mobile - let cards be natural height
-    .component-card .component-description {
-      display: block;
-      -webkit-line-clamp: unset;
-      overflow: visible;
-      text-overflow: unset;
-      min-height: unset;
     }
 
     // Multiplier rows on mobile - stack description under title
