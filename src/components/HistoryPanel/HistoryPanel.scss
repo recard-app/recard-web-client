@@ -39,6 +39,10 @@
 
     // Apply these styles only when viewing full history
     &.full-history {
+        .history-section {
+          gap: 0;
+        }
+
         background-color: $neutral-light-gray;
 
         .edge-to-edge & {

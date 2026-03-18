@@ -307,9 +307,9 @@ const MyCredits: React.FC<MyCreditsProps> = ({
                 />
                 {groupedSections ? (
                   <>
-                    {groupedSections.map(section => (
+                    {groupedSections.map((section, i) => (
                       <React.Fragment key={section.label}>
-                        <div className="credits-section-label">{section.label}</div>
+                        <div className={`credits-section-label${i === 0 ? ' first' : ''}`}>{section.label}</div>
                         <CreditsDisplay
                           key={`credits-display-${section.label}-${showRedeemed}`}
                           calendar={toCalendarCredits(section.credits)}
