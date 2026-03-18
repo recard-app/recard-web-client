@@ -739,3 +739,58 @@
     outline-offset: 2px;
   }
 }
+
+// Divider-separated list item - replaces interactive-card for divider lists
+// Items separated by 0.5px bottom border; last child has no border
+// Used by: credit-entry-row, credit-card-accordion
+@mixin divider-list-item {
+  background-color: $neutral-white;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: $border-half solid $neutral-light-gray;
+  cursor: pointer;
+  transition: background-color $transition-base;
+
+  @include hover {
+    background-color: $neutral-lightest-gray;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: -2px;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+// Space-separated list item - for lists with gap-only separation
+// No borders, no dividers; slight border-radius for hover highlight shape
+// Used by: history-entry (full-page), card selectors
+@mixin space-list-item {
+  background-color: $neutral-white;
+  border: none;
+  border-radius: $radius-base;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background-color $transition-base;
+
+  @include hover {
+    background-color: $neutral-lightest-gray;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+  }
+}
+
+// Container for a divider-separated list
+// Items stack vertically with no gap (dividers handle spacing)
+@mixin divider-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
