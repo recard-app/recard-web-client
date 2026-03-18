@@ -3,9 +3,9 @@
 
 .credit-section {
   padding: $space-3 $space-4;
-  background-color: $neutral-lightest-gray;
-  border-radius: $radius-md;
-  border: $border-full solid $neutral-light-gray;
+  background-color: transparent;
+  border-radius: $radius-base;
+  border: none;
   cursor: pointer;
   transition: background-color 0.2s ease;
 

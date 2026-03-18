@@ -2,16 +2,13 @@
 @use '../../../styling/mixins' as *;
 
 .credit-card-accordion {
-  @include interactive-card;
+  @include divider-list-item;
 
   & {
-    overflow: hidden;
     background-color: $neutral-white;
-    box-shadow: $shadow-sm;
   }
 
   &.expanded {
-    border-color: $neutral-gray;
     background-color: $neutral-white;
   }
 
@@ -157,7 +154,7 @@
   // Accordion content
   .accordion-content {
     //border-top: $border-full solid $neutral-light-gray;
-    padding: $space-4 $space-4 $space-4;
+    padding: $space-3 $space-4;
     background-color: $neutral-white;
     display: flex;
     flex-direction: column;

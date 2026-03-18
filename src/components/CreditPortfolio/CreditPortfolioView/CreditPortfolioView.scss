@@ -36,13 +36,13 @@
 .card-accordions {
   display: flex;
   flex-direction: column;
-  gap: $space-4;
+  gap: 0;
   max-width: 720px;
   margin: 0 auto;
   overflow-anchor: none; // Prevent scroll anchoring during content updates
 
   @media (max-width: $mobile-breakpoint) {
-    gap: $space-2;
+    gap: 0;
     max-width: none;
   }
 }
