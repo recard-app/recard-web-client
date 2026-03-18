@@ -3,6 +3,7 @@ import FullHistoryPanel from '../../components/HistoryPanel/FullHistoryPanel';
 import { PAGE_NAMES, PAGE_ICONS } from '../../types';
 import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
+import { useEdgeToEdge } from '../../hooks/useEdgeToEdge';
 import './History.scss';
 
 interface HistoryProps {
@@ -22,6 +23,7 @@ function History({
 }: HistoryProps): React.ReactElement {
   // Use the full height hook for this page
   useFullHeight(true);
+  useEdgeToEdge(true);
 
   return (
     <div className="standard-page-layout">

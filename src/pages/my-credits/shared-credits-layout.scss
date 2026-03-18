@@ -20,6 +20,10 @@
     -webkit-overflow-scrolling: touch;
     background-color: $neutral-light-gray;
 
+    .edge-to-edge & {
+      background-color: $neutral-white;
+    }
+
     // Universal scrollbar styling
     @include universal-scrollbar;
   }

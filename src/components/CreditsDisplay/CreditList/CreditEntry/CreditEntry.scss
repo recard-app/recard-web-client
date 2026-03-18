@@ -7,7 +7,7 @@
   @include divider-list-item;
 
   & {
-    padding: $space-2;
+    padding: $space-2 $space-4;
     position: relative;
     display: flex;
     align-items: center;
@@ -33,7 +33,7 @@
 
   // Mobile styling
   @media (max-width: $mobile-breakpoint) {
-    padding: $space-1-5;
+    padding: $space-1-5 $space-4;
   }
 }
 

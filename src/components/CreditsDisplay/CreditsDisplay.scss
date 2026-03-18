@@ -2,13 +2,23 @@
 
 .credits-display {
   padding: $space-5;
-  
+
   // Center the content area
+  max-width: 1000px;
   width: 100%;
   margin-left: auto;
   margin-right: auto;
-  
+
   @media (max-width: $mobile-breakpoint) {
     padding: $space-3 $space-4;
+  }
+
+  // Edge-to-edge: remove padding so list items span full width
+  .edge-to-edge & {
+    padding: 0;
+
+    @media (max-width: $mobile-breakpoint) {
+      padding: 0;
+    }
   }
 }

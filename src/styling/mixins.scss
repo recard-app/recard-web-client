@@ -760,10 +760,6 @@
     outline: 2px solid $primary-color;
     outline-offset: -2px;
   }
-
-  &:last-child {
-    border-bottom: none;
-  }
 }
 
 // Space-separated list item - for lists with gap-only separation

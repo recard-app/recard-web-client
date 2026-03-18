@@ -3,34 +3,31 @@
 .history-panel {
     .history-section {
         display: flex;
-        margin-bottom: $space-6;
-        gap: $space-4;
-        align-items: flex-start;
-        //max-width: 1000px;
+        flex-direction: column;
+        gap: $space-1;
+        align-items: stretch;
+        margin-bottom: $space-2;
 
         .section-header {
-            flex-shrink: 0;
-            width: 120px;
-            position: sticky;
-            top: 0;
-            
+            width: 100%;
+
             .section-title {
                 font-family: $font-body;
                 font-size: $font-xs;
                 font-weight: $font-bold;
-                color: $neutral-dark-gray;
-                padding: $space-1 0;
+                color: $neutral-medium-gray;
+                padding: 0;
                 margin: 0;
-                text-align: right;
+                text-align: left;
                 line-height: $leading-normal;
                 text-transform: uppercase;
-                @media (max-width: $mobile-breakpoint) {
-                  color: $neutral-medium-gray;
+
+                // Edge-to-edge: indent section titles so they don't touch container edges
+                .edge-to-edge & {
+                  padding: 0 $space-4;
                 }
             }
         }
-
-
     }
 
   .section-entries {
@@ -50,6 +47,10 @@
         box-sizing: border-box;
         min-height: 0; // Critical for nested flex scrolling
 
+        .edge-to-edge & {
+          background-color: $neutral-white;
+        }
+
         .history-panel-content {
             flex: 1;
             overflow-y: auto;
@@ -59,7 +60,7 @@
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
             padding: $space-5;
-            
+
             // Center the content area
             max-width: 1000px;
             width: 100%;
@@ -73,6 +74,15 @@
               padding: $space-3 $space-4;
             }
 
+            // Edge-to-edge: remove padding so list items span full width
+            .edge-to-edge & {
+              padding: 0;
+
+              @media (max-width: $mobile-breakpoint) {
+                padding: 0;
+              }
+            }
+
             // Loading and empty state messages
             > p {
                 @include body-regular;
@@ -80,6 +90,14 @@
                 color: $neutral-dark-gray;
                 margin: $space-8 0;
                 flex-shrink: 0;
+
+                .edge-to-edge & {
+                  padding: $space-5;
+
+                  @media (max-width: $mobile-breakpoint) {
+                    padding: $space-4;
+                  }
+                }
             }
         }
 
@@ -123,27 +141,7 @@
     }
   }
 
-  // Stack section header above entries on mobile for the full history page
   .history-panel {
-    .history-section {
-      flex-direction: column;
-      gap: $space-1;
-      align-items: stretch;
-      margin-bottom: $space-2;
-
-      .section-header {
-        position: static;
-        top: auto;
-        width: 100%;
-
-        .section-title {
-          text-align: left;
-          padding: 0;
-          margin: 0;
-        }
-      }
-    }
-
     &.full-history {
       .history-panel-content {
         padding: $space-3 $space-4;

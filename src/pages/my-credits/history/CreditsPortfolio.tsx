@@ -5,6 +5,7 @@ import { CreditCardDetails } from '../../../types/CreditCardTypes';
 import { CreditPortfolioView } from '../../../components/CreditPortfolio';
 import CreditsTabFooter from '@/components/PageControls/CreditsTabFooter';
 import { useFullHeight } from '../../../hooks/useFullHeight';
+import { useEdgeToEdge } from '../../../hooks/useEdgeToEdge';
 import '../shared-credits-layout.scss';
 import './CreditsPortfolio.scss';
 
@@ -28,6 +29,7 @@ const CreditsPortfolio: React.FC<CreditsPortfolioProps> = ({
   onClearAllUpdatingCredits
 }) => {
   useFullHeight(true);
+  useEdgeToEdge(true);
 
   return (
     <div className="standard-page-layout">

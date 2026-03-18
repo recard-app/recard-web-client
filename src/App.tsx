@@ -110,6 +110,7 @@ import {
 } from './types/CreditCardTypes';
 import { UserComponentTrackingPreferences, PrioritizedCredit } from './types/CardCreditsTypes';
 import { FullHeightContext } from './hooks/useFullHeight';
+import { EdgeToEdgeContext } from './hooks/useEdgeToEdge';
 import { ScrollHeightContext } from './hooks/useScrollHeight';
 import { toast } from 'sonner';
 import { Toaster } from './components/ui/sonner';
@@ -245,6 +246,8 @@ function AppContent({}: AppContentProps) {
   const [needsFullHeight, setNeedsFullHeight] = useState<boolean>(false);
   // State for managing scroll height behavior
   const [_needsScrollHeight, setNeedsScrollHeight] = useState<boolean>(false);
+  // State for managing edge-to-edge layout behavior
+  const [needsEdgeToEdge, setNeedsEdgeToEdge] = useState<boolean>(false);
 
   const [isCardSelectorOpen, setIsCardSelectorOpen] = useState(false);
   const [isCardDetailsOpen, setIsCardDetailsOpen] = useState(false);
@@ -1362,6 +1365,7 @@ function AppContent({}: AppContentProps) {
 
   return (
     <FullHeightContext.Provider value={{ setFullHeight: setNeedsFullHeight }}>
+      <EdgeToEdgeContext.Provider value={{ setEdgeToEdge: setNeedsEdgeToEdge }}>
       <ScrollHeightContext.Provider value={{ setScrollHeight: setNeedsScrollHeight }}>
         <CreditDrawerProvider
           prioritizedCredits={prioritizedCredits}
@@ -1646,6 +1650,7 @@ function AppContent({}: AppContentProps) {
               <UniversalContentWrapper
                 isSidePanelOpen={user ? isSidePanelOpen : false}
                 fullHeight={isAuthRoute || isOnboardingRoute ? true : needsFullHeight}
+                edgeToEdge={needsEdgeToEdge}
                 className={[
                   isAuthRoute || isOnboardingRoute ? 'center-content auth-background' : '',
                   isLandingPage ? 'auth-background' : '',
@@ -1793,6 +1798,7 @@ function AppContent({}: AppContentProps) {
         </div>
         </CreditDrawerProvider>
       </ScrollHeightContext.Provider>
+      </EdgeToEdgeContext.Provider>
     </FullHeightContext.Provider>
   );
 }

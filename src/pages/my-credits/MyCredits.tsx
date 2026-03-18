@@ -13,6 +13,7 @@ import HeaderControls from '@/components/PageControls/HeaderControls';
 import CreditSummary from '../../components/CreditSummary';
 import CreditsTabFooter from '@/components/PageControls/CreditsTabFooter';
 import { useFullHeight } from '../../hooks/useFullHeight';
+import { useEdgeToEdge } from '../../hooks/useEdgeToEdge';
 import { useComponents } from '../../contexts/useComponents';
 import FilterChips, { CreditFilter } from './FilterChips';
 import './shared-credits-layout.scss';
@@ -45,6 +46,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
 }) => {
   // Use the full height hook for this page
   useFullHeight(true);
+  useEdgeToEdge(true);
 
   const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
