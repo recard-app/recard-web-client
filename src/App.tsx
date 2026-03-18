@@ -769,8 +769,6 @@ function AppContent({}: AppContentProps) {
 
       setIsLoadingCreditCards(true);
       setIsLoadingHistory(true);
-      setIsLoadingMonthlyStats(false);
-      setIsLoadingPrioritizedCredits(false);
 
       try {
         // Extract chatId from URL if present (priority loading for initial chat hydration)
@@ -805,8 +803,6 @@ function AppContent({}: AppContentProps) {
       } finally {
         setIsLoadingCreditCards(false);
         setIsLoadingHistory(false);
-        setIsLoadingMonthlyStats(false);
-        setIsLoadingPrioritizedCredits(false);
         isLoadingRef.current = false;
       }
     };

@@ -54,7 +54,6 @@ const MyCredits: React.FC<MyCreditsProps> = ({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [showRedeemed, setShowRedeemed] = useState(false);
-  const [stableFilteredCredits, setStableFilteredCredits] = useState<PrioritizedCredit[]>([]);
   const [hasRequestedPrioritizedCredits, setHasRequestedPrioritizedCredits] = useState(isLoadingPrioritizedCredits);
   const [activeFilter, setActiveFilter] = useState<CreditFilter | null>(null);
   const { isInitialized: isComponentsInitialized, credits: componentCredits } = useComponents();
@@ -91,17 +90,15 @@ const MyCredits: React.FC<MyCreditsProps> = ({
     return currentHistory?.CreditUsage;
   };
 
-  // Update stable credits only when prioritizedCredits or showRedeemed changes
-  // This prevents flickering during the filtering/sorting process
-  useEffect(() => {
-    const newFilteredCredits = showRedeemed
+  // Compute filtered credits synchronously so the list and hasRedeemedCredits
+  // are always in sync within the same render (avoids single-frame flicker).
+  const stableFilteredCredits = useMemo(() => {
+    return showRedeemed
       ? prioritizedCredits
       : prioritizedCredits.filter(credit => {
           const creditUsage = getCurrentPeriodCreditUsage(credit);
           return creditUsage !== CREDIT_USAGE.USED;
         });
-
-    setStableFilteredCredits(newFilteredCredits);
   }, [prioritizedCredits, showRedeemed]);
 
   // Track whether the prioritized credits request has actually started.
