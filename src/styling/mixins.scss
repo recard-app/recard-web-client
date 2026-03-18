@@ -741,7 +741,7 @@
 }
 
 // Divider-separated list item - replaces interactive-card for divider lists
-// Items separated by 0.5px bottom border; last child has no border
+// Items separated by top + bottom borders; first and last items get capped
 // Used by: credit-entry-row, credit-card-accordion
 @mixin divider-list-item {
   background-color: $neutral-white;
@@ -751,6 +751,10 @@
   border-bottom: $border-half solid $neutral-light-gray;
   cursor: pointer;
   transition: background-color $transition-base;
+
+  &:first-child {
+    border-top: $border-half solid $neutral-light-gray;
+  }
 
   @include hover {
     background-color: $neutral-lightest-gray;
