@@ -12,7 +12,7 @@
     }
       .card {
     // Apply solution-card styling to main credit card selector
-    border: $border-full solid $neutral-light-gray;
+    border: none;
     border-radius: $radius-base;
     padding: $space-2;
     margin-bottom: $space-1;
@@ -24,8 +24,7 @@
 
     @media (hover: hover) {
       &:hover:not(.disabled) {
-        border-color: $neutral-medium-gray;
-        box-shadow: $shadow-sm;
+        background-color: $neutral-lightest-gray;
       }
     }
 
@@ -35,15 +34,13 @@
       pointer-events: none;
 
       @include hover {
-        border-color: $neutral-light-gray;
-        box-shadow: none;
+        background-color: $neutral-white;
       }
     }
 
     // Selected card styling
     &--selected {
       background-color: $primary-lightest;
-      border-color: $primary-light;
     }
 
         .card-select {
@@ -357,7 +354,7 @@
       // Apply solution-card styling to selectable cards
       .selectable-card {
         // Import base solution-card styles
-        border: $border-full solid $neutral-light-gray;
+        border: none;
         border-radius: $radius-base;
         padding: $space-2;
         margin-bottom: $space-1;
@@ -370,13 +367,12 @@
 
         @media (hover: hover) {
           &:hover:not(.disabled) {
-            border-color: $neutral-medium-gray;
-            box-shadow: $shadow-sm;
+            background-color: $neutral-lightest-gray;
           }
         }
 
         &.selected-card {
-          border: $border-full solid $primary-color;
+          border: none;
           background-color: $primary-lightest;
           
           .card-content {
@@ -397,8 +393,7 @@
           opacity: 0.5;
 
           @include hover {
-            border-color: $neutral-light-gray;
-            box-shadow: none;
+            background-color: $neutral-white;
           }
         }
         
