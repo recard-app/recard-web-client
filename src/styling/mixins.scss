@@ -748,12 +748,12 @@
   border: none;
   border-radius: 0;
   box-shadow: none;
-  border-bottom: $border-half solid $neutral-light-gray;
+  border-bottom: $border-full solid $neutral-light-gray;
   cursor: pointer;
   transition: background-color $transition-base;
 
   &:first-child {
-    border-top: $border-half solid $neutral-light-gray;
+    border-top: $border-full solid $neutral-light-gray;
   }
 
   @include hover {
