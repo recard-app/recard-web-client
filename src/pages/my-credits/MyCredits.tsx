@@ -109,10 +109,17 @@ const MyCredits: React.FC<MyCreditsProps> = ({
     }
   }, [isLoadingPrioritizedCredits]);
 
-  const hasRedeemedCredits = prioritizedCredits.some(credit => {
-    const creditUsage = getCurrentPeriodCreditUsage(credit);
-    return creditUsage === CREDIT_USAGE.USED;
-  });
+  const hasRedeemedCredits = useMemo(() => {
+    const redeemedCredits = prioritizedCredits.filter(credit => {
+      const creditUsage = getCurrentPeriodCreditUsage(credit);
+      return creditUsage === CREDIT_USAGE.USED;
+    });
+    if (redeemedCredits.length === 0) return false;
+    if (activeFilter === 'expiring') {
+      return redeemedCredits.some(c => c.isExpiring);
+    }
+    return true;
+  }, [prioritizedCredits, activeFilter]);
 
   // Helper to convert PrioritizedCredit[] to CalendarUserCredits
   const toCalendarCredits = (credits: PrioritizedCredit[]): CalendarUserCredits | null => {
