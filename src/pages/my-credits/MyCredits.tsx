@@ -167,6 +167,28 @@ const MyCredits: React.FC<MyCreditsProps> = ({
         : null;
     }
 
+    if (activeFilter === 'period') {
+      const periodLabels: Record<string, string> = {
+        monthly: 'Monthly',
+        quarterly: 'Quarterly',
+        semiannually: 'Semiannually',
+        annually: 'Annually',
+      };
+      const periodOrder = ['monthly', 'quarterly', 'semiannually', 'annually'];
+
+      const groups = new Map<string, PrioritizedCredit[]>();
+      for (const credit of stableFilteredCredits) {
+        const key = credit.period;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key)!.push(credit);
+      }
+
+      const result = periodOrder
+        .filter(p => groups.has(p))
+        .map(p => ({ label: periodLabels[p], credits: groups.get(p)! }));
+      return result.length > 0 ? result : null;
+    }
+
     const groups = new Map<string, PrioritizedCredit[]>();
     for (const credit of stableFilteredCredits) {
       const key = activeFilter === 'card'

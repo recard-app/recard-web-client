@@ -1,7 +1,7 @@
 import React from 'react';
 import Icon from '../../icons';
 
-export type CreditFilter = 'card' | 'category' | 'expiring';
+export type CreditFilter = 'card' | 'category' | 'period' | 'expiring';
 
 interface FilterChipsProps {
   activeFilter: CreditFilter | null;
@@ -12,6 +12,7 @@ interface FilterChipsProps {
 const CHIPS: { filter: CreditFilter; label: string }[] = [
   { filter: 'card', label: 'By Card' },
   { filter: 'category', label: 'By Category' },
+  { filter: 'period', label: 'By Period' },
   { filter: 'expiring', label: 'Expiring' },
 ];
 

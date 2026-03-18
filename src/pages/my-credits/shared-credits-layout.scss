@@ -102,7 +102,10 @@
   align-items: center;
   gap: $space-1-5;
   padding: $space-2 $space-4;
-  height: 2.5rem; // Fixed height to prevent jitter on filter toggle
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  @include universal-scrollbar;
 }
 
 // Individual chip - based on .category-badge pattern
