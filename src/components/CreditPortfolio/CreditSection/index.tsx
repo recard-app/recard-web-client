@@ -45,8 +45,9 @@ const CreditSection: React.FC<CreditSectionProps> = ({
   const isAnniversaryBased = credit.isAnniversaryBased ?? cardCredit?.isAnniversaryBased ?? false;
 
   // Capitalize period label from CREDIT_PERIODS values
-  const period = isAnniversaryBased ? 'yearly' : credit.AssociatedPeriod;
-  const periodTypeLabel = period.charAt(0).toUpperCase() + period.slice(1);
+  const periodTypeLabel = isAnniversaryBased
+    ? 'Anniversary'
+    : credit.AssociatedPeriod.charAt(0).toUpperCase() + credit.AssociatedPeriod.slice(1);
 
   return (
     <div className="credit-section" onClick={onClick} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}>
@@ -54,7 +55,6 @@ const CreditSection: React.FC<CreditSectionProps> = ({
         <h4 className="credit-title">{cardCredit.Title}</h4>
         <span className="credit-period">
           {periodTypeLabel}
-          {isAnniversaryBased && <span className="anniversary-badge">Anniversary</span>}
         </span>
       </div>
 

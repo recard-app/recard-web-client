@@ -572,7 +572,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                                         <Icon
                                                                             name="chevron-down"
                                                                             variant="mini"
-                                                                            size={16}
+                                                                            size={20}
                                                                             color={ICON_GRAY}
                                                                             className={`toggle-icon${isExpanded ? ' rotated' : ''}`}
                                                                         />
@@ -691,7 +691,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                                         <Icon
                                                                             name="chevron-down"
                                                                             variant="mini"
-                                                                            size={16}
+                                                                            size={20}
                                                                             color={ICON_GRAY}
                                                                             className={`toggle-icon${isExpanded ? ' rotated' : ''}`}
                                                                         />
@@ -794,7 +794,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                 </div>
                                                 <div className="component-value-info">
                                                     <span className="value-badge">${credit.Value}</span>
-                                                    <span className="period-badge">{credit.TimePeriod}</span>
+                                                    <span className="period-badge">{credit.isAnniversaryBased ? 'Anniversary' : credit.TimePeriod}</span>
                                                 </div>
                                                 <div className="component-description">
                                                     {credit.Description}
@@ -805,7 +805,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                     <Icon
                                                         name="chevron-down"
                                                         variant="mini"
-                                                        size={16}
+                                                        size={20}
                                                         color={ICON_GRAY}
                                                         className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
                                                     />
@@ -904,7 +904,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                     <Icon
                                                         name="chevron-down"
                                                         variant="mini"
-                                                        size={16}
+                                                        size={20}
                                                         color={ICON_GRAY}
                                                         className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
                                                     />
