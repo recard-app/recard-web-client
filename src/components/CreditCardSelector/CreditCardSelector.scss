@@ -9,6 +9,7 @@
   .dialog-body & {
       @extend %dialog-scrollable-content-base;
       max-height: none;
+      padding: 0;
     }
       .card {
     // Apply solution-card styling to main credit card selector
@@ -296,6 +297,7 @@
     .dialog-content & {
       @extend %dialog-scrollable-content-base;
       max-height: 70vh;
+      padding: 0;
     }
 
     // When wrapped in our dialog-body within a Drawer, avoid nested scrollbars
