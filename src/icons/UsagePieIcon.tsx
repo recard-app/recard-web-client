@@ -14,13 +14,18 @@ interface UsagePieIconProps {
   style?: React.CSSProperties;
 }
 
-// SVG geometry derived from the not-used-icon-v2 ring path
+// Ring geometry: center at (480, -480), outer radius 392, inner radius 309
 const CENTER_X = 480;
 const CENTER_Y = -480;
-// Outer radius ~392, inner radius ~309 => midpoint ~350.5, thickness ~83
 const RING_RADIUS = 350.5;
 const RING_THICKNESS = 83;
 const CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+
+// Crop viewBox tightly around the ring (outer edge = radius + thickness/2 = 392, plus 4px padding)
+const OUTER_EDGE = RING_RADIUS + RING_THICKNESS / 2 + 4;
+const VB_X = CENTER_X - OUTER_EDGE;
+const VB_Y = CENTER_Y - OUTER_EDGE;
+const VB_SIZE = OUTER_EDGE * 2;
 
 // Opacity for the background track ring (unfilled portion)
 const TRACK_OPACITY = 0.25;
@@ -30,8 +35,8 @@ const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, tr
   const dashLength = (clampedPct / 100) * CIRCUMFERENCE;
   const gapLength = CIRCUMFERENCE - dashLength;
 
-  const fontSize = Math.round(960 * 0.18);
-  const subFontSize = Math.round(960 * 0.115);
+  const fontSize = 173;
+  const subFontSize = 110;
   const hasSubText = !!(centerText && centerSubText);
 
   return (
@@ -41,7 +46,7 @@ const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, tr
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
-      viewBox="0 -960 960 960"
+      viewBox={`${VB_X} ${VB_Y} ${VB_SIZE} ${VB_SIZE}`}
     >
       {/* Background track ring (dimmed) */}
       <circle

@@ -277,7 +277,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
       <div className="credit-donut">
         <UsagePieIcon
           percentage={usedPercentage}
-          size={72}
+          size={56}
           color={usageColor}
           trackColor={CREDIT_USAGE_DISPLAY_COLORS.NOT_USED}
           centerText={formatCreditDollarsCompact(remainingValue)}

@@ -44,7 +44,7 @@ const CreditListSkeleton: React.FC<CreditListSkeletonProps> = ({
                     style={{ pointerEvents: 'none' }}
                 >
                     <div className="credit-donut">
-                        <Skeleton className="rounded-full" style={{ width: 72, height: 72 }} />
+                        <Skeleton className="rounded-full" style={{ width: 56, height: 56 }} />
                     </div>
                     <div className="credit-info" style={{ gap: 8 }}>
                         <div className="credit-name">
