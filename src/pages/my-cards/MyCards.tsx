@@ -3,6 +3,7 @@ import CreditCardManager from '../../components/CreditCardManager';
 import { CreditCard } from '../../types/CreditCardTypes';
 import { PAGE_NAMES, PAGE_ICONS } from '../../types';
 import { useFullHeight } from '../../hooks/useFullHeight';
+import { useEdgeToEdge } from '../../hooks/useEdgeToEdge';
 import PageHeader from '../../components/PageHeader';
 import './MyCards.scss';
 
@@ -14,8 +15,8 @@ interface MyCardsProps {
 }
 
 const MyCards: React.FC<MyCardsProps> = ({ onCardsUpdate, onOpenCardSelector, reloadTrigger, onPreferencesUpdate }) => {
-    // Declare that this component needs full height behavior
     useFullHeight(true);
+    useEdgeToEdge(true);
 
     // Wrap the onCardsUpdate callback with useCallback to prevent unnecessary re-renders
     const handleCardsUpdate = useCallback((cards: CreditCard[]) => {

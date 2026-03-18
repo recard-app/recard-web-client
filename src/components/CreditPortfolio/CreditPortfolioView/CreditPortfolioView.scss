@@ -31,9 +31,9 @@
     padding: $space-2;
   }
 
-  // Edge-to-edge: remove padding and match item background
+  // Edge-to-edge: remove padding so accordion items span full width
   .edge-to-edge & {
-    background-color: $neutral-white;
+    background-color: inherit;
     padding: 0;
 
     @media (max-width: $mobile-breakpoint) {

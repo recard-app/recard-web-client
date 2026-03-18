@@ -1645,7 +1645,7 @@ function AppContent({}: AppContentProps) {
           ) : (
           (() => {
             const isHelpPage = location.pathname.startsWith(PAGES.HELP_CENTER.PATH);
-            const backgroundVariant = (isHelpPage || isLegalPage || isOnboardingRoute) ? 'bg-white' as const : undefined;
+            const backgroundVariant = (isHelpPage || isLegalPage || isOnboardingRoute || needsEdgeToEdge) ? 'bg-white' as const : undefined;
             return (
               <UniversalContentWrapper
                 isSidePanelOpen={user ? isSidePanelOpen : false}

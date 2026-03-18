@@ -21,7 +21,7 @@
     background-color: $neutral-light-gray;
 
     .edge-to-edge & {
-      background-color: $neutral-white;
+      background-color: inherit;
     }
 
     // Universal scrollbar styling

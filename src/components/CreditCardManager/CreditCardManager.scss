@@ -10,6 +10,10 @@
   background-color: $neutral-lightest-gray;
   overflow: hidden;
 
+  .edge-to-edge & {
+    background-color: inherit;
+  }
+
   /* Shared styles for card selector button (desktop dropdown trigger + mobile select) */
   .view-card-select {
     @include default-select;
@@ -89,6 +93,10 @@
       overflow-y: auto;
       min-height: 0;
       background-color: $neutral-lightest-gray;
+
+      .edge-to-edge & {
+        background-color: inherit;
+      }
     }
 
     .footer-row {

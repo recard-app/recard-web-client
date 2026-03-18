@@ -40,16 +40,17 @@
     // Apply these styles only when viewing full history
     &.full-history {
         background-color: $neutral-light-gray;
+
+        .edge-to-edge & {
+          background-color: inherit;
+        }
+
         display: flex;
         flex-direction: column;
         height: 100%;
         max-height: calc(var(--app-vh, 1vh) * 100);
         box-sizing: border-box;
         min-height: 0; // Critical for nested flex scrolling
-
-        .edge-to-edge & {
-          background-color: $neutral-white;
-        }
 
         .history-panel-content {
             flex: 1;
