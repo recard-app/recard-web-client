@@ -421,6 +421,10 @@
       border-bottom: none;
     }
 
+    &.expanded {
+      background-color: $neutral-lightest-gray;
+    }
+
     &.disabled {
       .component-title-row,
       .component-description,
