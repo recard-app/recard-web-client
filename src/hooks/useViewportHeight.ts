@@ -1,8 +1,12 @@
 import { useEffect } from 'react';
 
 /**
- * Ensures the app uses the visible viewport height on iOS Safari and other mobile browsers
- * with dynamic toolbars by setting a CSS variable that mirrors the current viewport height.
+ * Sets --app-vh and --app-vh-px CSS variables for consistent viewport height
+ * on mobile browsers with dynamic toolbars.
+ *
+ * The height only updates upward — when the virtual keyboard opens and the
+ * viewport shrinks, --app-vh stays at its pre-keyboard value so nothing shifts.
+ * It resets on orientation change to capture the new dimensions.
  *
  * Usage: call useViewportHeight() once near the root (e.g., in App).
  */
@@ -11,16 +15,21 @@ export function useViewportHeight(): void {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
     const root = document.documentElement;
+    let lastHeight = 0;
 
     const setAppVh = () => {
       try {
         const visualViewport = window.visualViewport;
         const height = visualViewport?.height ?? window.innerHeight;
-        // Store both the pixel height and a 1% unit helper
-        root.style.setProperty('--app-vh-px', `${height}px`);
-        root.style.setProperty('--app-vh', `${height * 0.01}px`);
+
+        // Only update when height increases — keyboard open shrinks the viewport,
+        // so skipping decreases keeps the layout stable.
+        if (height >= lastHeight) {
+          lastHeight = height;
+          root.style.setProperty('--app-vh-px', `${height}px`);
+          root.style.setProperty('--app-vh', `${height * 0.01}px`);
+        }
       } catch {
-        // Fallback in case of any unexpected errors
         root.style.setProperty('--app-vh', `${window.innerHeight * 0.01}px`);
       }
     };
@@ -30,13 +39,16 @@ export function useViewportHeight(): void {
 
     const handlePageShow = () => setAppVh();
     const handleResize = () => setAppVh();
-    const handleOrientation = () => setAppVh();
+    const handleOrientation = () => {
+      // Reset on orientation change so it captures the new dimensions
+      lastHeight = 0;
+      setAppVh();
+    };
 
     window.addEventListener('pageshow', handlePageShow);
     window.addEventListener('resize', handleResize, { passive: true });
     window.addEventListener('orientationchange', handleOrientation, { passive: true });
 
-    // Use visualViewport listeners when available to respond to dynamic toolbar / keyboard changes
     const vv = window.visualViewport;
     if (vv) {
       vv.addEventListener('resize', handleResize, { passive: true } as AddEventListenerOptions);
