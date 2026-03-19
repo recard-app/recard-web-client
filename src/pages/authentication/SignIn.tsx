@@ -3,7 +3,7 @@ import { useAuth } from '../../context/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AuthService } from '../../services';
-import { AuthResponse, PAGES, APP_NAME, COLORS } from '../../types';
+import { PAGES, APP_NAME, COLORS } from '../../types';
 import Icon from '../../icons';
 import { ButtonSpinner } from '../../elements';
 import { getAuthErrorMessage } from './utils';
@@ -38,7 +38,7 @@ const SignIn: React.FC = () => {
 
         try {
             await loginWithEmail(email, password);
-            await AuthService.emailSignIn();
+            await AuthService.sync();
             navigate(PAGES.HOME.PATH);
         } catch (error: any) {
             toast.error(getAuthErrorMessage(error));
@@ -56,9 +56,9 @@ const SignIn: React.FC = () => {
         setIsGoogleLoading(true);
 
         try {
-            const { isNewUser }: AuthResponse = await login();
-            await AuthService.googleSignIn(isNewUser);
-            if (isNewUser) {
+            await login();
+            const { status } = await AuthService.sync();
+            if (status === 'created') {
                 navigate(PAGES.ONBOARDING.PATH);
             } else {
                 navigate(PAGES.HOME.PATH);

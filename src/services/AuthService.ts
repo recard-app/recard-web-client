@@ -1,74 +1,39 @@
-import axios from "axios";
-import { apiurl, getAuthHeaders } from "./index";
+import { apiClient, withRetry } from "./index";
+
+export type SyncStatus = 'created' | 'repaired' | 'already_initialized';
 
 /**
- * Service class for user authentication-related operations
+ * Service for auth-critical backend operations.
+ * Uses apiClient (auto-token, 401-retry, timeout) instead of raw axios.
  */
 export const AuthService = {
     /**
-     * Handles email sign-in authentication with the backend
-     * @returns Promise<void>
+     * Idempotent account sync with the backend.
+     * Replaces emailSignIn, googleSignIn, and emailSignUp.
+     *
+     * @param options.firstName Required for new password-provider accounts
+     * @param options.lastName  Required for new password-provider accounts
+     * @returns The sync status from the server
      */
-    async emailSignIn(): Promise<void> {
-        const headers = await getAuthHeaders();
-        const response = await axios.post(
-            `${apiurl}/auth/signin`,
-            {},  // empty body since we're just validating the token
-            { headers }
+    async sync(options?: { firstName?: string; lastName?: string }): Promise<{
+        status: SyncStatus;
+    }> {
+        const body: Record<string, string> = {};
+        if (options?.firstName) body.firstName = options.firstName;
+        if (options?.lastName) body.lastName = options.lastName;
+
+        const response = await withRetry(() =>
+            apiClient.post('/auth/sync', body)
         );
-
-        if (response.status !== 200) {
-            throw new Error('Failed to authenticate with the server');
-        }
-    },
-
-    /**
-     * Handles Google sign-in/sign-up authentication with the backend
-     * @param isNewUser Whether the user is new or existing
-     * @returns Promise<void>
-     */
-    async googleSignIn(isNewUser: boolean): Promise<void> {
-        const headers = await getAuthHeaders();
-        const response = await axios.post(
-            `${apiurl}/auth/${isNewUser ? 'signup' : 'signin'}`,
-            {},  // empty body since we're just validating the token
-            { headers }
-        );
-
-        if (response.status !== 200) {
-            throw new Error('Failed to authenticate with the server');
-        }
-    },
-
-    /**
-     * Handles email sign-up with the backend
-     * @param firstName User's first name
-     * @param lastName User's last name
-     * @returns Promise<void>
-     */
-    async emailSignUp(firstName: string, lastName: string): Promise<void> {
-        const headers = await getAuthHeaders();
-        const response = await axios.post(
-            `${apiurl}/auth/signup`,
-            { firstName, lastName },
-            { headers }
-        );
-
-        if (response.status !== 200) {
-            const data = await response.data;
-            throw new Error(data.error || 'Registration failed');
-        }
+        return response.data.data;
     },
 
     /**
      * Deletes the user's account and all associated data
      * @param reason Optional reason for account deletion (for analytics)
-     * @returns Promise<void>
      */
     async deleteAccount(reason?: string): Promise<void> {
-        const headers = await getAuthHeaders();
-        await axios.delete(`${apiurl}/users/account`, {
-            headers,
+        await apiClient.delete('/users/account', {
             data: { reason }
         });
     }

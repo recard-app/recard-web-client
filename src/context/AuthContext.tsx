@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, useRef, ReactNode } from 'react';
 import { auth } from '../config/firebase';
 import {
   User as FirebaseUser,
@@ -19,6 +19,7 @@ import {
 import { PLACEHOLDER_PROFILE_IMAGE, LOADING_ICON, COLORS } from '../types';
 import Icon from '../icons';
 import { logError } from '../utils/logger';
+import { AuthService } from '../services/AuthService';
 import { AuthContext } from './useAuth';
 import type { AuthContextType } from './useAuth';
 
@@ -36,10 +37,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Suppresses background sync for one auth state change after explicit
+  // auth actions (login, loginWithEmail, registerWithEmail) to avoid
+  // duplicate sync calls -- the caller handles sync explicitly.
+  const suppressNextBackgroundSyncRef = useRef(false);
+
   /**
    * Sets up a Firebase auth state listener that:
    * - Updates the user state when auth state changes
    * - Reloads user data to ensure it's fresh
+   * - Fires a background /auth/sync to ensure Firestore profile exists
    * - Handles initial loading state
    * Returns cleanup function to unsubscribe when component unmounts
    */
@@ -48,6 +55,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (firebaseUser) {
         await firebaseUser.reload();
         setUser(firebaseUser);
+
+        // Fire-and-forget background sync -- ensures Firestore profile exists.
+        // Non-blocking: does not delay app rendering or impact perceived load time.
+        // Suppressed for one cycle after explicit auth actions to avoid duplicate calls.
+        if (suppressNextBackgroundSyncRef.current) {
+          suppressNextBackgroundSyncRef.current = false;
+        } else {
+          AuthService.sync().catch((err) => {
+            logError('Background auth sync failed:', err);
+          });
+        }
       } else {
         setUser(null);
       }
@@ -67,6 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async () => {
     const provider = new GoogleAuthProvider();
     try {
+      suppressNextBackgroundSyncRef.current = true;
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       const additionalInfo = getAdditionalUserInfo(result);
@@ -74,6 +93,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const token = await user.getIdToken();
       return { user, token, isNewUser };
     } catch (error) {
+      suppressNextBackgroundSyncRef.current = false;
       logError('Authentication failed:', error);
       throw error;
     }
@@ -93,29 +113,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   /**
-   * Creates new user account with email/password
-   * Also sets up initial profile with name and default picture
+   * Creates new user account with email/password.
+   * Sets default profile picture client-side; display name is set
+   * server-side by /auth/sync to avoid dual-write divergence.
    * @param email - User's email
    * @param password - User's password
-   * @param firstName - User's first name
-   * @param lastName - User's last name
+   * @param firstName - User's first name (passed through, not used here)
+   * @param lastName - User's last name (passed through, not used here)
    * @returns Object containing authenticated user and JWT token
    */
   const registerWithEmail = async (
     email: string,
     password: string,
-    firstName: string,
-    lastName: string
+    _firstName: string,
+    _lastName: string
   ) => {
     try {
+      suppressNextBackgroundSyncRef.current = true;
       const result = await createUserWithEmailAndPassword(auth, email, password);
+      // Set default profile picture only -- display name is set server-side by /auth/sync
       await updateProfile(result.user, {
-        displayName: `${firstName} ${lastName}`,
         photoURL: DEFAULT_PROFILE_PICTURE
       });
       const token = await result.user.getIdToken();
       return { user: result.user, token };
     } catch (error) {
+      suppressNextBackgroundSyncRef.current = false;
       logError('Registration failed:', error);
       throw error;
     }
@@ -129,10 +152,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const loginWithEmail = async (email: string, password: string) => {
     try {
+      suppressNextBackgroundSyncRef.current = true;
       const result = await signInWithEmailAndPassword(auth, email, password);
       const token = await result.user.getIdToken();
       return { user: result.user, token };
     } catch (error) {
+      suppressNextBackgroundSyncRef.current = false;
       logError('Email login failed:', error);
       throw error;
     }

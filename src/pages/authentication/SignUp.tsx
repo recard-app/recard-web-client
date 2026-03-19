@@ -2,6 +2,7 @@ import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { auth as firebaseAuth } from '../../config/firebase';
 import { AuthService } from '../../services';
 import { AuthResponse, PAGES, APP_NAME, COLORS } from '../../types';
 import Icon from '../../icons';
@@ -85,16 +86,32 @@ const SignUp: React.FC = () => {
                 throw new Error('Registration failed - no user returned');
             }
 
-            // Register with backend first (creates Firestore doc with promo plan)
-            // This MUST happen before verification email — if verification fails,
+            // Sync with backend (creates Firestore doc with promo plan)
+            // This MUST happen before verification email -- if verification fails,
             // the user still gets their promo plan in Firestore
-            await AuthService.emailSignUp(firstName, lastName);
+            try {
+                await AuthService.sync({ firstName, lastName });
+            } catch (syncError: any) {
+                // Backend sync failed -- attempt to clean up orphaned Firebase Auth user
+                // so the user can retry with the same email
+                logError('Backend sync failed after registration:', syncError);
+                try {
+                    await firebaseAuth.currentUser?.delete();
+                } catch (deleteError) {
+                    // Cleanup failed too -- user should sign in to trigger background recovery
+                    logError('Failed to clean up orphaned auth user:', deleteError);
+                    toast.error('Account setup failed. Please try signing in to complete setup.');
+                    return;
+                }
+                // Re-throw so the outer catch shows the error
+                throw syncError;
+            }
 
             // Send verification email (non-blocking for signup completion)
             try {
                 await sendVerificationEmail();
             } catch (verificationError) {
-                // Log but don't block signup — user can resend from settings
+                // Log but don't block signup -- user can resend from settings
                 logError('Verification email failed (non-blocking):', verificationError);
                 toast.error('Account created, but we could not send a verification email. You can resend it from onboarding.');
             }
@@ -116,17 +133,20 @@ const SignUp: React.FC = () => {
         setIsGoogleLoading(true);
 
         try {
-            const { isNewUser } = await login() as AuthResponse;
+            await login();
 
-            // Use the UserAuthService for Google authentication
-            await AuthService.googleSignIn(isNewUser ?? false);
+            // Sync with backend -- server determines if user is new or existing
+            const { status } = await AuthService.sync();
 
-            if (isNewUser) {
+            if (status === 'created') {
                 navigate(PAGES.ONBOARDING.PATH);
             } else {
                 navigate(PAGES.HOME.PATH);
             }
         } catch (error: any) {
+            // Do NOT delete Google auth user on sync failure --
+            // user may have other Google-linked services.
+            // Background sync on next reload will handle recovery.
             toast.error(getAuthErrorMessage(error));
             logError('Authentication failed:', error);
         } finally {
