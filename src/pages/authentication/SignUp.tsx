@@ -96,6 +96,7 @@ const SignUp: React.FC = () => {
             } catch (verificationError) {
                 // Log but don't block signup — user can resend from settings
                 logError('Verification email failed (non-blocking):', verificationError);
+                toast.error('Account created, but we could not send a verification email. You can resend it from onboarding.');
             }
 
             navigate(PAGES.ONBOARDING.PATH);
