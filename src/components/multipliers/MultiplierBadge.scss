@@ -1,14 +1,17 @@
 @use '../../styling/variables' as *;
 
-.multiplier-badge {
-  display: inline-block;
+.multiplier-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
   padding: $space-half $space-2;
-  margin-left: $space-1;
-  font-size: $font-xxs;
-  font-weight: $font-medium;
-  color: $primary-color;
-  background-color: $primary-lightest;
+  margin-bottom: $space-1;
   border-radius: $radius-full;
-  text-transform: uppercase;
-  letter-spacing: $letter-spacing-caps;
+  font-size: $font-xxs;
+  font-weight: $font-semibold;
+  line-height: 1;
+  white-space: nowrap;
+  border: $border-full solid $neutral-gray;
+  background-color: $neutral-white;
+  color: $primary-color;
 }

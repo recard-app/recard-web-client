@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import './CreditCardDetailView.scss';
-import { CreditCardDetails, EnrichedMultiplier, CreditCard, isRotatingMultiplier, isSelectableMultiplier } from '../../types/CreditCardTypes';
+import { CreditCardDetails, CreditCard, EnrichedMultiplier, CardCredit, CardPerk, isRotatingMultiplier, isSelectableMultiplier } from '../../types/CreditCardTypes';
 import { UserComponentTrackingPreferences, ComponentType, COMPONENT_TYPES } from '../../types/CardCreditsTypes';
 import { ICON_RED, ICON_GRAY, ICON_PRIMARY, LOADING_ICON, LOADING_ICON_SIZE } from '../../types';
 import { COLORS } from '../../types/Colors';
@@ -29,6 +29,141 @@ import {
 } from '../ui/dropdown-menu/dropdown-menu';
 
 import type { TabType } from './cardTabs';
+import ComponentListItem from './ComponentListItem';
+
+/**
+ * Sorts multipliers for display: General first, then rotating/selectable,
+ * then all other categories grouped and ordered by max value descending.
+ */
+function sortMultipliers(multipliers: EnrichedMultiplier[]): EnrichedMultiplier[] {
+    const compareByValueThenName = (a: EnrichedMultiplier, b: EnrichedMultiplier): number => {
+        // Value descending (null sorts last)
+        const aVal = a.Multiplier ?? -Infinity;
+        const bVal = b.Multiplier ?? -Infinity;
+        if (aVal !== bVal) return bVal - aVal;
+        // Name alphabetical ascending
+        return a.Name.localeCompare(b.Name, undefined, { sensitivity: 'base' });
+    };
+
+    const general: EnrichedMultiplier[] = [];
+    const dynamic: EnrichedMultiplier[] = [];
+    const standard: EnrichedMultiplier[] = [];
+
+    for (const m of multipliers) {
+        if (m.Category.toLowerCase() === 'general') {
+            general.push(m);
+        } else if (m.multiplierType === 'rotating' || m.multiplierType === 'selectable') {
+            dynamic.push(m);
+        } else {
+            standard.push(m);
+        }
+    }
+
+    general.sort(compareByValueThenName);
+    dynamic.sort(compareByValueThenName);
+
+    // Group standard multipliers by Category
+    const groups = new Map<string, { categoryItems: EnrichedMultiplier[]; subCategoryItems: EnrichedMultiplier[] }>();
+    for (const m of standard) {
+        const key = m.Category.toLowerCase();
+        if (!groups.has(key)) {
+            groups.set(key, { categoryItems: [], subCategoryItems: [] });
+        }
+        const group = groups.get(key)!;
+        if (!m.SubCategory || m.SubCategory.trim() === '') {
+            group.categoryItems.push(m);
+        } else {
+            group.subCategoryItems.push(m);
+        }
+    }
+
+    // Sort items within each group
+    for (const group of groups.values()) {
+        group.categoryItems.sort(compareByValueThenName);
+        group.subCategoryItems.sort(compareByValueThenName);
+    }
+
+    // Sort groups by max multiplier value descending, then category name alphabetically
+    const sortedGroupKeys = [...groups.keys()].sort((a, b) => {
+        const groupA = groups.get(a)!;
+        const groupB = groups.get(b)!;
+        const allA = [...groupA.categoryItems, ...groupA.subCategoryItems];
+        const allB = [...groupB.categoryItems, ...groupB.subCategoryItems];
+        const maxA = Math.max(...allA.map(m => m.Multiplier ?? -Infinity));
+        const maxB = Math.max(...allB.map(m => m.Multiplier ?? -Infinity));
+        if (maxA !== maxB) return maxB - maxA;
+        return a.localeCompare(b, undefined, { sensitivity: 'base' });
+    });
+
+    // Flatten: category-level items first, then subcategory items per group
+    const standardSorted: EnrichedMultiplier[] = [];
+    for (const key of sortedGroupKeys) {
+        const group = groups.get(key)!;
+        standardSorted.push(...group.categoryItems, ...group.subCategoryItems);
+    }
+
+    return [...general, ...dynamic, ...standardSorted];
+}
+
+interface MultiplierGroup {
+    label: string;
+    items: EnrichedMultiplier[];
+}
+
+function groupSortedMultipliers(multipliers: EnrichedMultiplier[]): MultiplierGroup[] {
+    const sorted = sortMultipliers(multipliers);
+    const groups: MultiplierGroup[] = [];
+
+    for (const m of sorted) {
+        const lastGroup = groups[groups.length - 1];
+        if (lastGroup && lastGroup.label === m.Category) {
+            lastGroup.items.push(m);
+        } else {
+            groups.push({ label: m.Category, items: [m] });
+        }
+    }
+
+    return groups;
+}
+
+const CREDIT_PERIOD_ORDER: Record<string, number> = {
+    monthly: 0,
+    quarterly: 1,
+    semiannually: 2,
+    annually: 3,
+};
+
+function sortCredits(credits: CardCredit[]): CardCredit[] {
+    return [...credits].sort((a, b) => {
+        // 1. Period: monthly → quarterly → semiannually → annually → anniversary
+        const aRank = a.isAnniversaryBased ? 4 : (CREDIT_PERIOD_ORDER[a.TimePeriod] ?? 5);
+        const bRank = b.isAnniversaryBased ? 4 : (CREDIT_PERIOD_ORDER[b.TimePeriod] ?? 5);
+        if (aRank !== bRank) return aRank - bRank;
+        // 2. Value descending
+        if (a.Value !== b.Value) return b.Value - a.Value;
+        // 3. Category alphabetical
+        const catCmp = a.Category.localeCompare(b.Category, undefined, { sensitivity: 'base' });
+        if (catCmp !== 0) return catCmp;
+        // 4. SubCategory alphabetical
+        const subCmp = a.SubCategory.localeCompare(b.SubCategory, undefined, { sensitivity: 'base' });
+        if (subCmp !== 0) return subCmp;
+        // 5. Title alphabetical
+        return a.Title.localeCompare(b.Title, undefined, { sensitivity: 'base' });
+    });
+}
+
+function sortPerks(perks: CardPerk[]): CardPerk[] {
+    return [...perks].sort((a, b) => {
+        // 1. Category alphabetical
+        const catCmp = a.Category.localeCompare(b.Category, undefined, { sensitivity: 'base' });
+        if (catCmp !== 0) return catCmp;
+        // 2. SubCategory alphabetical
+        const subCmp = a.SubCategory.localeCompare(b.SubCategory, undefined, { sensitivity: 'base' });
+        if (subCmp !== 0) return subCmp;
+        // 3. Title alphabetical
+        return a.Title.localeCompare(b.Title, undefined, { sensitivity: 'base' });
+    });
+}
 
 // Dropdown menu icon factories
 const CARD_ACTION_ICONS = {
@@ -499,268 +634,104 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 {/* Multipliers Tab */}
                 {effectiveTab === 'multipliers' && (
                     cardMultipliers && cardMultipliers.length > 0 ? (
-                        <div className="multipliers-content">
-                            <div className="multipliers-table">
-                                {Array.from(
-                                    cardMultipliers.reduce((map, m) => {
-                                        // For rotating/selectable, use the multiplier name as category since they're dynamic
-                                        const key = (isRotatingMultiplier(m) || isSelectableMultiplier(m))
-                                            ? 'Dynamic Categories'
-                                            : (m.Category && m.Category.trim() !== '') ? m.Category : 'Other';
-                                        if (!map.has(key)) map.set(key, [] as EnrichedMultiplier[]);
-                                        map.get(key)!.push(m);
-                                        return map;
-                                    }, new Map<string, EnrichedMultiplier[]>())
-                                ).map(([category, items]) => {
-                                    const mainItems = items.filter(i => !i.SubCategory || i.SubCategory.trim() === '');
-                                    const subItems = items.filter(i => i.SubCategory && i.SubCategory.trim() !== '');
-                                    return (
-                                        <div key={category} className="category-group">
-                                            <div className="category-title">{category}</div>
-                                            <div className="table">
-                                                {mainItems.map((m, idx) => {
-                                                    const isExpanded = expandedMultipliers.has(m.id);
-                                                    const isDisabled = isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER);
-                                                    const isRotating = isRotatingMultiplier(m);
-                                                    const isSelectable = isSelectableMultiplier(m);
-                                                    const hasExpandableContent = m.Requirements || m.Details || showTrackingPreferences || isRotating || isSelectable;
-
-                                                    return (
-                                                        <div key={m.id ?? `main-${idx}`} className={`table-row main-row${isDisabled ? ' disabled' : ''}${isExpanded ? ' expanded' : ''}`}>
-                                                            <div
-                                                                className={`multiplier-row-clickable${hasExpandableContent ? ' has-expandable' : ''}`}
-                                                                onClick={() => hasExpandableContent && toggleMultiplierExpanded(m.id)}
-                                                                role={hasExpandableContent ? 'button' : undefined}
-                                                                tabIndex={hasExpandableContent ? 0 : undefined}
-                                                                onKeyDown={(e) => hasExpandableContent && e.key === 'Enter' && toggleMultiplierExpanded(m.id)}
-                                                            >
-                                                                <div className="cell rate">
-                                                                    {m.Multiplier !== null ? (
-                                                                        <span className="rate-badge">{m.Multiplier}x</span>
-                                                                    ) : '—'}
-                                                                </div>
-                                                                <div className="cell subcategory">
-                                                                    {isDisabled && (
-                                                                        <span className="disabled-pill">Disabled</span>
-                                                                    )}
-                                                                    {m.Name}
-                                                                    <MultiplierBadge multiplierType={m.multiplierType} />
-                                                                </div>
-                                                                <div className="cell description">
-                                                                    <div className="multiplier-desc">{m.Description}</div>
-                                                                    {isRotating && m.currentSchedules && m.currentSchedules.length > 0 && (
-                                                                        <div className="rotating-category-preview">
-                                                                            <span className="category-label">Current:</span>
-                                                                            <div className="category-values">
-                                                                                {m.currentSchedules.map((schedule, scheduleIdx) => (
-                                                                                    <span key={schedule.id || scheduleIdx} className="category-value">
-                                                                                        {schedule.title}
-                                                                                    </span>
-                                                                                ))}
-                                                                            </div>
-                                                                        </div>
-                                                                    )}
-                                                                    {isSelectable && m.userSelectedCategory && (
-                                                                        <div className="selected-category-preview">
-                                                                            <span className="category-label">Your category:</span>
-                                                                            <span className="category-value">{m.userSelectedCategory.displayName}</span>
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                                {hasExpandableContent && (
-                                                                    <div className="cell chevron">
-                                                                        <Icon
-                                                                            name="chevron-down"
-                                                                            variant="mini"
-                                                                            size={20}
-                                                                            color={ICON_GRAY}
-                                                                            className={`toggle-icon${isExpanded ? ' rotated' : ''}`}
-                                                                        />
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                            {isExpanded && hasExpandableContent && (
-                                                                <div className="multiplier-expanded-content">
-                                                                    {/* Rotating: Show current schedules */}
-                                                                    {isRotating && m.currentSchedules && m.currentSchedules.length > 0 && m.currentSchedules.map((schedule, scheduleIdx) => (
-                                                                        <CurrentCategoryDisplay key={schedule.id || scheduleIdx} scheduleEntry={schedule} />
+                        <div className="multipliers-grid">
+                            {groupSortedMultipliers(cardMultipliers).map((group, groupIdx) => (
+                                <React.Fragment key={group.label}>
+                                    <div className="component-group-label">{group.label}</div>
+                                    {group.items.map((m, idx) => {
+                                        const isExpanded = expandedMultipliers.has(m.id);
+                                        const isDisabled = isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER);
+                                        const isRotating = isRotatingMultiplier(m);
+                                        const isSelectable = isSelectableMultiplier(m);
+                                        const hasExpandableContent = !!(m.Requirements || m.Details || showTrackingPreferences || isRotating || isSelectable);
+                                        return (
+                                            <ComponentListItem
+                                                key={m.id ?? `mult-${idx}`}
+                                                id={m.id}
+                                                title={m.Name}
+                                                isDisabled={isDisabled}
+                                                isExpanded={isExpanded}
+                                                onToggle={toggleMultiplierExpanded}
+                                                hasExpandableContent={hasExpandableContent}
+                                                rateBadge={m.Multiplier !== null ? <span className="rate-badge">{m.Multiplier}x</span> : undefined}
+                                                typeBadge={<MultiplierBadge multiplierType={m.multiplierType} />}
+                                                description={m.Description}
+                                                categoryPreview={
+                                                    <>
+                                                        {isRotating && m.currentSchedules && m.currentSchedules.length > 0 && (
+                                                            <div className="rotating-category-preview">
+                                                                <div className="category-values">
+                                                                    {m.currentSchedules.map((schedule, scheduleIdx) => (
+                                                                        <span key={schedule.id || scheduleIdx} className="category-value">
+                                                                            {schedule.title}
+                                                                        </span>
                                                                     ))}
-                                                                    {isRotating && (!m.currentSchedules || m.currentSchedules.length === 0) && (
-                                                                        <div className="multiplier-no-schedule">
-                                                                            No category scheduled for current period
-                                                                        </div>
-                                                                    )}
-                                                                    {/* Selectable: Show category selector */}
-                                                                    {isSelectable && m.allowedCategories && m.allowedCategories.length > 0 && (
-                                                                        <div className="multiplier-category-selector">
-                                                                            <span className="selector-label">Your Category:</span>
-                                                                            <CategorySelector
-                                                                                allowedCategories={m.allowedCategories}
-                                                                                selectedCategoryId={m.userSelectedCategory?.id || m.allowedCategories[0]?.id || ''}
-                                                                                onSelect={(categoryId) => updateMultiplierSelection(m.id, categoryId)}
-                                                                                disabled={!showTrackingPreferences}
-                                                                            />
-                                                                        </div>
-                                                                    )}
-                                                                    {m.Requirements && (
-                                                                        <div className="multiplier-requirements">
-                                                                            <span className="label">Requirements:</span> {m.Requirements}
-                                                                        </div>
-                                                                    )}
-                                                                    {m.Details && (
-                                                                        <div className="multiplier-details-text">
-                                                                            <span className="label">Details:</span> {m.Details}
-                                                                        </div>
-                                                                    )}
-                                                                    {showTrackingPreferences && (
-                                                                        <div className="tracking-toggle">
-                                                                            <label className="toggle-switch">
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    checked={!isDisabled}
-                                                                                    onChange={(e) => handleComponentDisabledChange(
-                                                                                        m.id,
-                                                                                        COMPONENT_TYPES.MULTIPLIER,
-                                                                                        !e.target.checked
-                                                                                    )}
-                                                                                    disabled={isLoadingPreferences}
-                                                                                />
-                                                                                <span className="toggle-slider"></span>
-                                                                            </label>
-                                                                            <span className="preference-label">
-                                                                                {isDisabled ? 'Multiplier Inactive' : 'Multiplier Active'}
-                                                                            </span>
-                                                                        </div>
-                                                                    )}
                                                                 </div>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-                                                {subItems.map((m, idx) => {
-                                                    const isExpanded = expandedMultipliers.has(m.id);
-                                                    const isDisabled = isComponentDisabled(m.id, COMPONENT_TYPES.MULTIPLIER);
-                                                    const isRotating = isRotatingMultiplier(m);
-                                                    const isSelectable = isSelectableMultiplier(m);
-                                                    const hasExpandableContent = m.Requirements || m.Details || showTrackingPreferences || isRotating || isSelectable;
-
-                                                    return (
-                                                        <div key={m.id ?? `sub-${idx}-${m.SubCategory}`} className={`table-row sub-row${isDisabled ? ' disabled' : ''}${isExpanded ? ' expanded' : ''}`}>
-                                                            <div
-                                                                className={`multiplier-row-clickable${hasExpandableContent ? ' has-expandable' : ''}`}
-                                                                onClick={() => hasExpandableContent && toggleMultiplierExpanded(m.id)}
-                                                                role={hasExpandableContent ? 'button' : undefined}
-                                                                tabIndex={hasExpandableContent ? 0 : undefined}
-                                                                onKeyDown={(e) => hasExpandableContent && e.key === 'Enter' && toggleMultiplierExpanded(m.id)}
-                                                            >
-                                                                <div className="cell rate">
-                                                                    {m.Multiplier !== null ? (
-                                                                        <span className="rate-badge">{m.Multiplier}x</span>
-                                                                    ) : '—'}
-                                                                </div>
-                                                                <div className="cell subcategory">
-                                                                    {isDisabled && (
-                                                                        <span className="disabled-pill">Disabled</span>
-                                                                    )}
-                                                                    {m.Name}
-                                                                    <MultiplierBadge multiplierType={m.multiplierType} />
-                                                                </div>
-                                                                <div className="cell description">
-                                                                    <div className="multiplier-desc">{m.Description}</div>
-                                                                    {isRotating && m.currentSchedules && m.currentSchedules.length > 0 && (
-                                                                        <div className="rotating-category-preview">
-                                                                            <span className="category-label">Current:</span>
-                                                                            <div className="category-values">
-                                                                                {m.currentSchedules.map((schedule, scheduleIdx) => (
-                                                                                    <span key={schedule.id || scheduleIdx} className="category-value">
-                                                                                        {schedule.title}
-                                                                                    </span>
-                                                                                ))}
-                                                                            </div>
-                                                                        </div>
-                                                                    )}
-                                                                    {isSelectable && m.userSelectedCategory && (
-                                                                        <div className="selected-category-preview">
-                                                                            <span className="category-label">Your category:</span>
-                                                                            <span className="category-value">{m.userSelectedCategory.displayName}</span>
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                                {hasExpandableContent && (
-                                                                    <div className="cell chevron">
-                                                                        <Icon
-                                                                            name="chevron-down"
-                                                                            variant="mini"
-                                                                            size={20}
-                                                                            color={ICON_GRAY}
-                                                                            className={`toggle-icon${isExpanded ? ' rotated' : ''}`}
-                                                                        />
-                                                                    </div>
-                                                                )}
                                                             </div>
-                                                            {isExpanded && hasExpandableContent && (
-                                                                <div className="multiplier-expanded-content">
-                                                                    {/* Rotating: Show current schedules */}
-                                                                    {isRotating && m.currentSchedules && m.currentSchedules.length > 0 && m.currentSchedules.map((schedule, scheduleIdx) => (
-                                                                        <CurrentCategoryDisplay key={schedule.id || scheduleIdx} scheduleEntry={schedule} />
-                                                                    ))}
-                                                                    {isRotating && (!m.currentSchedules || m.currentSchedules.length === 0) && (
-                                                                        <div className="multiplier-no-schedule">
-                                                                            No category scheduled for current period
-                                                                        </div>
-                                                                    )}
-                                                                    {/* Selectable: Show category selector */}
-                                                                    {isSelectable && m.allowedCategories && m.allowedCategories.length > 0 && (
-                                                                        <div className="multiplier-category-selector">
-                                                                            <span className="selector-label">Your Category:</span>
-                                                                            <CategorySelector
-                                                                                allowedCategories={m.allowedCategories}
-                                                                                selectedCategoryId={m.userSelectedCategory?.id || m.allowedCategories[0]?.id || ''}
-                                                                                onSelect={(categoryId) => updateMultiplierSelection(m.id, categoryId)}
-                                                                                disabled={!showTrackingPreferences}
-                                                                            />
-                                                                        </div>
-                                                                    )}
-                                                                    {m.Requirements && (
-                                                                        <div className="multiplier-requirements">
-                                                                            <span className="label">Requirements:</span> {m.Requirements}
-                                                                        </div>
-                                                                    )}
-                                                                    {m.Details && (
-                                                                        <div className="multiplier-details-text">
-                                                                            <span className="label">Details:</span> {m.Details}
-                                                                        </div>
-                                                                    )}
-                                                                    {showTrackingPreferences && (
-                                                                        <div className="tracking-toggle">
-                                                                            <label className="toggle-switch">
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    checked={!isDisabled}
-                                                                                    onChange={(e) => handleComponentDisabledChange(
-                                                                                        m.id,
-                                                                                        COMPONENT_TYPES.MULTIPLIER,
-                                                                                        !e.target.checked
-                                                                                    )}
-                                                                                    disabled={isLoadingPreferences}
-                                                                                />
-                                                                                <span className="toggle-slider"></span>
-                                                                            </label>
-                                                                            <span className="preference-label">
-                                                                                {isDisabled ? 'Multiplier Inactive' : 'Multiplier Active'}
-                                                                            </span>
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
+                                                        )}
+                                                        {isSelectable && m.userSelectedCategory && (
+                                                            <div className="selected-category-preview">
+                                                                <span className="category-label">Your category:</span>
+                                                                <span className="category-value">{m.userSelectedCategory.displayName}</span>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                }
+                                            >
+                                                {isRotating && m.currentSchedules && m.currentSchedules.length > 0 && m.currentSchedules.map((schedule, scheduleIdx) => (
+                                                    <CurrentCategoryDisplay key={schedule.id || scheduleIdx} scheduleEntry={schedule} />
+                                                ))}
+                                                {isRotating && (!m.currentSchedules || m.currentSchedules.length === 0) && (
+                                                    <div className="multiplier-no-schedule">
+                                                        No category scheduled for current period
+                                                    </div>
+                                                )}
+                                                {isSelectable && m.allowedCategories && m.allowedCategories.length > 0 && (
+                                                    <div className="multiplier-category-selector">
+                                                        <span className="selector-label">Your Category:</span>
+                                                        <CategorySelector
+                                                            allowedCategories={m.allowedCategories}
+                                                            selectedCategoryId={m.userSelectedCategory?.id || m.allowedCategories[0]?.id || ''}
+                                                            onSelect={(categoryId) => updateMultiplierSelection(m.id, categoryId)}
+                                                            disabled={!showTrackingPreferences}
+                                                        />
+                                                    </div>
+                                                )}
+                                                {m.Requirements && (
+                                                    <div className="component-requirements">
+                                                        <span className="label">Requirements:</span> {m.Requirements}
+                                                    </div>
+                                                )}
+                                                {m.Details && (
+                                                    <div className="component-details-text">
+                                                        <span className="label">Details:</span> {m.Details}
+                                                    </div>
+                                                )}
+                                                {showTrackingPreferences && (
+                                                    <div className="tracking-toggle">
+                                                        <label className="toggle-switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={!isDisabled}
+                                                                onChange={(e) => handleComponentDisabledChange(
+                                                                    m.id,
+                                                                    COMPONENT_TYPES.MULTIPLIER,
+                                                                    !e.target.checked
+                                                                )}
+                                                                disabled={isLoadingPreferences}
+                                                            />
+                                                            <span className="toggle-slider"></span>
+                                                        </label>
+                                                        <span className="preference-label">
+                                                            {isDisabled ? 'Multiplier Inactive' : 'Multiplier Active'}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </ComponentListItem>
+                                        );
+                                    })}
+                                </React.Fragment>
+                            ))}
                         </div>
                     ) : (
                         <div className="empty-tab-state">No multipliers available for this card</div>
@@ -771,92 +742,69 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 {effectiveTab === 'credits' && (
                     cardCredits && cardCredits.length > 0 ? (
                         <div className="credits-grid">
-                            {cardCredits.map((credit) => {
+                            {sortCredits(cardCredits).map((credit) => {
                                 const isExpanded = expandedCredits.has(credit.id);
                                 const isDisabled = isComponentDisabled(credit.id, COMPONENT_TYPES.CREDIT);
-                                const hasDetails = credit.Requirements || credit.Details || showTrackingPreferences || credit.Category || credit.SubCategory;
+                                const hasDetails = !!(credit.Requirements || credit.Details || showTrackingPreferences || credit.Category || credit.SubCategory);
 
                                 return (
-                                    <div key={credit.id} className={`component-card ${isExpanded ? 'expanded' : ''} ${isDisabled ? 'disabled' : ''}`}>
-                                        <div
-                                            className="component-clickable-area"
-                                            onClick={() => toggleCreditExpanded(credit.id)}
-                                            role="button"
-                                            tabIndex={0}
-                                            onKeyDown={(e) => e.key === 'Enter' && toggleCreditExpanded(credit.id)}
-                                        >
-                                            <div className="component-content">
-                                                <div className="component-header">
-                                                    <div className="component-title">
-                                                        {isDisabled && <span className="disabled-pill">Disabled</span>}
-                                                        {credit.Title}
-                                                    </div>
-                                                </div>
-                                                <div className="component-value-info">
-                                                    <span className="value-badge">${credit.Value}</span>
-                                                    <span className="period-badge">{credit.isAnniversaryBased ? 'Anniversary' : credit.TimePeriod}</span>
-                                                </div>
-                                                <div className="component-description">
-                                                    {credit.Description}
-                                                </div>
-                                            </div>
-                                            {hasDetails && (
-                                                <div className="component-chevron">
-                                                    <Icon
-                                                        name="chevron-down"
-                                                        variant="mini"
-                                                        size={20}
-                                                        color={ICON_GRAY}
-                                                        className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                        {isExpanded && hasDetails && (
-                                            <div className="component-details-section">
-                                                {credit.Requirements && (
-                                                    <div className="component-requirements">
-                                                        <span className="label">Requirements:</span> {credit.Requirements}
-                                                    </div>
-                                                )}
-                                                {credit.Details && (
-                                                    <div className="component-details-text">
-                                                        <span className="label">Details:</span> {credit.Details}
-                                                    </div>
-                                                )}
-                                                {credit.isAnniversaryBased && (
-                                                    <div className="component-anniversary-note">
-                                                        <span className="label">Note:</span> This credit renews annually on your card's anniversary date rather than the calendar year.
-                                                    </div>
-                                                )}
-                                                {(credit.Category || credit.SubCategory) && (
-                                                    <span className="category-badge">
-                                                        {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
-                                                    </span>
-                                                )}
-                                                {showTrackingPreferences && (
-                                                    <div className="tracking-toggle">
-                                                        <label className="toggle-switch">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={!isDisabled}
-                                                                onChange={(e) => handleComponentDisabledChange(
-                                                                    credit.id,
-                                                                    COMPONENT_TYPES.CREDIT,
-                                                                    !e.target.checked
-                                                                )}
-                                                                disabled={isLoadingPreferences}
-                                                            />
-                                                            <span className="toggle-slider"></span>
-                                                        </label>
-                                                        <span className="preference-label">
-                                                            {isDisabled ? 'Not Tracking Credit' : 'Tracking Credit'}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                    <ComponentListItem
+                                        key={credit.id}
+                                        id={credit.id}
+                                        title={credit.Title}
+                                        isDisabled={isDisabled}
+                                        isExpanded={isExpanded}
+                                        onToggle={toggleCreditExpanded}
+                                        hasExpandableContent={hasDetails}
+                                        infoBadges={
+                                            <>
+                                                <span className="value-badge">${credit.Value}</span>
+                                                <span className="period-badge">{credit.isAnniversaryBased ? 'Anniversary' : credit.TimePeriod}</span>
+                                            </>
+                                        }
+                                        description={credit.Description}
+                                    >
+                                        {credit.Requirements && (
+                                            <div className="component-requirements">
+                                                <span className="label">Requirements:</span> {credit.Requirements}
                                             </div>
                                         )}
-                                    </div>
+                                        {credit.Details && (
+                                            <div className="component-details-text">
+                                                <span className="label">Details:</span> {credit.Details}
+                                            </div>
+                                        )}
+                                        {credit.isAnniversaryBased && (
+                                            <div className="component-anniversary-note">
+                                                <span className="label">Note:</span> This credit renews annually on your card's anniversary date rather than the calendar year.
+                                            </div>
+                                        )}
+                                        {(credit.Category || credit.SubCategory) && (
+                                            <span className="category-badge">
+                                                {credit.Category}{credit.SubCategory ? ` › ${credit.SubCategory}` : ''}
+                                            </span>
+                                        )}
+                                        {showTrackingPreferences && (
+                                            <div className="tracking-toggle">
+                                                <label className="toggle-switch">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={!isDisabled}
+                                                        onChange={(e) => handleComponentDisabledChange(
+                                                            credit.id,
+                                                            COMPONENT_TYPES.CREDIT,
+                                                            !e.target.checked
+                                                        )}
+                                                        disabled={isLoadingPreferences}
+                                                    />
+                                                    <span className="toggle-slider"></span>
+                                                </label>
+                                                <span className="preference-label">
+                                                    {isDisabled ? 'Not Tracking Credit' : 'Tracking Credit'}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </ComponentListItem>
                                 );
                             })}
                         </div>
@@ -869,83 +817,60 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 {effectiveTab === 'perks' && (
                     cardPerks && cardPerks.length > 0 ? (
                         <div className="perks-grid">
-                            {cardPerks.map((perk) => {
+                            {sortPerks(cardPerks).map((perk) => {
                                 const isExpanded = expandedPerks.has(perk.id);
                                 const isDisabled = isComponentDisabled(perk.id, COMPONENT_TYPES.PERK);
-                                const hasDetails = perk.Requirements || perk.Details || showTrackingPreferences || perk.Category || perk.SubCategory;
+                                const hasDetails = !!(perk.Requirements || perk.Details || showTrackingPreferences || perk.Category || perk.SubCategory);
 
                                 return (
-                                    <div key={perk.id} className={`component-card ${isExpanded ? 'expanded' : ''} ${isDisabled ? 'disabled' : ''}`}>
-                                        <div
-                                            className="component-clickable-area"
-                                            onClick={() => togglePerkExpanded(perk.id)}
-                                            role="button"
-                                            tabIndex={0}
-                                            onKeyDown={(e) => e.key === 'Enter' && togglePerkExpanded(perk.id)}
-                                        >
-                                            <div className="component-content">
-                                                <div className="component-header">
-                                                    <div className="component-title">
-                                                        {isDisabled && <span className="disabled-pill">Disabled</span>}
-                                                        {perk.Title}
-                                                    </div>
-                                                </div>
-                                                {(perk.Category || perk.SubCategory) && (
-                                                    <span className="category-badge">
-                                                        {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
-                                                    </span>
-                                                )}
-                                                <div className="component-description">
-                                                    {perk.Description}
-                                                </div>
-                                            </div>
-                                            {hasDetails && (
-                                                <div className="component-chevron">
-                                                    <Icon
-                                                        name="chevron-down"
-                                                        variant="mini"
-                                                        size={20}
-                                                        color={ICON_GRAY}
-                                                        className={`toggle-icon ${isExpanded ? 'rotated' : ''}`}
-                                                    />
-                                                </div>
-                                            )}
-                                        </div>
-                                        {isExpanded && hasDetails && (
-                                            <div className="component-details-section">
-                                                {perk.Requirements && (
-                                                    <div className="component-requirements">
-                                                        <span className="label">Requirements:</span> {perk.Requirements}
-                                                    </div>
-                                                )}
-                                                {perk.Details && (
-                                                    <div className="component-details-text">
-                                                        <span className="label">Details:</span> {perk.Details}
-                                                    </div>
-                                                )}
-                                                {showTrackingPreferences && (
-                                                    <div className="tracking-toggle">
-                                                        <label className="toggle-switch">
-                                                            <input
-                                                                type="checkbox"
-                                                                checked={!isDisabled}
-                                                                onChange={(e) => handleComponentDisabledChange(
-                                                                    perk.id,
-                                                                    COMPONENT_TYPES.PERK,
-                                                                    !e.target.checked
-                                                                )}
-                                                                disabled={isLoadingPreferences}
-                                                            />
-                                                            <span className="toggle-slider"></span>
-                                                        </label>
-                                                        <span className="preference-label">
-                                                            {isDisabled ? 'Perk Inactive' : 'Perk Active'}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                    <ComponentListItem
+                                        key={perk.id}
+                                        id={perk.id}
+                                        title={perk.Title}
+                                        isDisabled={isDisabled}
+                                        isExpanded={isExpanded}
+                                        onToggle={togglePerkExpanded}
+                                        hasExpandableContent={hasDetails}
+                                        infoBadges={
+                                            (perk.Category || perk.SubCategory) ? (
+                                                <span className="category-badge">
+                                                    {perk.Category}{perk.SubCategory ? ` › ${perk.SubCategory}` : ''}
+                                                </span>
+                                            ) : undefined
+                                        }
+                                        description={perk.Description}
+                                    >
+                                        {perk.Requirements && (
+                                            <div className="component-requirements">
+                                                <span className="label">Requirements:</span> {perk.Requirements}
                                             </div>
                                         )}
-                                    </div>
+                                        {perk.Details && (
+                                            <div className="component-details-text">
+                                                <span className="label">Details:</span> {perk.Details}
+                                            </div>
+                                        )}
+                                        {showTrackingPreferences && (
+                                            <div className="tracking-toggle">
+                                                <label className="toggle-switch">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={!isDisabled}
+                                                        onChange={(e) => handleComponentDisabledChange(
+                                                            perk.id,
+                                                            COMPONENT_TYPES.PERK,
+                                                            !e.target.checked
+                                                        )}
+                                                        disabled={isLoadingPreferences}
+                                                    />
+                                                    <span className="toggle-slider"></span>
+                                                </label>
+                                                <span className="preference-label">
+                                                    {isDisabled ? 'Perk Inactive' : 'Perk Active'}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </ComponentListItem>
                                 );
                             })}
                         </div>

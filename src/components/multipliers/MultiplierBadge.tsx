@@ -1,4 +1,5 @@
 import type { MultiplierType } from '@/types';
+import { Icon } from '@/icons';
 import './MultiplierBadge.scss';
 
 interface MultiplierBadgeProps {
@@ -6,9 +7,9 @@ interface MultiplierBadgeProps {
   className?: string;
 }
 
-const BADGE_LABELS: Record<string, string> = {
-  rotating: 'Rotating',
-  selectable: 'Choice',
+const BADGE_CONFIG: Record<string, { label: string; icon: string; iconVariant: string }> = {
+  rotating: { label: 'Rotating', icon: 'arrow-refresh', iconVariant: 'outline' },
+  selectable: { label: 'Choice', icon: 'check-circle', iconVariant: 'solid' },
 };
 
 /**
@@ -21,14 +22,15 @@ export function MultiplierBadge({ multiplierType, className = '' }: MultiplierBa
     return null;
   }
 
-  const label = BADGE_LABELS[multiplierType];
-  if (!label) {
+  const config = BADGE_CONFIG[multiplierType];
+  if (!config) {
     return null;
   }
 
   return (
-    <span className={`multiplier-badge ${className}`}>
-      {label}
+    <span className={`multiplier-type-badge ${className}`}>
+      <Icon name={config.icon} variant={config.iconVariant} size={12} aria-hidden="true" />
+      {config.label}
     </span>
   );
 }
