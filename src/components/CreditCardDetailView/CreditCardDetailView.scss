@@ -308,7 +308,7 @@
       font-size: $font-sm;
       text-align: center;
       background-color: $neutral-white;
-      border: $border-half solid $neutral-light-gray;
+      border: $border-full solid $neutral-light-gray;
       border-radius: $radius-base;
     }
   }
@@ -406,7 +406,7 @@
     letter-spacing: $letter-spacing-caps;
     padding: $space-1 0;
     margin: 0;
-    border-bottom: $border-half solid $neutral-light-gray;
+    border-bottom: $border-full solid $neutral-light-gray;
   }
 
   // Unified Component Card Styles
@@ -414,7 +414,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    border-bottom: $border-half solid $neutral-light-gray;
+    border-bottom: $border-full solid $neutral-light-gray;
     border-radius: 0;
 
     &:last-child {
