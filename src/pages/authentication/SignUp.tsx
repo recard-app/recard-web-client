@@ -9,6 +9,7 @@ import Icon from '../../icons';
 import { InfoDisplay, ButtonSpinner } from '../../elements';
 import { getAuthErrorMessage } from './utils';
 import { logError } from '../../utils/logger';
+import { validateDisplayName, NAME_MAX_LENGTH } from '../../utils/validation';
 import './Auth.scss';
 
 // Google icon SVG component
@@ -38,19 +39,19 @@ const SignUp: React.FC = () => {
 
     /**
      * Validates the first and last names entered by the user.
+     * Uses shared validation that matches server-side rules (max length, charset).
      * @returns {boolean} - Returns true if names are valid, otherwise false.
      */
     const validateNames = (): boolean => {
-        // Check if names are empty after trimming
-        if (firstName.trim().length === 0 || lastName.trim().length === 0) {
-            setError('First name and last name cannot be empty');
+        const firstNameResult = validateDisplayName(firstName);
+        if (!firstNameResult.valid) {
+            setError(`First name: ${firstNameResult.error}`);
             return false;
         }
 
-        // Validate name format (Unicode-aware: allows letters from any language)
-        const nameRegex = /^[\p{L}\s\-']+$/u;
-        if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
-            setError('Names can only contain letters (any language), spaces, hyphens, and apostrophes');
+        const lastNameResult = validateDisplayName(lastName);
+        if (!lastNameResult.valid) {
+            setError(`Last name: ${lastNameResult.error}`);
             return false;
         }
 
@@ -176,6 +177,7 @@ const SignUp: React.FC = () => {
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                             required
+                            maxLength={NAME_MAX_LENGTH}
                             disabled={isFormDisabled}
                             className="default-input"
                         />
@@ -187,6 +189,7 @@ const SignUp: React.FC = () => {
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                             required
+                            maxLength={NAME_MAX_LENGTH}
                             disabled={isFormDisabled}
                             className="default-input"
                         />
