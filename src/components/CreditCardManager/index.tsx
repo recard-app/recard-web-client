@@ -653,7 +653,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
                 if (useDrawer) {
                     return (
                         <Drawer open={showSelector} onOpenChange={handleSelectorDialogChange} direction="bottom">
-                            <DrawerContent fitContent maxHeight="80vh">
+                            <DrawerContent fitContent={false} fixedHeight="calc(var(--app-vh, 1vh) * 80)">
                                 <DrawerTitle className="sr-only">My Cards</DrawerTitle>
                                 <div
                                     className="dialog-header drawer-sticky-header"
@@ -729,7 +729,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             {/* Add card drawer (mobile) */}
             {isMobileViewport && (
                 <Drawer open={showAddDrawer} onOpenChange={handleAddDrawerChange} direction="bottom" repositionInputs={false}>
-                    <DrawerContent fitContent maxHeight="calc(var(--app-vh, 1vh) * 80)">
+                    <DrawerContent fitContent={false} fixedHeight="calc(var(--app-vh, 1vh) * 80)">
                         <DrawerTitle className="sr-only">Add Card</DrawerTitle>
                         <div className="dialog-header drawer-sticky-header">
                             <h2>Add Card</h2>
