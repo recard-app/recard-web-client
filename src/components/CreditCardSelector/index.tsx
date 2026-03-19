@@ -7,7 +7,7 @@ import { filterCards, fetchUserCards, toggleCardSelection, setDefaultCard, saveU
 import { APP_NAME, PAGES } from '../../types';
 import { CardIcon } from '../../icons';
 import Icon from '@/icons';
-import { InfoDisplay, SearchField } from '../../elements';
+import { InfoDisplay, SearchField, ErrorWithRetry } from '../../elements';
 
 /**
  * Props interface for the CreditCardSelector component
@@ -47,6 +47,8 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
     const [searchTerm, setSearchTerm] = useState<string>('');
     // State for tracking if we're loading initial data
     const [isInitialLoad, setIsInitialLoad] = useState<boolean>(creditCards.length === 0 && !disableApiFetch);
+    const [cardsLoadError, setCardsLoadError] = useState<string | null>(null);
+    const [cardsReloadTrigger, setCardsReloadTrigger] = useState<number>(0);
 
     const { user: authUser } = useAuth();
     const user = forcedUser || authUser;
@@ -59,16 +61,27 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
     useEffect(() => {
         const loadCards = async () => {
             if (user && !disableApiFetch) {
-                const cards = await fetchUserCards(creditCards);
-                setCreditCards(cards);
-                setIsInitialLoad(false);
+                if (creditCards.length === 0) {
+                    setIsInitialLoad(true);
+                }
+                setCardsLoadError(null);
+
+                try {
+                    const cards = await fetchUserCards(existingCreditCards, true, true);
+                    setCreditCards(cards);
+                } catch (error) {
+                    console.error('Error loading cards in selector:', error);
+                    setCardsLoadError('Unable to load credit cards. Please try again.');
+                } finally {
+                    setIsInitialLoad(false);
+                }
             } else if (disableApiFetch) {
                 setIsInitialLoad(false);
             }
         };
 
         loadCards();
-    }, [user, disableApiFetch]);
+    }, [user, disableApiFetch, cardsReloadTrigger]);
 
     /**
      * Re-sync local state with existingCreditCards prop when it changes
@@ -77,6 +90,10 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
     useEffect(() => {
         setCreditCards(sortCards(existingCreditCards || []));
     }, [existingCreditCards]);
+
+    const handleRetryCardsLoad = (): void => {
+        setCardsReloadTrigger(prev => prev + 1);
+    };
 
     /**
      * Toggles the selected state of a card
@@ -137,6 +154,7 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
             }
             return a.CardName.localeCompare(b.CardName);
         });
+    const shouldShowRetryForEmptyCards = !disableApiFetch && !isInitialLoad && creditCards.length === 0;
 
     // Notify parent of selection changes (for external chips rendering)
     useEffect(() => {
@@ -219,6 +237,14 @@ const CreditCardSelector = forwardRef<CreditCardSelectorRef, CreditCardSelectorP
                         showTitle={false}
                         transparent={true}
                         centered
+                    />
+                </div>
+            ) : shouldShowRetryForEmptyCards ? (
+                <div className="cards-container">
+                    <ErrorWithRetry
+                        message={cardsLoadError || 'No cards were loaded. Please try again.'}
+                        onRetry={handleRetryCardsLoad}
+                        retryText="Retry Loading Cards"
                     />
                 </div>
             ) : (

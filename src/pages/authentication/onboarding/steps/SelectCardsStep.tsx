@@ -1,6 +1,6 @@
 import React from 'react';
 import ChatCardComponent from '../../../../elements/ChatComponents/ChatCardComponent';
-import { InfoDisplay } from '../../../../elements';
+import { InfoDisplay, ErrorWithRetry } from '../../../../elements';
 import OnboardingHeader from '../OnboardingHeader';
 import { CHAT_COMPONENT_TYPES } from '../../../../types/ChatComponentTypes';
 import type { CardComponentItem } from '../../../../types/ChatComponentTypes';
@@ -11,6 +11,8 @@ import { COLORS } from '../../../../types/Colors';
 interface SelectCardsStepProps {
   onModalOpen: () => void;
   creditCards: CreditCard[];
+  isLoadingCreditCards: boolean;
+  onRetryCardsLoad: () => Promise<void>;
   onCardClick: (cardId: string) => void;
 }
 
@@ -31,9 +33,16 @@ function toCardComponentItem(card: CreditCard, index: number): CardComponentItem
   };
 }
 
-const SelectCardsStep: React.FC<SelectCardsStepProps> = ({ onModalOpen, creditCards, onCardClick }) => {
+const SelectCardsStep: React.FC<SelectCardsStepProps> = ({
+  onModalOpen,
+  creditCards,
+  isLoadingCreditCards,
+  onRetryCardsLoad,
+  onCardClick,
+}) => {
   const selectedCards = creditCards.filter(c => c.selected);
   const hasCards = selectedCards.length > 0;
+  const hasFetchedCards = creditCards.length > 0;
   const header = (
     <OnboardingHeader
       icon="card"
@@ -67,11 +76,29 @@ const SelectCardsStep: React.FC<SelectCardsStepProps> = ({ onModalOpen, creditCa
       ) : (
         <>
           {header}
-          <InfoDisplay
-            type="info"
-            message="No cards selected yet. Tap below to add your cards."
-            showTitle={false}
-          />
+          {!hasFetchedCards ? (
+            isLoadingCreditCards ? (
+              <InfoDisplay
+                type="loading"
+                message="Loading your cards..."
+                showTitle={false}
+              />
+            ) : (
+              <ErrorWithRetry
+                message="We couldn't load your cards. Please try again."
+                onRetry={() => {
+                  void onRetryCardsLoad();
+                }}
+                retryText="Retry Loading Cards"
+              />
+            )
+          ) : (
+            <InfoDisplay
+              type="info"
+              message="No cards selected yet. Tap below to add your cards."
+              showTitle={false}
+            />
+          )}
         </>
       )}
     </div>

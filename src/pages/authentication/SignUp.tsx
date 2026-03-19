@@ -85,11 +85,18 @@ const SignUp: React.FC = () => {
                 throw new Error('Registration failed - no user returned');
             }
 
-            // Send verification email
-            await sendVerificationEmail();
-
-            // Use the UserAuthService for backend registration
+            // Register with backend first (creates Firestore doc with promo plan)
+            // This MUST happen before verification email — if verification fails,
+            // the user still gets their promo plan in Firestore
             await AuthService.emailSignUp(firstName, lastName);
+
+            // Send verification email (non-blocking for signup completion)
+            try {
+                await sendVerificationEmail();
+            } catch (verificationError) {
+                // Log but don't block signup — user can resend from settings
+                logError('Verification email failed (non-blocking):', verificationError);
+            }
 
             navigate(PAGES.ONBOARDING.PATH);
         } catch (error: any) {

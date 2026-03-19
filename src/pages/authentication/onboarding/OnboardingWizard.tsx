@@ -15,6 +15,8 @@ const TOTAL_STEPS = 6;
 interface OnboardingWizardProps {
   onModalOpen: () => void;
   creditCards: CreditCard[];
+  isLoadingCreditCards: boolean;
+  onRetryCardsLoad: () => Promise<void>;
   prioritizedCredits: PrioritizedCredit[];
   isLoadingPrioritizedCredits: boolean;
   onComplete: (initialPrompt?: string) => void;
@@ -25,6 +27,8 @@ interface OnboardingWizardProps {
 const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   onModalOpen,
   creditCards,
+  isLoadingCreditCards,
+  onRetryCardsLoad,
   prioritizedCredits,
   isLoadingPrioritizedCredits,
   onComplete,
@@ -102,6 +106,8 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           <SelectCardsStep
             onModalOpen={onModalOpen}
             creditCards={creditCards}
+            isLoadingCreditCards={isLoadingCreditCards}
+            onRetryCardsLoad={onRetryCardsLoad}
             onCardClick={onCardClick}
           />
         );

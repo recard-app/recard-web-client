@@ -12,6 +12,8 @@ import './Onboarding.scss';
 interface OnboardingProps {
   onModalOpen: () => void;
   creditCards: CreditCard[];
+  isLoadingCreditCards: boolean;
+  onRetryCardsLoad: () => Promise<void>;
   prioritizedCredits: PrioritizedCredit[];
   isLoadingPrioritizedCredits: boolean;
   onCardClick: (cardId: string) => void;
@@ -21,6 +23,8 @@ interface OnboardingProps {
 const Onboarding: React.FC<OnboardingProps> = ({
   onModalOpen,
   creditCards,
+  isLoadingCreditCards,
+  onRetryCardsLoad,
   prioritizedCredits,
   isLoadingPrioritizedCredits,
   onCardClick,
@@ -56,6 +60,8 @@ const Onboarding: React.FC<OnboardingProps> = ({
     <OnboardingWizard
       onModalOpen={onModalOpen}
       creditCards={creditCards}
+      isLoadingCreditCards={isLoadingCreditCards}
+      onRetryCardsLoad={onRetryCardsLoad}
       prioritizedCredits={prioritizedCredits}
       isLoadingPrioritizedCredits={isLoadingPrioritizedCredits}
       onComplete={handleComplete}

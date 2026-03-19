@@ -47,13 +47,17 @@ export const formatCardsForSubmission = (cards: CreditCard[]) => {
  */
 export const fetchUserCards = async (
     existingCreditCards: CreditCard[], 
-    includeSelectedInfo: boolean = true
+    includeSelectedInfo: boolean = true,
+    throwOnError: boolean = false
 ): Promise<CreditCard[]> => {
     try {
         const cards = await CardService.fetchCreditCards(includeSelectedInfo);
         return sortCards(cards);
     } catch (error) {
         console.error('Error fetching cards:', error);
+        if (throwOnError) {
+            throw error;
+        }
         return sortCards(existingCreditCards);
     }
 };

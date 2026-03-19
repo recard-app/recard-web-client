@@ -114,6 +114,7 @@ import { EdgeToEdgeContext } from './hooks/useEdgeToEdge';
 import { ScrollHeightContext } from './hooks/useScrollHeight';
 import { toast } from 'sonner';
 import { Toaster } from './components/ui/sonner';
+import { apiCache, CACHE_KEYS } from './utils/ApiCache';
 
 const DEFERRED_CREDITS_IDLE_TIMEOUT_MS = 2000;
 const DEFERRED_CREDITS_TIMEOUT_FALLBACK_MS = 0;
@@ -1042,6 +1043,33 @@ function AppContent({}: AppContentProps) {
     }
   };
 
+  const refreshOnboardingCards = useCallback(async (): Promise<void> => {
+    if (!user) return;
+
+    setIsLoadingCreditCards(true);
+    try {
+      // Force-refresh onboarding card state so transient empty/cache states can recover.
+      apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS);
+      apiCache.invalidate(CACHE_KEYS.CREDIT_CARDS_PREVIEWS);
+      apiCache.invalidate(CACHE_KEYS.USER_CARD_DETAILS_FULL);
+      apiCache.invalidate(CACHE_KEYS.USER_CARDS);
+
+      const [cards, details, userCardsData] = await Promise.all([
+        CardService.fetchCreditCards(true),
+        UserCreditCardService.fetchUserCardsDetailedInfo(),
+        UserCreditCardService.fetchUserCards(),
+      ]);
+
+      setCreditCards(cards);
+      setUserDetailedCardDetails(details);
+      setUserCardsMetadata(buildUserCardMetadataMap(userCardsData));
+    } catch (error) {
+      console.error('Error refreshing onboarding cards:', error);
+    } finally {
+      setIsLoadingCreditCards(false);
+    }
+  }, [user]);
+
   // Function to refresh component tracking preferences when they're updated
   const refreshComponentPreferences = async (): Promise<void> => {
     if (!user) return;
@@ -1697,6 +1725,8 @@ function AppContent({}: AppContentProps) {
                       <Onboarding
                         onModalOpen={() => setIsCardSelectorOpen(true)}
                         creditCards={creditCards}
+                        isLoadingCreditCards={isLoadingCreditCards}
+                        onRetryCardsLoad={refreshOnboardingCards}
                         prioritizedCredits={prioritizedCredits}
                         isLoadingPrioritizedCredits={isLoadingPrioritizedCredits}
                         onCardClick={handleCardSelectById}
