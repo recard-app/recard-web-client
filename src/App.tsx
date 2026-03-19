@@ -238,6 +238,7 @@ function AppContent({}: AppContentProps) {
   const [subscriptionPlan, setSubscriptionPlan] = useState<SubscriptionPlan | null>(null);
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatusType>(SUBSCRIPTION_STATUS.NONE);
   const [subscriptionExpiresAt, setSubscriptionExpiresAt] = useState<string | null>(null);
+  const [onboardingServerComplete, setOnboardingServerComplete] = useState<boolean | undefined>(undefined);
   // State for managing side panel visibility with localStorage persistence
   const [isSidePanelOpen, setIsSidePanelOpen] = useState<boolean>(() => {
     const stored = localStorage.getItem('sidePanelOpen');
@@ -619,6 +620,7 @@ function AppContent({}: AppContentProps) {
       setSubscriptionPlan(bootstrapResponse.subscription.plan);
       setSubscriptionStatus(bootstrapResponse.subscription.status);
       setSubscriptionExpiresAt(bootstrapResponse.subscription.expiresAt);
+      setOnboardingServerComplete(bootstrapResponse.subscription.onboardingComplete);
       setComponentPreferences(bootstrapResponse.componentPreferences);
       setPreferencesInstructions(bootstrapResponse.preferences.instructions || '');
       setChatHistoryPreference(bootstrapResponse.preferences.chatHistory);
@@ -1731,6 +1733,7 @@ function AppContent({}: AppContentProps) {
                         isLoadingPrioritizedCredits={isLoadingPrioritizedCredits}
                         onCardClick={handleCardSelectById}
                         onCreditClick={handleCreditSelect}
+                        onboardingServerComplete={onboardingServerComplete}
                       />
                     </ProtectedRoute>
                   } />

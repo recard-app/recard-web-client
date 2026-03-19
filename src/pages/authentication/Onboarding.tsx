@@ -18,6 +18,7 @@ interface OnboardingProps {
   isLoadingPrioritizedCredits: boolean;
   onCardClick: (cardId: string) => void;
   onCreditClick: (cardId: string, creditId: string) => void;
+  onboardingServerComplete?: boolean;
 }
 
 const Onboarding: React.FC<OnboardingProps> = ({
@@ -29,10 +30,11 @@ const Onboarding: React.FC<OnboardingProps> = ({
   isLoadingPrioritizedCredits,
   onCardClick,
   onCreditClick,
+  onboardingServerComplete,
 }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { isOnboardingComplete, markOnboardingComplete } = useOnboardingState(user?.uid);
+  const { isOnboardingComplete, markOnboardingComplete } = useOnboardingState(user?.uid, onboardingServerComplete);
 
   useFullHeight(true);
 

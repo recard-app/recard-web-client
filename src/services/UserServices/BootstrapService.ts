@@ -35,6 +35,7 @@ export interface BootstrapSubscriptionPayload {
   status: SubscriptionStatusType;
   billingPeriod: string | null;
   expiresAt: string | null;
+  onboardingComplete: boolean;
 }
 
 export interface BootstrapPreferencesPayload {
