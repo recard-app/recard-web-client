@@ -6,7 +6,7 @@ export interface AuthContextType {
   user: FirebaseUser | null;
   login: () => Promise<{ user: FirebaseUser; token: string }>;
   loginWithEmail: (email: string, password: string) => Promise<{ user: FirebaseUser; token: string }>;
-  registerWithEmail: (email: string, password: string, firstName: string, lastName: string) => Promise<{ user: FirebaseUser; token: string }>;
+  registerWithEmail: (email: string, password: string) => Promise<{ user: FirebaseUser; token: string }>;
   syncAccount: (options?: { firstName?: string; lastName?: string }) => Promise<{ status: SyncStatus }>;
   authSyncState: 'idle' | 'syncing' | 'ready' | 'error';
   logout: () => Promise<void>;

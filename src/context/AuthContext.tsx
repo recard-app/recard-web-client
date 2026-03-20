@@ -83,15 +83,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (firebaseUser) {
         await firebaseUser.reload();
         setUser(firebaseUser);
-        setAuthSyncState('syncing');
 
         // Fire-and-forget background sync -- ensures Firestore profile exists.
         // Non-blocking: does not delay app rendering or impact perceived load time.
         // Suppressed for one cycle after explicit auth actions to avoid duplicate calls.
         if (suppressNextBackgroundSyncRef.current) {
           suppressNextBackgroundSyncRef.current = false;
-          setAuthSyncState((prev) => (prev === 'ready' ? 'ready' : 'idle'));
+          // Don't touch authSyncState -- the explicit caller (login/register handler) manages it.
+          // Setting state here would race with the explicit syncAccount() call and could
+          // overwrite 'syncing' or 'error' with 'idle', causing ProtectedRoute to show
+          // "Finishing account setup..." indefinitely.
         } else {
+          setAuthSyncState('syncing');
           syncAccount().catch((err) => {
             logError('Background auth sync failed:', err);
           });
@@ -146,15 +149,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * server-side by /auth/sync to avoid dual-write divergence.
    * @param email - User's email
    * @param password - User's password
-   * @param firstName - User's first name (passed through, not used here)
-   * @param lastName - User's last name (passed through, not used here)
    * @returns Object containing authenticated user and JWT token
    */
   const registerWithEmail = async (
     email: string,
-    password: string,
-    _firstName: string,
-    _lastName: string
+    password: string
   ) => {
     try {
       suppressNextBackgroundSyncRef.current = true;

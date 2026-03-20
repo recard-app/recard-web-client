@@ -1,3 +1,8 @@
+import type { NavigateFunction } from 'react-router-dom';
+import { toast } from 'sonner';
+import { PAGES } from '../../types';
+import { logError } from '../../utils/logger';
+
 /**
  * Maps Firebase Auth error codes to user-friendly messages.
  * Prevents user enumeration by using generic messages for auth failures.
@@ -25,3 +30,31 @@ export const getAuthErrorMessage = (error: any): string => {
       return error?.message || 'An error occurred. Please try again';
   }
 };
+
+/**
+ * Authenticate, sync account with backend, and navigate based on sync status.
+ * Shared by Google sign-in (both pages) and email sign-in.
+ */
+export async function authenticateAndNavigate(
+    authenticate: () => Promise<unknown>,
+    syncAccount: () => Promise<{ status: string }>,
+    navigate: NavigateFunction,
+    setLoading: (loading: boolean) => void,
+): Promise<void> {
+    setLoading(true);
+    try {
+        await authenticate();
+        try {
+            const { status } = await syncAccount();
+            navigate(status === 'created' ? PAGES.ONBOARDING.PATH : PAGES.HOME.PATH);
+        } catch (syncError) {
+            logError('Sync failed after authentication:', syncError);
+            navigate(PAGES.HOME.PATH);
+        }
+    } catch (error: any) {
+        toast.error(getAuthErrorMessage(error));
+        logError('Authentication failed:', error);
+    } finally {
+        setLoading(false);
+    }
+}
