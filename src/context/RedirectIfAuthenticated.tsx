@@ -8,9 +8,9 @@ interface RedirectIfAuthenticatedProps {
 }
 
 const RedirectIfAuthenticated = ({ children }: RedirectIfAuthenticatedProps): React.ReactElement => {
-  const { user } = useAuth();
+  const { user, authSyncState } = useAuth();
 
-  if (user) {
+  if (user && authSyncState === 'ready') {
     return <Navigate to={PAGES.HOME.PATH} replace />;
   }
 

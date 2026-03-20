@@ -8,13 +8,30 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, authSyncState, syncAccount } = useAuth();
 
   if (!user) {
     return <Navigate to={PAGES.SIGN_IN.PATH} replace />;
   }
 
+  if (authSyncState === 'error') {
+    // Don't boot the user -- they have a valid Firebase session.
+    // Show a retry option so transient network errors don't lose their context.
+    return (
+      <div className="auth-sync-loading">
+        <p>Something went wrong loading your account.</p>
+        <button onClick={() => syncAccount().catch(() => {})}>
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  if (authSyncState !== 'ready') {
+    return <div className="auth-sync-loading">Finishing account setup...</div>;
+  }
+
   return children;
 };
 
-export default ProtectedRoute; 
+export default ProtectedRoute;

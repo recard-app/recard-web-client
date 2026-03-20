@@ -1,11 +1,14 @@
 import { createContext, useContext } from 'react';
 import type { User as FirebaseUser } from 'firebase/auth';
+import type { SyncStatus } from '../services/AuthService';
 
 export interface AuthContextType {
   user: FirebaseUser | null;
-  login: () => Promise<{ user: FirebaseUser; token: string; isNewUser: boolean }>;
+  login: () => Promise<{ user: FirebaseUser; token: string }>;
   loginWithEmail: (email: string, password: string) => Promise<{ user: FirebaseUser; token: string }>;
   registerWithEmail: (email: string, password: string, firstName: string, lastName: string) => Promise<{ user: FirebaseUser; token: string }>;
+  syncAccount: (options?: { firstName?: string; lastName?: string }) => Promise<{ status: SyncStatus }>;
+  authSyncState: 'idle' | 'syncing' | 'ready' | 'error';
   logout: () => Promise<void>;
   sendVerificationEmail: () => Promise<boolean>;
   sendPasswordResetEmail: (email: string) => Promise<void>;

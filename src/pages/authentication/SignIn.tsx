@@ -2,7 +2,6 @@ import React, { useState, FormEvent } from 'react';
 import { useAuth } from '../../context/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import { AuthService } from '../../services';
 import { PAGES, APP_NAME, COLORS } from '../../types';
 import Icon from '../../icons';
 import { ButtonSpinner } from '../../elements';
@@ -21,7 +20,7 @@ const GoogleIcon: React.FC = () => (
 );
 
 const SignIn: React.FC = () => {
-    const { login, loginWithEmail } = useAuth();
+    const { login, loginWithEmail, syncAccount } = useAuth();
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -38,8 +37,8 @@ const SignIn: React.FC = () => {
 
         try {
             await loginWithEmail(email, password);
-            await AuthService.sync();
-            navigate(PAGES.HOME.PATH);
+            const { status } = await syncAccount();
+            navigate(status === 'created' ? PAGES.ONBOARDING.PATH : PAGES.HOME.PATH);
         } catch (error: any) {
             toast.error(getAuthErrorMessage(error));
             logError('Authentication failed:', error);
@@ -57,7 +56,7 @@ const SignIn: React.FC = () => {
 
         try {
             await login();
-            const { status } = await AuthService.sync();
+            const { status } = await syncAccount();
             if (status === 'created') {
                 navigate(PAGES.ONBOARDING.PATH);
             } else {

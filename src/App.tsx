@@ -597,6 +597,7 @@ function AppContent({}: AppContentProps) {
           status: SubscriptionStatusType;
           billingPeriod: string | null;
           expiresAt: string | null;
+          onboardingComplete: boolean;
         };
         preferences: {
           instructions: string;
@@ -751,6 +752,7 @@ function AppContent({}: AppContentProps) {
         setSubscriptionPlan(null);
         setSubscriptionStatus(SUBSCRIPTION_STATUS.NONE);
         setSubscriptionExpiresAt(null);
+        setOnboardingServerComplete(undefined);
         setPreferencesInstructions('');
         setChatHistoryPreference(CHAT_HISTORY_PREFERENCE.KEEP_HISTORY);
         setAgentModePreference(AGENT_MODE_PREFERENCE.SIMPLIFIED);

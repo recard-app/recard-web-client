@@ -10,7 +10,6 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
   sendEmailVerification,
-  getAdditionalUserInfo,
   sendPasswordResetEmail as firebaseSendPasswordResetEmail,
   EmailAuthProvider,
   reauthenticateWithCredential,
@@ -19,7 +18,7 @@ import {
 import { PLACEHOLDER_PROFILE_IMAGE, LOADING_ICON, COLORS } from '../types';
 import Icon from '../icons';
 import { logError } from '../utils/logger';
-import { AuthService } from '../services/AuthService';
+import { AuthService, type SyncStatus } from '../services/AuthService';
 import { AuthContext } from './useAuth';
 import type { AuthContextType } from './useAuth';
 
@@ -36,11 +35,40 @@ const DEFAULT_PROFILE_PICTURE = PLACEHOLDER_PROFILE_IMAGE;
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authSyncState, setAuthSyncState] = useState<'idle' | 'syncing' | 'ready' | 'error'>('idle');
 
   // Suppresses background sync for one auth state change after explicit
   // auth actions (login, loginWithEmail, registerWithEmail) to avoid
   // duplicate sync calls -- the caller handles sync explicitly.
   const suppressNextBackgroundSyncRef = useRef(false);
+  const syncInFlightRef = useRef<Promise<{ status: SyncStatus }> | null>(null);
+
+  const syncAccount = async (options?: { firstName?: string; lastName?: string }) => {
+    if (!auth.currentUser) {
+      throw new Error('No authenticated user to sync');
+    }
+
+    if (syncInFlightRef.current) {
+      return syncInFlightRef.current;
+    }
+
+    setAuthSyncState('syncing');
+    const syncPromise = AuthService.sync(options)
+      .then((result) => {
+        setAuthSyncState('ready');
+        return result;
+      })
+      .catch((err) => {
+        setAuthSyncState('error');
+        throw err;
+      })
+      .finally(() => {
+        syncInFlightRef.current = null;
+      });
+
+    syncInFlightRef.current = syncPromise;
+    return syncPromise;
+  };
 
   /**
    * Sets up a Firebase auth state listener that:
@@ -55,19 +83,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (firebaseUser) {
         await firebaseUser.reload();
         setUser(firebaseUser);
+        setAuthSyncState('syncing');
 
         // Fire-and-forget background sync -- ensures Firestore profile exists.
         // Non-blocking: does not delay app rendering or impact perceived load time.
         // Suppressed for one cycle after explicit auth actions to avoid duplicate calls.
         if (suppressNextBackgroundSyncRef.current) {
           suppressNextBackgroundSyncRef.current = false;
+          setAuthSyncState((prev) => (prev === 'ready' ? 'ready' : 'idle'));
         } else {
-          AuthService.sync().catch((err) => {
+          syncAccount().catch((err) => {
             logError('Background auth sync failed:', err);
           });
         }
       } else {
         setUser(null);
+        setAuthSyncState('idle');
       }
       setLoading(false);
     });
@@ -80,18 +111,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * @returns Object containing:
    * - user: Authenticated Firebase user
    * - token: JWT token for API calls
-   * - isNewUser: Boolean indicating if this is a new user
    */
   const login = async () => {
     const provider = new GoogleAuthProvider();
     try {
       suppressNextBackgroundSyncRef.current = true;
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const additionalInfo = getAdditionalUserInfo(result);
-      const isNewUser = additionalInfo?.isNewUser ?? false;
-      const token = await user.getIdToken();
-      return { user, token, isNewUser };
+      const token = await result.user.getIdToken();
+      return { user: result.user, token };
     } catch (error) {
       suppressNextBackgroundSyncRef.current = false;
       logError('Authentication failed:', error);
@@ -107,6 +134,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await signOut(auth);
       setUser(null);
+      setAuthSyncState('idle');
     } catch (error) {
       logError('Logout failed:', error);
     }
@@ -306,6 +334,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     loginWithEmail,
     registerWithEmail,
+    syncAccount,
+    authSyncState,
     logout,
     sendVerificationEmail,
     sendPasswordResetEmail,
@@ -321,4 +351,3 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-

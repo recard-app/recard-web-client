@@ -3,8 +3,7 @@ import { useAuth } from '../../context/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { auth as firebaseAuth } from '../../config/firebase';
-import { AuthService } from '../../services';
-import { AuthResponse, PAGES, APP_NAME, COLORS } from '../../types';
+import { PAGES, APP_NAME, COLORS } from '../../types';
 import Icon from '../../icons';
 import { InfoDisplay, ButtonSpinner } from '../../elements';
 import { getAuthErrorMessage } from './utils';
@@ -26,7 +25,7 @@ const GoogleIcon: React.FC = () => (
  * SignUp component for user registration.
  */
 const SignUp: React.FC = () => {
-    const { registerWithEmail, login, sendVerificationEmail } = useAuth();
+    const { registerWithEmail, login, sendVerificationEmail, syncAccount } = useAuth();
     const navigate = useNavigate();
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
@@ -81,7 +80,7 @@ const SignUp: React.FC = () => {
         setIsLoading(true);
 
         try {
-            const { user } = await registerWithEmail(email, password, firstName, lastName) as AuthResponse;
+            const { user } = await registerWithEmail(email, password, firstName, lastName);
 
             if (!user) {
                 throw new Error('Registration failed - no user returned');
@@ -91,17 +90,29 @@ const SignUp: React.FC = () => {
             // This MUST happen before verification email -- if verification fails,
             // the user still gets their promo plan in Firestore
             try {
-                await AuthService.sync({ firstName, lastName });
+                await syncAccount({ firstName, lastName });
+                // Reload user to pick up the server-set display name
+                // (needed for WelcomeStep greeting and profile UI)
+                await firebaseAuth.currentUser?.reload();
             } catch (syncError: any) {
-                // Backend sync failed -- attempt to clean up orphaned Firebase Auth user
-                // so the user can retry with the same email
+                // Backend sync failed after Firebase Auth creation.
+                // Only delete the auth user if we got an explicit server error response
+                // (4xx/5xx). For network/timeout errors (no response), the server may
+                // have committed -- deleting the auth user would orphan the Firestore doc.
                 logError('Backend sync failed after registration:', syncError);
-                try {
-                    await firebaseAuth.currentUser?.delete();
-                } catch (deleteError) {
-                    // Cleanup failed too -- user should sign in to trigger background recovery
-                    logError('Failed to clean up orphaned auth user:', deleteError);
-                    toast.error('Account setup failed. Please try signing in to complete setup.');
+                const hasServerResponse = Boolean(syncError?.response?.status);
+                if (hasServerResponse) {
+                    try {
+                        await firebaseAuth.currentUser?.delete();
+                    } catch (deleteError) {
+                        logError('Failed to clean up orphaned auth user:', deleteError);
+                        toast.error('Account setup failed. Please try signing in to complete setup.');
+                        return;
+                    }
+                } else {
+                    // Network/timeout error -- server may have committed.
+                    // Don't delete auth user; guide user to retry or sign in.
+                    toast.error('Connection issue during setup. Please try signing in to complete setup.');
                     return;
                 }
                 // Re-throw so the outer catch shows the error
@@ -137,7 +148,7 @@ const SignUp: React.FC = () => {
             await login();
 
             // Sync with backend -- server determines if user is new or existing
-            const { status } = await AuthService.sync();
+            const { status } = await syncAccount();
 
             if (status === 'created') {
                 navigate(PAGES.ONBOARDING.PATH);

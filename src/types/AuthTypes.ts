@@ -6,5 +6,4 @@ import { User as FirebaseUser } from 'firebase/auth';
 export interface AuthResponse {
     user: FirebaseUser; // The authenticated Firebase user object
     token: string;      // The authentication token for the user
-    isNewUser?: boolean; // Optional flag indicating if the user is new
 }
