@@ -36,10 +36,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const syncInFlightRef = useRef<Promise<{ status: SyncStatus }> | null>(null);
+  const isInitialLoadRef = useRef(true);
 
   /**
    * Syncs the user's Firestore profile with the server.
-   * Called explicitly during login/signup flows only -- not on page reload.
+   * Called explicitly during login/signup flows, and automatically on
+   * initial page load to ensure the Firestore doc exists.
    * Deduplicates concurrent calls via ref.
    */
   const syncAccount = async (options?: { firstName?: string; lastName?: string }) => {
@@ -72,9 +74,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (firebaseUser) {
         await firebaseUser.reload();
         setUser(firebaseUser);
+
+        // On initial page load with an existing session, auto-sync to ensure
+        // the Firestore doc exists. Handles the edge case where a user refreshed
+        // mid-signup before /auth/sync completed.
+        if (isInitialLoadRef.current) {
+          try {
+            await syncAccount();
+          } catch (error) {
+            logError('Auto-sync on page load failed:', error);
+          }
+        }
       } else {
         setUser(null);
       }
+      isInitialLoadRef.current = false;
       setLoading(false);
     });
 

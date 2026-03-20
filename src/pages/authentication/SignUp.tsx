@@ -140,6 +140,7 @@ const SignUp: React.FC = () => {
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                             required
+                            maxLength={50}
                             disabled={isFormDisabled}
                             className="default-input"
                         />
@@ -151,6 +152,7 @@ const SignUp: React.FC = () => {
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                             required
+                            maxLength={50}
                             disabled={isFormDisabled}
                             className="default-input"
                         />

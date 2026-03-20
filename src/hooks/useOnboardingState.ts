@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { apiClient } from '../services';
 import { logError } from '../utils/logger';
 
@@ -23,6 +23,15 @@ interface UseOnboardingStateResult {
  * @param serverValue Optional server-provided onboarding status from bootstrap
  */
 export function useOnboardingState(uid: string | undefined, serverValue?: boolean): UseOnboardingStateResult {
+  const reconciliationFiredRef = useRef(false);
+  const lastUidRef = useRef(uid);
+
+  // Reset reconciliation guard when uid changes
+  if (uid !== lastUidRef.current) {
+    reconciliationFiredRef.current = false;
+    lastUidRef.current = uid;
+  }
+
   const [isComplete, setIsComplete] = useState<boolean>(() => {
     if (!uid) return false;
     // Force revisit flag takes precedence over everything
@@ -56,6 +65,17 @@ export function useOnboardingState(uid: string | undefined, serverValue?: boolea
     }
     // serverValue is false or undefined -- use localStorage
     setIsComplete(localComplete);
+
+    // Reconciliation: localStorage says complete but server explicitly disagrees.
+    // Re-fire the completion POST to heal prior silent failures.
+    // Only when serverValue is explicitly false (not undefined, which means bootstrap
+    // hasn't loaded yet). Guarded by ref to fire at most once per session.
+    if (localComplete && serverValue === false && !reconciliationFiredRef.current) {
+      reconciliationFiredRef.current = true;
+      apiClient.post('/users/onboarding/complete').catch((err) => {
+        logError('Reconciliation: failed to re-sync onboarding completion to server:', err);
+      });
+    }
   }, [uid, serverValue]);
 
   const markOnboardingComplete = useCallback(() => {
@@ -74,9 +94,13 @@ export function useOnboardingState(uid: string | undefined, serverValue?: boolea
   const resetOnboarding = useCallback(() => {
     if (!uid) return;
     localStorage.removeItem(`${STORAGE_KEY_PREFIX}${uid}`);
-    // Set force-revisit flag so server value doesn't override
+    // Set force-revisit flag so server value doesn't override during this session
     localStorage.setItem(`${FORCE_REVISIT_KEY_PREFIX}${uid}`, 'true');
     setIsComplete(false);
+    // Fire-and-forget: persist reset to server
+    apiClient.post('/users/onboarding/reset').catch((err) => {
+      logError('Failed to persist onboarding reset to server:', err);
+    });
   }, [uid]);
 
   return {
