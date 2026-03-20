@@ -8,7 +8,6 @@ import Icon from '../../icons';
 import { InfoDisplay, ButtonSpinner } from '../../elements';
 import { getAuthErrorMessage, authenticateAndNavigate } from './utils';
 import { logError } from '../../utils/logger';
-import { validateDisplayName, NAME_MAX_LENGTH } from '../../utils/validation';
 import GoogleIcon from './GoogleIcon';
 import './Auth.scss';
 
@@ -16,7 +15,7 @@ import './Auth.scss';
  * SignUp component for user registration.
  */
 const SignUp: React.FC = () => {
-    const { registerWithEmail, login, sendVerificationEmail, syncAccount } = useAuth();
+    const { registerWithEmail, login, sendVerificationEmail, syncAccount, logout } = useAuth();
     const navigate = useNavigate();
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
@@ -26,27 +25,6 @@ const SignUp: React.FC = () => {
     const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false);
-
-    /**
-     * Validates the first and last names entered by the user.
-     * Uses shared validation that matches server-side rules (max length, charset).
-     * @returns {boolean} - Returns true if names are valid, otherwise false.
-     */
-    const validateNames = (): boolean => {
-        const firstNameResult = validateDisplayName(firstName);
-        if (!firstNameResult.valid) {
-            setError(`First name: ${firstNameResult.error}`);
-            return false;
-        }
-
-        const lastNameResult = validateDisplayName(lastName);
-        if (!lastNameResult.valid) {
-            setError(`Last name: ${lastNameResult.error}`);
-            return false;
-        }
-
-        return true;
-    };
 
     /**
      * Handles the sign-up process for a new user.
@@ -60,11 +38,6 @@ const SignUp: React.FC = () => {
         // Validate passwords
         if (password !== confirmPassword) {
             setError('Passwords do not match');
-            return;
-        }
-
-        // Validate names
-        if (!validateNames()) {
             return;
         }
 
@@ -90,6 +63,7 @@ const SignUp: React.FC = () => {
                 // Only delete the auth user if we got an explicit server error response
                 // (4xx/5xx). For network/timeout errors (no response), the server may
                 // have committed -- deleting the auth user would orphan the Firestore doc.
+                // Regardless of branch, force sign-out to avoid a half-initialized session.
                 logError('Backend sync failed after registration:', syncError);
                 const hasServerResponse = Boolean(syncError?.response?.status);
                 if (hasServerResponse) {
@@ -97,17 +71,23 @@ const SignUp: React.FC = () => {
                         await firebaseAuth.currentUser?.delete();
                     } catch (deleteError) {
                         logError('Failed to clean up orphaned auth user:', deleteError);
-                        toast.error('Account setup failed. Please try signing in to complete setup.');
-                        return;
                     }
-                } else {
-                    // Network/timeout error -- server may have committed.
-                    // Don't delete auth user; guide user to retry or sign in.
-                    toast.error('Connection issue during setup. Please try signing in to complete setup.');
-                    return;
                 }
-                // Re-throw so the outer catch shows the error
-                throw syncError;
+
+                // Always force sign-out when sync does not confirm success.
+                // This prevents a partially initialized authenticated session.
+                try {
+                    await logout();
+                } catch (logoutError) {
+                    logError('Forced sign out after signup sync failure failed:', logoutError);
+                }
+
+                if (hasServerResponse) {
+                    toast.error('Account setup failed. Please try creating your account again.');
+                } else {
+                    toast.error('Connection issue during setup. Please try again.');
+                }
+                return;
             }
 
             // Send verification email (non-blocking for signup completion)
@@ -132,6 +112,7 @@ const SignUp: React.FC = () => {
         await authenticateAndNavigate(
             () => login(),
             syncAccount,
+            logout,
             navigate,
             setIsGoogleLoading
         );
@@ -159,7 +140,6 @@ const SignUp: React.FC = () => {
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
                             required
-                            maxLength={NAME_MAX_LENGTH}
                             disabled={isFormDisabled}
                             className="default-input"
                         />
@@ -171,7 +151,6 @@ const SignUp: React.FC = () => {
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
                             required
-                            maxLength={NAME_MAX_LENGTH}
                             disabled={isFormDisabled}
                             className="default-input"
                         />

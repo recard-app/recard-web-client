@@ -9,7 +9,7 @@ import GoogleIcon from './GoogleIcon';
 import './Auth.scss';
 
 const SignIn: React.FC = () => {
-    const { login, loginWithEmail, syncAccount } = useAuth();
+    const { login, loginWithEmail, syncAccount, logout } = useAuth();
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -21,6 +21,7 @@ const SignIn: React.FC = () => {
         await authenticateAndNavigate(
             () => loginWithEmail(email, password),
             syncAccount,
+            logout,
             navigate,
             setIsLoading
         );
@@ -30,6 +31,7 @@ const SignIn: React.FC = () => {
         await authenticateAndNavigate(
             () => login(),
             syncAccount,
+            logout,
             navigate,
             setIsGoogleLoading
         );

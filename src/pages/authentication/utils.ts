@@ -38,6 +38,7 @@ export const getAuthErrorMessage = (error: any): string => {
 export async function authenticateAndNavigate(
     authenticate: () => Promise<unknown>,
     syncAccount: () => Promise<{ status: string }>,
+    logout: () => Promise<void>,
     navigate: NavigateFunction,
     setLoading: (loading: boolean) => void,
 ): Promise<void> {
@@ -48,8 +49,13 @@ export async function authenticateAndNavigate(
             const { status } = await syncAccount();
             navigate(status === 'created' ? PAGES.ONBOARDING.PATH : PAGES.HOME.PATH);
         } catch (syncError) {
-            logError('Sync failed after authentication:', syncError);
-            navigate(PAGES.HOME.PATH);
+            logError('Sync failed after authentication; forcing sign out:', syncError);
+            try {
+                await logout();
+            } catch (logoutError) {
+                logError('Forced sign out after sync failure failed:', logoutError);
+            }
+            toast.error('We could not finish setting up your account. Please try again.');
         }
     } catch (error: any) {
         toast.error(getAuthErrorMessage(error));
