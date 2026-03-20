@@ -299,18 +299,6 @@
       // Content wrappers
     }
 
-    .empty-tab-state {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: $space-8;
-      color: $neutral-dark-gray;
-      font-size: $font-sm;
-      text-align: center;
-      background-color: $neutral-white;
-      border: $border-full solid $neutral-light-gray;
-      border-radius: $radius-base;
-    }
   }
   
   // Section headers for tab content

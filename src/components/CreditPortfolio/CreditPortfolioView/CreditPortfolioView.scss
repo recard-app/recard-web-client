@@ -81,4 +81,10 @@
     max-width: none;
     padding-top: $space-5;
   }
+
+  // Restore horizontal padding in edge-to-edge so InfoDisplay isn't flush
+  .edge-to-edge & {
+    padding-left: $space-4;
+    padding-right: $space-4;
+  }
 }

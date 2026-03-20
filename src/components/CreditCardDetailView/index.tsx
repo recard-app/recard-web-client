@@ -734,7 +734,14 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             ))}
                         </div>
                     ) : (
-                        <div className="empty-tab-state">No multipliers available for this card</div>
+                        <InfoDisplay
+                            type="default"
+                            message="No multipliers available for this card"
+                            showTitle={false}
+                            transparent={true}
+                            showIcon={false}
+                            centered
+                        />
                     )
                 )}
 
@@ -809,7 +816,14 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             })}
                         </div>
                     ) : (
-                        <div className="empty-tab-state">No credits available for this card</div>
+                        <InfoDisplay
+                            type="default"
+                            message="No credits available for this card"
+                            showTitle={false}
+                            transparent={true}
+                            showIcon={false}
+                            centered
+                        />
                     )
                 )}
 
@@ -875,7 +889,14 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                             })}
                         </div>
                     ) : (
-                        <div className="empty-tab-state">No perks available for this card</div>
+                        <InfoDisplay
+                            type="default"
+                            message="No perks available for this card"
+                            showTitle={false}
+                            transparent={true}
+                            showIcon={false}
+                            centered
+                        />
                     )
                 )}
             </div>

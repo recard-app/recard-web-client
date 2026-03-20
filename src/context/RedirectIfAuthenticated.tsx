@@ -8,13 +8,13 @@ interface RedirectIfAuthenticatedProps {
 }
 
 const RedirectIfAuthenticated = ({ children }: RedirectIfAuthenticatedProps): React.ReactElement => {
-  const { user, authSyncState } = useAuth();
+  const { user } = useAuth();
 
-  if (user && authSyncState === 'ready') {
+  if (user) {
     return <Navigate to={PAGES.HOME.PATH} replace />;
   }
 
   return <>{children}</>;
 };
 
-export default RedirectIfAuthenticated; 
+export default RedirectIfAuthenticated;

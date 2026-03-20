@@ -20,5 +20,10 @@
     @media (max-width: $mobile-breakpoint) {
       padding: 0;
     }
+
+    // Restore horizontal padding for empty state so InfoDisplay isn't flush
+    &.empty {
+      padding: 0 $space-4;
+    }
   }
 }
