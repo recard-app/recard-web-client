@@ -21,9 +21,10 @@
     border-radius: $radius-lg;
     box-shadow: $shadow-sm;
     overflow: hidden;
+    border: $border-full solid $neutral-light-gray;
 
     @media (max-width: $mobile-breakpoint) {
-      box-shadow: $shadow-base;
+      box-shadow: $shadow-lg;
     }
 
     @media (max-width: $mobile-breakpoint) {
@@ -42,7 +43,6 @@
     background: var(--showcase-blob-3-subtle, transparent), white;
     background-size: 160% 160%;
     animation: showcase-pulse-mid 18s ease-in-out 6s infinite;
-    border: $border-full solid $neutral-light-gray;
     border-bottom: none;
     overflow: hidden;
 
@@ -64,7 +64,7 @@
     &::after {
       background: var(--showcase-blob-2-subtle, transparent);
       background-size: 150% 150%;
-      animation: showcase-pulse-fast 10s ease-in-out 3s infinite;
+      animation: showcase-pulse-fast 5s ease-in-out 1.5s infinite;
     }
 
     .showcase-actions {
@@ -136,7 +136,7 @@
     gap: $space-5;
     padding: $space-1-5 $space-4;
     background-color: $neutral-lightest-gray;
-    border: $border-full solid $neutral-light-gray;
+    border-top: $border-full solid $neutral-light-gray;
     border-radius: 0 0 $radius-lg $radius-lg;
 
     .meta-item {
