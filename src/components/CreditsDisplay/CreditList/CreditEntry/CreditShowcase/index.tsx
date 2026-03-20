@@ -34,7 +34,9 @@ const CreditShowcase: React.FC<CreditShowcaseProps> = ({
   const showcaseStyle = card?.CardPrimaryColor
     ? ({
         '--showcase-solid': `color-mix(in srgb, ${card.CardPrimaryColor} 8%, white)`,
-        '--showcase-gradient': `radial-gradient(ellipse at 80% 80%, color-mix(in srgb, ${card.CardPrimaryColor} 25%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 20% 20%, color-mix(in srgb, ${card.CardPrimaryColor} 15%, transparent) 0%, transparent 50%), white`,
+        '--showcase-blob-1': `radial-gradient(ellipse at 89% 11%, color-mix(in srgb, ${card.CardPrimaryColor} 25%, transparent) 0%, color-mix(in srgb, ${card.CardPrimaryColor} 5%, transparent) 30%, color-mix(in srgb, ${card.CardPrimaryColor} 2%, transparent) 70%)`,
+        '--showcase-blob-2': `radial-gradient(ellipse at 6% 50%, color-mix(in srgb, ${card.CardPrimaryColor} 15%, transparent) 0%, color-mix(in srgb, ${card.CardPrimaryColor} 3%, transparent) 30%, color-mix(in srgb, ${card.CardPrimaryColor} 1%, transparent) 70%)`,
+        '--showcase-blob-3': `radial-gradient(ellipse at 72% 94%, color-mix(in srgb, ${card.CardPrimaryColor} 8%, transparent) 0%, color-mix(in srgb, ${card.CardPrimaryColor} 2%, transparent) 25%, color-mix(in srgb, ${card.CardPrimaryColor} 1%, transparent) 60%)`,
       } as React.CSSProperties)
     : undefined;
 

@@ -447,8 +447,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 className="card-showcase"
                 style={cardDetails.CardPrimaryColor ? {
                     '--showcase-solid': `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 8%, white)`,
-                    '--showcase-gradient': `radial-gradient(ellipse at 20% 20%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 38%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 22%, transparent) 0%, transparent 50%), white`,
-                    '--showcase-gradient-subtle': `radial-gradient(ellipse at 20% 20%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 20%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, transparent) 0%, transparent 50%), white`,
+                    '--showcase-blob-1': `radial-gradient(ellipse at 11% 11%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 38%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 8%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 3%, transparent) 70%)`,
+                    '--showcase-blob-2': `radial-gradient(ellipse at 94% 50%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 22%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 5%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 2%, transparent) 70%)`,
+                    '--showcase-blob-3': `radial-gradient(ellipse at 28% 94%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 10%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 2%, transparent) 25%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 60%)`,
+                    '--showcase-blob-1-subtle': `radial-gradient(ellipse at 11% 11%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 20%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 4%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 2%, transparent) 70%)`,
+                    '--showcase-blob-2-subtle': `radial-gradient(ellipse at 94% 50%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 3%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 70%)`,
+                    '--showcase-blob-3-subtle': `radial-gradient(ellipse at 28% 94%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 6%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 25%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 60%)`,
                 } as React.CSSProperties : undefined}
             >
                 {/* Card Actions Dropdown -- top-right of showcase */}
