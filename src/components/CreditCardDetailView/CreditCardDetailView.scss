@@ -42,7 +42,7 @@
     padding: $space-5 $space-4;
     background: var(--showcase-blob-3-subtle, transparent), white;
     background-size: 160% 160%;
-    animation: showcase-pulse-mid 18s ease-in-out 6s infinite;
+    animation: showcase-pulse-mid 22s ease-in-out 10s infinite;
     border-bottom: none;
     overflow: hidden;
 
@@ -752,7 +752,7 @@
 
 @keyframes showcase-pulse-slow {
   0%, 100% {
-    background-size: 150% 150%;
+    background-size: 180% 180%;
     background-position: 0% 0%;
   }
   50% {
@@ -777,9 +777,13 @@
     background-size: 160% 160%;
     background-position: 20% 100%;
   }
-  50% {
+  40% {
     background-size: 200% 200%;
     background-position: 60% 0%;
+  }
+  70% {
+    background-size: 175% 175%;
+    background-position: 40% 60%;
   }
 }
 
