@@ -39,7 +39,9 @@
     position: relative;
     border-radius: $radius-lg $radius-lg 0 0;
     padding: $space-5 $space-4;
-    background: var(--showcase-solid, $neutral-lightest-gray);
+    background: var(--showcase-gradient, $neutral-lightest-gray);
+    background-size: 150% 150%;
+    animation: showcase-gradient-pulse 6s ease-in-out infinite;
     border: $border-full solid $neutral-light-gray;
     border-bottom: none;
 
@@ -681,8 +683,6 @@
 
     // Showcase stacks vertically on mobile
     .card-showcase {
-      background: var(--showcase-gradient, $neutral-lightest-gray);
-
       .showcase-identity {
         flex-direction: column;
         align-items: center;
@@ -712,6 +712,17 @@
       }
     }
 
+  }
+}
+
+@keyframes showcase-gradient-pulse {
+  0%, 100% {
+    background-size: 150% 150%;
+    background-position: 0% 0%;
+  }
+  50% {
+    background-size: 200% 200%;
+    background-position: 100% 100%;
   }
 }
 
