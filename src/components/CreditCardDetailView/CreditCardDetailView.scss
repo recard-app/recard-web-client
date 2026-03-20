@@ -39,7 +39,7 @@
     position: relative;
     border-radius: $radius-lg $radius-lg 0 0;
     padding: $space-5 $space-4;
-    background: var(--showcase-gradient, $neutral-lightest-gray);
+    background: var(--showcase-gradient-subtle, $neutral-lightest-gray);
     background-size: 150% 150%;
     animation: showcase-gradient-pulse 6s ease-in-out infinite;
     border: $border-full solid $neutral-light-gray;
@@ -683,6 +683,8 @@
 
     // Showcase stacks vertically on mobile
     .card-showcase {
+      background: var(--showcase-gradient, $neutral-lightest-gray);
+
       .showcase-identity {
         flex-direction: column;
         align-items: center;

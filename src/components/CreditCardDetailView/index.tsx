@@ -448,6 +448,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                 style={cardDetails.CardPrimaryColor ? {
                     '--showcase-solid': `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 8%, white)`,
                     '--showcase-gradient': `radial-gradient(ellipse at 20% 20%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 38%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 22%, transparent) 0%, transparent 50%), white`,
+                    '--showcase-gradient-subtle': `radial-gradient(ellipse at 20% 20%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 20%, transparent) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, transparent) 0%, transparent 50%), white`,
                 } as React.CSSProperties : undefined}
             >
                 {/* Card Actions Dropdown -- top-right of showcase */}
