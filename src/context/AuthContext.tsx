@@ -127,6 +127,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   /**
+   * Strict sign-out for auth-critical failure handling.
+   * Unlike logout(), this propagates failures so callers can hard-stop flows.
+   */
+  const logoutStrict = async (): Promise<void> => {
+    try {
+      await signOut(auth);
+      setUser(null);
+    } catch (error) {
+      logError('auth_logout_strict_failed', error);
+      throw error;
+    }
+  };
+
+  /**
    * Creates new user account with email/password.
    * Sets default profile picture client-side; display name is set
    * server-side by /auth/sync to avoid dual-write divergence.
@@ -140,10 +154,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   ) => {
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
-      // Set default profile picture only -- display name is set server-side by /auth/sync
-      await updateProfile(result.user, {
-        photoURL: DEFAULT_PROFILE_PICTURE
-      });
+      // Non-blocking profile bootstrap.
+      // Account creation should not fail if profile photo update fails.
+      try {
+        await updateProfile(result.user, {
+          photoURL: DEFAULT_PROFILE_PICTURE
+        });
+      } catch (profileUpdateError) {
+        logError('auth_register_profile_update_failed_nonblocking', profileUpdateError);
+      }
+
       const token = await result.user.getIdToken();
       return { user: result.user, token };
     } catch (error) {
@@ -314,6 +334,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     registerWithEmail,
     syncAccount,
     logout,
+    logoutStrict,
     sendVerificationEmail,
     sendPasswordResetEmail,
     updateDisplayName,

@@ -9,6 +9,7 @@ export interface AuthContextType {
   registerWithEmail: (email: string, password: string) => Promise<{ user: FirebaseUser; token: string }>;
   syncAccount: (options?: { firstName?: string; lastName?: string }) => Promise<{ status: SyncStatus }>;
   logout: () => Promise<void>;
+  logoutStrict: () => Promise<void>;
   sendVerificationEmail: () => Promise<boolean>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
   updateDisplayName: (newName: string) => Promise<void>;

@@ -15,7 +15,7 @@ import './Auth.scss';
  * SignUp component for user registration.
  */
 const SignUp: React.FC = () => {
-    const { registerWithEmail, login, sendVerificationEmail, syncAccount, logout } = useAuth();
+    const { registerWithEmail, login, sendVerificationEmail, syncAccount, logoutStrict } = useAuth();
     const navigate = useNavigate();
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
@@ -64,22 +64,24 @@ const SignUp: React.FC = () => {
                 // (4xx/5xx). For network/timeout errors (no response), the server may
                 // have committed -- deleting the auth user would orphan the Firestore doc.
                 // Regardless of branch, force sign-out to avoid a half-initialized session.
-                logError('Backend sync failed after registration:', syncError);
+                logError('auth_signup_sync_failed_forced_logout_attempt', syncError);
                 const hasServerResponse = Boolean(syncError?.response?.status);
                 if (hasServerResponse) {
                     try {
                         await firebaseAuth.currentUser?.delete();
                     } catch (deleteError) {
-                        logError('Failed to clean up orphaned auth user:', deleteError);
+                        logError('auth_signup_sync_cleanup_delete_failed', deleteError);
                     }
                 }
 
                 // Always force sign-out when sync does not confirm success.
                 // This prevents a partially initialized authenticated session.
                 try {
-                    await logout();
+                    await logoutStrict();
                 } catch (logoutError) {
-                    logError('Forced sign out after signup sync failure failed:', logoutError);
+                    logError('auth_signup_sync_failed_forced_logout_failed', logoutError);
+                    toast.error('Setup failed and we could not safely sign you out. Please refresh and try again.');
+                    return;
                 }
 
                 if (hasServerResponse) {
@@ -112,7 +114,7 @@ const SignUp: React.FC = () => {
         await authenticateAndNavigate(
             () => login(),
             syncAccount,
-            logout,
+            logoutStrict,
             navigate,
             setIsGoogleLoading
         );

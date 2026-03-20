@@ -38,7 +38,7 @@ export const getAuthErrorMessage = (error: any): string => {
 export async function authenticateAndNavigate(
     authenticate: () => Promise<unknown>,
     syncAccount: () => Promise<{ status: string }>,
-    logout: () => Promise<void>,
+    logoutStrict: () => Promise<void>,
     navigate: NavigateFunction,
     setLoading: (loading: boolean) => void,
 ): Promise<void> {
@@ -49,13 +49,14 @@ export async function authenticateAndNavigate(
             const { status } = await syncAccount();
             navigate(status === 'created' ? PAGES.ONBOARDING.PATH : PAGES.HOME.PATH);
         } catch (syncError) {
-            logError('Sync failed after authentication; forcing sign out:', syncError);
+            logError('auth_sync_failed_forced_logout_attempt', syncError);
             try {
-                await logout();
+                await logoutStrict();
+                toast.error('We could not finish setting up your account. Please try again.');
             } catch (logoutError) {
-                logError('Forced sign out after sync failure failed:', logoutError);
+                logError('auth_sync_failed_forced_logout_failed', logoutError);
+                toast.error('Setup failed and we could not safely sign you out. Please refresh and try again.');
             }
-            toast.error('We could not finish setting up your account. Please try again.');
         }
     } catch (error: any) {
         toast.error(getAuthErrorMessage(error));
