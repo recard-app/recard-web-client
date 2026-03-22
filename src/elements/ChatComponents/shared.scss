@@ -110,7 +110,7 @@
 // Container no longer has padding, so no negative margins needed
 .action-row {
   padding: $space-1 $space-2;
-  border-top: $border-half solid $neutral-light-gray;
+  border-top: $border-full solid $neutral-light-gray;
   background-color: $neutral-lightest-gray;
   border-radius: 0 0 $radius-md $radius-md;
   transition: border-color $transition-fast;

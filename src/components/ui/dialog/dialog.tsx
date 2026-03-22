@@ -3,7 +3,11 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { useScrollShadow } from "@/hooks/useScrollShadow"
 import "./dialog.scss"
+
+/** Known scrollable container selectors inside dialogs */
+const SCROLLABLE_SELECTORS = '.dialog-body, .drawer-content-scroll, .dialog-content-scroll';
 
 function Dialog({
   ...props
@@ -59,6 +63,13 @@ const DialogContent = React.forwardRef<
   DialogContentProps
 >(({ className, children, showCloseButton = true, width, fullWidth = false, fullScreen = false, fullHeight = false, ...props }, ref) => {
   const inlineStyles: React.CSSProperties = !!width && !fullWidth && !fullScreen ? { width } : {};
+  const [innerElement, setInnerElement] = React.useState<HTMLDivElement | null>(null);
+  const { isScrolledFromBottom } = useScrollShadow(innerElement, {
+    selectors: SCROLLABLE_SELECTORS,
+  });
+  const setInnerRef = React.useCallback((node: HTMLDivElement | null) => {
+    setInnerElement(node);
+  }, []);
 
   return (
     <DialogPortal data-slot="dialog-portal">
@@ -80,7 +91,7 @@ const DialogContent = React.forwardRef<
         style={inlineStyles}
         {...props}
       >
-        <div className="dialog-inner">
+        <div className="dialog-inner" ref={setInnerRef} data-scrolled-bottom={isScrolledFromBottom}>
           {React.Children.map(children, (child) => {
             if (React.isValidElement(child) && child.type === DialogHeader) {
               return React.cloneElement(child as React.ReactElement<any>, {

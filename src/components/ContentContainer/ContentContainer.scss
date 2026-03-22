@@ -16,7 +16,7 @@
   // Optional framed variant, matching auth cards
   &--framed {
     background-color: $neutral-white;
-    border: $border-half solid $neutral-light-gray;
+    border: $border-full solid $neutral-light-gray;
     border-radius: $radius-lg;
     box-shadow: $shadow-sm;
     padding: $space-6; // override to match auth-card spacing

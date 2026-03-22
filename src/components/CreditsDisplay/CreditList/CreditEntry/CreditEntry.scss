@@ -508,7 +508,7 @@ body:has(.mobile-credit-details-drawer, .credit-edit-modal-drawer) [data-radix-p
   .amount-input-field {
     width: 80px;
     padding: $space-1 $space-2;
-    border: $border-half solid $neutral-gray;
+    border: $border-full solid $neutral-gray;
     border-radius: $radius-base;
     font-size: $font-sm;
     font-variant-numeric: tabular-nums;

@@ -247,7 +247,7 @@
   & {
     background-color: $primary-lightest;
     color: $primary-color;
-    border: $border-half solid $primary-light;
+    border: $border-full solid $primary-light;
   }
 
   @media (hover: hover) {
@@ -272,7 +272,7 @@
 
   & {
     background-color: transparent;
-    border: $border-half solid $primary-light;
+    border: $border-full solid $primary-light;
     color: $primary-medium;
   }
 
@@ -692,7 +692,7 @@
 // Use for non-interactive cards (static display items)
 @mixin card-base {
   background-color: $neutral-white;
-  border: $border-half solid $neutral-light-gray;
+  border: $border-full solid $neutral-light-gray;
   border-radius: $radius-md;
 }
 

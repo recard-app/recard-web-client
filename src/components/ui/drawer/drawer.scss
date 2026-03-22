@@ -1,21 +1,37 @@
 @use '../../../styling/globals' as *;
 
-// Universal drawer handle
+// Handle area: full-width container for the handle pill (shadow surface)
+[data-slot="drawer-handle-area"] {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 11;
+  background: $neutral-white;
+  transition: box-shadow 0.15s ease;
+}
+
+// Shadow below handle area when content is scrolled from top
+[data-slot="drawer-content"][data-scrolled-top="true"] [data-slot="drawer-handle-area"] {
+  box-shadow: $container-shadow-bottom-bigger;
+}
+
+// Universal drawer handle pill
 [data-slot="drawer-handle"] {
   width: 48px;
   height: 6px;
   border-radius: $radius-full;
   background: $neutral-light-gray;
-  margin: $space-2 auto;
+  margin: $space-2 0;
   flex-shrink: 0;
   min-height: 6px;
   min-width: 48px;
 }
 
-// Provide a bit more top spacing when the drawer opens from bottom
-[data-slot="drawer-content"][data-vaul-drawer-direction="bottom"] > [data-slot="drawer-handle"],
-[data-slot="drawer-content"][data-vaul-drawer-direction="top"] > [data-slot="drawer-handle"] {
-  margin-top: $space-3;
+// Provide a bit more top spacing when the drawer opens from bottom/top
+[data-slot="drawer-content"][data-vaul-drawer-direction="bottom"] [data-slot="drawer-handle-area"],
+[data-slot="drawer-content"][data-vaul-drawer-direction="top"] [data-slot="drawer-handle-area"] {
+  padding-top: $space-1;
 }
 
 // Remove blue focus/outline from drawer content itself
@@ -96,7 +112,7 @@
 
   .card-detail-tab-footer {
     padding: $space-3 $space-4;
-    border-top: none;
+    border-top: $border-full solid $neutral-light-gray;
     box-shadow: $container-shadow-top-bigger;
     position: relative;
     z-index: 2;
@@ -174,7 +190,7 @@
   }
 }
 
-// Card selector drawer: shadow on sticky header and footer
+// Card selector drawer: shadow on sticky header and footer (always-on, uses its own sticky header)
 .mobile-card-selector-drawer {
   .drawer-sticky-header {
     box-shadow: $container-shadow-bottom-bigger;
@@ -187,4 +203,24 @@
     position: relative;
     z-index: 2;
   }
+}
+
+// === Scroll-driven footer shadows for drawers ===
+
+// Smooth transition for drawer footers
+[data-slot="drawer-footer"],
+[data-slot="drawer-content"] .dialog-footer {
+  transition: box-shadow 0.15s ease;
+}
+
+// Shadow above footer when there is more content to scroll
+[data-slot="drawer-content"][data-scrolled-bottom="true"] .dialog-footer,
+[data-slot="drawer-content"][data-scrolled-bottom="true"] [data-slot="drawer-footer"] {
+  box-shadow: $container-shadow-top-bigger;
+}
+
+// No shadow when scrolled to bottom or content does not overflow
+[data-slot="drawer-content"][data-scrolled-bottom="false"] [data-slot="drawer-footer"],
+[data-slot="drawer-content"][data-scrolled-bottom="false"] .dialog-footer {
+  box-shadow: none;
 }

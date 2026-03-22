@@ -11,7 +11,7 @@
   width: $side-panel-width; // Always keep full width
   overflow: hidden; // Prevent overall scroll, let middle section handle it
   background-color: $neutral-white;
-  border-right: $border-half solid $neutral-light-gray;
+  border-right: $border-full solid $neutral-light-gray;
   // Subtle right-side drop shadow for desktop to separate sidebar from content
   // Use directional shadow token for consistency across the app
   box-shadow: $container-shadow-right;
@@ -30,7 +30,7 @@
     flex-shrink: 0;
     padding: $space-3;
     padding-right: $space-1-5;
-    border-bottom: $border-half solid $neutral-light-gray;
+    border-bottom: $border-full solid $neutral-light-gray;
     background-color: $neutral-white;
     display: flex;
     justify-content: space-between;
@@ -185,7 +185,7 @@
     align-items: center;
     justify-content: flex-start;
     padding: $space-3 $space-2;
-    border-right: $border-half solid $neutral-light-gray;
+    border-right: $border-full solid $neutral-light-gray;
     background-color: $neutral-white;
     z-index: 2;
     overflow: hidden; // Prevent any scrolling on mini nav
@@ -300,7 +300,7 @@
   .sidebar-bottom {
     flex-shrink: 0;
     padding: $space-3;
-    border-top: $border-half solid $neutral-light-gray;
+    border-top: $border-full solid $neutral-light-gray;
     background-color: $neutral-white;
   }
 

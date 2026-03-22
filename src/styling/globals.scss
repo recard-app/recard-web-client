@@ -283,7 +283,7 @@ button {
 
   // Ensure ghost destructive icon buttons keep a red border even with icon-only base
   &.ghost.destructive.icon {
-    border: $border-half solid $error;
+    border: $border-full solid $error;
   }
 
   // No padding variant - removes all padding from button
@@ -333,7 +333,7 @@ button {
   align-self: flex-start;
   padding: $space-half $space-2;
   border-radius: $radius-full;
-  border: $border-half solid $neutral-light-gray;
+  border: $border-full solid $neutral-light-gray;
 
   .card-thumbnail {
     width: auto;

@@ -158,6 +158,7 @@
   flex-direction: column;
   gap: $space-3;
   flex-shrink: 0; // Prevent footer from shrinking
+  transition: box-shadow 0.15s ease;
   
   // InfoDisplay styling - appears first (above buttons)
   .info-component {
@@ -377,6 +378,18 @@
 // Auto-apply scrollable content to children that are not header/footer
 .dialog-inner > *:not(.dialog-header):not(.dialog-footer):not(.dialog-body) {
   @extend %dialog-scrollable-content-base;
+}
+
+// === SCROLL-DRIVEN FOOTER SHADOWS FOR DIALOGS ===
+
+// Shadow above dialog footer when there is more content to scroll
+.dialog-inner[data-scrolled-bottom="true"] .dialog-footer {
+  box-shadow: $container-shadow-top-bigger;
+}
+
+// No shadow when scrolled to bottom or content does not overflow
+.dialog-inner[data-scrolled-bottom="false"] .dialog-footer {
+  box-shadow: none;
 }
 
 // === ALERT DIALOG SPECIFIC STYLES ===

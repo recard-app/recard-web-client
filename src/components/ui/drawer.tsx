@@ -3,6 +3,7 @@ import { Drawer as DrawerPrimitive } from "vaul"
 import "./drawer/drawer.scss"
 
 import { cn } from "@/lib/utils"
+import { useScrollShadow } from "@/hooks/useScrollShadow"
 
 function Drawer({
   ...props
@@ -51,17 +52,37 @@ const DrawerOverlay = React.forwardRef<
 ));
 DrawerOverlay.displayName = "DrawerOverlay";
 
+/** Known scrollable container selectors inside drawers */
+const SCROLLABLE_SELECTORS = '.dialog-body, .drawer-content-scroll, .dialog-content-scroll';
+
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentProps<typeof DrawerPrimitive.Content> & { fitContent?: boolean; maxHeight?: string; fixedHeight?: string }
 >(({ className, children, fitContent, maxHeight = "80vh", fixedHeight, ...props }, ref) => {
+  const [contentElement, setContentElement] = React.useState<HTMLDivElement | null>(null);
+  const { isScrolledFromTop, isScrolledFromBottom } = useScrollShadow(contentElement, {
+    selectors: SCROLLABLE_SELECTORS,
+  });
+
+  // Compose forwarded ref with internal ref
+  const composedRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      setContentElement(node);
+      if (typeof ref === 'function') ref(node);
+      else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    },
+    [ref]
+  );
+
   return (
     <DrawerPortal data-slot="drawer-portal">
       <DrawerOverlay />
       <DrawerPrimitive.Content
-        ref={ref}
+        ref={composedRef}
         data-slot="drawer-content"
         aria-describedby={undefined}
+        data-scrolled-top={isScrolledFromTop}
+        data-scrolled-bottom={isScrolledFromBottom}
         className={cn(
           "group/drawer-content bg-background fixed z-[50001] flex flex-col overflow-hidden",
           // Use a static height for consistent UX; content scrolls inside
@@ -83,8 +104,10 @@ const DrawerContent = React.forwardRef<
         }}
         {...props}
       >
-        {/* Universal handle for all drawers */}
-        <div data-slot="drawer-handle" aria-hidden="true" />
+        {/* Universal handle for all drawers, wrapped for full-width shadow surface */}
+        <div data-slot="drawer-handle-area">
+          <div data-slot="drawer-handle" aria-hidden="true" />
+        </div>
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
