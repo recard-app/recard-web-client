@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Card Showcase Tilt Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    gap: 60px;
+    flex-wrap: wrap;
+    padding: 40px;
+  }
+
+  .demo-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    perspective: 800px;
+  }
+
+  .demo-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .demo-sublabel {
+    font-size: 11px;
+    color: #999;
+    max-width: 280px;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .card-showcase-wrapper {
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    width: 320px;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .card-showcase {
+    position: relative;
+    border-radius: 16px 16px 0 0;
+    padding: 32px 24px;
+    background:
+      radial-gradient(ellipse at 11% 11%, rgba(200, 0, 0, 0.38) 0%, rgba(200, 0, 0, 0.08) 30%, rgba(200, 0, 0, 0.03) 70%),
+      radial-gradient(ellipse at 94% 50%, rgba(200, 0, 0, 0.22) 0%, rgba(200, 0, 0, 0.05) 30%, rgba(200, 0, 0, 0.02) 70%),
+      white;
+    overflow: hidden;
+  }
+
+  .showcase-identity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .card-icon {
+    width: 64px;
+    height: 40px;
+    background: #c80000;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-icon-inner {
+    width: 28px;
+    height: 20px;
+    background: white;
+    border-radius: 3px;
+    opacity: 0.9;
+  }
+
+  .showcase-info h2 {
+    font-size: 18px;
+    color: #1a1a1a;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .card-footer {
+    display: flex;
+    gap: 32px;
+    padding: 8px 24px;
+    background-color: #fafafa;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .meta-label {
+    font-size: 11px;
+    color: #888;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .meta-value {
+    font-size: 13px;
+    color: #1a1a1a;
+    font-weight: 600;
+  }
+
+  /* ========================================
+     Option E: Launch entrance + idle float
+     ======================================== */
+
+  /* Entrance: card starts tilted and scaled down, springs into place */
+  .option-e .card-showcase-wrapper {
+    animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards,
+               cardFloat 10s ease-in-out 0.8s infinite;
+  }
+
+  @keyframes cardEntrance {
+    0% {
+      opacity: 0;
+      transform: rotateX(8deg) rotateY(-5deg) scale(0.92) translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: rotateX(0deg) rotateY(0deg) scale(1) translateY(0px);
+    }
+  }
+
+  @keyframes cardFloat {
+    0%, 100% {
+      transform: rotateX(0deg) rotateY(0deg) translateY(0px);
+    }
+    25% {
+      transform: rotateX(1.5deg) rotateY(-1deg) translateY(-2px);
+    }
+    50% {
+      transform: rotateX(-0.5deg) rotateY(1.5deg) translateY(0px);
+    }
+    75% {
+      transform: rotateX(-1deg) rotateY(-0.5deg) translateY(-1px);
+    }
+  }
+
+  /* ========================================
+     Option F: Continuous float only (no entrance)
+     ======================================== */
+  .option-f .card-showcase-wrapper {
+    animation: cardFloat 10s ease-in-out infinite;
+  }
+
+  /* ========================================
+     Option G: Launch entrance only (no idle)
+     ======================================== */
+  .option-g .card-showcase-wrapper {
+    animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  .instructions {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    color: #999;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    white-space: nowrap;
+  }
+
+  .replay-btn {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .replay-btn:active { background: #e0e0e0; }
+</style>
+</head>
+<body>
+
+<!-- Option E: Entrance + Float -->
+<div class="demo-column option-e">
+  <span class="demo-label">Entrance + Float</span>
+  <span class="demo-sublabel">Swoops in on load, then gently floats forever</span>
+  <div class="card-showcase-wrapper" id="entranceFloat">
+    <div class="card-showcase">
+      <div class="showcase-identity">
+        <div class="card-icon"><div class="card-icon-inner"></div></div>
+        <div class="showcase-info">
+          <h2>Bank of America Customized Cash Rewards</h2>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-item"><span class="meta-label">Issuer</span><span class="meta-value">Bank of America</span></div>
+      <div class="meta-item"><span class="meta-label">Network</span><span class="meta-value">Visa</span></div>
+    </div>
+  </div>
+  <button class="replay-btn" onclick="replay('entranceFloat', 'option-e')">Replay entrance</button>
+</div>
+
+<!-- Option F: Float only -->
+<div class="demo-column option-f">
+  <span class="demo-label">Float Only</span>
+  <span class="demo-sublabel">Continuous gentle rocking, no entrance animation</span>
+  <div class="card-showcase-wrapper">
+    <div class="card-showcase">
+      <div class="showcase-identity">
+        <div class="card-icon"><div class="card-icon-inner"></div></div>
+        <div class="showcase-info">
+          <h2>Bank of America Customized Cash Rewards</h2>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-item"><span class="meta-label">Issuer</span><span class="meta-value">Bank of America</span></div>
+      <div class="meta-item"><span class="meta-label">Network</span><span class="meta-value">Visa</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Option G: Entrance only -->
+<div class="demo-column option-g">
+  <span class="demo-label">Entrance Only</span>
+  <span class="demo-sublabel">Swoops in once, then stays still</span>
+  <div class="card-showcase-wrapper" id="entranceOnly">
+    <div class="card-showcase">
+      <div class="showcase-identity">
+        <div class="card-icon"><div class="card-icon-inner"></div></div>
+        <div class="showcase-info">
+          <h2>Bank of America Customized Cash Rewards</h2>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-item"><span class="meta-label">Issuer</span><span class="meta-value">Bank of America</span></div>
+      <div class="meta-item"><span class="meta-label">Network</span><span class="meta-value">Visa</span></div>
+    </div>
+  </div>
+  <button class="replay-btn" onclick="replay('entranceOnly', 'option-g')">Replay entrance</button>
+</div>
+
+<div class="instructions">Watch the cards -- entrance plays on load, float runs continuously</div>
+
+<script>
+  // Replay entrance animation
+  function replay(id, className) {
+    const el = document.getElementById(id);
+    const col = el.closest('.demo-column');
+    // Remove class to reset animation
+    col.classList.remove(className);
+    el.style.animation = 'none';
+    el.style.opacity = '0';
+    void el.offsetWidth; // force reflow
+    el.style.animation = '';
+    el.style.opacity = '';
+    col.classList.add(className);
+  }
+</script>
+</body>
+</html>

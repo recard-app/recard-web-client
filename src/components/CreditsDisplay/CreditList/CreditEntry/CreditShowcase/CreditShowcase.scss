@@ -11,12 +11,22 @@
 
   @media (max-width: $mobile-breakpoint) {
     box-shadow: $shadow-md;
+    overflow: visible;
+    transform-style: preserve-3d;
+    animation: cardFloat 10s ease-in-out infinite;
   }
 
   .mobile-credit-details-drawer &,
   .credit-edit-modal-drawer & {
     margin-left: $space-1-5;
     margin-right: $space-1-5;
+  }
+}
+
+@media (max-width: $mobile-breakpoint) {
+  .mobile-credit-details-drawer,
+  .credit-edit-modal-drawer {
+    perspective: 800px;
   }
 }
 
@@ -146,6 +156,21 @@
   70% {
     background-size: 175% 175%;
     background-position: 40% 60%;
+  }
+}
+
+@keyframes cardFloat {
+  0%, 100% {
+    transform: rotateX(0deg) rotateY(0deg) translateY(0px);
+  }
+  25% {
+    transform: rotateX(1.5deg) rotateY(-1deg) translateY(-2px);
+  }
+  50% {
+    transform: rotateX(-0.5deg) rotateY(1.5deg) translateY(0px);
+  }
+  75% {
+    transform: rotateX(-1deg) rotateY(-0.5deg) translateY(-1px);
   }
 }
 
