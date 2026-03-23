@@ -707,7 +707,7 @@
 
     .card-showcase-wobble-layer {
       transform-style: preserve-3d;
-      animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+      animation: cardEntrance 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
     }
 
     .card-showcase-wrapper {
@@ -716,7 +716,7 @@
 
     .card-showcase-motion-layer {
       overflow: visible;
-      animation: cardFloat 10s ease-in-out 0.8s infinite;
+      animation: cardFloat 10s ease-in-out 1.2s infinite;
     }
 
     // Hide trigger text on mobile, icon-only with touch target

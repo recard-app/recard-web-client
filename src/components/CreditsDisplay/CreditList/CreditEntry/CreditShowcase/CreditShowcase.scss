@@ -5,7 +5,7 @@
 .credit-showcase-wobble-layer {
   @media (max-width: $mobile-breakpoint) {
     perspective: 500px;
-    animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    animation: cardEntrance 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
   }
 }
 
@@ -21,7 +21,7 @@
     box-shadow: $shadow-md;
     overflow: visible;
     transform-style: preserve-3d;
-    animation: cardFloat 10s ease-in-out 0.8s infinite;
+    animation: cardFloat 10s ease-in-out 1.2s infinite;
   }
 
   .mobile-credit-details-drawer &,
