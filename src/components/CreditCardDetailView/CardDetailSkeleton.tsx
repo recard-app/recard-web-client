@@ -18,6 +18,7 @@ const CardDetailSkeleton: React.FC = () => {
         <div className="card-details">
             {/* Card Showcase */}
             <div className="card-showcase-wrapper">
+                <div className="card-showcase-motion-layer">
                 <div
                     className="card-showcase"
                     style={{
@@ -52,6 +53,7 @@ const CardDetailSkeleton: React.FC = () => {
                         <span className="meta-label">Network</span>
                         <Skeleton className="h-[14px] w-[70px] rounded" style={{ marginTop: 2 }} />
                     </div>
+                </div>
                 </div>
             </div>
 
