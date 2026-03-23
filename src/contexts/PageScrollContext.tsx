@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { useScrollShadow } from '@/hooks/useScrollShadow';
 
@@ -28,8 +28,23 @@ export function PageScrollProvider({ children }: PageScrollProviderProps) {
   const [scrollContainerEl, setScrollContainerEl] = useState<HTMLElement | null>(null);
   const [hasHeaderControls, setHasHeaderControls] = useState(false);
 
+  // Guard against cleanup race conditions during route transitions.
+  // Ref callbacks (commit phase) fire BEFORE effect cleanups (passive phase),
+  // so ScrollContainerCleanup's null call can clobber a new page's registration.
+  // This flag prevents stale cleanups from overriding a fresh registration.
+  const justRegisteredRef = useRef(false);
+
   const registerScrollContainer = useCallback((element: HTMLElement | null) => {
-    setScrollContainerEl(element);
+    if (element !== null) {
+      justRegisteredRef.current = true;
+      setScrollContainerEl(element);
+      requestAnimationFrame(() => {
+        justRegisteredRef.current = false;
+      });
+    } else {
+      if (justRegisteredRef.current) return;
+      setScrollContainerEl(null);
+    }
   }, []);
 
   const { isScrolledFromTop, isScrolledFromBottom } = useScrollShadow(scrollContainerEl);
