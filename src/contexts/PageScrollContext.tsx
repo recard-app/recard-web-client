@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState, useMemo } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { useScrollShadow } from '@/hooks/useScrollShadow';
 
@@ -57,4 +57,15 @@ export function usePageScroll(): PageScrollState {
 /** Returns just the registerScrollContainer callback (convenience for pages) */
 export function useRegisterScrollContainer(): (element: HTMLElement | null) => void {
   return useContext(PageScrollContext).registerScrollContainer;
+}
+
+/**
+ * Renders nothing. On unmount, clears the registered scroll container
+ * so stale references don't keep the header shadow visible across route changes.
+ * Place inside a keyed wrapper that remounts on navigation.
+ */
+export function ScrollContainerCleanup(): null {
+  const register = useContext(PageScrollContext).registerScrollContainer;
+  useEffect(() => () => register(null), [register]);
+  return null;
 }

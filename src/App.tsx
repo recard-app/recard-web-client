@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, Fragment } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard, UserCredit, CreditCardDetails, CardCredit, CardPerk, EnrichedMultiplier } from './types';
 import { Icon, CardIcon } from './icons';
@@ -60,7 +60,7 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 import { ComponentsProvider } from './contexts/ComponentsContext';
 import { useComponents } from './contexts/useComponents';
 import { CreditDrawerProvider, CreditDrawerBridge } from './contexts/CreditDrawerContext';
-import { PageScrollProvider } from './contexts/PageScrollContext';
+import { PageScrollProvider, ScrollContainerCleanup } from './contexts/PageScrollContext';
 import CreditCardDetailView from './components/CreditCardDetailView';
 import { CARD_TABS } from './components/CreditCardDetailView/cardTabs';
 import type { TabType } from './components/CreditCardDetailView/cardTabs';
@@ -1421,9 +1421,11 @@ function AppContent({}: AppContentProps) {
             />
           )}
 
-          {/* Mobile Header - in its own PageScrollProvider (no key) so drawer isn't unmounted on route change */}
+          {/* Single PageScrollProvider shared by MobileHeader and page content.
+              MobileHeader sits outside the keyed Fragment so its drawer isn't
+              unmounted on route change. Content is keyed so pages remount cleanly. */}
+          <PageScrollProvider>
           {user && !isAuthRoute && !isDesignSystemPage && !isOnboardingRoute && (
-            <PageScrollProvider>
             <MobileHeader
               title={PageUtils.getTitleByPath(location.pathname) || APP_NAME}
               onLogout={handleLogout}
@@ -1450,11 +1452,10 @@ function AppContent({}: AppContentProps) {
               onRemoveUpdatingCreditId={removeUpdatingCreditId}
               isCreditUpdating={isCreditUpdating}
             />
-            </PageScrollProvider>
           )}
 
-          {/* Check if current route is an auth page (no sidebar/nav should show) */}
-          <PageScrollProvider key={location.pathname}>
+          <Fragment key={location.pathname}>
+          <ScrollContainerCleanup />
           {(() => {
             return (
               <>
@@ -1827,6 +1828,7 @@ function AppContent({}: AppContentProps) {
             );
           })()
           )}
+          </Fragment>
           </PageScrollProvider>
         </div>
         </CreditDrawerProvider>
