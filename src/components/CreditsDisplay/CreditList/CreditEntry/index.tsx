@@ -242,7 +242,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
               percentage={maxValue > 0 ? (valueUsed / maxValue) * 100 : 0}
               size={18}
               color={COLORS.NEUTRAL_DARK_GRAY}
-              trackColor={COLORS.NEUTRAL_BLACK}
+              trackColor={COLORS.NEUTRAL_DARK_GRAY}
               thickness={150}
             />
           ) : (
