@@ -23,14 +23,16 @@ interface ActionDisplayProps {
   canUndo: boolean;
   /** Whether an undo operation is in progress */
   isUndoPending?: boolean;
+  /** Whether the associated credit is non-monetary (no $ prefix) */
+  isNonMonetary?: boolean;
 }
 
 /**
  * Get the display text for an action
  */
-function getActionText(action: ChatComponentAction): string {
+function getActionText(action: ChatComponentAction, isNonMonetary?: boolean): string {
   if (isCreditAction(action)) {
-    return formatCreditActionText(action);
+    return formatCreditActionText(action, isNonMonetary);
   }
   if (isCardAction(action)) {
     return formatCardActionText(action);
@@ -59,8 +61,9 @@ const ActionDisplay: React.FC<ActionDisplayProps> = ({
   onUndo,
   canUndo,
   isUndoPending = false,
+  isNonMonetary,
 }) => {
-  const actionText = getActionText(action);
+  const actionText = getActionText(action, isNonMonetary);
   const isUndone = action.isUndone;
 
   // Determine button state

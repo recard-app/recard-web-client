@@ -157,7 +157,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
         <Icon name={CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.icon} variant="micro" size={14} color={WARNING} />
       </span>
       <span className="expiring-text">
-        <span className="expiring-value">{effectiveMonthlyStats.ExpiringCredits.Total.count} {effectiveMonthlyStats.ExpiringCredits.Total.count === 1 ? 'credit' : 'credits'}</span> worth <span className="expiring-value">${effectiveMonthlyStats.ExpiringCredits.Total.unusedValue}</span> expiring soon
+        <span className="expiring-value">{effectiveMonthlyStats.ExpiringCredits.Total.count} {effectiveMonthlyStats.ExpiringCredits.Total.count === 1 ? 'credit' : 'credits'}</span>{effectiveMonthlyStats.ExpiringCredits.Total.unusedValue > 0 ? <> worth <span className="expiring-value">${effectiveMonthlyStats.ExpiringCredits.Total.unusedValue}</span></> : null} expiring soon
       </span>
     </div>
   );

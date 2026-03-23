@@ -67,11 +67,11 @@ const CreditSection: React.FC<CreditSectionProps> = ({
               ]}
               maxValue={usageStats.totalPossible}
               showLabels={false}
-              valuePrefix="$"
+              valuePrefix={cardCredit.isNonMonetary ? '' : '$'}
             />
           </div>
           <div className={`credit-stat${usageStats.totalUsed >= usageStats.totalPossible ? ' fully-used' : ''}`}>
-            <span>${usageStats.totalUsed} / ${usageStats.totalPossible}</span>
+            <span>{cardCredit.isNonMonetary ? '' : '$'}{usageStats.totalUsed} / {cardCredit.isNonMonetary ? '' : '$'}{usageStats.totalPossible}</span>
             <span>{Math.round((usageStats.totalUsed / usageStats.totalPossible) * 100)}%</span>
           </div>
         </>

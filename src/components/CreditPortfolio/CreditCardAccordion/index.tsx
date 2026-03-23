@@ -21,6 +21,9 @@ const calculateCardSummary = (
     const cardCredit = creditMetadata.get(credit.CreditId);
     if (!cardCredit) continue;
 
+    // Non-monetary credits are excluded from dollar sums
+    if (cardCredit.isNonMonetary) continue;
+
     // Get credit value (already a number)
     const creditValue = cardCredit.Value || 0;
 

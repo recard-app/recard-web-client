@@ -354,6 +354,9 @@ export interface PrioritizedCredit {
     isAnniversaryBased?: boolean;
     anniversaryDate?: string;   // MM/DD format
     anniversaryYear?: number;
+
+    // Non-monetary credit fields
+    isNonMonetary?: boolean;
 }
 
 export interface GetPrioritizedCreditsListParams {

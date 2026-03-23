@@ -305,7 +305,7 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
       <div className="credit-period-row">
         {SHOW_PERIOD_NAME_IN_CREDIT_MODAL && <div className="period-name">{getCurrentPeriodName()}</div>}
         <div className="amount-display">
-          <span className="amount-text">{formatCreditDollars(valueUsed)} / {formatCreditDollars(maxValue)}</span>
+          <span className="amount-text">{formatCreditDollars(valueUsed, cardCredit?.isNonMonetary)} / {formatCreditDollars(maxValue, cardCredit?.isNonMonetary)}</span>
         </div>
       </div>
       

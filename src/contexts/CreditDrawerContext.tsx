@@ -557,6 +557,7 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
       currentValueUsed={liveValueUsed}
       isExpiring={isExpiring}
       currentPeriodNumber={currentPeriodNumber}
+      isNonMonetary={cardCredit?.isNonMonetary}
     />
   );
 

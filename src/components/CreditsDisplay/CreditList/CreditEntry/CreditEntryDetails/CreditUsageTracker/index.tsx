@@ -17,6 +17,7 @@ interface CreditUsageTrackerProps {
   isUpdating?: (periodNumber: number) => boolean;
   isExpiring?: boolean;
   currentPeriodNumber?: number;
+  isNonMonetary?: boolean;
 }
 
 interface PeriodInfo {
@@ -59,12 +60,13 @@ const PILL_BORDER_COLORS: Record<PillState, string> = {
   future: COLORS.BORDER_LIGHT_GRAY
 };
 
-const formatPillValue = (value: number): string => {
+const formatPillValue = (value: number, isNonMonetary?: boolean): string => {
+  const prefix = isNonMonetary ? '' : '$';
   if (value >= 1000) {
     const k = Math.round((value / 1000) * 10) / 10;
-    return `$${k}K`;
+    return `${prefix}${k}K`;
   }
-  return `$${Math.round(value)}`;
+  return `${prefix}${Math.round(value)}`;
 };
 
 const getPillState = (period: PeriodInfo): PillState => {
@@ -88,7 +90,8 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
   onPeriodSelect,
   isUpdating,
   isExpiring,
-  currentPeriodNumber
+  currentPeriodNumber,
+  isNonMonetary
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const periodRefs = useRef<Map<number, HTMLDivElement>>(new Map());
@@ -254,7 +257,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
                 }
               }}
               className={`tracker-period ${isNonInteractive ? 'future' : ''} ${onPeriodSelect && !isNonInteractive ? 'clickable' : ''} ${isSelected ? 'selected' : ''} ${updating ? 'updating' : ''}`}
-              title={`${period.name}: ${period.isFuture ? 'Future period' : isDisabled ? 'Disabled period' : getUsageLabel(period.usage, period.isFuture)}${!isNonInteractive && period.valueUsed > 0 ? ` ($${period.valueUsed})` : ''}${onPeriodSelect && !isNonInteractive ? ' (Click to edit)' : ''}${isSelected ? ' [EDITING]' : ''}`}
+              title={`${period.name}: ${period.isFuture ? 'Future period' : isDisabled ? 'Disabled period' : getUsageLabel(period.usage, period.isFuture)}${!isNonInteractive && period.valueUsed > 0 ? ` (${isNonMonetary ? '' : '$'}${period.valueUsed})` : ''}${onPeriodSelect && !isNonInteractive ? ' (Click to edit)' : ''}${isSelected ? ' [EDITING]' : ''}`}
               onClick={() => handlePeriodClick(period)}
               role="button"
               tabIndex={isNonInteractive ? -1 : 0}
@@ -263,7 +266,7 @@ const CreditUsageTracker: React.FC<CreditUsageTrackerProps> = ({
               <div className="period-bar-container" style={{ backgroundColor: PILL_BG_COLORS[pillState], borderColor: PILL_BORDER_COLORS[pillState] }}>
                 {showValue && (
                   <span className="pill-value" style={{ color: PILL_TEXT_COLORS[pillState] }}>
-                    {formatPillValue(period.valueUsed)}
+                    {formatPillValue(period.valueUsed, isNonMonetary)}
                   </span>
                 )}
                 {pillState === 'inactive' && (

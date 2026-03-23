@@ -72,11 +72,11 @@ const CreditShowcase: React.FC<CreditShowcaseProps> = ({
       <div className="credit-showcase-footer">
         <div className="meta-item">
           <span className="meta-label">Value</span>
-          <span className="meta-value">{formatCreditDollars(value)} {timePeriod}</span>
+          <span className="meta-value">{formatCreditDollars(value, cardCredit?.isNonMonetary)} {timePeriod}</span>
         </div>
         <div className="meta-item">
           <span className="meta-label">{currentYear} Usage</span>
-          <span className="meta-value">{formatCreditDollars(totalUsed)} / {formatCreditDollars(totalPossible)}</span>
+          <span className="meta-value">{formatCreditDollars(totalUsed, cardCredit?.isNonMonetary)} / {formatCreditDollars(totalPossible, cardCredit?.isNonMonetary)}</span>
         </div>
       </div>
     </div>

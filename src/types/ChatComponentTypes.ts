@@ -41,6 +41,7 @@ export interface ChatComponentCredit {
   Value: number;
   TimePeriod: string;
   Description?: string;
+  isNonMonetary?: boolean;
 }
 
 /**
@@ -456,14 +457,15 @@ export function formatPeriodText(
  * @example "Now tracking" for track
  * @example "Stopped tracking" for untrack
  */
-export function formatCreditActionText(action: CreditAction): string {
+export function formatCreditActionText(action: CreditAction, isNonMonetary?: boolean): string {
   // Handle tracking actions (track/untrack)
   if (action.actionType === CREDIT_ACTION_TYPES.TRACK || action.actionType === CREDIT_ACTION_TYPES.UNTRACK) {
     return CREDIT_TRACKING_DISPLAY_LABELS[action.actionType] || action.actionType;
   }
 
   // Handle usage update actions
-  const valueText = `Set from $${action.fromValue ?? 0} to $${action.toValue ?? 0}`;
+  const prefix = isNonMonetary ? '' : '$';
+  const valueText = `Set from ${prefix}${action.fromValue ?? 0} to ${prefix}${action.toValue ?? 0}`;
   const periodText = formatPeriodText(
     action.periodNumber ?? 1,
     action.periodType,

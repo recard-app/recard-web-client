@@ -56,6 +56,7 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
   isUndoPending = false,
 }) => {
   const { cardCredit, card, userCredit, creditMaxValue, currentValueUsed, action } = item;
+  const prefix = cardCredit.isNonMonetary ? '' : '$';
 
   const handleClick = () => {
     onCreditClick(card.id, cardCredit.id);
@@ -106,7 +107,7 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
     if (isTrackingAction) {
       ariaLabel += `. Action: ${action.actionType === CREDIT_ACTION_TYPES.TRACK ? 'Now tracking' : 'Stopped tracking'}`;
     } else {
-      ariaLabel += `. Action: Updated from $${action.fromValue} to $${action.toValue}`;
+      ariaLabel += `. Action: Updated from ${prefix}${action.fromValue} to ${prefix}${action.toValue}`;
     }
   }
 
@@ -145,11 +146,11 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
           {/* Right side: Value display - simplified for tracking actions */}
           {isTrackingAction ? (
             <div className="credit-value">
-              <span className="value-amount">${creditMaxValue}</span>
+              <span className="value-amount">{prefix}{creditMaxValue}</span>
             </div>
           ) : (
             <div className="credit-usage" style={{ color: usageInfo.color }}>
-              <div className="usage-amount">${currentValueUsed} / ${creditMaxValue}</div>
+              <div className="usage-amount">{prefix}{currentValueUsed} / {prefix}{creditMaxValue}</div>
               <div className="usage-status">
                 {currentValueUsed < creditMaxValue ? (
                   <UsagePieIcon
@@ -173,6 +174,7 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
             onUndo={handleUndo}
             canUndo={canUndo}
             isUndoPending={isUndoPending}
+            isNonMonetary={cardCredit.isNonMonetary}
           />
         </div>
       )}
