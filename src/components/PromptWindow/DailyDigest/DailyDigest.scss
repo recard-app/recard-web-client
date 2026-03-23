@@ -153,9 +153,9 @@
 
 @keyframes digest-glow-pulse {
     0%, 100% {
-        box-shadow: 0 0 8px rgba($primary-color, 0.08), 0 0 2px rgba($primary-color, 0.05);
+        box-shadow: 0 0 6px color-mix(in srgb, $primary-color 5%, transparent), 0 0 2px color-mix(in srgb, $primary-color 3%, transparent);
     }
     50% {
-        box-shadow: 0 0 24px rgba($primary-color, 0.35), 0 0 10px rgba($primary-color, 0.2);
+        box-shadow: 0 0 18px color-mix(in srgb, $primary-color 22%, transparent), 0 0 8px color-mix(in srgb, $primary-color 12%, transparent);
     }
 }

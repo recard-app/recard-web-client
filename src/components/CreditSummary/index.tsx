@@ -144,7 +144,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
           <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
         </span>
         <span className="supporting-text">
-          You have used <span className="supporting-value">{usedMonthlyCredits}/{totalMonthlyCredits}</span> monthly credits worth <span className="supporting-value">${effectiveMonthlyStats.MonthlyCredits.usedValue}</span>
+          <span className="supporting-value">{usedMonthlyCredits}/{totalMonthlyCredits}</span> monthly credits used
         </span>
       </div>
     </>
