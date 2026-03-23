@@ -9,6 +9,7 @@
   .summary-section {
     @include card-panel;
     margin-bottom: 0;
+    border: none;
   }
 
   .section-header {
@@ -17,7 +18,7 @@
     gap: $space-2;
     margin-bottom: $space-3;
     padding-bottom: $space-2;
-    border-bottom: $border-full solid $neutral-light-gray;
+    border-bottom: none;
 
     .section-title {
       font-family: $font-heading;

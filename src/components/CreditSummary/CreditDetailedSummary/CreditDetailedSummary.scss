@@ -23,6 +23,7 @@
   .summary-section {
     @include card-panel;
     margin-bottom: 0; // Override default margin since parent uses gap
+    border: none;
 
     &:last-child {
       margin-bottom: 0;
@@ -36,7 +37,7 @@
     gap: $space-2;
     margin-bottom: $space-3;
     padding-bottom: $space-2;
-    border-bottom: $border-full solid $neutral-light-gray;
+    border-bottom: none;
 
     .section-icon {
       display: flex;
