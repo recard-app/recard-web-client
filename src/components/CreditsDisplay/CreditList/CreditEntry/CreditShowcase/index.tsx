@@ -26,7 +26,7 @@ const CreditShowcase: React.FC<CreditShowcaseProps> = ({
   const timePeriod = cardCredit?.TimePeriod ?? userCredit.AssociatedPeriod;
   const value = cardCredit?.Value ?? 0;
 
-  const { wobbleRef, onWobble } = useTapWobble();
+  const { wobbleRef, onWobble } = useTapWobble(500);
 
   const totalUsed = userCredit.History.reduce(
     (sum: number, h: any) => sum + (h.ValueUsed || 0),

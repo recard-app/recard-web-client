@@ -3,7 +3,9 @@
 
 // Wobble layer (outer wrapper for tap wobble via Web Animations API)
 .credit-showcase-wobble-layer {
-  perspective: 800px;
+  @media (max-width: $mobile-breakpoint) {
+    animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
 }
 
 // Credit Showcase Wrapper (showcase + footer)
@@ -18,8 +20,7 @@
     box-shadow: $shadow-md;
     overflow: visible;
     transform-style: preserve-3d;
-    animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards,
-               cardFloat 10s ease-in-out 0.8s infinite;
+    animation: cardFloat 10s ease-in-out 0.8s infinite;
   }
 
   .mobile-credit-details-drawer &,
@@ -32,7 +33,10 @@
 @media (max-width: $mobile-breakpoint) {
   .mobile-credit-details-drawer,
   .credit-edit-modal-drawer {
-    perspective: 800px;
+    // Apply perspective to the scroll container so wobble layer (direct child) gets 3D depth
+    .drawer-content-scroll {
+      perspective: 500px;
+    }
   }
 }
 
@@ -183,13 +187,13 @@
     transform: rotateX(0deg) rotateY(0deg) translateY(0px);
   }
   25% {
-    transform: rotateX(2.5deg) rotateY(-1.5deg) translateY(-2px);
+    transform: rotateX(3.5deg) rotateY(-2deg) translateY(-2px);
   }
   50% {
-    transform: rotateX(-1deg) rotateY(2deg) translateY(0px);
+    transform: rotateX(-1.5deg) rotateY(3deg) translateY(0px);
   }
   75% {
-    transform: rotateX(-1.5deg) rotateY(-1deg) translateY(-1px);
+    transform: rotateX(-2deg) rotateY(-1.5deg) translateY(-1px);
   }
 }
 

@@ -15,9 +15,30 @@
 .card-details {
   text-align: left;
 
+  .card-showcase-shell {
+    position: relative;
+  }
+
   // Wobble layer (outer wrapper for tap wobble via Web Animations API)
   .card-showcase-wobble-layer {
-    perspective: 800px;
+    // Perspective comes from the parent .card-details container on mobile.
+  }
+
+  .showcase-actions-overlay {
+    position: absolute;
+    top: $space-3;
+    right: $space-3;
+    z-index: 20;
+    pointer-events: auto;
+    touch-action: manipulation;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+
+    @media (max-width: $mobile-breakpoint) {
+      .card-detail-drawer & {
+        right: calc(#{$space-3} + #{$space-1-5});
+      }
+    }
   }
 
   // Card Showcase Wrapper (showcase + footer)
@@ -72,13 +93,6 @@
       background-size: 150% 150%;
       background-position: 100% 100%;
       animation: showcase-pulse-fast 5s ease-in-out 1.5s infinite;
-    }
-
-    .showcase-actions {
-      position: absolute;
-      top: $space-3;
-      right: $space-3;
-      z-index: 2;
     }
 
     .showcase-identity {
@@ -182,6 +196,7 @@
     font-weight: $font-medium;
     transition: all $transition-base;
     flex-shrink: 0;
+    touch-action: manipulation;
 
     @include hover {
       background-color: $neutral-light-gray;
@@ -698,13 +713,16 @@
 /* Mobile responsiveness */
 @media (max-width: $mobile-breakpoint) {
   .card-details {
-    perspective: 800px;
+    perspective: 500px;
+
+    .card-showcase-wobble-layer {
+      animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
 
     .card-showcase-wrapper {
       overflow: visible;
       transform-style: preserve-3d;
-      animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards,
-                 cardFloat 10s ease-in-out 0.8s infinite;
+      animation: cardFloat 10s ease-in-out 0.8s infinite;
     }
 
     // Hide trigger text on mobile, icon-only with touch target
@@ -825,13 +843,13 @@
     transform: rotateX(0deg) rotateY(0deg) translateY(0px);
   }
   25% {
-    transform: rotateX(2.5deg) rotateY(-1.5deg) translateY(-2px);
+    transform: rotateX(3.5deg) rotateY(-2deg) translateY(-2px);
   }
   50% {
-    transform: rotateX(-1deg) rotateY(2deg) translateY(0px);
+    transform: rotateX(-1.5deg) rotateY(3deg) translateY(0px);
   }
   75% {
-    transform: rotateX(-1.5deg) rotateY(-1deg) translateY(-1px);
+    transform: rotateX(-2deg) rotateY(-1.5deg) translateY(-1px);
   }
 }
 
