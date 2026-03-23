@@ -30,6 +30,9 @@ export function useTapWobble<T extends HTMLElement = HTMLDivElement>(perspective
   const keyframes = useMemo(() => buildWobbleKeyframes(perspective), [perspective]);
 
   const onWobble = useCallback((e: React.MouseEvent) => {
+    // Mobile only — matches $mobile-breakpoint in variables.scss
+    if (window.innerWidth > 780) return;
+
     // Don't wobble when clicking interactive elements (buttons, links, dropdowns)
     const target = e.target as HTMLElement;
     if (target.closest('button, a, [role="menuitem"], .showcase-actions')) return;

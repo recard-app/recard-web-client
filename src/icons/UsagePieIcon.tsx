@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface UsagePieIconProps {
   percentage: number;
@@ -9,6 +9,7 @@ interface UsagePieIconProps {
   centerTextColor?: string;
   centerSubText?: string;
   centerSubTextColor?: string;
+  animate?: boolean;
 
   className?: string;
   style?: React.CSSProperties;
@@ -30,9 +31,25 @@ const VB_SIZE = OUTER_EDGE * 2;
 // Opacity for the background track ring (unfilled portion)
 const TRACK_OPACITY = 0.25;
 
-const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, trackColor, centerText, centerTextColor, centerSubText, centerSubTextColor, className, style }) => {
+const ANIMATION_DURATION_MS = 600;
+
+const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, trackColor, centerText, centerTextColor, centerSubText, centerSubTextColor, animate = true, className, style }) => {
   const clampedPct = Math.max(0, Math.min(100, percentage));
-  const dashLength = (clampedPct / 100) * CIRCUMFERENCE;
+  const [animatedPct, setAnimatedPct] = useState(animate ? 0 : clampedPct);
+
+  useEffect(() => {
+    if (!animate) {
+      setAnimatedPct(clampedPct);
+      return;
+    }
+    // Trigger animation on next frame so the initial 0 renders first
+    const frame = requestAnimationFrame(() => {
+      setAnimatedPct(clampedPct);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [clampedPct, animate]);
+
+  const dashLength = (animatedPct / 100) * CIRCUMFERENCE;
   const gapLength = CIRCUMFERENCE - dashLength;
 
   const fontSize = 173;
@@ -72,6 +89,9 @@ const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, tr
           strokeDashoffset={0}
           strokeLinecap="round"
           transform={`rotate(-90 ${CENTER_X} ${CENTER_Y})`}
+          style={animate ? {
+            transition: `stroke-dasharray ${ANIMATION_DURATION_MS}ms ease-out`,
+          } : undefined}
         />
       )}
 
