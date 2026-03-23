@@ -299,7 +299,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return (
       <div
         style={{
-          height: 'calc(var(--app-vh, 1vh) * 100)',
+          position: 'fixed',
+          inset: 0,
           overflow: 'hidden',
           display: 'flex',
           alignItems: 'center',
