@@ -241,7 +241,9 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
             <UsagePieIcon
               percentage={maxValue > 0 ? (valueUsed / maxValue) * 100 : 0}
               size={18}
-              color={COLORS.NEUTRAL_BLACK}
+              color={COLORS.NEUTRAL_DARK_GRAY}
+              trackColor={COLORS.NEUTRAL_BLACK}
+              thickness={150}
             />
           ) : (
             <Icon

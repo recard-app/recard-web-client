@@ -10,6 +10,7 @@ interface UsagePieIconProps {
   centerSubText?: string;
   centerSubTextColor?: string;
   animate?: boolean;
+  thickness?: number;
 
   className?: string;
   style?: React.CSSProperties;
@@ -22,18 +23,12 @@ const RING_RADIUS = 350.5;
 const RING_THICKNESS = 83;
 const CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
-// Crop viewBox tightly around the ring (outer edge = radius + thickness/2 = 392, plus 4px padding)
-const OUTER_EDGE = RING_RADIUS + RING_THICKNESS / 2 + 4;
-const VB_X = CENTER_X - OUTER_EDGE;
-const VB_Y = CENTER_Y - OUTER_EDGE;
-const VB_SIZE = OUTER_EDGE * 2;
-
 // Opacity for the background track ring (unfilled portion)
 const TRACK_OPACITY = 0.25;
 
 const ANIMATION_DURATION_MS = 600;
 
-const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, trackColor, centerText, centerTextColor, centerSubText, centerSubTextColor, animate = true, className, style }) => {
+const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, trackColor, centerText, centerTextColor, centerSubText, centerSubTextColor, animate = true, thickness, className, style }) => {
   const clampedPct = Math.max(0, Math.min(100, percentage));
   const [animatedPct, setAnimatedPct] = useState(animate ? 0 : clampedPct);
 
@@ -52,6 +47,12 @@ const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, tr
   const dashLength = (animatedPct / 100) * CIRCUMFERENCE;
   const gapLength = CIRCUMFERENCE - dashLength;
 
+  const ringThickness = thickness ?? RING_THICKNESS;
+  const outerEdge = RING_RADIUS + ringThickness / 2 + 4;
+  const vbX = CENTER_X - outerEdge;
+  const vbY = CENTER_Y - outerEdge;
+  const vbSize = outerEdge * 2;
+
   const fontSize = 173;
   const subFontSize = 110;
   const hasSubText = !!(centerText && centerSubText);
@@ -63,7 +64,7 @@ const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, tr
       xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
-      viewBox={`${VB_X} ${VB_Y} ${VB_SIZE} ${VB_SIZE}`}
+      viewBox={`${vbX} ${vbY} ${vbSize} ${vbSize}`}
     >
       {/* Background track ring (dimmed) */}
       <circle
@@ -72,7 +73,7 @@ const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, tr
         r={RING_RADIUS}
         fill="none"
         stroke={trackColor || color}
-        strokeWidth={RING_THICKNESS}
+        strokeWidth={ringThickness}
         opacity={TRACK_OPACITY}
       />
 
@@ -84,7 +85,7 @@ const UsagePieIcon: React.FC<UsagePieIconProps> = ({ percentage, size, color, tr
           r={RING_RADIUS}
           fill="none"
           stroke={color}
-          strokeWidth={RING_THICKNESS}
+          strokeWidth={ringThickness}
           strokeDasharray={`${dashLength} ${gapLength}`}
           strokeDashoffset={0}
           strokeLinecap="round"
