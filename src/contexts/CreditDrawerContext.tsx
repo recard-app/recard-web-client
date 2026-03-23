@@ -483,7 +483,7 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
         <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
           <DrawerContent fitContent maxHeight="80vh" className="mobile-credit-details-drawer">
             <DrawerTitle className="sr-only">Loading</DrawerTitle>
-            <div className="drawer-content-scroll" style={{ padding: '0 8px 16px', overflow: 'auto' }}>
+            <div className="drawer-content-scroll" style={{ padding: '12px 8px 16px', overflow: 'auto' }}>
               <CreditDrawerShowcaseSkeleton />
             </div>
             <DrawerFooter>
@@ -501,7 +501,7 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
           <DialogHeader>
             <DialogTitle className="sr-only">Loading</DialogTitle>
           </DialogHeader>
-          <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
+          <div className="dialog-content-scroll" style={{ padding: '8px 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
             <CreditDrawerShowcaseSkeleton />
             <CreditDrawerTrackerSkeleton />
           </div>
@@ -579,7 +579,7 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
       <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DrawerContent fitContent maxHeight="80vh" className="mobile-credit-details-drawer">
           <DrawerTitle className="sr-only">{CREDIT_MODAL_TITLE}</DrawerTitle>
-          <div className="drawer-content-scroll" style={{ padding: '0 8px 16px', overflow: 'auto' }}>
+          <div className="drawer-content-scroll" style={{ padding: '12px 8px 16px', overflow: 'auto' }}>
             <CreditShowcase
               card={card}
               cardCredit={cardCredit}
@@ -603,7 +603,7 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
         <DialogHeader>
           <DialogTitle>{CREDIT_MODAL_TITLE}</DialogTitle>
         </DialogHeader>
-        <div className="dialog-content-scroll" style={{ padding: '0 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
+        <div className="dialog-content-scroll" style={{ padding: '8px 24px 24px', overflow: 'auto', maxHeight: '70vh' }}>
           <CreditShowcase
             card={card}
             cardCredit={cardCredit}
