@@ -4,6 +4,7 @@
 // Wobble layer (outer wrapper for tap wobble via Web Animations API)
 .credit-showcase-wobble-layer {
   @media (max-width: $mobile-breakpoint) {
+    perspective: 500px;
     animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
   }
 }

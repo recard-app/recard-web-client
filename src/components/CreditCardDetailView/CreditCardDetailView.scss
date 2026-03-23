@@ -711,12 +711,11 @@
     }
 
     .card-showcase-wrapper {
-      transform-style: preserve-3d;
+      perspective: 500px;
     }
 
     .card-showcase-motion-layer {
       overflow: visible;
-      transform-style: preserve-3d;
       animation: cardFloat 10s ease-in-out 0.8s infinite;
     }
 
@@ -838,13 +837,13 @@
     transform: rotateX(0deg) rotateY(0deg) translateY(0px);
   }
   25% {
-    transform: rotateX(5deg) rotateY(-3deg) translateY(-3px);
+    transform: rotateX(10deg) rotateY(-7deg) translateY(-4px);
   }
   50% {
-    transform: rotateX(-2.5deg) rotateY(4deg) translateY(-1px);
+    transform: rotateX(-6deg) rotateY(9deg) translateY(-2px);
   }
   75% {
-    transform: rotateX(-3deg) rotateY(-2.5deg) translateY(-2px);
+    transform: rotateX(-7deg) rotateY(-6deg) translateY(-3px);
   }
 }
 
