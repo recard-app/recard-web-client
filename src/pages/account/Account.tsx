@@ -31,6 +31,7 @@ import {
   DialogFooter,
 } from '../../components/ui/dialog/dialog';
 import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
+import { useTapWobble } from '../../hooks/useTapWobble';
 import './Account.scss';
 
 interface AccountProps {
@@ -68,6 +69,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
 
   useFullHeight(true);
   const registerScrollContainer = useRegisterScrollContainer();
+  const { wobbleRef, onWobble } = useTapWobble(500);
 
   const handleVerificationEmailClick = async (): Promise<void> => {
     const result = await handleVerificationEmailUtil(sendVerificationEmail);
@@ -225,6 +227,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
           {user ? (
             <div className="account-wrapper">
               {/* Profile Showcase */}
+              <div className="profile-showcase-wobble-layer" ref={wobbleRef} onClick={onWobble}>
               <div className="profile-showcase-wrapper">
                 <div className="profile-showcase">
                   <div className="showcase-identity">
@@ -270,6 +273,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
                     <span className="meta-value">{creditCardCount}</span>
                   </div>
                 </div>
+              </div>
               </div>
 
               {/* Account Settings */}

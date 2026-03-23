@@ -315,7 +315,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       >
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
           <Icon name="cardzen-logo" variant="solid" size={48} color={COLORS.PRIMARY_COLOR} />
-          <LOADING_ICON size={24} className="spinning" aria-label="Loading" />
+          <LOADING_ICON size={24} className="spinning" color={COLORS.NEUTRAL_DARK_GRAY} aria-label="Loading" />
         </div>
       </div>
     );
