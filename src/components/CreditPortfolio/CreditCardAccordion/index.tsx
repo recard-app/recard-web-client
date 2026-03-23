@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Icon } from '@/icons';
 import { CardIcon } from '@/icons';
 import { COLORS } from '@/types/Colors';
-import { ICON_BLUE, ICON_PRIMARY, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_NAMES } from '@/types';
+import { ICON_BLUE, ICON_GRAY, ICON_PRIMARY, CREDIT_PERIODS, CREDIT_USAGE_DISPLAY_NAMES } from '@/types';
 import UsageBar from '@/components/UsageBar';
 import CreditSection from '../CreditSection';
 import { CreditCardAccordionProps, CardCreditSummary } from '../types';
@@ -148,7 +148,7 @@ const CreditCardAccordion: React.FC<CreditCardAccordionProps> = ({
             name="chevron-down"
             variant="mini"
             size={20}
-            color={COLORS.NEUTRAL_GRAY}
+            color={ICON_GRAY}
             className={`chevron-icon ${isExpanded ? 'rotated' : ''}`}
           />
         </div>

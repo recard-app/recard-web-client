@@ -2,14 +2,14 @@
 @use '../../../styling/mixins' as *;
 
 .credit-card-accordion {
-  @include divider-list-item;
+  // @include divider-list-item;
 
   & {
     background-color: $neutral-white;
   }
 
   &.expanded {
-    background-color: $neutral-white;
+    background-color: $neutral-lightest-gray;
   }
 
   // Accordion header - clickable button
@@ -155,10 +155,25 @@
   .accordion-content {
     //border-top: $border-full solid $neutral-light-gray;
     padding: $space-3 $space-4;
-    background-color: $neutral-white;
+    background-color: $neutral-lightest-gray;
     display: flex;
     flex-direction: column;
-    gap: $space-3;
+    gap: 0;
+
+    // Light inset divider between sub-items only
+    .credit-section + .credit-section {
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: $space-4;
+        right: $space-4;
+        height: 1px;
+        background-color: $neutral-light-gray;
+      }
+    }
 
     &.updating {
       @include updating-state;
