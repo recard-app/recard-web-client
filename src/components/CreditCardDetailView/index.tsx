@@ -222,7 +222,8 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     const cardPerks = usePerksByCardId(cardDetails?.id || '');
     const cardMultipliers = useMultipliersByCardId(cardDetails?.id || '');
     const { updateMultiplierSelection } = useComponents();
-    const { wobbleRef, onWobble } = useTapWobble(500);
+    const { wobbleRef, onWobble } = useTapWobble();
+    const hasCardActions = Boolean(onSetPreferred || onFreezeToggle || onOpenDateChange || onRemoveCard);
 
     const [componentPreferences, setComponentPreferences] = useState<UserComponentTrackingPreferences | null>(null);
     const [isLoadingPreferences, setIsLoadingPreferences] = useState(false);
@@ -441,123 +442,124 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
 
     return (
         <div className="card-details">
-            {/* Card Showcase Header - keep actions outside transformed wobble layer for stable touch hit-testing */}
-            <div
-                className="card-showcase-shell"
+            {/* Card Showcase Header - wobble layer stays mounted across tab switches */}
+            <div className="card-showcase-wobble-layer" key={cardDetails.id} ref={wobbleRef}
+                onClick={hasCardActions ? undefined : onWobble}
                 style={hideInlineTabs && effectiveTab !== 'overview' ? { visibility: 'hidden', height: 0, overflow: 'hidden' } as React.CSSProperties : undefined}
             >
-                <div className="card-showcase-wobble-layer" key={cardDetails.id} ref={wobbleRef} onClick={onWobble}>
-                    <div className="card-showcase-wrapper">
-                        <div
-                            className="card-showcase"
-                            style={cardDetails.CardPrimaryColor ? {
-                                '--showcase-solid': `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 8%, white)`,
-                                '--showcase-blob-1': `radial-gradient(ellipse at 11% 11%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 38%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 8%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 3%, transparent) 70%)`,
-                                '--showcase-blob-2': `radial-gradient(ellipse at 94% 50%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 22%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 5%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 2%, transparent) 70%)`,
-                                '--showcase-blob-3': `radial-gradient(ellipse at 28% 94%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 10%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 2%, transparent) 25%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 60%)`,
-                                '--showcase-blob-1-subtle': `radial-gradient(ellipse at 11% 11%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 20%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 4%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 2%, transparent) 70%)`,
-                                '--showcase-blob-2-subtle': `radial-gradient(ellipse at 94% 50%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 3%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 70%)`,
-                                '--showcase-blob-3-subtle': `radial-gradient(ellipse at 28% 94%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 6%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 25%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 60%)`,
-                            } as React.CSSProperties : undefined}
-                        >
-                            <div className="showcase-identity">
-                                <CardIcon
-                                    title={`${cardDetails.CardName} card`}
-                                    size={64}
-                                    primary={cardDetails.CardPrimaryColor}
-                                    secondary={cardDetails.CardSecondaryColor}
-                                    className="card-image"
-                                />
-                                <div className="showcase-info">
-                                    <h2>{cardDetails.CardName}</h2>
-                                    {(cardDetails.isDefaultCard || isFrozen) && (
-                                        <div className="showcase-badges">
-                                            {cardDetails.isDefaultCard && (
-                                                <span className="badge badge-preferred">
-                                                    <Icon name="star" variant="solid" size={12} aria-hidden="true" />
-                                                    Preferred
-                                                </span>
-                                            )}
-                                            {isFrozen && (
-                                                <span className="badge badge-frozen">
-                                                    <Icon name="snowflake" variant="solid" size={12} aria-hidden="true" />
-                                                    Frozen
-                                                </span>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
+            <div className="card-showcase-wrapper">
+            <div className="card-showcase-motion-layer">
+            <div
+                className="card-showcase"
+                style={cardDetails.CardPrimaryColor ? {
+                    '--showcase-solid': `color-mix(in srgb, ${cardDetails.CardPrimaryColor} 8%, white)`,
+                    '--showcase-blob-1': `radial-gradient(ellipse at 11% 11%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 38%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 8%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 3%, transparent) 70%)`,
+                    '--showcase-blob-2': `radial-gradient(ellipse at 94% 50%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 22%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 5%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 2%, transparent) 70%)`,
+                    '--showcase-blob-3': `radial-gradient(ellipse at 28% 94%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 10%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 2%, transparent) 25%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 60%)`,
+                    '--showcase-blob-1-subtle': `radial-gradient(ellipse at 11% 11%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 20%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 4%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 2%, transparent) 70%)`,
+                    '--showcase-blob-2-subtle': `radial-gradient(ellipse at 94% 50%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 12%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 3%, transparent) 30%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 70%)`,
+                    '--showcase-blob-3-subtle': `radial-gradient(ellipse at 28% 94%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 6%, transparent) 0%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 25%, color-mix(in srgb, ${cardDetails.CardPrimaryColor} 1%, transparent) 60%)`,
+                } as React.CSSProperties : undefined}
+            >
+                <div className="showcase-identity">
+                    <CardIcon
+                        title={`${cardDetails.CardName} card`}
+                        size={64}
+                        primary={cardDetails.CardPrimaryColor}
+                        secondary={cardDetails.CardSecondaryColor}
+                        className="card-image"
+                    />
+                    <div className="showcase-info">
+                        <h2>{cardDetails.CardName}</h2>
+                        {(cardDetails.isDefaultCard || isFrozen) && (
+                            <div className="showcase-badges">
+                                {cardDetails.isDefaultCard && (
+                                    <span className="badge badge-preferred">
+                                        <Icon name="star" variant="solid" size={12} aria-hidden="true" />
+                                        Preferred
+                                    </span>
+                                )}
+                                {isFrozen && (
+                                    <span className="badge badge-frozen">
+                                        <Icon name="snowflake" variant="solid" size={12} aria-hidden="true" />
+                                        Frozen
+                                    </span>
+                                )}
                             </div>
-                        </div>
-                        <div className="card-footer">
-                            <div className="meta-item">
-                                <span className="meta-label">Issuer</span>
-                                <span className="meta-value">{cardDetails.CardIssuer}</span>
-                            </div>
-                            <div className="meta-item">
-                                <span className="meta-label">Network</span>
-                                <span className="meta-value">{cardDetails.CardNetwork}</span>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
+            </div>
+            <div className="card-footer">
+                <div className="meta-item">
+                    <span className="meta-label">Issuer</span>
+                    <span className="meta-value">{cardDetails.CardIssuer}</span>
+                </div>
+                <div className="meta-item">
+                    <span className="meta-label">Network</span>
+                    <span className="meta-value">{cardDetails.CardNetwork}</span>
+                </div>
+            </div>
+            </div>
 
-                {/* Card Actions Dropdown -- anchored to shell so it stays outside transformed hit-test layers */}
-                {(onSetPreferred || onFreezeToggle || onOpenDateChange || onRemoveCard) && (
-                    <div
-                        className="showcase-actions showcase-actions-overlay"
-                        onPointerDown={e => e.stopPropagation()}
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <button className="card-actions-trigger" aria-label="Card actions" type="button">
-                                    <Icon name="pencil" variant="solid" size={16} color={ICON_GRAY} aria-hidden="true" />
-                                    <span className="card-actions-trigger-text">Edit Card</span>
-                                </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                {onSetPreferred && (
-                                    <DropdownMenuItem
-                                        onClick={onSetPreferred}
-                                        disabled={isSettingPreferred}
-                                        icon={CARD_ACTION_ICONS.PREFERRED}
-                                    >
-                                        {cardDetails.isDefaultCard ? 'Remove Preferred' : 'Set Preferred'}
-                                    </DropdownMenuItem>
-                                )}
-                                {onFreezeToggle && (
-                                    <DropdownMenuItem
-                                        onClick={onFreezeToggle}
-                                        icon={CARD_ACTION_ICONS.FREEZE}
-                                    >
-                                        {isFrozen ? 'Unfreeze Card' : 'Freeze Card'}
-                                    </DropdownMenuItem>
-                                )}
-                                {onOpenDateChange && (
-                                    <DropdownMenuItem
-                                        onClick={handleOpenDateModal}
-                                        icon={CARD_ACTION_ICONS.CALENDAR}
-                                    >
-                                        {openDate ? 'Edit Start Date' : 'Set Start Date'}
-                                    </DropdownMenuItem>
-                                )}
-                                {onRemoveCard && (
-                                    <>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem
-                                            onClick={onRemoveCard}
-                                            variant="destructive"
-                                            icon={CARD_ACTION_ICONS.DELETE}
-                                        >
-                                            Remove Card
-                                        </DropdownMenuItem>
-                                    </>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                )}
+            {/* Card Actions Dropdown -- in-card placement but outside transformed motion layer */}
+            {hasCardActions && (
+            <div
+                className="showcase-actions"
+                onPointerDown={e => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
+            >
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <button className="card-actions-trigger" aria-label="Card actions" type="button">
+                        <Icon name="pencil" variant="solid" size={16} color={ICON_GRAY} aria-hidden="true" />
+                        <span className="card-actions-trigger-text">Edit Card</span>
+                    </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    {onSetPreferred && (
+                        <DropdownMenuItem
+                            onClick={onSetPreferred}
+                            disabled={isSettingPreferred}
+                            icon={CARD_ACTION_ICONS.PREFERRED}
+                        >
+                            {cardDetails.isDefaultCard ? 'Remove Preferred' : 'Set Preferred'}
+                        </DropdownMenuItem>
+                    )}
+                    {onFreezeToggle && (
+                        <DropdownMenuItem
+                            onClick={onFreezeToggle}
+                            icon={CARD_ACTION_ICONS.FREEZE}
+                        >
+                            {isFrozen ? 'Unfreeze Card' : 'Freeze Card'}
+                        </DropdownMenuItem>
+                    )}
+                    {onOpenDateChange && (
+                        <DropdownMenuItem
+                            onClick={handleOpenDateModal}
+                            icon={CARD_ACTION_ICONS.CALENDAR}
+                        >
+                            {openDate ? 'Edit Start Date' : 'Set Start Date'}
+                        </DropdownMenuItem>
+                    )}
+                    {onRemoveCard && (
+                        <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                onClick={onRemoveCard}
+                                variant="destructive"
+                                icon={CARD_ACTION_ICONS.DELETE}
+                            >
+                                Remove Card
+                            </DropdownMenuItem>
+                        </>
+                    )}
+                </DropdownMenuContent>
+            </DropdownMenu>
+            </div>
+            )}
+
+            </div>
             </div>
 
             {/* Description & Stats - hidden on mobile when non-overview tab active */}

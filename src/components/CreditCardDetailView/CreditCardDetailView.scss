@@ -15,35 +15,33 @@
 .card-details {
   text-align: left;
 
-  .card-showcase-shell {
-    position: relative;
-  }
-
   // Wobble layer (outer wrapper for tap wobble via Web Animations API)
   .card-showcase-wobble-layer {
     // Perspective comes from the parent .card-details container on mobile.
   }
 
-  .showcase-actions-overlay {
-    position: absolute;
-    top: $space-3;
-    right: $space-3;
-    z-index: 20;
-    pointer-events: auto;
-    touch-action: manipulation;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+  // Card Showcase Wrapper (showcase + footer)
+  .card-showcase-wrapper {
+    position: relative;
+    margin-bottom: $space-3;
 
     @media (max-width: $mobile-breakpoint) {
       .card-detail-drawer & {
-        right: calc(#{$space-3} + #{$space-1-5});
+        margin-left: $space-1-5;
+        margin-right: $space-1-5;
       }
+    }
+
+    .showcase-actions {
+      position: absolute;
+      top: $space-3;
+      right: $space-3;
+      z-index: 3;
+      transform: translateZ(10px);
     }
   }
 
-  // Card Showcase Wrapper (showcase + footer)
-  .card-showcase-wrapper {
-    margin-bottom: $space-3;
+  .card-showcase-motion-layer {
     border-radius: $radius-2xl;
     box-shadow: $shadow-sm;
     overflow: hidden;
@@ -51,13 +49,6 @@
 
     @media (max-width: $mobile-breakpoint) {
       box-shadow: $shadow-lg;
-    }
-
-    @media (max-width: $mobile-breakpoint) {
-      .card-detail-drawer & {
-        margin-left: $space-1-5;
-        margin-right: $space-1-5;
-      }
     }
   }
 
@@ -196,7 +187,6 @@
     font-weight: $font-medium;
     transition: all $transition-base;
     flex-shrink: 0;
-    touch-action: manipulation;
 
     @include hover {
       background-color: $neutral-light-gray;
@@ -713,13 +703,18 @@
 /* Mobile responsiveness */
 @media (max-width: $mobile-breakpoint) {
   .card-details {
-    perspective: 500px;
+    perspective: 800px;
 
     .card-showcase-wobble-layer {
+      transform-style: preserve-3d;
       animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
     }
 
     .card-showcase-wrapper {
+      transform-style: preserve-3d;
+    }
+
+    .card-showcase-motion-layer {
       overflow: visible;
       transform-style: preserve-3d;
       animation: cardFloat 10s ease-in-out 0.8s infinite;
@@ -843,13 +838,13 @@
     transform: rotateX(0deg) rotateY(0deg) translateY(0px);
   }
   25% {
-    transform: rotateX(3.5deg) rotateY(-2deg) translateY(-2px);
+    transform: rotateX(5deg) rotateY(-3deg) translateY(-3px);
   }
   50% {
-    transform: rotateX(-1.5deg) rotateY(3deg) translateY(0px);
+    transform: rotateX(-2.5deg) rotateY(4deg) translateY(-1px);
   }
   75% {
-    transform: rotateX(-2deg) rotateY(-1.5deg) translateY(-1px);
+    transform: rotateX(-3deg) rotateY(-2.5deg) translateY(-2px);
   }
 }
 
