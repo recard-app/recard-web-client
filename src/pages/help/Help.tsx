@@ -7,10 +7,12 @@ import { HelpSidebar } from './components';
 import { Icon } from '../../icons';
 import { ICON_GRAY } from '../../types';
 import { useFullHeight } from '../../hooks/useFullHeight';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
 import './Help.scss';
 
 const Help: React.FC = () => {
   useFullHeight(true);
+  const registerScrollContainer = useRegisterScrollContainer();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Close mobile sidebar when a nav item is clicked
@@ -21,7 +23,7 @@ const Help: React.FC = () => {
   return (
     <div className="full-page-layout">
       <PageHeader title={PAGE_NAMES.HELP_CENTER} icon={PAGE_ICONS.HELP_CENTER.MINI} />
-      <div className="full-page-content">
+      <div className="full-page-content" ref={registerScrollContainer}>
         <ContentContainer size="lg">
           <div className="help-layout">
             {/* Mobile toggle button */}

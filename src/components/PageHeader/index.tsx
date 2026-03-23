@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { TEMP_ICON, SHOW_HEADER_ICONS } from '../../types';
 import { IconRenderer } from '@/icons';
+import { usePageScroll } from '@/contexts/PageScrollContext';
 import './PageHeader.scss';
 
 interface PageHeaderProps {
@@ -21,6 +22,8 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   withActions = false,
   titleLink
 }) => {
+  const { isScrolledFromTop, hasHeaderControls } = usePageScroll();
+  const showShadow = isScrolledFromTop && !hasHeaderControls;
   const headerClasses = `page-header ${withActions ? 'page-header-with-actions' : ''}`;
 
   const titleContent = (
@@ -38,7 +41,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   );
 
   return (
-    <div className={headerClasses}>
+    <div className={headerClasses} data-scrolled={showShadow}>
       <div className="header-title-section">
         <h1>
           {titleLink ? (

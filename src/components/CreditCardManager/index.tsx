@@ -27,6 +27,7 @@ import Icon from '../../icons';
 import CardSwitcherDropdown, { CardSelectContent } from '../CardSwitcherDropdown';
 import HeaderControls from '../PageControls/HeaderControls';
 import FooterControls from '../PageControls/FooterControls';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +47,7 @@ interface CreditCardManagerProps {
 }
 
 const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, onOpenCardSelector, reloadTrigger, onPreferencesUpdate }) => {
+    const registerScrollContainer = useRegisterScrollContainer();
     const [userCards, setUserCards] = useState<CreditCard[]>([]);
     const [selectedCard, setSelectedCard] = useState<CreditCard | null>(null);
     const [cardDetails, setCardDetails] = useState<CreditCardDetails | null>(null);
@@ -604,7 +606,7 @@ const CreditCardManager: React.FC<CreditCardManagerProps> = ({ onCardsUpdate, on
             )}
 
             {/* Main content area for card details */}
-            <div className="card-details-panel">
+            <div className="card-details-panel" ref={registerScrollContainer}>
                 {loadError ? (
                     <ErrorWithRetry
                         message={loadError}

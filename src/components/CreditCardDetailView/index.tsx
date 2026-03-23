@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, CreditCard, EnrichedMultiplier, CardCredit, CardPerk, isRotatingMultiplier, isSelectableMultiplier } from '../../types/CreditCardTypes';
@@ -12,6 +12,7 @@ import { Icon, createIconVariant } from '../../icons';
 import { UserComponentService } from '../../services/UserServices';
 import { useCreditsByCardId, usePerksByCardId, useMultipliersByCardId, useComponents } from '../../contexts/useComponents';
 import { MultiplierBadge, CurrentCategoryDisplay, CategorySelector } from '../multipliers';
+import { useTapWobble } from '../../hooks/useTapWobble';
 import {
     Dialog,
     DialogContent,
@@ -221,6 +222,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
     const cardPerks = usePerksByCardId(cardDetails?.id || '');
     const cardMultipliers = useMultipliersByCardId(cardDetails?.id || '');
     const { updateMultiplierSelection } = useComponents();
+    const { wobbleRef, onWobble } = useTapWobble();
 
     const [componentPreferences, setComponentPreferences] = useState<UserComponentTrackingPreferences | null>(null);
     const [isLoadingPreferences, setIsLoadingPreferences] = useState(false);
@@ -442,6 +444,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
             {/* Overview sections: showcase, description, stats - hidden on mobile when non-overview tab active */}
             {(!hideInlineTabs || effectiveTab === 'overview') && (<>
             {/* Card Showcase Header */}
+            <div className="card-showcase-wobble-layer" ref={wobbleRef} onClick={onWobble}>
             <div className="card-showcase-wrapper">
             <div
                 className="card-showcase"
@@ -546,6 +549,7 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     <span className="meta-label">Network</span>
                     <span className="meta-value">{cardDetails.CardNetwork}</span>
                 </div>
+            </div>
             </div>
             </div>
 

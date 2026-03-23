@@ -12,7 +12,12 @@
   height: 52px;
   position: relative; // ensure stacking context
   z-index: 20; // above sidebar shadow
-  box-shadow: $container-shadow-bottom;
+  box-shadow: none;
+  transition: $shadow-scroll-transition;
+
+  &[data-scrolled="true"] {
+    box-shadow: $container-shadow-bottom;
+  }
 
   .header-title-section {
     display: flex;

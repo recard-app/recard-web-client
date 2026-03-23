@@ -13,9 +13,9 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    gap: 60px;
+    gap: 40px;
     flex-wrap: wrap;
-    padding: 40px;
+    padding: 40px 20px 60px;
   }
 
   .demo-column {
@@ -47,9 +47,10 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     overflow: hidden;
     border: 1px solid #e0e0e0;
-    width: 320px;
+    width: 300px;
     transform-style: preserve-3d;
     will-change: transform;
+    cursor: pointer;
   }
 
   .card-showcase {
@@ -125,25 +126,55 @@
     font-weight: 600;
   }
 
-  /* ========================================
-     Option E: Launch entrance + idle float
-     ======================================== */
-
-  /* Entrance: card starts tilted and scaled down, springs into place */
-  .option-e .card-showcase-wrapper {
-    animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards,
-               cardFloat 10s ease-in-out 0.8s infinite;
+  /* A: Press Tilt */
+  .option-a .card-showcase-wrapper {
+    transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease;
+  }
+  .option-a .card-showcase-wrapper:active {
+    transform: rotateX(4deg) rotateY(-2deg) scale(0.98);
+    box-shadow: 0 4px 20px rgba(200, 0, 0, 0.12);
   }
 
-  @keyframes cardEntrance {
-    0% {
-      opacity: 0;
-      transform: rotateX(8deg) rotateY(-5deg) scale(0.92) translateY(20px);
-    }
-    100% {
-      opacity: 1;
-      transform: rotateX(0deg) rotateY(0deg) scale(1) translateY(0px);
-    }
+  /* B: Mouse Follow (JS-driven) */
+  .option-b .card-showcase-wrapper {
+    transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+  }
+
+  /* C: Click Tilt */
+  .option-c .card-showcase-wrapper {
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.6s ease;
+  }
+  .option-c .card-showcase-wrapper.flipped {
+    transform: rotateY(8deg) rotateX(-3deg) scale(1.02);
+    box-shadow: -8px 8px 24px rgba(200, 0, 0, 0.15);
+  }
+
+  /* D: Tap Wobble */
+  .option-d .card-showcase-wrapper.wobble {
+    animation: wobbleTilt 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  @keyframes wobbleTilt {
+    0%   { transform: rotateX(0deg) rotateY(0deg); }
+    20%  { transform: rotateX(3deg) rotateY(-4deg) scale(0.98); }
+    50%  { transform: rotateX(-2deg) rotateY(2deg) scale(1.01); }
+    75%  { transform: rotateX(1deg) rotateY(-1deg); }
+    100% { transform: rotateX(0deg) rotateY(0deg); }
+  }
+
+  /* E: Float + Wobble combo */
+  .option-e .card-showcase-outer {
+    perspective: 800px;
+  }
+  .option-e .card-showcase-wobble-layer {
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .option-e .card-showcase-wobble-layer.wobbling {
+    transition: none;
+  }
+  .option-e .card-showcase-wrapper {
+    animation: cardFloat 10s ease-in-out infinite;
   }
 
   @keyframes cardFloat {
@@ -151,28 +182,14 @@
       transform: rotateX(0deg) rotateY(0deg) translateY(0px);
     }
     25% {
-      transform: rotateX(1.5deg) rotateY(-1deg) translateY(-2px);
+      transform: rotateX(2.5deg) rotateY(-1.5deg) translateY(-2px);
     }
     50% {
-      transform: rotateX(-0.5deg) rotateY(1.5deg) translateY(0px);
+      transform: rotateX(-1deg) rotateY(2deg) translateY(0px);
     }
     75% {
-      transform: rotateX(-1deg) rotateY(-0.5deg) translateY(-1px);
+      transform: rotateX(-1.5deg) rotateY(-1deg) translateY(-1px);
     }
-  }
-
-  /* ========================================
-     Option F: Continuous float only (no entrance)
-     ======================================== */
-  .option-f .card-showcase-wrapper {
-    animation: cardFloat 10s ease-in-out infinite;
-  }
-
-  /* ========================================
-     Option G: Launch entrance only (no idle)
-     ======================================== */
-  .option-g .card-showcase-wrapper {
-    animation: cardEntrance 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
   }
 
   .instructions {
@@ -188,56 +205,19 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     white-space: nowrap;
   }
-
-  .replay-btn {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 6px 14px;
-    font-size: 12px;
-    font-weight: 600;
-    color: #666;
-    background: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  .replay-btn:active { background: #e0e0e0; }
 </style>
 </head>
 <body>
 
-<!-- Option E: Entrance + Float -->
-<div class="demo-column option-e">
-  <span class="demo-label">Entrance + Float</span>
-  <span class="demo-sublabel">Swoops in on load, then gently floats forever</span>
-  <div class="card-showcase-wrapper" id="entranceFloat">
-    <div class="card-showcase">
-      <div class="showcase-identity">
-        <div class="card-icon"><div class="card-icon-inner"></div></div>
-        <div class="showcase-info">
-          <h2>Bank of America Customized Cash Rewards</h2>
-        </div>
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="meta-item"><span class="meta-label">Issuer</span><span class="meta-value">Bank of America</span></div>
-      <div class="meta-item"><span class="meta-label">Network</span><span class="meta-value">Visa</span></div>
-    </div>
-  </div>
-  <button class="replay-btn" onclick="replay('entranceFloat', 'option-e')">Replay entrance</button>
-</div>
-
-<!-- Option F: Float only -->
-<div class="demo-column option-f">
-  <span class="demo-label">Float Only</span>
-  <span class="demo-sublabel">Continuous gentle rocking, no entrance animation</span>
+<!-- A: Press Tilt -->
+<div class="demo-column option-a">
+  <span class="demo-label">A: Press Tilt</span>
+  <span class="demo-sublabel">Hold/press to tilt, releases on let go</span>
   <div class="card-showcase-wrapper">
     <div class="card-showcase">
       <div class="showcase-identity">
         <div class="card-icon"><div class="card-icon-inner"></div></div>
-        <div class="showcase-info">
-          <h2>Bank of America Customized Cash Rewards</h2>
-        </div>
+        <div class="showcase-info"><h2>Bank of America Customized Cash Rewards</h2></div>
       </div>
     </div>
     <div class="card-footer">
@@ -247,17 +227,15 @@
   </div>
 </div>
 
-<!-- Option G: Entrance only -->
-<div class="demo-column option-g">
-  <span class="demo-label">Entrance Only</span>
-  <span class="demo-sublabel">Swoops in once, then stays still</span>
-  <div class="card-showcase-wrapper" id="entranceOnly">
+<!-- B: Mouse/Touch Follow -->
+<div class="demo-column option-b">
+  <span class="demo-label">B: Mouse/Touch Follow</span>
+  <span class="demo-sublabel">Card tilts to follow cursor or finger position</span>
+  <div class="card-showcase-wrapper" id="mouseFollow">
     <div class="card-showcase">
       <div class="showcase-identity">
         <div class="card-icon"><div class="card-icon-inner"></div></div>
-        <div class="showcase-info">
-          <h2>Bank of America Customized Cash Rewards</h2>
-        </div>
+        <div class="showcase-info"><h2>Bank of America Customized Cash Rewards</h2></div>
       </div>
     </div>
     <div class="card-footer">
@@ -265,25 +243,132 @@
       <div class="meta-item"><span class="meta-label">Network</span><span class="meta-value">Visa</span></div>
     </div>
   </div>
-  <button class="replay-btn" onclick="replay('entranceOnly', 'option-g')">Replay entrance</button>
 </div>
 
-<div class="instructions">Watch the cards -- entrance plays on load, float runs continuously</div>
+<!-- C: Click Tilt -->
+<div class="demo-column option-c">
+  <span class="demo-label">C: Click Tilt</span>
+  <span class="demo-sublabel">Toggles a tilted perspective on tap</span>
+  <div class="card-showcase-wrapper" id="clickFlip">
+    <div class="card-showcase">
+      <div class="showcase-identity">
+        <div class="card-icon"><div class="card-icon-inner"></div></div>
+        <div class="showcase-info"><h2>Bank of America Customized Cash Rewards</h2></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-item"><span class="meta-label">Issuer</span><span class="meta-value">Bank of America</span></div>
+      <div class="meta-item"><span class="meta-label">Network</span><span class="meta-value">Visa</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- D: Tap Wobble -->
+<div class="demo-column option-d">
+  <span class="demo-label">D: Tap Wobble</span>
+  <span class="demo-sublabel">Spring wobble animation on each tap</span>
+  <div class="card-showcase-wrapper" id="wobbleCard">
+    <div class="card-showcase">
+      <div class="showcase-identity">
+        <div class="card-icon"><div class="card-icon-inner"></div></div>
+        <div class="showcase-info"><h2>Bank of America Customized Cash Rewards</h2></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="meta-item"><span class="meta-label">Issuer</span><span class="meta-value">Bank of America</span></div>
+      <div class="meta-item"><span class="meta-label">Network</span><span class="meta-value">Visa</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- E: Float + Wobble Combo -->
+<div class="demo-column option-e">
+  <span class="demo-label">E: Float + Tap Wobble</span>
+  <span class="demo-sublabel">Continuously floats AND wobbles on tap. Two layers so they don't conflict.</span>
+  <div class="card-showcase-outer">
+    <div class="card-showcase-wobble-layer" id="comboWobble">
+      <div class="card-showcase-wrapper">
+        <div class="card-showcase">
+          <div class="showcase-identity">
+            <div class="card-icon"><div class="card-icon-inner"></div></div>
+            <div class="showcase-info"><h2>Bank of America Customized Cash Rewards</h2></div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="meta-item"><span class="meta-label">Issuer</span><span class="meta-value">Bank of America</span></div>
+          <div class="meta-item"><span class="meta-label">Network</span><span class="meta-value">Visa</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="instructions">Click / hold / hover each card -- E combines float + wobble on tap</div>
 
 <script>
-  // Replay entrance animation
-  function replay(id, className) {
-    const el = document.getElementById(id);
-    const col = el.closest('.demo-column');
-    // Remove class to reset animation
-    col.classList.remove(className);
-    el.style.animation = 'none';
-    el.style.opacity = '0';
-    void el.offsetWidth; // force reflow
-    el.style.animation = '';
-    el.style.opacity = '';
-    col.classList.add(className);
-  }
+  // B: Mouse/Touch follow
+  const followEl = document.getElementById('mouseFollow');
+
+  followEl.addEventListener('mousemove', (e) => {
+    const rect = followEl.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    followEl.style.transform = `rotateY(${x * 10}deg) rotateX(${-y * 10}deg)`;
+    followEl.style.boxShadow = `${-x * 12}px ${y * 12}px 24px rgba(200,0,0,0.1)`;
+  });
+
+  followEl.addEventListener('mouseleave', () => {
+    followEl.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    followEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+  });
+
+  followEl.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    const rect = followEl.getBoundingClientRect();
+    const x = (touch.clientX - rect.left) / rect.width - 0.5;
+    const y = (touch.clientY - rect.top) / rect.height - 0.5;
+    followEl.style.transform = `rotateY(${x * 10}deg) rotateX(${-y * 10}deg)`;
+    e.preventDefault();
+  }, { passive: false });
+
+  followEl.addEventListener('touchend', () => {
+    followEl.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    followEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+  });
+
+  // C: Click flip toggle
+  const flipEl = document.getElementById('clickFlip');
+  flipEl.addEventListener('click', () => {
+    flipEl.classList.toggle('flipped');
+  });
+
+  // D: Wobble on click
+  const wobbleEl = document.getElementById('wobbleCard');
+  wobbleEl.addEventListener('click', () => {
+    wobbleEl.classList.remove('wobble');
+    void wobbleEl.offsetWidth;
+    wobbleEl.classList.add('wobble');
+  });
+  wobbleEl.addEventListener('animationend', () => {
+    wobbleEl.classList.remove('wobble');
+  });
+
+  // E: Float + Wobble combo (JS-driven wobble on outer layer, CSS float on inner)
+  const comboEl = document.getElementById('comboWobble');
+  const wobbleKeyframes = [
+    { offset: 0,    transform: 'rotateX(0deg) rotateY(0deg)' },
+    { offset: 0.2,  transform: 'rotateX(3deg) rotateY(-4deg) scale(0.98)' },
+    { offset: 0.5,  transform: 'rotateX(-2deg) rotateY(2deg) scale(1.01)' },
+    { offset: 0.75, transform: 'rotateX(1deg) rotateY(-1deg)' },
+    { offset: 1,    transform: 'rotateX(0deg) rotateY(0deg)' },
+  ];
+
+  comboEl.addEventListener('click', () => {
+    comboEl.animate(wobbleKeyframes, {
+      duration: 1200,
+      easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
+    });
+  });
 </script>
 </body>
 </html>

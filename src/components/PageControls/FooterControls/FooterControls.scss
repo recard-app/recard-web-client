@@ -4,7 +4,12 @@
   padding: $space-2;
   background: $neutral-white;
   border-top: $border-full solid $neutral-light-gray;
-  box-shadow: $container-shadow-top-bigger;
+  box-shadow: none;
+  transition: $shadow-scroll-transition;
+
+  &[data-has-overflow="true"] {
+    box-shadow: $container-shadow-top-bigger;
+  }
   flex-shrink: 0;
   position: relative;
   z-index: 2;

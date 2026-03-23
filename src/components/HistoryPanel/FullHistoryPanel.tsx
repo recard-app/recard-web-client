@@ -24,6 +24,7 @@ import {
   PaginationPrevious,
 } from '../ui/pagination';
 import FooterControls from '@/components/PageControls/FooterControls';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
  
 
 // Define the page size limit as a constant
@@ -48,6 +49,7 @@ function FullHistoryPanel({
   historyRefreshTrigger
 }: FullHistoryPanelProps) {
   const { user } = useAuth();
+  const registerScrollContainer = useRegisterScrollContainer();
   // Use scroll height for this component's scrollable area
   useScrollHeight(true);
 
@@ -273,7 +275,7 @@ function FullHistoryPanel({
   return (
     <div className="history-panel full-history">
       {/* Scrollable content area */}
-      <div className="history-panel-content">
+      <div className="history-panel-content" ref={registerScrollContainer}>
         {fetchError ? (
           <ErrorWithRetry
             message={fetchError}

@@ -15,7 +15,7 @@
   display: none;
   align-items: center;
   justify-content: space-between;
-  transition: box-shadow $transition-base;
+  transition: $shadow-scroll-transition;
 
   .mobile-header__title {
     font-size: $font-h6;
@@ -155,11 +155,7 @@
 @media (max-width: $mobile-breakpoint) {
   .mobile-header {
     display: flex; // show on mobile
-    box-shadow: $container-shadow-bottom; // static shadow for non-chat pages
-
-    &.chat-page {
-      box-shadow: none; // no shadow at top on chat pages
-    }
+    box-shadow: none; // no shadow by default; scroll-dependent on all pages
 
     &.header-scrolled {
       box-shadow: $container-shadow-bottom-bigger; // shadow when scrolled
@@ -217,7 +213,7 @@
     border-bottom: $border-full solid $neutral-light-gray;
     position: relative;
     z-index: 1;
-    transition: box-shadow $transition-base;
+    transition: $shadow-scroll-transition;
 
     &.scrolled {
       box-shadow: $container-shadow-bottom-bigger;
@@ -419,7 +415,7 @@
     background: $neutral-white;
     position: relative;
     z-index: 1;
-    transition: box-shadow $transition-base;
+    transition: $shadow-scroll-transition;
 
     &.scrolled {
       box-shadow: $container-shadow-top-bigger;

@@ -4,6 +4,7 @@ import { Drawer } from 'vaul';
 import { APP_NAME, PAGE_NAMES, PAGES, DROPDOWN_ICONS, PLAN_DISPLAY_TEXT, SIDEBAR_TOGGLE_ICON_COLOR, ICON_GRAY, ICON_PRIMARY, ICON_PRIMARY_MEDIUM, SIDEBAR_INACTIVE_ICON_COLOR, PageUtils, MY_CARDS_IN_ACCOUNT_MENU, MY_CARDS_DROPDOWN_LABEL, MY_CREDITS_BEFORE_MY_CARDS, MOBILE_SEE_ALL_CHATS_LINK, SUBSCRIPTION_PLAN, COLORS } from '../../types';
 import { WARNING } from '../../types/Colors';
 import { Icon } from '../../icons';
+import { usePageScroll } from '@/contexts/PageScrollContext';
 import { HistoryPanelPreview } from '../HistoryPanel';
 import CreditCardPreviewList from '../CreditCardPreviewList';
 import CreditList from '../CreditsDisplay/CreditList';
@@ -51,7 +52,6 @@ interface MobileHeaderProps {
   onAddUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   onRemoveUpdatingCreditId?: (cardId: string, creditId: string, periodNumber: number) => void;
   isCreditUpdating?: (cardId: string, creditId: string, periodNumber: number) => boolean;
-  isChatScrolled?: boolean;
 }
 
 const MobileHeader: React.FC<MobileHeaderProps> = ({
@@ -81,9 +81,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
   onAddUpdatingCreditId,
   onRemoveUpdatingCreditId,
   isCreditUpdating,
-  isChatScrolled = false
 }) => {
   const location = useLocation();
+  const { isScrolledFromTop, hasHeaderControls } = usePageScroll();
   const navigate = useNavigate();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [drawerBodyEl, setDrawerBodyEl] = useState<HTMLDivElement | null>(null);
@@ -351,7 +351,7 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
 
   return (
     <>
-      <header className={`mobile-header${isHomeOrChatRoute(location.pathname) ? ' chat-page' : ''}${isHomeOrChatRoute(location.pathname) && isChatScrolled ? ' header-scrolled' : ''}`} role="banner">
+      <header className={`mobile-header${isScrolledFromTop && !hasHeaderControls ? ' header-scrolled' : ''}`} role="banner">
         <Drawer.Root direction="left" open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <div className="mobile-header__left">
             <Drawer.Trigger asChild>

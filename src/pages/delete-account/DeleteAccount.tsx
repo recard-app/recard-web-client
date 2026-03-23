@@ -17,6 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../../components/ui/dialog/alert-dialog';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
 import './DeleteAccount.scss';
 
 const DELETION_REASONS = [
@@ -33,6 +34,7 @@ const DeleteAccount: React.FC = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
   useFullHeight(true);
+  const registerScrollContainer = useRegisterScrollContainer();
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
@@ -153,7 +155,7 @@ const DeleteAccount: React.FC = () => {
   return (
     <div className="full-page-layout">
       <PageHeader title="Delete Account" icon={PAGE_ICONS.DELETE_ACCOUNT.MINI} />
-      <div className="full-page-content">
+      <div className="full-page-content" ref={registerScrollContainer}>
         <ContentContainer size="sm">
           <section className="danger-zone">
             <h2 className="danger-zone__title">Danger Zone</h2>

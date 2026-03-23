@@ -30,6 +30,7 @@ import {
   DialogBody,
   DialogFooter,
 } from '../../components/ui/dialog/dialog';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
 import './Account.scss';
 
 interface AccountProps {
@@ -66,6 +67,7 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
   const { canShow: canShowInstall, platform, promptInstall, markDismissed } = usePWAInstall();
 
   useFullHeight(true);
+  const registerScrollContainer = useRegisterScrollContainer();
 
   const handleVerificationEmailClick = async (): Promise<void> => {
     const result = await handleVerificationEmailUtil(sendVerificationEmail);
@@ -216,9 +218,9 @@ const Account: React.FC<AccountProps> = ({ subscriptionPlan, subscriptionStatus,
   };
 
   return (
-    <div className="full-page-layout">
+    <div className="full-page-layout account-page">
       <PageHeader title={PAGE_NAMES.MY_ACCOUNT} icon={PAGE_ICONS.MY_ACCOUNT.MINI} />
-      <div className="full-page-content">
+      <div className="full-page-content" ref={registerScrollContainer}>
         <ContentContainer size="sm">
           {user ? (
             <div className="account-wrapper">

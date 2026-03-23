@@ -3,6 +3,10 @@
 .legal-page {
   padding: $space-6 0 $space-8;
 
+  @media (max-width: $mobile-breakpoint) {
+    padding: $space-3 0 $space-6;
+  }
+
   &__nav {
     margin-bottom: $space-6;
   }

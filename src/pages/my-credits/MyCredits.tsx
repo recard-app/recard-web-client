@@ -13,6 +13,7 @@ import { Skeleton } from '../../components/ui/skeleton';
 import HeaderControls from '@/components/PageControls/HeaderControls';
 import CreditSummary from '../../components/CreditSummary';
 import CreditsTabFooter from '@/components/PageControls/CreditsTabFooter';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import { useEdgeToEdge } from '../../hooks/useEdgeToEdge';
 import { useComponents } from '../../contexts/useComponents';
@@ -49,6 +50,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
   useFullHeight(true);
   useEdgeToEdge(true);
 
+  const registerScrollContainer = useRegisterScrollContainer();
   const [userCards, setUserCards] = useState<CreditCardDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -259,7 +261,7 @@ const MyCredits: React.FC<MyCreditsProps> = ({
               onDetailedSummaryClick={onDetailedSummaryClick}
             />
           </HeaderControls>
-          <div className="credits-history-content">
+          <div className="credits-history-content" ref={registerScrollContainer}>
             {loadError ? (
               <ErrorWithRetry
                 message={loadError}

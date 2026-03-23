@@ -15,6 +15,11 @@
 .card-details {
   text-align: left;
 
+  // Wobble layer (outer wrapper for tap wobble via Web Animations API)
+  .card-showcase-wobble-layer {
+    perspective: 800px;
+  }
+
   // Card Showcase Wrapper (showcase + footer)
   .card-showcase-wrapper {
     margin-bottom: $space-3;

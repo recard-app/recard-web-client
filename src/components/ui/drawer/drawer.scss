@@ -8,7 +8,7 @@
   position: relative;
   z-index: 11;
   background: $neutral-white;
-  transition: box-shadow 0.15s ease;
+  transition: $shadow-scroll-transition;
 }
 
 // Shadow below handle area when content is scrolled from top
@@ -210,7 +210,7 @@
 // Smooth transition for drawer footers
 [data-slot="drawer-footer"],
 [data-slot="drawer-content"] .dialog-footer {
-  transition: box-shadow 0.15s ease;
+  transition: $shadow-scroll-transition;
 }
 
 // Shadow above footer when there is more content to scroll

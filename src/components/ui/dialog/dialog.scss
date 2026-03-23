@@ -158,7 +158,7 @@
   flex-direction: column;
   gap: $space-3;
   flex-shrink: 0; // Prevent footer from shrinking
-  transition: box-shadow 0.15s ease;
+  transition: $shadow-scroll-transition;
   
   // InfoDisplay styling - appears first (above buttons)
   .info-component {

@@ -5,6 +5,8 @@ import PageHeader from '../../components/PageHeader';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import { PAGE_NAMES, PAGE_ICONS } from '../../types';
 import ContentContainer from '../../components/ContentContainer';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
+import './Preferences.scss';
 
 interface PreferencesProps {
     preferencesInstructions: InstructionsPreference;
@@ -25,14 +27,15 @@ const Preferences: React.FC<PreferencesProps> = ({
 }) => {
     // Use the full height hook to prevent double scroll
     useFullHeight(true);
+    const registerScrollContainer = useRegisterScrollContainer();
 
     return (
-        <div className="full-page-layout">
+        <div className="full-page-layout preferences-page">
             <PageHeader
                 title={PAGE_NAMES.PREFERENCES}
                 icon={PAGE_ICONS.PREFERENCES.MINI}
             />
-            <div className="full-page-content">
+            <div className="full-page-content" ref={registerScrollContainer}>
                 <ContentContainer size="md">
                     <PreferencesModule
                         customInstructions={preferencesInstructions}

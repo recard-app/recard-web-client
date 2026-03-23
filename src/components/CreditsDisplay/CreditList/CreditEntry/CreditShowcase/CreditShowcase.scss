@@ -1,6 +1,11 @@
 @use '../../../../../styling/variables' as *;
 @use '../../../../../styling/mixins' as *;
 
+// Wobble layer (outer wrapper for tap wobble via Web Animations API)
+.credit-showcase-wobble-layer {
+  perspective: 800px;
+}
+
 // Credit Showcase Wrapper (showcase + footer)
 .credit-showcase-wrapper {
   margin-bottom: $space-3;

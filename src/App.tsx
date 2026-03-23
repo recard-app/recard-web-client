@@ -60,6 +60,7 @@ import RedirectIfAuthenticated from './context/RedirectIfAuthenticated';
 import { ComponentsProvider } from './contexts/ComponentsContext';
 import { useComponents } from './contexts/useComponents';
 import { CreditDrawerProvider, CreditDrawerBridge } from './contexts/CreditDrawerContext';
+import { PageScrollProvider } from './contexts/PageScrollContext';
 import CreditCardDetailView from './components/CreditCardDetailView';
 import { CARD_TABS } from './components/CreditCardDetailView/cardTabs';
 import type { TabType } from './components/CreditCardDetailView/cardTabs';
@@ -222,7 +223,6 @@ function AppContent({}: AppContentProps) {
   const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState<string | null>(null);
   // State to trigger chat clearing functionality
   const [clearChatCallback, setClearChatCallback] = useState<number>(0);
-  const [isChatScrolled, setIsChatScrolled] = useState(false);
   // State for storing user preferences instructions
   const [preferencesInstructions, setPreferencesInstructions] = useState<InstructionsPreference>('');
   // State for managing chat history preference (keep/clear)
@@ -1382,7 +1382,6 @@ function AppContent({}: AppContentProps) {
               digestLoading={digestLoading}
               onRegenerateDigest={handleRegenerateDigest}
               isRegeneratingDigest={isRegeneratingDigest}
-              onChatScrolledChange={setIsChatScrolled}
               onHistoryRefresh={handleHistoryRefresh}
             />
           </div>
@@ -1423,6 +1422,7 @@ function AppContent({}: AppContentProps) {
           )}
 
           {/* Check if current route is an auth page (no sidebar/nav should show) */}
+          <PageScrollProvider key={location.pathname}>
           {(() => {
             return (
               <>
@@ -1460,7 +1460,6 @@ function AppContent({}: AppContentProps) {
                 {user && !isAuthRoute && !isDesignSystemPage && !isOnboardingRoute && (
                   <MobileHeader
                     title={PageUtils.getTitleByPath(location.pathname) || APP_NAME}
-                    isChatScrolled={isChatScrolled}
                     onLogout={handleLogout}
                     chatHistory={chatHistory}
                     currentChatId={currentChatId}
@@ -1826,6 +1825,7 @@ function AppContent({}: AppContentProps) {
             );
           })()
           )}
+          </PageScrollProvider>
         </div>
         </CreditDrawerProvider>
       </ScrollHeightContext.Provider>

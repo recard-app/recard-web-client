@@ -87,8 +87,6 @@
 
   // Default behavior for regular pages (scrollable)
   &:not(.full-height) {
-    // Fill the remaining space beneath the header within the flex column app shell
-    min-height: 100%;
     overflow-y: auto;
   }
 }

@@ -16,6 +16,7 @@ import {
   AlertDialogTitle,
 } from '../../components/ui/dialog/alert-dialog';
 import { ChatHistory } from '../../types';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
 import './DeleteHistory.scss';
 
 interface DeleteHistoryProps {
@@ -25,6 +26,7 @@ interface DeleteHistoryProps {
 
 const DeleteHistory: React.FC<DeleteHistoryProps> = ({ setChatHistory, setHistoryRefreshTrigger }) => {
   useFullHeight(true);
+  const registerScrollContainer = useRegisterScrollContainer();
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -60,7 +62,7 @@ const DeleteHistory: React.FC<DeleteHistoryProps> = ({ setChatHistory, setHistor
   return (
     <div className="full-page-layout">
       <PageHeader title="Delete History" icon={PAGE_ICONS.DELETE_HISTORY.MINI} />
-      <div className="full-page-content">
+      <div className="full-page-content" ref={registerScrollContainer}>
         <ContentContainer size="sm">
           <section className="danger-zone">
             <h2 className="danger-zone__title">Danger Zone</h2>

@@ -4,6 +4,7 @@ import { UserCredit } from '../../../../../types';
 import { CreditCard, CardCredit } from '../../../../../types/CreditCardTypes';
 import { CardIcon } from '../../../../../icons';
 import { formatCreditDollars } from '../utils';
+import { useTapWobble } from '../../../../../hooks/useTapWobble';
 
 interface CreditShowcaseProps {
   card: CreditCard | null;
@@ -25,6 +26,8 @@ const CreditShowcase: React.FC<CreditShowcaseProps> = ({
   const timePeriod = cardCredit?.TimePeriod ?? userCredit.AssociatedPeriod;
   const value = cardCredit?.Value ?? 0;
 
+  const { wobbleRef, onWobble } = useTapWobble();
+
   const totalUsed = userCredit.History.reduce(
     (sum: number, h: any) => sum + (h.ValueUsed || 0),
     0
@@ -41,6 +44,7 @@ const CreditShowcase: React.FC<CreditShowcaseProps> = ({
     : undefined;
 
   return (
+    <div className="credit-showcase-wobble-layer" ref={wobbleRef} onClick={onWobble}>
     <div className="credit-showcase-wrapper">
       <div className="credit-showcase" style={showcaseStyle}>
         <div className="showcase-identity">
@@ -75,6 +79,7 @@ const CreditShowcase: React.FC<CreditShowcaseProps> = ({
           <span className="meta-value">{formatCreditDollars(totalUsed)} / {formatCreditDollars(totalPossible)}</span>
         </div>
       </div>
+    </div>
     </div>
   );
 };

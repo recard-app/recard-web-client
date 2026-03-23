@@ -1,6 +1,11 @@
 @use '../../styling/globals' as *;
 @use '../../styling/mixins' as *;
 
+// Account page background
+.account-page .full-page-content {
+  background-color: $neutral-lightest-gray;
+}
+
 // Account layout
 .account-wrapper {
   display: flex;

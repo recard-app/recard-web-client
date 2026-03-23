@@ -8,6 +8,7 @@ import { InfoDisplay, ErrorWithRetry } from '@/elements';
 import CreditPortfolioSkeleton from '../CreditPortfolioSkeleton';
 import { buildYearOptions } from '@/pages/my-credits/utils';
 import HeaderControls from '@/components/PageControls/HeaderControls';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
 import YearDropdown from '../YearDropdown';
 import CreditCardAccordion from '../CreditCardAccordion';
 import { useCreditDrawer } from '@/contexts/useCreditDrawer';
@@ -128,6 +129,13 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
 
   // Scroll container ref for preserving scroll position during year changes
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const registerScrollContainer = useRegisterScrollContainer();
+
+  // Callback ref that sets both the local ref and registers with page scroll context
+  const scrollContainerCallbackRef = useCallback((node: HTMLDivElement | null) => {
+    scrollContainerRef.current = node;
+    registerScrollContainer(node);
+  }, [registerScrollContainer]);
   const savedScrollPosition = useRef<number>(0);
 
   // Build credit metadata map from context credits
@@ -474,7 +482,7 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
       </HeaderControls>
 
       {/* Scrollable content area */}
-      <div ref={scrollContainerRef} className="portfolio-content">
+      <div ref={scrollContainerCallbackRef} className="portfolio-content">
         <div className="card-accordions">
           {displayCards.map(card => (
             <CreditCardAccordion

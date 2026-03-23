@@ -4,6 +4,7 @@ import { PAGES, PAGE_NAMES, PAGE_ICONS } from '../../types';
 import { useAuth } from '../../context/useAuth';
 import ContentContainer from '../../components/ContentContainer';
 import PageHeader from '../../components/PageHeader';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
 import './LegalPageLayout.scss';
 
 interface LegalPageLayoutProps {
@@ -16,6 +17,7 @@ interface LegalPageLayoutProps {
 const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, lastUpdated, children, pageNameKey }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const registerScrollContainer = useRegisterScrollContainer();
 
   useEffect(() => {
     const scrollContainer = document.querySelector('.universal-content-wrapper');
@@ -36,11 +38,13 @@ const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, lastUpdated, c
 
   const content = (
     <ContentContainer size="md">
-      <nav className="legal-page__nav">
-        <button type="button" className="legal-page__back-link" onClick={handleBack}>
-          &larr; Back
-        </button>
-      </nav>
+      {!user && (
+        <nav className="legal-page__nav">
+          <button type="button" className="legal-page__back-link" onClick={handleBack}>
+            &larr; Back
+          </button>
+        </nav>
+      )}
       {!user && <h1 className="legal-page__title">{title}</h1>}
       <div className="help-content">
         {children}
@@ -56,7 +60,7 @@ const LegalPageLayout: React.FC<LegalPageLayoutProps> = ({ title, lastUpdated, c
           title={PAGE_NAMES[pageNameKey]}
           icon={PAGE_ICONS[pageNameKey].MINI}
         />
-        <div className="full-page-content">
+        <div className="full-page-content" ref={registerScrollContainer}>
           <div className="legal-page">
             {content}
           </div>

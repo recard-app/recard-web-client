@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import { useAgentChat } from '../../hooks/useAgentChat';
-import { useScrolledFromTop } from '../../hooks/useScrolledFromTop';
+import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
 
 import PromptHistory from './PromptHistory';
 import PromptField from './PromptField';
@@ -73,8 +73,6 @@ interface PromptWindowProps {
     onRegenerateDigest?: () => void;
     /** Whether digest is currently being regenerated */
     isRegeneratingDigest?: boolean;
-    /** Callback fired when the chat scroll state changes (scrolled from top or not) */
-    onChatScrolledChange?: (isScrolled: boolean) => void;
     /** Callback to refresh the sidebar history list (picks up new titles + status) */
     onHistoryRefresh?: () => void;
 }
@@ -103,14 +101,18 @@ function PromptWindow({
     digestLoading = false,
     onRegenerateDigest,
     isRegeneratingDigest = false,
-    onChatScrolledChange,
     onHistoryRefresh,
 }: PromptWindowProps) {
     const { chatId: urlChatId } = useParams<{ chatId: string }>();
     const navigate = useNavigate();
     const location = useLocation();
     const promptHistoryRef = useRef<HTMLDivElement>(null);
-    useScrolledFromTop(promptHistoryRef, onChatScrolledChange);
+    const registerScrollContainer = useRegisterScrollContainer();
+
+    // Register the chat scroll container with the page scroll context
+    useEffect(() => {
+        registerScrollContainer(promptHistoryRef.current);
+    }, [registerScrollContainer]);
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
     // Ref to track when we're intentionally clearing the chat (prevents loading effects from restoring)
     const isClearingRef = useRef<boolean>(false);
@@ -1378,11 +1380,7 @@ function PromptWindow({
 
     // Reset scroll state when welcome screen is active (no scrollable content)
     const isWelcomeActive = isNewChat && chatHistory.length === 0 && !streamingState?.isStreaming && !chatLoadError;
-    useEffect(() => {
-        if (isWelcomeActive) {
-            onChatScrolledChange?.(false);
-        }
-    }, [isWelcomeActive, onChatScrolledChange]);
+    // When welcome screen activates, scroll resets naturally (no content to scroll)
 
     const currentChatStreamingStatus = existingHistoryList.find(c => c.chatId === chatId)?.streamingStatus;
     const isWaitingForResponse = !isProcessing
