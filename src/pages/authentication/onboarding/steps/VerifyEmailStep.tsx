@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { useAuth } from '../../../../context/useAuth';
 import { RefreshButton } from '../../../../components/RefreshButton';
 import { InfoDisplay } from '../../../../elements';
@@ -16,6 +17,9 @@ const VerifyEmailStep: React.FC = () => {
     try {
       await sendVerificationEmail();
       setHasSent(true);
+      toast.success('Verification email sent. Check your inbox.');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send verification email. Please try again later.');
     } finally {
       setIsSending(false);
     }

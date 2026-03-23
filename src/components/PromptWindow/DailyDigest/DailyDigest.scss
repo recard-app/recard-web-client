@@ -1,6 +1,12 @@
 @use '../../../styling/globals' as *;
 @use '../../../styling/mixins' as *;
 
+@property --digest-glow-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
 .daily-digest {
     @include card-base;
     margin-top: $space-4;
@@ -11,6 +17,20 @@
     border: $border-full solid $primary-light;
     display: flex;
     flex-direction: column;
+
+    &--loading {
+        border: $border-full solid transparent;
+        background:
+            linear-gradient($neutral-white, $neutral-white) padding-box,
+            conic-gradient(
+                from var(--digest-glow-angle),
+                $primary-lightest 0%,
+                $primary-color 20%,
+                $primary-lightest 40%,
+                $primary-lightest 100%
+            ) border-box;
+        animation: digest-glow-rotate 3s linear infinite, digest-glow-pulse 3s ease-in-out infinite;
+    }
 
     &__header {
         display: flex;
@@ -53,7 +73,7 @@
 
         ul {
             margin: $space-1 0;
-            padding-left: $space-4;
+            padding-left: $space-6;
             list-style-type: disc;
         }
 
@@ -72,6 +92,13 @@
                 margin-bottom: 0;
             }
         }
+    }
+
+    &__skeleton-bars {
+        display: flex;
+        flex-direction: column;
+        gap: $space-2;
+        padding: $space-3;
     }
 
     &__footer {
@@ -115,5 +142,20 @@
         &__footer {
             padding: $space-1 $space-2;
         }
+    }
+}
+
+@keyframes digest-glow-rotate {
+    to {
+        --digest-glow-angle: 360deg;
+    }
+}
+
+@keyframes digest-glow-pulse {
+    0%, 100% {
+        box-shadow: 0 0 8px rgba($primary-color, 0.08), 0 0 2px rgba($primary-color, 0.05);
+    }
+    50% {
+        box-shadow: 0 0 24px rgba($primary-color, 0.35), 0 0 10px rgba($primary-color, 0.2);
     }
 }

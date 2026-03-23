@@ -74,7 +74,7 @@ const CreditList: React.FC<CreditListProps> = ({ credits, now, cardById, creditB
 
         return (
           <CreditEntry
-            key={`${uc.CardId}:${uc.CreditId}`}
+            key={`${uc.CardId}:${uc.CreditId}:${uc.anniversaryYear ?? 'cal'}`}
             userCredit={uc}
             now={now}
             card={card}

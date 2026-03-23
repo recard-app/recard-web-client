@@ -7,9 +7,10 @@ import { StreamingState } from '../../../types/AgentChatTypes';
 import AgentTimeline from '../AgentTimeline';
 import { ChatErrorBoundary } from '../ErrorBoundary';
 import { DailyDigest } from '../DailyDigest';
+import DailyDigestSkeleton from '../DailyDigest/DailyDigestSkeleton';
 import { Skeleton } from '../../ui/skeleton';
 import './PromptHistory.scss';
-import { CHAT_SOURCE, DAILY_ZEN_FEATURE_NAME } from '../../../types';
+import { CHAT_SOURCE } from '../../../types';
 import { COLORS } from '../../../types/Colors';
 import { Icon } from '../../../icons';
 import { sanitizeMarkdownHtml } from '../../../utils/sanitizeMarkdown';
@@ -207,15 +208,7 @@ function PromptHistory({
           <div className="welcome-message">
             <p className="title">What are you looking to purchase?</p>
             <p className="subtitle">I'll help you find the best credit card to maximize your rewards.</p>
-            {digestLoading && (
-              <InfoDisplay
-                type="loading"
-                message={`Loading your ${DAILY_ZEN_FEATURE_NAME}...`}
-                showTitle={false}
-                transparent={true}
-                centered={false}
-              />
-            )}
+            {digestLoading && <DailyDigestSkeleton />}
             {!digestLoading && digest && (
               <DailyDigest
                 title={digest.title}

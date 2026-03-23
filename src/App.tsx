@@ -1421,6 +1421,38 @@ function AppContent({}: AppContentProps) {
             />
           )}
 
+          {/* Mobile Header - in its own PageScrollProvider (no key) so drawer isn't unmounted on route change */}
+          {user && !isAuthRoute && !isDesignSystemPage && !isOnboardingRoute && (
+            <PageScrollProvider>
+            <MobileHeader
+              title={PageUtils.getTitleByPath(location.pathname) || APP_NAME}
+              onLogout={handleLogout}
+              chatHistory={chatHistory}
+              currentChatId={currentChatId}
+              onCurrentChatIdChange={getCurrentChatId}
+              onHistoryDelete={handleHistoryDelete}
+              onHistoryRefresh={handleHistoryRefresh}
+              subscriptionPlan={subscriptionPlan}
+              creditCards={creditCards}
+              isLoadingCreditCards={isLoadingCreditCards}
+              isLoadingHistory={isLoadingHistory}
+              onCardSelect={handleCardSelect}
+              quickHistorySize={GLOBAL_QUICK_HISTORY_SIZE}
+              user={user}
+              onNewChat={handleClearChat}
+              onOpenCardSelector={() => setIsCardSelectorOpen(true)}
+              monthlyStats={monthlyStats}
+              isLoadingMonthlyStats={isLoadingMonthlyStats}
+              isUpdatingMonthlyStats={isUpdatingMonthlyStats}
+              prioritizedCredits={prioritizedCredits}
+              onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
+              onAddUpdatingCreditId={addUpdatingCreditId}
+              onRemoveUpdatingCreditId={removeUpdatingCreditId}
+              isCreditUpdating={isCreditUpdating}
+            />
+            </PageScrollProvider>
+          )}
+
           {/* Check if current route is an auth page (no sidebar/nav should show) */}
           <PageScrollProvider key={location.pathname}>
           {(() => {
@@ -1454,36 +1486,6 @@ function AppContent({}: AppContentProps) {
               onRemoveUpdatingCreditId={removeUpdatingCreditId}
               isCreditUpdating={isCreditUpdating}
             />
-                )}
-
-                {/* Mobile Header - shown on mobile for authenticated, non-auth routes (except design system) */}
-                {user && !isAuthRoute && !isDesignSystemPage && !isOnboardingRoute && (
-                  <MobileHeader
-                    title={PageUtils.getTitleByPath(location.pathname) || APP_NAME}
-                    onLogout={handleLogout}
-                    chatHistory={chatHistory}
-                    currentChatId={currentChatId}
-                    onCurrentChatIdChange={getCurrentChatId}
-                    onHistoryDelete={handleHistoryDelete}
-                    onHistoryRefresh={handleHistoryRefresh}
-                    subscriptionPlan={subscriptionPlan}
-                    creditCards={creditCards}
-                    isLoadingCreditCards={isLoadingCreditCards}
-                    isLoadingHistory={isLoadingHistory}
-                    onCardSelect={handleCardSelect}
-                    quickHistorySize={GLOBAL_QUICK_HISTORY_SIZE}
-                    user={user}
-                    onNewChat={handleClearChat}
-                    onOpenCardSelector={() => setIsCardSelectorOpen(true)}
-                    monthlyStats={monthlyStats}
-                    isLoadingMonthlyStats={isLoadingMonthlyStats}
-                    isUpdatingMonthlyStats={isUpdatingMonthlyStats}
-                    prioritizedCredits={prioritizedCredits}
-                    onRefreshMonthlyStats={() => setMonthlyStatsRefreshTrigger(prev => prev + 1)}
-                    onAddUpdatingCreditId={addUpdatingCreditId}
-                    onRemoveUpdatingCreditId={removeUpdatingCreditId}
-                    isCreditUpdating={isCreditUpdating}
-                  />
                 )}
               </>
             );

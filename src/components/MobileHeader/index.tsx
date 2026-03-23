@@ -279,9 +279,9 @@ const MobileHeader: React.FC<MobileHeaderProps> = ({
     <li key="my-credits-link" className={isActive(PAGES.MY_CREDITS.PATH) ? 'active' : ''}>
       <Drawer.Close asChild>
         <Link to={PAGES.MY_CREDITS.PATH}>
-          <Icon 
-            name="banknotes" 
-            variant={isActive(PAGES.MY_CREDITS.PATH) ? 'solid' : 'outline'} 
+          <Icon
+            name="banknotes"
+            variant={isActive(PAGES.MY_CREDITS.PATH) ? 'solid' : 'outline'}
             size={18}
             color={SIDEBAR_INACTIVE_ICON_COLOR}
           />

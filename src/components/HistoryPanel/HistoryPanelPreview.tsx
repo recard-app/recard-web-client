@@ -19,9 +19,9 @@ export interface HistoryPanelPreviewProps {
   loading?: boolean;
 }
 
-function HistoryPanelPreview({ 
-  existingHistoryList, 
-  listSize, 
+function HistoryPanelPreview({
+  existingHistoryList,
+  listSize,
   currentChatId,
   returnCurrentChatId,
   onHistoryDelete,
@@ -68,8 +68,8 @@ function HistoryPanelPreview({
         />
       ) : (
         displayList.map(entry => (
-          <HistoryEntry 
-            key={entry.chatId} 
+          <HistoryEntry
+            key={entry.chatId}
             chatEntry={entry}
             currentChatId={currentChatId}
             onDelete={handleDelete}

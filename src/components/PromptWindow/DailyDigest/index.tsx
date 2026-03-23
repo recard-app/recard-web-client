@@ -4,6 +4,8 @@ import Icon from '@/icons';
 import { PRIMARY_MEDIUM } from '../../../types/Colors';
 import { RefreshButton } from '../../RefreshButton';
 import { sanitizeMarkdownHtml } from '../../../utils/sanitizeMarkdown';
+import { DigestSkeletonBars } from './DailyDigestSkeleton';
+import { COLORS } from '../../../types/Colors';
 import './DailyDigest.scss';
 
 interface DailyDigestProps {
@@ -70,23 +72,35 @@ export const DailyDigest: React.FC<DailyDigestProps> = ({
     }
 
     return (
-        <div className="daily-digest">
+        <div className={`daily-digest${isRegenerating ? ' daily-digest--loading' : ''}`}>
             <div className="daily-digest__header">
                 <Icon name="lotus" variant="solid" height={11} width={16} viewBox="0 80 512 345" color={PRIMARY_MEDIUM} />
                 <h3 className="daily-digest__title">{title}</h3>
             </div>
-            <div
-                ref={contentRef}
-                className="daily-digest__content"
-                dangerouslySetInnerHTML={{ __html: sanitizeMarkdownHtml(converter, content) }}
-            />
+            {isRegenerating ? (
+                <DigestSkeletonBars />
+            ) : (
+                <div
+                    ref={contentRef}
+                    className="daily-digest__content"
+                    dangerouslySetInnerHTML={{ __html: sanitizeMarkdownHtml(converter, content) }}
+                />
+            )}
             {(generatedAt || onRegenerate) && (
                 <div className={`daily-digest__footer${isOverflowing ? ' daily-digest__footer--shadow' : ''}`}>
-                    {generatedAt && (
+                    {isRegenerating ? (
+                        <div
+                            className="h-3 rounded-sm animate-pulse"
+                            style={{
+                                width: 100,
+                                backgroundColor: `color-mix(in srgb, ${COLORS.PRIMARY_COLOR} 12%, transparent)`,
+                            }}
+                        />
+                    ) : generatedAt ? (
                         <span className="daily-digest__timestamp">
                             Generated {formatGeneratedTime(generatedAt)}
                         </span>
-                    )}
+                    ) : null}
                     {onRegenerate && (
                         <RefreshButton
                             onClick={onRegenerate}
