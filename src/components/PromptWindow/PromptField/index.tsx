@@ -49,11 +49,49 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
     // Early return for non-mobile devices - nothing below this line affects desktop/tablet
     if (!isMobile || !visualViewport) return;
 
-    // No manual scroll manipulation needed. Safari natively scrolls to
-    // reveal the focused textarea when the keyboard opens. All previous
-    // attempts to manually scroll document.documentElement caused flickering
-    // because the page root includes the header -- scrolling it moves
-    // the entire layout, not just the chat area.
+    let initialHeight = window.innerHeight;
+    let hasAdjusted = false;
+
+    const handleFocus = () => {
+      initialHeight = window.innerHeight;
+      hasAdjusted = false;
+    };
+
+    // After the keyboard is fully open, nudge the scroll so the input
+    // sits right above the keyboard instead of Safari's default padding.
+    // This runs AFTER Safari's native scroll has finished, so the
+    // adjustment is small (~40-80px) and doesn't cause visible flicker.
+    const handleViewportChange = () => {
+      if (hasAdjusted) return;
+
+      const currentHeight = visualViewport.height;
+      const heightDifference = initialHeight - currentHeight;
+
+      if (heightDifference > 150) {
+        hasAdjusted = true;
+
+        // Wait for Safari's native scroll to finish settling
+        requestAnimationFrame(() => {
+          const textareaRect = textarea.getBoundingClientRect();
+          const visibleBottom = visualViewport.height + visualViewport.offsetTop;
+          const gap = visibleBottom - textareaRect.bottom;
+
+          // If the input is more than 20px above the keyboard, nudge it down
+          if (gap > 20) {
+            const nudge = gap - 12; // Leave 12px breathing room above keyboard
+            window.scrollBy({ top: -nudge, behavior: 'instant' });
+          }
+        });
+      }
+    };
+
+    textarea.addEventListener('focus', handleFocus);
+    visualViewport.addEventListener('resize', handleViewportChange);
+
+    return () => {
+      textarea.removeEventListener('focus', handleFocus);
+      visualViewport.removeEventListener('resize', handleViewportChange);
+    };
   }, []);
 
   /**
