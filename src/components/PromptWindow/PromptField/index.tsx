@@ -49,7 +49,12 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
     // Early return for non-mobile devices - nothing below this line affects desktop/tablet
     if (!isMobile || !visualViewport) return;
 
-    let initialHeight = visualViewport.height;
+    // Use window.innerHeight as the baseline -- it reflects the full layout
+    // viewport and is stable regardless of app load state.
+    // visualViewport.height can be smaller during loading if the address bar
+    // is in a transitional state, causing the keyboard detection threshold
+    // (heightDifference > 150) to fail.
+    let initialHeight = window.innerHeight;
 
     const scrollToKeyboard = () => {
       const htmlElement = document.documentElement;
