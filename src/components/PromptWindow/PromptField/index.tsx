@@ -49,98 +49,11 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
     // Early return for non-mobile devices - nothing below this line affects desktop/tablet
     if (!isMobile || !visualViewport) return;
 
-    // Use window.innerHeight as the baseline -- it reflects the full layout
-    // viewport and is stable regardless of app load state.
-    // visualViewport.height can be smaller during loading if the address bar
-    // is in a transitional state, causing the keyboard detection threshold
-    // (heightDifference > 150) to fail.
-    let initialHeight = window.innerHeight;
-
-    const scrollToKeyboard = () => {
-      const htmlElement = document.documentElement;
-      const textareaRect = textarea.getBoundingClientRect();
-      const viewportHeight = visualViewport.height;
-      const initialViewportHeight = initialHeight;
-      const keyboardHeight = initialViewportHeight - viewportHeight;
-
-      // Use adaptive spacing: 4% of viewport height or minimum 18px, maximum 50px
-      const adaptiveSpacing = Math.max(18, Math.min(50, viewportHeight * 0.04));
-
-      // Alternative approach: use a percentage of the keyboard height for spacing
-      const keyboardBasedSpacing = Math.max(15, keyboardHeight * 0.05); // 5% of keyboard height
-
-      // Choose the smaller of the two for optimal positioning
-      const optimalSpacing = Math.min(adaptiveSpacing, keyboardBasedSpacing);
-
-      const targetInputBottom = viewportHeight - optimalSpacing;
-      const currentInputBottom = textareaRect.bottom;
-      const scrollAdjustment = currentInputBottom - targetInputBottom;
-      const newScrollTop = htmlElement.scrollTop + scrollAdjustment;
-
-      // Use the calculated position with exact keyboard timing to prevent shaking
-      htmlElement.style.scrollBehavior = 'auto'; // Disable smooth for manual control
-
-      // Animate scroll manually to match keyboard timing exactly
-      const startScroll = htmlElement.scrollTop;
-      const scrollDistance = newScrollTop - startScroll;
-      const duration = 250; // Match iOS keyboard animation duration
-      const startTime = performance.now();
-
-      const animateScroll = (currentTime: number) => {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        // Use easeOutCubic for natural iOS-like animation
-        const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-        const currentScrollTop = startScroll + (scrollDistance * easeOutCubic);
-
-        htmlElement.scrollTop = currentScrollTop;
-
-        if (progress < 1) {
-          requestAnimationFrame(animateScroll);
-        } else {
-          // Restore smooth behavior after animation
-          htmlElement.style.scrollBehavior = '';
-        }
-      };
-
-      requestAnimationFrame(animateScroll);
-    };
-
-    const handleFocus = () => {
-      // This function only runs on mobile devices (event listener only added on mobile)
-      // Re-capture baseline at focus time so first-tap keyboard detection
-      // does not rely on a stale mount-time viewport measurement.
-      initialHeight = window.innerHeight;
-
-      // Do NOT call scrollIntoView here -- the textarea has no scrollable
-      // ancestor until document.documentElement (the page root), so
-      // scrollIntoView scrolls the entire page (header, sidebar, etc.)
-      // causing a visible flicker. Safari handles focus-scroll natively;
-      // scrollToKeyboard handles precise positioning after the keyboard opens.
-      setTimeout(scrollToKeyboard, 50);
-    };
-
-    const handleViewportChange = () => {
-      const currentHeight = visualViewport.height;
-      const heightDifference = initialHeight - currentHeight;
-
-      // If keyboard appeared (height reduced significantly)
-      if (heightDifference > 150) {
-        // Position input precisely above keyboard - start immediately for sync
-        setTimeout(scrollToKeyboard, 16); // Single frame delay for viewport stabilization
-      }
-    };
-
-    // Add event listeners
-    textarea.addEventListener('focus', handleFocus);
-    visualViewport.addEventListener('resize', handleViewportChange);
-
-    // Cleanup
-    return () => {
-      textarea.removeEventListener('focus', handleFocus);
-      visualViewport.removeEventListener('resize', handleViewportChange);
-    };
+    // No manual scroll manipulation needed. Safari natively scrolls to
+    // reveal the focused textarea when the keyboard opens. All previous
+    // attempts to manually scroll document.documentElement caused flickering
+    // because the page root includes the header -- scrolling it moves
+    // the entire layout, not just the chat area.
   }, []);
 
   /**
