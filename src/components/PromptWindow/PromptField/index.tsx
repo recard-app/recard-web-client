@@ -109,9 +109,6 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
 
     const handleFocus = () => {
       // This function only runs on mobile devices (event listener only added on mobile)
-      // Re-capture baseline at focus time so first-tap keyboard detection
-      // does not rely on a stale mount-time viewport measurement.
-      initialHeight = window.innerHeight;
 
       // First scroll to bring input into view
       textarea.scrollIntoView({
