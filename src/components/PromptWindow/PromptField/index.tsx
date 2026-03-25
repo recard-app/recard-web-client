@@ -113,14 +113,11 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
       // does not rely on a stale mount-time viewport measurement.
       initialHeight = window.innerHeight;
 
-      // First scroll to bring input into view
-      textarea.scrollIntoView({
-        behavior: "instant",
-        block: "nearest",
-        inline: "nearest"
-      });
-
-      // Then position precisely above keyboard - reduced delay for tighter sync
+      // Do NOT call scrollIntoView here -- the textarea has no scrollable
+      // ancestor until document.documentElement (the page root), so
+      // scrollIntoView scrolls the entire page (header, sidebar, etc.)
+      // causing a visible flicker. Safari handles focus-scroll natively;
+      // scrollToKeyboard handles precise positioning after the keyboard opens.
       setTimeout(scrollToKeyboard, 50);
     };
 
