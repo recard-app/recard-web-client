@@ -26,6 +26,13 @@ const AVATAR_ANIMATIONS: Record<typeof ASSISTANT_ICONS[number], AvatarAnimation>
   'assistant-4': 'rock',
 };
 
+const WAITING_PHRASES = [
+  'Working on it...',
+  'Still working...',
+  'On it...',
+  'Processing...',
+];
+
 function hashString(str: string): number {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {
@@ -124,6 +131,11 @@ function PromptHistory({
     }
     return -1;
   }, [chatEntries]);
+
+  const waitingPhrase = useMemo(
+    () => WAITING_PHRASES[Math.floor(Math.random() * WAITING_PHRASES.length)],
+    [isWaitingForResponse],
+  );
 
   const streamingAnimationRef = useRef<AvatarAnimation>('rock');
 
@@ -277,8 +289,11 @@ function PromptHistory({
 
           {/* Show animated avatar when waiting for server response (returned to streaming chat) */}
           {isWaitingForResponse && !streamingState?.isStreaming && (
-            <div className="streaming-content">
+            <div className="streaming-content waiting-status">
               <Icon name={assistantIconName} variant="solid" className={`assistant-avatar avatar-anim-${AVATAR_ANIMATIONS[assistantIconName]}`} />
+              <span className="waiting-text">
+                {waitingPhrase}
+              </span>
             </div>
           )}
         </>

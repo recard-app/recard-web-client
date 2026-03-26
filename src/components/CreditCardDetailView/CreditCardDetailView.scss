@@ -57,10 +57,7 @@
     position: relative;
     border-radius: $radius-lg $radius-lg 0 0;
     padding: $space-5 $space-4;
-    background: var(--showcase-blob-3-subtle, transparent), white;
-    background-size: 160% 160%;
-    background-position: 20% 100%;
-    animation: showcase-pulse-mid 22s ease-in-out 10s infinite;
+    background: white;
     border-bottom: none;
     overflow: hidden;
 
@@ -71,19 +68,6 @@
       inset: 0;
       border-radius: inherit;
       pointer-events: none;
-    }
-
-    &::before {
-      background: var(--showcase-blob-1-subtle, transparent);
-      background-size: 180% 180%;
-      animation: showcase-pulse-slow 14s ease-in-out infinite;
-    }
-
-    &::after {
-      background: var(--showcase-blob-2-subtle, transparent);
-      background-size: 150% 150%;
-      background-position: 100% 100%;
-      animation: showcase-pulse-fast 5s ease-in-out 1.5s infinite;
     }
 
     .showcase-identity {
@@ -739,17 +723,20 @@
       background: var(--showcase-blob-3, transparent), white;
       background-size: 160% 160%;
       background-position: 20% 100%;
+      animation: showcase-pulse-mid 22s ease-in-out 10s infinite;
 
       &::before {
         background: var(--showcase-blob-1, transparent);
         background-size: 180% 180%;
         background-position: 0% 0%;
+        animation: showcase-pulse-slow 14s ease-in-out infinite;
       }
 
       &::after {
         background: var(--showcase-blob-2, transparent);
         background-size: 150% 150%;
         background-position: 100% 100%;
+        animation: showcase-pulse-fast 5s ease-in-out 1.5s infinite;
       }
 
       .showcase-identity {

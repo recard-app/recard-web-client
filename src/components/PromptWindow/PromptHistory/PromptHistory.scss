@@ -222,6 +222,23 @@
       height: $icon-main-logo;
       margin: 0 $space-3;
     }
+
+    &.waiting-status {
+      flex-direction: row;
+      align-items: center;
+
+      > .assistant-avatar {
+        margin-right: $space-1;
+      }
+    }
+
+    .waiting-text {
+      font-size: $font-xs;
+      font-weight: $font-semibold;
+      font-style: italic;
+      color: $primary-medium;
+      animation: avatar-color-glint 2.5s ease-in-out infinite;
+    }
   }
 
   // Stuttery avatar loading animations (~1fps feel)
