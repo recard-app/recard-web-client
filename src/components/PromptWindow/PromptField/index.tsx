@@ -50,38 +50,20 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
     if (!isMobile || !visualViewport) return;
 
     let initialHeight = window.innerHeight;
-    let hasAdjusted = false;
 
     const handleFocus = () => {
       initialHeight = window.innerHeight;
-      hasAdjusted = false;
     };
 
-    // After the keyboard is fully open, nudge the scroll so the input
-    // sits right above the keyboard instead of Safari's default padding.
-    // This runs AFTER Safari's native scroll has finished, so the
-    // adjustment is small (~40-80px) and doesn't cause visible flicker.
+    // Keep viewport-change detection for keyboard-open state, but do not
+    // perform any manual page-root scroll writes. Safari native focus-scroll
+    // is the source of truth for positioning.
     const handleViewportChange = () => {
-      if (hasAdjusted) return;
-
       const currentHeight = visualViewport.height;
       const heightDifference = initialHeight - currentHeight;
 
       if (heightDifference > 150) {
-        hasAdjusted = true;
-
-        // Wait for Safari's native scroll to finish settling
-        requestAnimationFrame(() => {
-          const textareaRect = textarea.getBoundingClientRect();
-          const visibleBottom = visualViewport.height + visualViewport.offsetTop;
-          const gap = visibleBottom - textareaRect.bottom;
-
-          // If the input is more than 20px above the keyboard, nudge it down
-          if (gap > 20) {
-            const nudge = gap - 12; // Leave 12px breathing room above keyboard
-            window.scrollBy({ top: -nudge, behavior: 'instant' });
-          }
-        });
+        // Keyboard appears; no-op by design.
       }
     };
 

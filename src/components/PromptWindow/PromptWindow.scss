@@ -37,13 +37,13 @@
       // When the composer is focused on mobile, collapse bottom padding so
       // the input sits closer to the keyboard toolbar.
       &:focus-within {
-        padding-bottom: 0;
+        padding-bottom: $space-1-5;
       }
     }
     @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
       padding-bottom: $pwa-bottom-padding-chat;
       &:focus-within {
-        padding-bottom: 0;
+        padding-bottom: $space-1-5;
       }
     }
 }
