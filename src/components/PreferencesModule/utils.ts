@@ -26,12 +26,12 @@ export interface AgentModeOption {
 export const AGENT_MODE_OPTIONS: AgentModeOption[] = [
     {
         value: AGENT_MODE_PREFERENCE.SIMPLIFIED,
-        label: 'Quick Mode',
-        description: 'Quick, direct answers with streamlined processing. Best for everyday questions about your cards.'
+        label: 'Smart',
+        description: 'Intelligent, efficient answers for everyday card questions.'
     },
     {
         value: AGENT_MODE_PREFERENCE.ORCHESTRATED,
-        label: 'Precision Mode',
-        description: 'Analyzes your question in depth using specialized agents for maximum accuracy. Best for complex queries.'
+        label: 'Deep Dive',
+        description: 'Multi-step research using specialized agents. Best for complex comparisons and in-depth analysis.'
     }
 ];
