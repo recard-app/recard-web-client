@@ -118,27 +118,7 @@ function PromptWindow({
     const isClearingRef = useRef<boolean>(false);
 
     // Maintains the array of chat messages between user and AI in the current conversation
-    const [chatHistory, setChatHistoryRaw] = useState<ChatMessage[]>([]);
-    // DEBUG: Wrap setChatHistory to trace all writes to chat history.
-    // Remove this wrapper once the blank-screen bug is resolved.
-    const setChatHistory = useCallback((update: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => {
-        setChatHistoryRaw(prev => {
-            const next = typeof update === 'function' ? update(prev) : update;
-            if (next.length === 0 && prev.length > 0) {
-                console.warn(
-                    '[DEBUG setChatHistory] CLEARING non-empty chatHistory!',
-                    { prevLength: prev.length, stack: new Error().stack }
-                );
-            }
-            if (next.length < prev.length) {
-                console.warn(
-                    '[DEBUG setChatHistory] chatHistory SHRUNK',
-                    { from: prev.length, to: next.length, stack: new Error().stack }
-                );
-            }
-            return next;
-        });
-    }, []);
+    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
     // Unique identifier for the current chat conversation
     const [chatId, setChatId] = useState<string>('');
     // Ref to store chatId immediately (synchronous) for use in callbacks
@@ -811,23 +791,8 @@ function PromptWindow({
             // Skip if we're intentionally clearing the chat
             if (isClearingRef.current) return;
 
-            // DEBUG: log every hydration effect invocation
-            console.warn('[DEBUG hydration]', {
-                urlChatId,
-                chatIdRef: chatIdRef.current,
-                chatHistoryLen: chatHistoryRef.current.length,
-                isNewChatPending,
-                isProcessing,
-                isLoadingHistory,
-                hasHydrated: hasHydratedCurrentChatRef.current,
-                hasUserSent: hasUserSentInCurrentChatRef.current,
-                snapshotKeys: Array.from(streamingSnapshotsRef.current.keys()),
-            });
-
             // Home/new chat route
             if (!urlChatId) {
-                console.warn('[DEBUG hydration] HOME ROUTE PATH ENTERED - will clear chatHistory');
-
                 const shouldDeferHomeReset = Boolean(
                     chatIdRef.current
                     && hasUserSentInCurrentChatRef.current
@@ -889,7 +854,6 @@ function PromptWindow({
             // Once this chat is hydrated locally, never re-run hydration for it.
             // The polling effect handles fetching the server response independently.
             if (!isSwitchingToDifferentChat && urlChatId === chatIdRef.current && hasHydratedCurrentChatRef.current) {
-                console.warn('[DEBUG hydration] EARLY RETURN - already hydrated, same chat');
                 setIsSwitchingChats(false);
                 return;
             }
@@ -949,14 +913,7 @@ function PromptWindow({
                         snapshot.componentBlocks
                     );
                     const snapshotDescription = snapshot.description || existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER;
-                    console.warn('[DEBUG hydration] SNAPSHOT FOUND', {
-                        chatId: urlChatId,
-                        snapshotLen: localConversation.length,
-                        lastMsg: localConversation[localConversation.length - 1]?.chatSource,
-                        sidebarStatus: existingChat?.streamingStatus,
-                    });
                     const applySnapshotLocally = () => {
-                        console.warn('[DEBUG hydration] APPLYING SNAPSHOT', { len: localConversation.length });
                         shouldSnapToBottomOnHydrationRef.current = true;
                         suppressNextSmoothAutoScrollRef.current = true;
                         setExistingChatStates(localConversation, urlChatId, snapshotDescription);
@@ -1180,7 +1137,6 @@ function PromptWindow({
     useEffect(() => {
         if (!urlChatId || !user) return;
 
-        console.warn('[DEBUG poll] EFFECT MOUNTED for', urlChatId);
         let stopped = false;
         let pollInFlight = false;
 
@@ -1188,19 +1144,12 @@ function PromptWindow({
             if (stopped || pollInFlight) return;
 
             // Read guards at call-time via refs (not captured at effect-mount time)
-            if (isProcessingRef.current || isStreamingRef.current) {
-                console.warn('[DEBUG poll] SKIPPED - processing/streaming', { isProcessing: isProcessingRef.current, isStreaming: isStreamingRef.current });
-                return;
-            }
+            if (isProcessingRef.current || isStreamingRef.current) return;
 
             const lastLocalMessage = chatHistoryRef.current[chatHistoryRef.current.length - 1];
             const localNeedsAssistant = lastLocalMessage?.chatSource !== CHAT_SOURCE.ASSISTANT;
-            if (!localNeedsAssistant) {
-                console.warn('[DEBUG poll] SKIPPED - last message is assistant already', { histLen: chatHistoryRef.current.length });
-                return;
-            }
+            if (!localNeedsAssistant) return;
 
-            console.warn('[DEBUG poll] POLLING SERVER', { urlChatId, histLen: chatHistoryRef.current.length, lastSource: lastLocalMessage?.chatSource });
             pollInFlight = true;
             try {
                 const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
@@ -1208,7 +1157,6 @@ function PromptWindow({
                 // Navigation guard: if user moved to a different chat while the fetch
                 // was in flight, discard this stale response.
                 if (latestUrlChatIdRef.current !== urlChatId) {
-                    console.warn('[DEBUG poll] DISCARDED - user navigated away');
                     stopped = true;
                     clearInterval(interval);
                     return;
@@ -1227,14 +1175,6 @@ function PromptWindow({
                 ) || [...chatHistoryRef.current].reverse().find(m => m.chatSource === CHAT_SOURCE.USER);
                 const serverHasOurMessage = !lastLocalUserMsg
                     || serverHistory.some((m: ChatMessage) => m.id === lastLocalUserMsg.id);
-
-                console.warn('[DEBUG poll] SERVER RESPONSE', {
-                    serverLen: serverHistory.length,
-                    lastServerSource: lastServerMsg?.chatSource,
-                    localLen: chatHistoryRef.current.length,
-                    lastLocalUserMsgId: lastLocalUserMsg?.id,
-                    serverHasOurMessage,
-                });
 
                 if (!serverHasOurMessage) {
                     // Server still has the old conversation; keep polling
@@ -1338,7 +1278,6 @@ function PromptWindow({
         }, POLL_TIMEOUT_MS);
 
         return () => {
-            console.warn('[DEBUG poll] EFFECT CLEANUP for', urlChatId);
             stopped = true;
             clearInterval(interval);
             clearTimeout(timeout);
