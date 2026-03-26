@@ -1318,6 +1318,7 @@ function AppContent({}: AppContentProps) {
       toast.success(message);
       // Trigger card-only refresh effect
       setCardsVersion(v => v + 1);
+      setIsCardSelectorOpen(false);
     } else {
       toast.error(message);
     }

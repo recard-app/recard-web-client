@@ -933,74 +933,56 @@ function PromptWindow({
                         }, true);
                     };
 
-                    // Check if the snapshot itself already contains a complete
-                    // response (e.g., background sync cached server data into it).
-                    const snapshotLastMsg = localConversation[localConversation.length - 1];
-                    const snapshotHasAssistantTail = snapshotLastMsg?.chatSource === CHAT_SOURCE.ASSISTANT;
+                    // Snapshot has the user message. Try the server first — the
+                    // response may already be persisted. This prevents the jarring
+                    // "user message appears, then response loads a second later"
+                    // effect when clicking on a completed chat.
+                    try {
+                        const chatData = await fetchChatData(urlChatId, abortController.signal, existingChat);
 
-                    if (snapshotHasAssistantTail) {
-                        // Snapshot has the full response — apply instantly, no polling needed.
-                        applySnapshotLocally();
-                        streamingSnapshotsRef.current.delete(urlChatId);
-                        clearCompletedStreamingStatus(
-                            urlChatId,
-                            snapshotDescription,
-                            localConversation,
-                            existingChat?.timestamp
-                        );
-                    } else {
-                        // Snapshot only has the user message. Always try the server
-                        // first — the response may already be persisted regardless
-                        // of what sidebar status says (COMPLETE, STREAMING, or null).
-                        // This prevents the jarring "user message appears, then
-                        // response loads a second later" effect.
-                        try {
-                            const chatData = await fetchChatData(urlChatId, abortController.signal, existingChat);
+                        if (!isHydrationRequestCurrent(requestId, urlChatId)) {
+                            return;
+                        }
 
-                            if (!isHydrationRequestCurrent(requestId, urlChatId)) {
-                                return;
-                            }
+                        const serverConversation = chatData.conversation;
+                        const lastServerMessage = serverConversation[serverConversation.length - 1];
 
-                            const serverConversation = chatData.conversation;
-                            const lastServerMessage = serverConversation[serverConversation.length - 1];
+                        // Verify the server response actually contains the
+                        // user's latest message (same stale-data guard as
+                        // the polling effect uses).
+                        const lastSnapshotUserMsg = localConversation.findLast?.(
+                            (m: ChatMessage) => m.chatSource === CHAT_SOURCE.USER
+                        ) || [...localConversation].reverse().find(m => m.chatSource === CHAT_SOURCE.USER);
+                        const serverHasUserMsg = !lastSnapshotUserMsg
+                            || serverConversation.some((m: ChatMessage) => m.id === lastSnapshotUserMsg.id);
+                        const serverHasAssistantResponse = lastServerMessage?.chatSource === CHAT_SOURCE.ASSISTANT;
 
-                            // Verify the server response actually contains the
-                            // user's latest message (same stale-data guard as
-                            // the polling effect uses).
-                            const lastSnapshotUserMsg = localConversation.findLast?.(
-                                (m: ChatMessage) => m.chatSource === CHAT_SOURCE.USER
-                            ) || [...localConversation].reverse().find(m => m.chatSource === CHAT_SOURCE.USER);
-                            const serverHasUserMsg = !lastSnapshotUserMsg
-                                || serverConversation.some((m: ChatMessage) => m.id === lastSnapshotUserMsg.id);
-                            const serverHasAssistantResponse = lastServerMessage?.chatSource === CHAT_SOURCE.ASSISTANT;
-
-                            if (serverHasUserMsg && serverHasAssistantResponse) {
-                                // Server has the complete response — show it all at once.
-                                shouldSnapToBottomOnHydrationRef.current = true;
-                                suppressNextSmoothAutoScrollRef.current = true;
-                                setExistingChatStates(
-                                    serverConversation,
-                                    urlChatId,
-                                    chatData.description || snapshotDescription
-                                );
-                                streamingSnapshotsRef.current.delete(urlChatId);
-                                clearStreamingStatusIfDone(
-                                    urlChatId,
-                                    serverConversation,
-                                    chatData.streamingStatus,
-                                    chatData.description || snapshotDescription,
-                                    existingChat?.timestamp
-                                );
-                            } else {
-                                // Server doesn't have the response yet — show snapshot
-                                // with loading indicator, polling will pick it up.
-                                applySnapshotAsStreaming();
-                            }
-                        } catch {
-                            // Fetch failed — fall back to snapshot + polling
-                            if (isHydrationRequestCurrent(requestId, urlChatId)) {
-                                applySnapshotAsStreaming();
-                            }
+                        if (serverHasUserMsg && serverHasAssistantResponse) {
+                            // Server has the complete response — show it all at once.
+                            shouldSnapToBottomOnHydrationRef.current = true;
+                            suppressNextSmoothAutoScrollRef.current = true;
+                            setExistingChatStates(
+                                serverConversation,
+                                urlChatId,
+                                chatData.description || snapshotDescription
+                            );
+                            streamingSnapshotsRef.current.delete(urlChatId);
+                            clearStreamingStatusIfDone(
+                                urlChatId,
+                                serverConversation,
+                                chatData.streamingStatus,
+                                chatData.description || snapshotDescription,
+                                existingChat?.timestamp
+                            );
+                        } else {
+                            // Server doesn't have the response yet — show snapshot
+                            // with loading indicator, polling will pick it up.
+                            applySnapshotAsStreaming();
+                        }
+                    } catch {
+                        // Fetch failed — fall back to snapshot + polling
+                        if (isHydrationRequestCurrent(requestId, urlChatId)) {
+                            applySnapshotAsStreaming();
                         }
                     }
                 } else {

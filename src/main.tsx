@@ -6,7 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { HelmetProvider } from 'react-helmet-async';
 import { StrictMode } from 'react';
-import { defaultTheme } from './styling/themes/default';
+import { defaultTheme } from './styling/themes';
 
 const tc = defaultTheme.colors;
 
