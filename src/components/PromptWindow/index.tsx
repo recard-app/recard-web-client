@@ -29,8 +29,8 @@ import { ErrorWithRetry } from '../../elements';
 import { classifyError } from '../../types/AgentChatTypes';
 import { apiCache, CACHE_KEYS } from '../../utils/ApiCache';
 
-const POLL_INTERVAL_MS = 3000;
-const POLL_TIMEOUT_MS = 20 * 1000;
+const POLL_INTERVAL_MS = 1000;
+const POLL_TIMEOUT_MS = 60 * 1000;
 const TITLE_RETRY_DELAYS_MS = [2000, 5000, 10000];
 const NEAR_BOTTOM_THRESHOLD_PX = 400;
 const SCROLL_DELAY_MS = 100;
@@ -118,7 +118,27 @@ function PromptWindow({
     const isClearingRef = useRef<boolean>(false);
 
     // Maintains the array of chat messages between user and AI in the current conversation
-    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+    const [chatHistory, setChatHistoryRaw] = useState<ChatMessage[]>([]);
+    // DEBUG: Wrap setChatHistory to trace all writes to chat history.
+    // Remove this wrapper once the blank-screen bug is resolved.
+    const setChatHistory = useCallback((update: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => {
+        setChatHistoryRaw(prev => {
+            const next = typeof update === 'function' ? update(prev) : update;
+            if (next.length === 0 && prev.length > 0) {
+                console.warn(
+                    '[DEBUG setChatHistory] CLEARING non-empty chatHistory!',
+                    { prevLength: prev.length, stack: new Error().stack }
+                );
+            }
+            if (next.length < prev.length) {
+                console.warn(
+                    '[DEBUG setChatHistory] chatHistory SHRUNK',
+                    { from: prev.length, to: next.length, stack: new Error().stack }
+                );
+            }
+            return next;
+        });
+    }, []);
     // Unique identifier for the current chat conversation
     const [chatId, setChatId] = useState<string>('');
     // Ref to store chatId immediately (synchronous) for use in callbacks
@@ -140,6 +160,7 @@ function PromptWindow({
     // Ref mirror of existingHistoryList for stable closures (avoids re-creating callbacks
     // on every sidebar refresh). Updated via sync effect below.
     const existingHistoryListRef = useRef<Conversation[]>(existingHistoryList);
+    const onHistoryUpsertRef = useRef(onHistoryUpsert);
     // Tracks whether this is a new chat conversation (true) or loading an existing one (false)
     const [isNewChat, setIsNewChat] = useState<boolean>(false);
     // Indicates whether a new chat creation request is in progress
@@ -171,10 +192,14 @@ function PromptWindow({
     const chatHydrationAbortControllerRef = useRef<AbortController | null>(null);
     const latestUrlChatIdRef = useRef<string | undefined>(urlChatId);
 
+
     // Keep existingHistoryListRef in sync with the prop
     useEffect(() => {
         existingHistoryListRef.current = existingHistoryList;
     }, [existingHistoryList]);
+    useEffect(() => {
+        onHistoryUpsertRef.current = onHistoryUpsert;
+    }, [onHistoryUpsert]);
 
     const logMetric = useCallback((name: string, metadata: Record<string, unknown> = {}) => {
         console.info('[PromptWindowMetrics]', { name, ...metadata });
@@ -328,17 +353,31 @@ function PromptWindow({
         // don't touch local chatHistory — just update the sidebar entry and let
         // hydration pick up the full conversation when the user switches to it.
         if (targetChatId && targetChatId !== currentChatId) {
-            streamingSnapshotsRef.current.delete(targetChatId);
             const existingChat = existingHistoryListRef.current.find(chat => chat.chatId === targetChatId);
-            if (existingChat) {
-                onHistoryUpsert({
-                    chatId: targetChatId,
-                    timestamp: existingChat.timestamp || new Date().toISOString(),
-                    conversation: existingChat.conversation || [],
-                    chatDescription: existingChat.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER,
-                    streamingStatus: null,
-                }, true);
-            }
+            const snapshot = streamingSnapshotsRef.current.get(targetChatId);
+            const baseConversation = snapshot?.conversation?.length
+                ? snapshot.conversation
+                : (existingChat?.conversation || []);
+            const hasAssistantAlready = baseConversation.some(m => m.id === message.id);
+            const mergedConversation = hasAssistantAlready
+                ? baseConversation
+                : [...baseConversation, message];
+            const mergedDescription = snapshot?.description
+                || existingChat?.chatDescription
+                || DEFAULT_CHAT_NAME_PLACEHOLDER;
+
+            // Stream is complete for that chat, so snapshot is no longer needed.
+            streamingSnapshotsRef.current.delete(targetChatId);
+
+            onHistoryUpsert({
+                chatId: targetChatId,
+                timestamp: existingChat?.timestamp || message.timestamp || new Date().toISOString(),
+                conversation: mergedConversation,
+                chatDescription: mergedDescription,
+                componentBlocks: extractComponentBlocks(mergedConversation),
+                messageCount: mergedConversation.length,
+                streamingStatus: null,
+            }, true);
             UserHistoryService.clearStreamingStatus(targetChatId).catch(() => {});
             onHistoryRefresh?.();
             return;
@@ -508,8 +547,8 @@ function PromptWindow({
             return;
         }
 
-        // Don't allow new messages while processing
-        if (isProcessing) {
+        // Don't allow new messages while processing or waiting for a server response
+        if (isProcessing || isWaitingForResponse) {
             return;
         }
 
@@ -537,6 +576,10 @@ function PromptWindow({
             chatIdRef.current = currentChatId;
             setChatId(currentChatId);
             setIsNewChat(false);
+            // Set currentChatId in App immediately so the sidebar highlights
+            // this chat as selected. The pageTransitionKey fix ensures "/" and
+            // "/chat/:id" share the same Fragment key, so the App-level
+            // navigation effect won't cause a remount.
             returnCurrentChatId(currentChatId);
 
             setIsNewChatPending(true);
@@ -644,14 +687,17 @@ function PromptWindow({
             const previewConversation = Array.isArray(existingChat.conversation)
                 ? existingChat.conversation
                 : [];
-            const previewMessageCount = typeof existingChat.messageCount === 'number'
+            const hasPreviewMessageCount = typeof existingChat.messageCount === 'number';
+            const previewMessageCount = hasPreviewMessageCount
                 ? existingChat.messageCount
-                : previewConversation.length;
+                : null;
 
             if (previewConversation.length > 0) {
                 return attachComponentBlocks(previewConversation, existingChat.componentBlocks);
             }
 
+            // Only trust "empty" when the server explicitly provided messageCount: 0.
+            // If messageCount is missing, treat preview as unknown and fetch full history.
             if (previewMessageCount === 0) {
                 return [];
             }
@@ -682,9 +728,9 @@ function PromptWindow({
     }, [resolveConversationFromPreview]);
 
     /**
-     * After fetching and setting chat states, clears streaming status if the server
-     * is done (status is 'complete', or status is 'streaming' but last message is
-     * from the assistant). Shared by the main hydration effect and retryLoadChat.
+     * After fetching and setting chat states, clears streaming status only when
+     * the conversation actually contains an assistant response at the end.
+     * Shared by the main hydration effect and retryLoadChat.
      */
     const clearStreamingStatusIfDone = useCallback((
         targetChatId: string,
@@ -694,10 +740,13 @@ function PromptWindow({
         timestamp?: string
     ) => {
         const lastMsg = conversation[conversation.length - 1];
-        const serverDone = streamingStatus === STREAMING_STATUS.STREAMING
-            && lastMsg?.chatSource === CHAT_SOURCE.ASSISTANT;
+        const hasAssistantTail = lastMsg?.chatSource === CHAT_SOURCE.ASSISTANT;
+        const serverDone = (
+            streamingStatus === STREAMING_STATUS.STREAMING
+            || streamingStatus === STREAMING_STATUS.COMPLETE
+        ) && hasAssistantTail;
 
-        if (streamingStatus === STREAMING_STATUS.COMPLETE || serverDone) {
+        if (serverDone) {
             clearCompletedStreamingStatus(
                 targetChatId,
                 description || DEFAULT_CHAT_NAME_PLACEHOLDER,
@@ -733,15 +782,22 @@ function PromptWindow({
 
     /**
      * Effect hook that synchronizes the URL with the current chat ID.
+     *
+     * For new chats, navigation is deferred until the parallel Firestore create
+     * has resolved AND the SSE stream has finished. Navigating earlier would
+     * cause React Router to remount this component (different <Route> elements
+     * for "/" vs "/chat/:id"), killing the active SSE connection and resetting
+     * all refs -- which leads to a "Failed to load chat" error because the
+     * hydration effect can no longer detect the in-flight new-chat state.
      */
     useEffect(() => {
         // Only push URL when creating/selecting a chat from the home route.
         // When URL already has /chat/:id, treat URL as source of truth to avoid route snap-back.
-        if (chatId && !urlChatId) {
+        if (chatId && !urlChatId && !isNewChatPending && !isProcessing) {
             returnCurrentChatId(chatId);
             navigate(`/chat/${chatId}`, { replace: true });
         }
-    }, [chatId, navigate, returnCurrentChatId, urlChatId]);
+    }, [chatId, navigate, returnCurrentChatId, urlChatId, isNewChatPending, isProcessing]);
 
     /**
      * Single chat hydration effect with request-id/abort guards.
@@ -755,8 +811,23 @@ function PromptWindow({
             // Skip if we're intentionally clearing the chat
             if (isClearingRef.current) return;
 
+            // DEBUG: log every hydration effect invocation
+            console.warn('[DEBUG hydration]', {
+                urlChatId,
+                chatIdRef: chatIdRef.current,
+                chatHistoryLen: chatHistoryRef.current.length,
+                isNewChatPending,
+                isProcessing,
+                isLoadingHistory,
+                hasHydrated: hasHydratedCurrentChatRef.current,
+                hasUserSent: hasUserSentInCurrentChatRef.current,
+                snapshotKeys: Array.from(streamingSnapshotsRef.current.keys()),
+            });
+
             // Home/new chat route
             if (!urlChatId) {
+                console.warn('[DEBUG hydration] HOME ROUTE PATH ENTERED - will clear chatHistory');
+
                 const shouldDeferHomeReset = Boolean(
                     chatIdRef.current
                     && hasUserSentInCurrentChatRef.current
@@ -815,20 +886,12 @@ function PromptWindow({
                 return;
             }
 
-            // Return early only when this chat is already hydrated locally
-            // AND it's not waiting for a server response. If the sidebar shows
-            // 'streaming' for this chat, force a re-fetch to pick up the response
-            // that may have arrived while the user was viewing another chat.
+            // Once this chat is hydrated locally, never re-run hydration for it.
+            // The polling effect handles fetching the server response independently.
             if (!isSwitchingToDifferentChat && urlChatId === chatIdRef.current && hasHydratedCurrentChatRef.current) {
-                const sidebarEntry = existingHistoryListRef.current.find(c => c.chatId === urlChatId);
-                const stillStreaming = sidebarEntry?.streamingStatus === STREAMING_STATUS.STREAMING;
-                const lastLocal = chatHistoryRef.current[chatHistoryRef.current.length - 1];
-                const missingResponse = lastLocal?.chatSource !== CHAT_SOURCE.ASSISTANT;
-                if (!stillStreaming || !missingResponse) {
-                    setIsSwitchingChats(false);
-                    return;
-                }
-                // Fall through to re-fetch from server
+                console.warn('[DEBUG hydration] EARLY RETURN - already hydrated, same chat');
+                setIsSwitchingChats(false);
+                return;
             }
 
             // Wait for initial history loading to complete before checking for existing chat.
@@ -874,22 +937,115 @@ function PromptWindow({
 
             try {
                 const existingChat = existingHistoryListRef.current.find(chat => chat.chatId === urlChatId);
-                const loadedStreamingStatus = existingChat?.streamingStatus;
 
-                // If the chat is still streaming (server processing), restore from
-                // the snapshot ref (stable, not affected by sidebar refreshes).
-                // Falls back to existingHistoryListRef, then server fetch.
+                // Restore from snapshot if one exists. A snapshot is set in getPrompt
+                // and only deleted by handleMessageComplete, so its existence proves
+                // the stream was interrupted (user navigated away) before the response
+                // arrived.
                 const snapshot = streamingSnapshotsRef.current.get(urlChatId);
-                if (loadedStreamingStatus === STREAMING_STATUS.STREAMING && snapshot) {
+                if (snapshot) {
                     const localConversation = attachComponentBlocks(
                         snapshot.conversation,
                         snapshot.componentBlocks
                     );
+                    const snapshotDescription = snapshot.description || existingChat?.chatDescription || DEFAULT_CHAT_NAME_PLACEHOLDER;
+                    console.warn('[DEBUG hydration] SNAPSHOT FOUND', {
+                        chatId: urlChatId,
+                        snapshotLen: localConversation.length,
+                        lastMsg: localConversation[localConversation.length - 1]?.chatSource,
+                        sidebarStatus: existingChat?.streamingStatus,
+                    });
+                    const applySnapshotLocally = () => {
+                        console.warn('[DEBUG hydration] APPLYING SNAPSHOT', { len: localConversation.length });
+                        shouldSnapToBottomOnHydrationRef.current = true;
+                        suppressNextSmoothAutoScrollRef.current = true;
+                        setExistingChatStates(localConversation, urlChatId, snapshotDescription);
+                    };
+                    const applySnapshotAsStreaming = () => {
+                        applySnapshotLocally();
 
-                    shouldSnapToBottomOnHydrationRef.current = true;
-                    suppressNextSmoothAutoScrollRef.current = true;
-                    setExistingChatStates(localConversation, urlChatId, snapshot.description);
-                    // Don't clear status -- polling will handle completion
+                        // Re-assert STREAMING on the sidebar entry so the loading
+                        // indicator stays visible while polling for completion.
+                        onHistoryUpsert({
+                            chatId: urlChatId,
+                            timestamp: existingChat?.timestamp || new Date().toISOString(),
+                            conversation: localConversation,
+                            chatDescription: snapshotDescription,
+                            componentBlocks: snapshot.componentBlocks || [],
+                            streamingStatus: STREAMING_STATUS.STREAMING,
+                        }, true);
+                    };
+
+                    // Check if the snapshot itself already contains a complete
+                    // response (e.g., background sync cached server data into it).
+                    const snapshotLastMsg = localConversation[localConversation.length - 1];
+                    const snapshotHasAssistantTail = snapshotLastMsg?.chatSource === CHAT_SOURCE.ASSISTANT;
+
+                    if (snapshotHasAssistantTail) {
+                        // Snapshot has the full response — apply instantly, no polling needed.
+                        applySnapshotLocally();
+                        streamingSnapshotsRef.current.delete(urlChatId);
+                        clearCompletedStreamingStatus(
+                            urlChatId,
+                            snapshotDescription,
+                            localConversation,
+                            existingChat?.timestamp
+                        );
+                    } else {
+                        // Snapshot only has the user message. Always try the server
+                        // first — the response may already be persisted regardless
+                        // of what sidebar status says (COMPLETE, STREAMING, or null).
+                        // This prevents the jarring "user message appears, then
+                        // response loads a second later" effect.
+                        try {
+                            const chatData = await fetchChatData(urlChatId, abortController.signal, existingChat);
+
+                            if (!isHydrationRequestCurrent(requestId, urlChatId)) {
+                                return;
+                            }
+
+                            const serverConversation = chatData.conversation;
+                            const lastServerMessage = serverConversation[serverConversation.length - 1];
+
+                            // Verify the server response actually contains the
+                            // user's latest message (same stale-data guard as
+                            // the polling effect uses).
+                            const lastSnapshotUserMsg = localConversation.findLast?.(
+                                (m: ChatMessage) => m.chatSource === CHAT_SOURCE.USER
+                            ) || [...localConversation].reverse().find(m => m.chatSource === CHAT_SOURCE.USER);
+                            const serverHasUserMsg = !lastSnapshotUserMsg
+                                || serverConversation.some((m: ChatMessage) => m.id === lastSnapshotUserMsg.id);
+                            const serverHasAssistantResponse = lastServerMessage?.chatSource === CHAT_SOURCE.ASSISTANT;
+
+                            if (serverHasUserMsg && serverHasAssistantResponse) {
+                                // Server has the complete response — show it all at once.
+                                shouldSnapToBottomOnHydrationRef.current = true;
+                                suppressNextSmoothAutoScrollRef.current = true;
+                                setExistingChatStates(
+                                    serverConversation,
+                                    urlChatId,
+                                    chatData.description || snapshotDescription
+                                );
+                                streamingSnapshotsRef.current.delete(urlChatId);
+                                clearStreamingStatusIfDone(
+                                    urlChatId,
+                                    serverConversation,
+                                    chatData.streamingStatus,
+                                    chatData.description || snapshotDescription,
+                                    existingChat?.timestamp
+                                );
+                            } else {
+                                // Server doesn't have the response yet — show snapshot
+                                // with loading indicator, polling will pick it up.
+                                applySnapshotAsStreaming();
+                            }
+                        } catch {
+                            // Fetch failed — fall back to snapshot + polling
+                            if (isHydrationRequestCurrent(requestId, urlChatId)) {
+                                applySnapshotAsStreaming();
+                            }
+                        }
+                    }
                 } else {
                     // Normal hydration: fetch from server
                     const chatData = await fetchChatData(urlChatId, abortController.signal, existingChat);
@@ -925,15 +1081,45 @@ function PromptWindow({
                         }
                     }
 
+                    let serverConversation = chatData.conversation;
+
+                    // Defensive: if resolveConversationFromPreview returned empty
+                    // (stale preview cache) but we know the chat exists, force a
+                    // full server fetch so we don't show a blank screen.
+                    if (serverConversation.length === 0 && existingChat) {
+                        try {
+                            const fullChat = await UserHistoryService.fetchChatHistoryById(urlChatId, abortController.signal);
+                            if (!isHydrationRequestCurrent(requestId, urlChatId)) return;
+                            const fullMessages = Array.isArray(fullChat.conversation) ? fullChat.conversation : [];
+                            if (fullMessages.length > 0) {
+                                serverConversation = attachComponentBlocks(fullMessages, fullChat.componentBlocks);
+                            }
+                        } catch {
+                            // Fall through with empty; polling will handle it
+                        }
+                    }
+
+                    const previewConversation = existingChat
+                        ? attachComponentBlocks(
+                            Array.isArray(existingChat.conversation) ? existingChat.conversation : [],
+                            existingChat.componentBlocks
+                        )
+                        : [];
+                    const usePreviewFallback = previewConversation.length > serverConversation.length;
+                    const hydrationConversation = usePreviewFallback ? previewConversation : serverConversation;
+                    const hydrationDescription = usePreviewFallback
+                        ? (existingChat?.chatDescription || chatData.description)
+                        : chatData.description;
+
                     shouldSnapToBottomOnHydrationRef.current = true;
                     suppressNextSmoothAutoScrollRef.current = true;
-                    setExistingChatStates(chatData.conversation, urlChatId, chatData.description);
+                    setExistingChatStates(hydrationConversation, urlChatId, hydrationDescription);
 
                     clearStreamingStatusIfDone(
                         urlChatId,
-                        chatData.conversation,
+                        hydrationConversation,
                         chatData.streamingStatus,
-                        chatData.description,
+                        hydrationDescription,
                         existingChat?.timestamp
                     );
                 }
@@ -994,6 +1180,7 @@ function PromptWindow({
     useEffect(() => {
         if (!urlChatId || !user) return;
 
+        console.warn('[DEBUG poll] EFFECT MOUNTED for', urlChatId);
         let stopped = false;
         let pollInFlight = false;
 
@@ -1001,14 +1188,19 @@ function PromptWindow({
             if (stopped || pollInFlight) return;
 
             // Read guards at call-time via refs (not captured at effect-mount time)
-            if (isProcessingRef.current || isStreamingRef.current) return;
-
-            const existingChat = existingHistoryListRef.current?.find(c => c.chatId === urlChatId);
-            if (!existingChat?.streamingStatus || existingChat.streamingStatus !== STREAMING_STATUS.STREAMING) return;
+            if (isProcessingRef.current || isStreamingRef.current) {
+                console.warn('[DEBUG poll] SKIPPED - processing/streaming', { isProcessing: isProcessingRef.current, isStreaming: isStreamingRef.current });
+                return;
+            }
 
             const lastLocalMessage = chatHistoryRef.current[chatHistoryRef.current.length - 1];
-            if (lastLocalMessage?.chatSource === CHAT_SOURCE.ASSISTANT) return;
+            const localNeedsAssistant = lastLocalMessage?.chatSource !== CHAT_SOURCE.ASSISTANT;
+            if (!localNeedsAssistant) {
+                console.warn('[DEBUG poll] SKIPPED - last message is assistant already', { histLen: chatHistoryRef.current.length });
+                return;
+            }
 
+            console.warn('[DEBUG poll] POLLING SERVER', { urlChatId, histLen: chatHistoryRef.current.length, lastSource: lastLocalMessage?.chatSource });
             pollInFlight = true;
             try {
                 const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
@@ -1016,6 +1208,7 @@ function PromptWindow({
                 // Navigation guard: if user moved to a different chat while the fetch
                 // was in flight, discard this stale response.
                 if (latestUrlChatIdRef.current !== urlChatId) {
+                    console.warn('[DEBUG poll] DISCARDED - user navigated away');
                     stopped = true;
                     clearInterval(interval);
                     return;
@@ -1023,6 +1216,30 @@ function PromptWindow({
 
                 const serverHistory = response.conversation || [];
                 const lastServerMsg = serverHistory[serverHistory.length - 1];
+
+                // Verify the server response actually contains our latest user
+                // message. Due to limitChatHistory, the server's OLD conversation
+                // (before user sent a new message) can be the same length as the
+                // local snapshot (after trimming). A pure length check would
+                // mistake the old conversation for a completed response.
+                const lastLocalUserMsg = chatHistoryRef.current.findLast?.(
+                    (m: ChatMessage) => m.chatSource === CHAT_SOURCE.USER
+                ) || [...chatHistoryRef.current].reverse().find(m => m.chatSource === CHAT_SOURCE.USER);
+                const serverHasOurMessage = !lastLocalUserMsg
+                    || serverHistory.some((m: ChatMessage) => m.id === lastLocalUserMsg.id);
+
+                console.warn('[DEBUG poll] SERVER RESPONSE', {
+                    serverLen: serverHistory.length,
+                    lastServerSource: lastServerMsg?.chatSource,
+                    localLen: chatHistoryRef.current.length,
+                    lastLocalUserMsgId: lastLocalUserMsg?.id,
+                    serverHasOurMessage,
+                });
+
+                if (!serverHasOurMessage) {
+                    // Server still has the old conversation; keep polling
+                    return;
+                }
 
                 // Server has an assistant response -- it's done
                 if (lastServerMsg && lastServerMsg.chatSource === CHAT_SOURCE.ASSISTANT) {
@@ -1035,6 +1252,7 @@ function PromptWindow({
                     const hydratedHistory = attachComponentBlocks(serverHistory, response.componentBlocks);
                     chatHistoryRef.current = hydratedHistory;
                     setChatHistory(limitChatHistory(hydratedHistory));
+                    setIsSwitchingChats(false);
 
                     // Clear streamingStatus locally + server-side
                     onHistoryUpsert({
@@ -1053,6 +1271,65 @@ function PromptWindow({
                 pollInFlight = false;
             }
         }, POLL_INTERVAL_MS);
+        // Run once immediately so users don't wait for the first interval tick.
+        void (async () => {
+            if (stopped || pollInFlight) return;
+
+            // Read guards at call-time via refs (not captured at effect-mount time)
+            if (isProcessingRef.current || isStreamingRef.current) return;
+
+            const lastLocalMessage = chatHistoryRef.current[chatHistoryRef.current.length - 1];
+            const localNeedsAssistant = lastLocalMessage?.chatSource !== CHAT_SOURCE.ASSISTANT;
+            if (!localNeedsAssistant) return;
+
+            pollInFlight = true;
+            try {
+                const response = await UserHistoryService.fetchChatHistoryById(urlChatId);
+
+                if (latestUrlChatIdRef.current !== urlChatId) {
+                    stopped = true;
+                    clearInterval(interval);
+                    return;
+                }
+
+                const serverHistory = response.conversation || [];
+                const lastServerMsg = serverHistory[serverHistory.length - 1];
+
+                // Same stale-response guard as the interval callback above.
+                const lastLocalUserMsgImm = chatHistoryRef.current.findLast?.(
+                    (m: ChatMessage) => m.chatSource === CHAT_SOURCE.USER
+                ) || [...chatHistoryRef.current].reverse().find(m => m.chatSource === CHAT_SOURCE.USER);
+                const serverHasOurMessageImm = !lastLocalUserMsgImm
+                    || serverHistory.some((m: ChatMessage) => m.id === lastLocalUserMsgImm.id);
+
+                if (!serverHasOurMessageImm) {
+                    return;
+                }
+
+                if (lastServerMsg && lastServerMsg.chatSource === CHAT_SOURCE.ASSISTANT) {
+                    stopped = true;
+                    clearInterval(interval);
+                    streamingSnapshotsRef.current.delete(urlChatId);
+
+                    const hydratedHistory = attachComponentBlocks(serverHistory, response.componentBlocks);
+                    chatHistoryRef.current = hydratedHistory;
+                    setChatHistory(limitChatHistory(hydratedHistory));
+                    setIsSwitchingChats(false);
+
+                    onHistoryUpsert({
+                        ...response,
+                        chatId: urlChatId,
+                        streamingStatus: null,
+                    }, true);
+                    await UserHistoryService.clearStreamingStatus(urlChatId).catch(() => {});
+                    onHistoryRefresh?.();
+                }
+            } catch {
+                // Silently continue polling
+            } finally {
+                pollInFlight = false;
+            }
+        })();
 
         // Stop polling after timeout (server should be done by then)
         const timeout = setTimeout(() => {
@@ -1061,6 +1338,7 @@ function PromptWindow({
         }, POLL_TIMEOUT_MS);
 
         return () => {
+            console.warn('[DEBUG poll] EFFECT CLEANUP for', urlChatId);
             stopped = true;
             clearInterval(interval);
             clearTimeout(timeout);
@@ -1216,15 +1494,28 @@ function PromptWindow({
                 return;
             }
 
+            const previewConversation = existingChat
+                ? attachComponentBlocks(
+                    Array.isArray(existingChat.conversation) ? existingChat.conversation : [],
+                    existingChat.componentBlocks
+                )
+                : [];
+            const serverConversation = chatData.conversation;
+            const usePreviewFallback = previewConversation.length > serverConversation.length;
+            const hydrationConversation = usePreviewFallback ? previewConversation : serverConversation;
+            const hydrationDescription = usePreviewFallback
+                ? (existingChat?.chatDescription || chatData.description)
+                : chatData.description;
+
             shouldSnapToBottomOnHydrationRef.current = true;
             suppressNextSmoothAutoScrollRef.current = true;
-            setExistingChatStates(chatData.conversation, urlChatId, chatData.description);
+            setExistingChatStates(hydrationConversation, urlChatId, hydrationDescription);
 
             clearStreamingStatusIfDone(
                 urlChatId,
-                chatData.conversation,
+                hydrationConversation,
                 chatData.streamingStatus,
-                chatData.description,
+                hydrationDescription,
                 existingChat?.timestamp
             );
 
@@ -1424,6 +1715,7 @@ function PromptWindow({
                         onCancel={handleCancel}
                         disabled={chatHistory.length >= MAX_CHAT_THREAD_MESSAGES || isSwitchingChats}
                         chatLimitReached={chatHistory.length >= MAX_CHAT_THREAD_MESSAGES}
+                        isWaitingForResponse={isWaitingForResponse}
                     />
                 </div>
                 {chatHistory.length >= MAX_CHAT_THREAD_MESSAGES && (

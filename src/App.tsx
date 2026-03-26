@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, Fragment } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, Fragment } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { APP_NAME, PAGE_NAMES, PAGE_ICONS, ICON_PRIMARY_MEDIUM, PAGES, PageUtils, MOBILE_BREAKPOINT, UserCreditCard, UserCredit, CreditCardDetails, CardCredit, CardPerk, EnrichedMultiplier } from './types';
 import { Icon, CardIcon } from './icons';
@@ -96,6 +96,7 @@ import {
   LOADING_ICON,
   LOADING_ICON_SIZE,
   STREAMING_STATUS,
+  CHAT_SOURCE,
   Conversation,
   ChatHistoryPreference,
   AgentModePreference,
@@ -148,6 +149,14 @@ function AppContent({}: AppContentProps) {
   const isOnboardingRoute = location.pathname === PAGES.ONBOARDING.PATH;
   const isLandingPage = !user && !isAuthRoute && !isLegalPage && location.pathname === '/';
   const pageMeta = usePageMeta(isLandingPage);
+  const pageTransitionKey = useMemo(() => {
+    const isChatSurfaceRoute = location.pathname === PAGES.HOME.PATH
+      || PageUtils.isPage(location.pathname, 'CHAT');
+
+    // Keep the chat surface mounted across home/chat route changes so
+    // in-flight message UI (snapshots/streaming indicators) persists.
+    return isChatSurfaceRoute ? 'chat-surface' : location.pathname;
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!isDesignSystemPage || typeof document === 'undefined') {
@@ -945,7 +954,11 @@ function AppContent({}: AppContentProps) {
 
             if (entry.chatId === currentChatId
                 && entry.streamingStatus === STREAMING_STATUS.COMPLETE) {
-              entry = { ...entry, streamingStatus: null };
+              const localLastMessage = local?.conversation?.[local.conversation.length - 1];
+              const localHasAssistantTail = localLastMessage?.chatSource === CHAT_SOURCE.ASSISTANT;
+              if (localHasAssistantTail) {
+                entry = { ...entry, streamingStatus: null };
+              }
             }
             return entry;
           });
@@ -1141,6 +1154,9 @@ function AppContent({}: AppContentProps) {
       }
 
       const existing = prevHistory[existingIndex];
+      const derivedMessageCount = Array.isArray(updatedChat.conversation)
+        ? updatedChat.conversation.length
+        : undefined;
       const merged = {
         ...updatedChat,
         // Keep the existing title if the incoming one is the default placeholder.
@@ -1151,6 +1167,11 @@ function AppContent({}: AppContentProps) {
         timestamp: updatedChat.timestamp > existing.timestamp
           ? updatedChat.timestamp
           : existing.timestamp,
+        // Preserve/derive messageCount so preview-only hydrations can decide
+        // when to fetch full history instead of treating missing metadata as empty.
+        messageCount: typeof updatedChat.messageCount === 'number'
+          ? updatedChat.messageCount
+          : (derivedMessageCount ?? existing.messageCount),
       };
 
       // Move to front if the conversation grew (new message sent/received).
@@ -1454,7 +1475,7 @@ function AppContent({}: AppContentProps) {
             />
           )}
 
-          <Fragment key={location.pathname}>
+          <Fragment key={pageTransitionKey}>
           <ScrollContainerCleanup />
           {(() => {
             return (

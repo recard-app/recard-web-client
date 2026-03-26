@@ -17,9 +17,11 @@ interface PromptFieldProps {
   onCancel: () => void;
   disabled?: boolean;
   chatLimitReached?: boolean;
+  /** True when the server is still processing a response (user returned to a streaming chat) */
+  isWaitingForResponse?: boolean;
 }
 
-function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, chatLimitReached = false }: PromptFieldProps): JSX.Element {
+function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, chatLimitReached = false, isWaitingForResponse = false }: PromptFieldProps): JSX.Element {
   // Stores the current value of the prompt textarea
   const [promptValue, setPromptValue] = useState<string>('');
   // Reference to the textarea element for dynamic height adjustment
@@ -82,8 +84,12 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
   /**
    * Handles the submission of the prompt.
    */
+  // Block all input when an active stream is running OR the server is still
+  // processing a previous response (user navigated away and back).
+  const inputBlocked = isProcessing || isWaitingForResponse;
+
   const handleSubmit = (): void => {
-    if (canSubmitPrompt(promptValue, isProcessing)) {
+    if (canSubmitPrompt(promptValue, inputBlocked)) {
       returnPrompt(promptValue);
       setPromptValue('');
     }
@@ -93,7 +99,7 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
    * Handles keyboard events in the textarea.
    */
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
-    if (shouldSubmitOnEnter(event, isProcessing)) {
+    if (shouldSubmitOnEnter(event, inputBlocked)) {
       event.preventDefault();
       handleSubmit();
     }
@@ -120,7 +126,7 @@ function PromptField({ returnPrompt, isProcessing, onCancel, disabled = false, c
         <button
           className="button icon"
           onClick={handleSubmit}
-          disabled={disabled || !promptValue.trim()}
+          disabled={disabled || inputBlocked || !promptValue.trim()}
           title="Submit"
         >
           <Icon name="arrow-up" variant="solid" size={16} />
