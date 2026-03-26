@@ -1,7 +1,7 @@
 import React from 'react';
 import type { ReactNode } from 'react';
 import { Icon } from '../../icons';
-import { ICON_GRAY } from '../../types';
+import { ICON_GRAY, ICON_GRAY_DARK } from '../../types';
 
 interface ComponentListItemProps {
     id: string;
@@ -60,7 +60,7 @@ const ComponentListItem: React.FC<ComponentListItemProps> = ({
                 <div className="component-content">
                     <div className="component-header">
                         <div className="component-title-row">
-                            {isDisabled && <span className="disabled-pill">Disabled</span>}
+                            {isDisabled && <Icon name="eye-closed" variant="solid" size={20} color={ICON_GRAY_DARK} />}
                             {rateBadge}
                             <span className="component-title-text">{title}</span>
                         </div>

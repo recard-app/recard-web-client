@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import './CreditCardDetailView.scss';
 import { CreditCardDetails, CreditCard, EnrichedMultiplier, CardCredit, CardPerk, isRotatingMultiplier, isSelectableMultiplier } from '../../types/CreditCardTypes';
 import { UserComponentTrackingPreferences, ComponentType, COMPONENT_TYPES } from '../../types/CardCreditsTypes';
-import { ICON_RED, ICON_GRAY, ICON_PRIMARY, LOADING_ICON, LOADING_ICON_SIZE } from '../../types';
+import { ICON_RED, ICON_GRAY, ICON_GRAY_DARK, ICON_PRIMARY, LOADING_ICON, LOADING_ICON_SIZE } from '../../types';
 import { COLORS } from '../../types/Colors';
 import { CardIcon } from '../../icons';
 import { InfoDisplay, DatePicker } from '../../elements';
@@ -742,9 +742,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                             />
                                                             <span className="toggle-slider"></span>
                                                         </label>
-                                                        <span className="preference-label">
-                                                            {isDisabled ? 'Multiplier Inactive' : 'Multiplier Active'}
-                                                        </span>
+                                                        <div className="preference-label-group">
+                                                            <Icon name={isDisabled ? 'eye-closed' : 'eye-open'} variant="solid" size={16} color={ICON_GRAY_DARK} />
+                                                            <span className="preference-label">
+                                                                {isDisabled ? 'Multiplier Inactive' : 'Multiplier Active'}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 )}
                                             </ComponentListItem>
@@ -826,9 +829,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                     />
                                                     <span className="toggle-slider"></span>
                                                 </label>
-                                                <span className="preference-label">
-                                                    {isDisabled ? 'Not Tracking Credit' : 'Tracking Credit'}
-                                                </span>
+                                                <div className="preference-label-group">
+                                                    <Icon name={isDisabled ? 'eye-closed' : 'eye-open'} variant="solid" size={16} color={ICON_GRAY_DARK} />
+                                                    <span className="preference-label">
+                                                        {isDisabled ? 'Not Tracking Credit' : 'Tracking Credit'}
+                                                    </span>
+                                                </div>
                                             </div>
                                         )}
                                     </ComponentListItem>
@@ -899,9 +905,12 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                                                     />
                                                     <span className="toggle-slider"></span>
                                                 </label>
-                                                <span className="preference-label">
-                                                    {isDisabled ? 'Perk Inactive' : 'Perk Active'}
-                                                </span>
+                                                <div className="preference-label-group">
+                                                    <Icon name={isDisabled ? 'eye-closed' : 'eye-open'} variant="solid" size={16} color={ICON_GRAY_DARK} />
+                                                    <span className="preference-label">
+                                                        {isDisabled ? 'Perk Inactive' : 'Perk Active'}
+                                                    </span>
+                                                </div>
                                             </div>
                                         )}
                                     </ComponentListItem>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PageHeader from '@/components/PageHeader';
 import UsageBar from '@/components/UsageBar';
 import { Icon } from '@/icons';
-import { ICON_PRIMARY } from '@/types';
+import { ICON_PRIMARY, ICON_GRAY_DARK } from '@/types';
 import { COLORS } from '@/types/Colors';
 import '@/components/CreditCardDetailView/CreditCardDetailView.scss';
 
@@ -188,24 +188,24 @@ const CompositeComponents: React.FC = () => {
         </div>
       </div>
 
-      {/* Disabled Pill */}
+      {/* Disabled Eye Icon */}
       <div className="ds-variant-group">
-        <h3 className="ds-variant-label">Disabled Pill</h3>
+        <h3 className="ds-variant-label">Disabled Eye Icon</h3>
         <p className="ds-variant-description">
-          Small pill badge used to indicate a disabled component (credit, multiplier, or perk) in card detail views.
+          Eye-closed icon used to indicate a disabled component (credit, multiplier, or perk) in card detail views.
         </p>
         <div className="ds-component-grid">
           <div className="ds-component-item" style={{ minWidth: '200px' }}>
             <span className="ds-component-name">Standalone</span>
             <div className="card-details">
-              <span className="disabled-pill">Disabled</span>
+              <Icon name="eye-closed" variant="solid" size={16} color={ICON_GRAY_DARK} />
             </div>
           </div>
           <div className="ds-component-item" style={{ minWidth: '300px' }}>
             <span className="ds-component-name">Before credit title</span>
             <div className="card-details">
-              <span style={{ fontWeight: 500, color: COLORS.NEUTRAL_BLACK, fontSize: '14px' }}>
-                <span className="disabled-pill">Disabled</span>
+              <span style={{ fontWeight: 500, color: COLORS.NEUTRAL_BLACK, fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="eye-closed" variant="solid" size={16} color={ICON_GRAY_DARK} />
                 Uber Cash Credit
               </span>
             </div>
@@ -213,8 +213,8 @@ const CompositeComponents: React.FC = () => {
           <div className="ds-component-item" style={{ minWidth: '300px' }}>
             <span className="ds-component-name">Before multiplier name</span>
             <div className="card-details">
-              <span style={{ fontWeight: 600, color: COLORS.NEUTRAL_BLACK, fontSize: '14px' }}>
-                <span className="disabled-pill">Disabled</span>
+              <span style={{ fontWeight: 600, color: COLORS.NEUTRAL_BLACK, fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="eye-closed" variant="solid" size={16} color={ICON_GRAY_DARK} />
                 Dining
               </span>
             </div>
@@ -222,8 +222,8 @@ const CompositeComponents: React.FC = () => {
           <div className="ds-component-item" style={{ minWidth: '300px' }}>
             <span className="ds-component-name">Before perk title</span>
             <div className="card-details">
-              <span style={{ fontWeight: 500, color: COLORS.NEUTRAL_BLACK, fontSize: '14px' }}>
-                <span className="disabled-pill">Disabled</span>
+              <span style={{ fontWeight: 500, color: COLORS.NEUTRAL_BLACK, fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Icon name="eye-closed" variant="solid" size={16} color={ICON_GRAY_DARK} />
                 Priority Pass Lounge Access
               </span>
             </div>
@@ -324,14 +324,14 @@ const CompositeComponents: React.FC = () => {
             </div>
           </div>
           <div className="ds-component-item-full">
-            <span className="ds-component-name">Disabled credit item (opacity: 0.5 + pill)</span>
+            <span className="ds-component-name">Disabled credit item (opacity: 0.5 + eye icon)</span>
             <div className="card-details">
               <div className="card-section" style={{ padding: 0, border: 'none', background: 'transparent' }}>
                 <div className="credits-list">
                   <div className="credit-item disabled">
                     <div className="credit-header">
-                      <span className="credit-title">
-                        <span className="disabled-pill">Disabled</span>
+                      <span className="credit-title" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <Icon name="eye-closed" variant="solid" size={16} color={ICON_GRAY_DARK} />
                         Uber Cash Credit
                       </span>
                       <span className="credit-value">$15</span>
