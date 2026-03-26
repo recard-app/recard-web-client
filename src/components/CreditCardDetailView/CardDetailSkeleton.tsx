@@ -7,9 +7,9 @@ import { ICON_GRAY, PLACEHOLDER_CARD_PRIMARY_COLOR, PLACEHOLDER_CARD_SECONDARY_C
 const PLACEHOLDER_SHOWCASE_SOLID = `color-mix(in srgb, ${PLACEHOLDER_CARD_PRIMARY_COLOR} 8%, white)`;
 
 const STAT_ITEMS = [
+    { icon: 'arrow-trending-up', label: 'Rewards' },
     { icon: 'banknotes', label: 'Annual Fee' },
     { icon: 'globe-alt', label: 'FX Fee' },
-    { icon: 'arrow-trending-up', label: 'Rewards' },
     { icon: 'calendar', label: 'Start Date' },
 ];
 

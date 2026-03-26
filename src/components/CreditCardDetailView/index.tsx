@@ -575,6 +575,13 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
             <div className="card-stats-grid">
                 <div className="stat-tile">
                     <div className="stat-icon-wrap">
+                        <Icon name="arrow-trending-up" variant="mini" size={16} color={ICON_GRAY} aria-hidden="true" />
+                    </div>
+                    <span className="stat-value">{cardDetails.RewardsCurrency || 'N/A'}</span>
+                    <span className="stat-label">Rewards</span>
+                </div>
+                <div className="stat-tile">
+                    <div className="stat-icon-wrap">
                         <Icon name="banknotes" variant="mini" size={16} color={ICON_GRAY} aria-hidden="true" />
                     </div>
                     <span className="stat-value">{cardDetails.AnnualFee !== null ? `$${cardDetails.AnnualFee}` : '$0'}</span>
@@ -586,13 +593,6 @@ const CreditCardDetailView: React.FC<CreditCardDetailViewProps> = ({
                     </div>
                     <span className="stat-value">{cardDetails.ForeignExchangeFee || 'None'}</span>
                     <span className="stat-label">FX Fee</span>
-                </div>
-                <div className="stat-tile">
-                    <div className="stat-icon-wrap">
-                        <Icon name="arrow-trending-up" variant="mini" size={16} color={ICON_GRAY} aria-hidden="true" />
-                    </div>
-                    <span className="stat-value">{cardDetails.RewardsCurrency || 'N/A'}</span>
-                    <span className="stat-label">Rewards</span>
                 </div>
                 {(onOpenDateChange || openDate !== undefined) && (
                     <div className="stat-tile">
