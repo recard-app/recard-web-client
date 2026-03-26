@@ -55,6 +55,14 @@
     min-height: 0;
     max-height: 100%; // Ensure it doesn't exceed container height
 
+    // Always scrollable on mobile so Safari's native focus-scroll has a
+    // scrollable ancestor for the textarea. The keyboard spacer provides
+    // the room. No class toggle -- avoids layout shift during keyboard animation.
+    @media (max-width: $mobile-breakpoint) {
+        overflow-y: auto;
+        max-height: none;
+    }
+
     .prompt-history-container {
         --chat-switch-transition: #{$transition-base};
         position: relative;
@@ -101,6 +109,15 @@
   //max-width: $prompt-window-max-width;
   margin: 0 auto;
   background-color: transparent;
+}
+
+// Invisible spacer grown by useIOSKeyboard hook when the keyboard opens.
+// Height is set directly via JS ref (no React re-renders).
+.keyboard-spacer {
+  flex-shrink: 0;
+  height: 0px;
+  width: 100%;
+  pointer-events: none;
 }
 
 .below-prompt-field-text {

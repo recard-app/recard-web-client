@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { User as FirebaseUser } from 'firebase/auth';
 import { useFullHeight } from '../../hooks/useFullHeight';
 import { useAgentChat } from '../../hooks/useAgentChat';
+import { useIOSKeyboard } from '../../hooks/useIOSKeyboard';
 import { useRegisterScrollContainer } from '@/contexts/PageScrollContext';
 
 import PromptHistory from './PromptHistory';
@@ -107,6 +108,7 @@ function PromptWindow({
     const navigate = useNavigate();
     const location = useLocation();
     const promptHistoryRef = useRef<HTMLDivElement>(null);
+    const { spacerRef } = useIOSKeyboard();
     const registerScrollContainer = useRegisterScrollContainer();
 
     // Register the chat scroll container with the page scroll context
@@ -1437,6 +1439,7 @@ function PromptWindow({
                     </div>
                 )}
             </div>
+            <div ref={spacerRef} className="keyboard-spacer" aria-hidden="true" />
         </div>
     );
 }
