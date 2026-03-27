@@ -178,11 +178,12 @@
       display: inline-flex;
       align-items: center;
       gap: $space-1;
-      color: $warning;
-      font-weight: $font-bold;
+      color: $warning-badge-text;
+      font-weight: $font-semibold;
       font-size: $font-xxs;
       text-transform: uppercase;
       white-space: nowrap;
+
     }
   }
 }

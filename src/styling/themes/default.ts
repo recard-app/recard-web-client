@@ -47,7 +47,7 @@ export const defaultTheme: Theme = {
 
     // Warning and status colors
     warningBadgeBackground: '#EAB308',
-    warningBadgeText: '#8a6d3b',
+    warningBadgeText: '#B45309',
     warningBadgeLight: '#EAB308',
     alertRedBackground: '#EF4444',
 

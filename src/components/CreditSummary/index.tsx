@@ -1,6 +1,6 @@
 import React from 'react';
 import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, ALWAYS_SHOW_EXPIRING_CREDITS, SHOW_USAGE_BAR_IN_SIDEBAR_MENU, CREDIT_USAGE_DISPLAY_NAMES } from '../../types';
-import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR, WARNING } from '../../types/Colors';
+import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR, PRIMARY_LIGHT, WARNING } from '../../types/Colors';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 import Icon from '@/icons';
 import UsageBar from '../UsageBar';
@@ -107,14 +107,13 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
 
   // Calculate stats
   const totalMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount + effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount + effectiveMonthlyStats.MonthlyCredits.unusedCount;
-  const usedMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount + effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount;
   const hasExpiringCredits = effectiveMonthlyStats.ExpiringCredits.Total.count > 0;
   const showExpiringRow = ALWAYS_SHOW_EXPIRING_CREDITS || hasExpiringCredits;
 
   // Shared hero content (used by both sidebar and header)
   const heroContent = (
     <>
-      {/* Hero value row: "$150 / 12 of monthly credits spent (4 unused)" */}
+      {/* Hero value row */}
       <div className="hero-value-row">
         <span className="hero-value">${effectiveMonthlyStats.MonthlyCredits.usedValue} / ${effectiveMonthlyStats.MonthlyCredits.possibleValue}</span>
         <span className="hero-label">of monthly credits spent</span>
@@ -171,19 +170,63 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   // Header variant
   return (
     <div className={`credit-summary-hero credit-summary-header ${isUpdating ? 'updating' : ''}`}>
-      <div className="header-content">
-        <div className="header-stats">
-          {heroContent}
-          {expiringRowContent}
-        </div>
+      {/* Section header row */}
+      <div className="section-header-row">
+        <span className="section-header-label">{CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}</span>
         {onDetailedSummaryClick && (
-          <div className="credit-summary-buttons">
-            <button className="button ghost icon no-padding" onClick={onDetailedSummaryClick} aria-label="Expand to view full report">
-              <Icon name="arrow-trending-up" variant="mini" size={20} />
-            </button>
-          </div>
+          <button className="button ghost icon small with-text" onClick={onDetailedSummaryClick} aria-label="View stats">
+            <Icon name="arrow-trending-up" variant="mini" size={16} />
+            View stats
+          </button>
         )}
       </div>
+
+      {/* Value line */}
+      <div className="hero-value-row">
+        <span className="hero-value">${effectiveMonthlyStats.MonthlyCredits.usedValue}</span>
+        <span className="hero-label">/ ${effectiveMonthlyStats.MonthlyCredits.possibleValue} spent</span>
+      </div>
+
+      {/* Segmented usage bar (count-based) */}
+      <UsageBar
+        segments={[
+          {
+            label: CREDIT_USAGE_DISPLAY_NAMES.USED,
+            value: effectiveMonthlyStats.MonthlyCredits.usedCount,
+            color: PRIMARY_COLOR,
+          },
+          {
+            label: CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED,
+            value: effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount,
+            color: PRIMARY_LIGHT,
+          },
+        ]}
+        maxValue={totalMonthlyCredits}
+        height={8}
+        borderRadius={4}
+        showLabels={false}
+        animate={true}
+        className="credit-summary-usage-bar"
+      />
+
+      {/* Legend */}
+      <div className="bar-legend">
+        <div className="bar-legend-item">
+          <span className="bar-legend-dot" style={{ backgroundColor: PRIMARY_COLOR }} />
+          <span className="bar-legend-text">{effectiveMonthlyStats.MonthlyCredits.usedCount} Used</span>
+        </div>
+        <div className="bar-legend-item">
+          <span className="bar-legend-dot" style={{ backgroundColor: PRIMARY_LIGHT }} />
+          <span className="bar-legend-text">{effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount} Partially</span>
+        </div>
+        <div className="bar-legend-item">
+          <span className="bar-legend-dot bar-legend-dot--unused" />
+          <span className="bar-legend-text">{effectiveMonthlyStats.MonthlyCredits.unusedCount} Unused</span>
+        </div>
+      </div>
+
+      {/* Expiring row */}
+      {expiringRowContent}
     </div>
   );
 };

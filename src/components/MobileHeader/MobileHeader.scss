@@ -364,10 +364,11 @@
       gap: $space-1;
       font-family: $font-body;
       font-size: $font-xs;
-      font-weight: $font-bold;
-      color: $warning;
+      font-weight: $font-semibold;
+      color: $warning-badge-text;
       text-transform: none;
       margin-left: auto;
+
     }
 
     .see-all-chats-link {

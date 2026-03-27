@@ -12,8 +12,8 @@
   // Apply updating state animation to values
   &.updating {
     .hero-value,
-    .supporting-text,
-    .expiring-text {
+    .expiring-text,
+    .bar-legend-text {
       @include updating-state;
     }
   }
@@ -38,37 +38,19 @@
     }
   }
 
-  // Supporting row: "[icon] you have used X/X credits worth up to $XXX this month"
-  .supporting-row {
-    display: flex;
-    align-items: center;
-    gap: $space-1;
-    font-size: $font-xs;
-    color: $neutral-dark-gray;
-
-    .supporting-icon {
-      display: flex;
-      align-items: center;
-    }
-
-    .supporting-text {
-      font-variant-numeric: tabular-nums;
-    }
-
-    .supporting-value {
-      font-weight: $font-bold;
-      color: $neutral-dark-gray;
-    }
-  }
-
   // Expiring row: "X credits expiring worth $XXX"
   .expiring-row {
+    margin-top: $space-1;
     display: flex;
     align-items: center;
     gap: $space-1;
     font-size: $font-xs;
     font-weight: $font-medium;
-    color: $neutral-dark-gray;
+    color: $warning-badge-text;
+    background-color: color-mix(in srgb, $warning-badge-background 10%, transparent);
+    border: 1px solid color-mix(in srgb, $warning-badge-background 20%, transparent);
+    padding: $space-1 $space-2;
+    border-radius: $radius-md;
 
     .expiring-icon {
       display: flex;
@@ -91,31 +73,65 @@
 }
 
 // Header variant specifics
-.credit-summary-header {
-  .header-content {
+.credit-summary-hero.credit-summary-header {
+  padding-top: 0;
+  padding-bottom: 0;
+  .section-header-row {
     display: flex;
-    align-items: flex-start;
-    gap: $space-2;
+    align-items: center;
+    justify-content: space-between;
 
-    .header-stats {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: $space-2;
+    .section-header-label {
+      font-size: $font-xs;
+      font-weight: $font-bold;
+      text-transform: uppercase;
+      letter-spacing: $letter-spacing-caps;
+      color: $neutral-medium-gray;
+    }
+
+    .button {
+      padding-top: $space-half !important;
+      padding-bottom: $space-half !important;
+      min-height: 0;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -$space-2;
+      }
     }
   }
 
-  .credit-summary-buttons {
+  .bar-legend {
     display: flex;
-    gap: $space-2;
-    align-items: center;
-    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: $space-2 $space-3;
+    font-size: $font-xs;
 
-    .button {
-      svg {
-        width: $icon-small;
-        height: $icon-small;
+    .bar-legend-item {
+      display: flex;
+      align-items: center;
+      gap: $space-1;
+      white-space: nowrap;
+    }
+
+    .bar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+
+      &--unused {
+        background-color: $neutral-light-gray;
+        border: 1px solid $neutral-gray;
       }
+    }
+
+    .bar-legend-text {
+      font-weight: $font-medium;
+      color: $neutral-dark-gray;
+      font-variant-numeric: tabular-nums;
     }
   }
 }
@@ -123,6 +139,10 @@
 // Sidebar variant specifics (mostly inherits from hero base)
 .credit-summary-sidebar {
   padding: $space-2;
+
+  .expiring-row {
+    margin-top: 0;
+  }
 }
 
 // Responsive adjustments for mobile
@@ -143,6 +163,12 @@
 
     .credit-summary-usage-bar {
       margin: $space-half 0;
+    }
+  }
+
+  .credit-summary-header {
+    .bar-legend {
+      gap: $space-1 $space-2;
     }
   }
 }

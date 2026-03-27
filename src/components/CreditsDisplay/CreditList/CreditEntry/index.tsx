@@ -325,7 +325,7 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
           </div>
           {isExpiring && (
             <span className="expiring-text-inline">
-              <Icon name="clock" variant="micro" size={12} />
+              <Icon name="clock" variant="micro" size={12} color={COLORS.WARNING} />
               {getExpirationText(daysUntilExpiration)}
             </span>
           )}
