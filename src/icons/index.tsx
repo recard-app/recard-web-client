@@ -2322,6 +2322,8 @@ const Icon: React.FC<IconProps> = ({
   className = '',
   ...props
 }) => {
+  const iconInstanceId = React.useId();
+
   // Get the icon definition from registry
   const iconData = iconRegistry[name];
   
@@ -2366,6 +2368,20 @@ const Icon: React.FC<IconProps> = ({
 
   // Add animation class for spinner
   const finalClassName = name === 'spinner' ? `animate-spin ${className}` : className;
+  const spinnerGradientId = `spinner-gradient-${iconInstanceId.replace(/:/g, '')}`;
+  const renderedPaths = name === 'spinner'
+    ? variantData.paths.map((path, index) => {
+      if (!React.isValidElement(path) || path.type !== 'path') {
+        return path;
+      }
+
+      const key = path.key ?? `spinner-path-${index}`;
+      return React.cloneElement(path, {
+        key,
+        stroke: `url(#${spinnerGradientId})`
+      });
+    })
+    : variantData.paths;
 
   return (
     <svg
@@ -2382,7 +2398,16 @@ const Icon: React.FC<IconProps> = ({
       style={{ color }}
       {...props}
     >
-      {variantData.paths}
+      {name === 'spinner' && (
+        <defs>
+          <linearGradient id={spinnerGradientId} x1="1" y1="0.5" x2="0" y2="0.5">
+            <stop offset="0%" stopColor="currentColor" stopOpacity="0" />
+            <stop offset="60%" stopColor="currentColor" stopOpacity="1" />
+            <stop offset="100%" stopColor="currentColor" stopOpacity="1" />
+          </linearGradient>
+        </defs>
+      )}
+      {renderedPaths}
     </svg>
   );
 };
