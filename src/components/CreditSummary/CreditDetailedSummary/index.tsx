@@ -311,6 +311,7 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
               showLabels={true}
               labelsVertical={true}
               animate={true}
+              valuePrefix="$"
               className="detailed-summary-usage-bar"
             />
           </div>

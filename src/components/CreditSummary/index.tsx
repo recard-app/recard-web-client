@@ -172,7 +172,10 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
     <div className={`credit-summary-hero credit-summary-header ${isUpdating ? 'updating' : ''}`}>
       {/* Section header row */}
       <div className="section-header-row">
-        <span className="section-header-label">{CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}</span>
+        <span className="section-header-label">
+          <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={16} color={NEUTRAL_DARK_GRAY} />
+          {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}
+        </span>
         {onDetailedSummaryClick && (
           <button className="button ghost icon small with-text" onClick={onDetailedSummaryClick} aria-label="View stats">
             <Icon name="arrow-trending-up" variant="mini" size={16} />

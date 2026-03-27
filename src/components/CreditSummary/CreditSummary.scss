@@ -82,11 +82,12 @@
     justify-content: space-between;
 
     .section-header-label {
-      font-size: $font-xs;
-      font-weight: $font-bold;
-      text-transform: uppercase;
-      letter-spacing: $letter-spacing-caps;
-      color: $neutral-medium-gray;
+      display: flex;
+      align-items: center;
+      gap: $space-1;
+      font-size: $font-sm;
+      font-weight: $font-semibold;
+      color: $neutral-dark-gray;
     }
 
     .button {
