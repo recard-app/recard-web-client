@@ -213,15 +213,15 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
       <div className="bar-legend">
         <div className="bar-legend-item">
           <span className="bar-legend-dot" style={{ backgroundColor: PRIMARY_COLOR }} />
-          <span className="bar-legend-text">{effectiveMonthlyStats.MonthlyCredits.usedCount} Used</span>
+          <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.usedCount}</span> Redeemed</span>
         </div>
         <div className="bar-legend-item">
           <span className="bar-legend-dot" style={{ backgroundColor: PRIMARY_LIGHT }} />
-          <span className="bar-legend-text">{effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount} Partially</span>
+          <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount}</span> Partial</span>
         </div>
         <div className="bar-legend-item">
           <span className="bar-legend-dot bar-legend-dot--unused" />
-          <span className="bar-legend-text">{effectiveMonthlyStats.MonthlyCredits.unusedCount} Unused</span>
+          <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.unusedCount}</span> Unused</span>
         </div>
       </div>
 
