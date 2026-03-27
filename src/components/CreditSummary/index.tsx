@@ -114,10 +114,10 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   // Shared hero content (used by both sidebar and header)
   const heroContent = (
     <>
-      {/* Hero value row: "$150 used" */}
+      {/* Hero value row: "$150 / 12 of monthly credits spent (4 unused)" */}
       <div className="hero-value-row">
-        <span className="hero-value">${effectiveMonthlyStats.MonthlyCredits.usedValue}</span>
-        <span className="hero-label">of monthly credits used</span>
+        <span className="hero-value">${effectiveMonthlyStats.MonthlyCredits.usedValue} / ${effectiveMonthlyStats.MonthlyCredits.possibleValue}</span>
+        <span className="hero-label">of monthly credits spent</span>
       </div>
 
       {/* Usage bar */}
@@ -137,16 +137,6 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
         className="credit-summary-usage-bar"
         valuePrefix="$"
       />
-
-      {/* Supporting row: "[icon] you have used X/X credits worth $XXX this month" */}
-      <div className="supporting-row">
-        <span className="supporting-icon">
-          <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={NEUTRAL_DARK_GRAY} />
-        </span>
-        <span className="supporting-text">
-          <span className="supporting-value">{usedMonthlyCredits}/{totalMonthlyCredits}</span> monthly credits used
-        </span>
-      </div>
     </>
   );
 

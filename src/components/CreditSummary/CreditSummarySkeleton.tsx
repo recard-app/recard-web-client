@@ -24,10 +24,6 @@ const CreditSummarySkeleton: React.FC = () => {
                         className="credit-summary-usage-bar"
                     />
 
-                    {/* Supporting row shimmer */}
-                    <div className="supporting-row">
-                        <Skeleton className="h-3 rounded" style={{ width: 260 }} />
-                    </div>
                 </div>
                 <div className="credit-summary-buttons">
                     <button className="button ghost icon no-padding" disabled style={{ cursor: 'default', opacity: 0.3 }} aria-label="Expand to view full report">
