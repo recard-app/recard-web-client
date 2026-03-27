@@ -34,15 +34,18 @@
     padding-bottom: $space-4;
     @media (max-width: $mobile-breakpoint) {
       padding-bottom: $space-2;
-      // When the composer is focused on mobile, collapse bottom padding so
-      // the input sits closer to the keyboard toolbar.
-      &:focus-within {
+      // When the composer textarea is focused on mobile, collapse bottom padding
+      // so the input sits closer to the keyboard toolbar.
+      // Use :has() instead of :focus-within to avoid triggering on focusable
+      // chat components (tabIndex={0} cards/credits), which caused a layout
+      // shift in PWA mode and a double-tap-to-click bug.
+      &:has(.prompt-field textarea:focus) {
         padding-bottom: $space-1-5;
       }
     }
     @media (max-width: $mobile-breakpoint) and (display-mode: standalone) {
       padding-bottom: $pwa-bottom-padding-chat;
-      &:focus-within {
+      &:has(.prompt-field textarea:focus) {
         padding-bottom: $space-1-5;
       }
     }
