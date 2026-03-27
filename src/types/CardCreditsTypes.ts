@@ -501,7 +501,7 @@ export type ComponentDisabledDisplayNameType = typeof COMPONENT_DISABLED_DISPLAY
  */
 export const CREDIT_SUMMARY_SECTIONS = {
     MONTHLY_CREDITS: {
-        displayName: 'Monthly credits',
+        displayName: 'Monthly Credits',
         icon: 'calendar-days'
     },
     CURRENT_CREDITS: {
