@@ -106,7 +106,8 @@ const CreditEntry: React.FC<CreditEntryProps> = ({ userCredit, now, card, cardCr
     userCredit.AssociatedPeriod,
     isAnniversaryBased,
     anniversaryDate,
-    now
+    now,
+    userCredit.anniversaryYear
   );
 
   // Get the display text for the credit period (anniversary-aware)

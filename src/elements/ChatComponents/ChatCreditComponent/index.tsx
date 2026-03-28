@@ -91,7 +91,9 @@ const ChatCreditComponent: React.FC<ChatCreditComponentProps> = ({
     : getDateRangeText(
         userCredit.AssociatedPeriod,
         userCredit.isAnniversaryBased ?? false,
-        userCredit.anniversaryDate
+        userCredit.anniversaryDate,
+        new Date(),
+        userCredit.anniversaryYear
       );
 
   const className = [

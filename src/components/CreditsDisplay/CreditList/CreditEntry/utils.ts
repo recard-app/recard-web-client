@@ -206,13 +206,14 @@ export function getDateRangeText(
   associatedPeriod: string,
   isAnniversaryBased: boolean,
   anniversaryDate?: string,
-  now: Date = new Date()
+  now: Date = new Date(),
+  anniversaryYear?: number
 ): string {
   if (isAnniversaryBased && anniversaryDate) {
-    // Use year=2000 as dummy -- callers only use monthAbbr
-    const range = getAnniversaryPeriodRange(anniversaryDate, 2000);
+    const year = anniversaryYear ?? now.getFullYear();
+    const range = getAnniversaryPeriodRange(anniversaryDate, year);
     if (range) {
-      return `${range.start.monthAbbr} \u2192 ${range.end.monthAbbr}`;
+      return `${range.start.monthAbbr} ${range.start.year} \u2192 ${range.end.monthAbbr} ${range.end.year}`;
     }
     return 'Annual';
   }
