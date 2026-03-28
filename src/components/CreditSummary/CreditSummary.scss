@@ -99,16 +99,6 @@
     .button {
       margin-left: auto;
       flex-shrink: 0;
-      padding-top: $space-half !important;
-      padding-bottom: $space-half !important;
-      min-height: 0;
-      position: relative;
-
-      &::before {
-        content: '';
-        position: absolute;
-        inset: -$space-2;
-      }
     }
   }
 
