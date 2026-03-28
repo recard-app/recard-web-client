@@ -8,9 +8,8 @@ const CreditSummarySkeleton: React.FC = () => {
             <div className="hero-value-row">
                 <div className="hero-value-group">
                     <Skeleton className="rounded" style={{ width: 120, height: 32 }} />
-                    <Skeleton className="rounded" style={{ width: 170, height: 21 }} />
+                    <div style={{ height: 21 }} />
                 </div>
-                <Skeleton className="rounded" style={{ width: 90, height: 24 }} />
             </div>
 
             {/* Usage bar */}
