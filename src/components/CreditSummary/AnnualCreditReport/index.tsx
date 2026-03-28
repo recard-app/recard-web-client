@@ -38,52 +38,39 @@ const PeriodBreakdownSection: React.FC<{
       <div className="section-header">
         <Icon name={icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
         <h3 className="section-title">{label}</h3>
+        <span className="section-summary-fraction">
+          {formatCurrency(breakdown.totalUsed)} / {formatCurrency(breakdown.totalValue)}
+        </span>
+        <span className="utilization-badge">
+          {Math.round(breakdown.utilizationRate * 100)}%
+        </span>
       </div>
-      <div className="metric-group">
-        <div className="metric-item">
-          <div className="metric-label">
-            Overall: {formatCurrency(breakdown.totalUsed)} / {formatCurrency(breakdown.totalValue)} ({Math.round(breakdown.utilizationRate * 100)}% utilized)
-          </div>
-          <UsageBar
-            segments={[
-              {
-                label: 'Used',
-                value: breakdown.totalUsed,
-                color: COLORS.PRIMARY_COLOR,
-              },
-            ]}
-            maxValue={breakdown.totalValue}
-            thickness={10}
-            borderRadius={5}
-            showLabels={false}
-            animate={true}
-            className="report-usage-bar"
-          />
-        </div>
-        <div className="period-bars">
-          {breakdown.periods.map((period) => (
-            <div key={period.periodNumber} className="period-bar-item">
-              <span className="period-label">
-                {period.periodLabel}: {formatCurrency(period.used)} / {formatCurrency(period.totalValue)}
+      <div className="period-bars">
+        {breakdown.periods.map((period) => (
+          <div key={period.periodNumber} className="period-bar-item">
+            <div className="period-item-header">
+              <span className="period-label">{period.periodLabel}</span>
+              <span className="period-fraction">
+                {formatCurrency(period.used)} / {formatCurrency(period.totalValue)}
               </span>
-              <UsageBar
-                segments={[
-                  {
-                    label: period.periodLabel,
-                    value: period.used,
-                    color: COLORS.PRIMARY_MEDIUM,
-                  },
-                ]}
-                maxValue={period.totalValue}
-                thickness={8}
-                borderRadius={4}
-                showLabels={false}
-                animate={true}
-                className="report-usage-bar"
-              />
             </div>
-          ))}
-        </div>
+            <UsageBar
+              segments={[
+                {
+                  label: period.periodLabel,
+                  value: period.used,
+                  color: COLORS.PRIMARY_MEDIUM,
+                },
+              ]}
+              maxValue={period.totalValue}
+              thickness={8}
+              borderRadius={4}
+              showLabels={false}
+              animate={true}
+              className="report-usage-bar"
+            />
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -134,34 +121,37 @@ const AnnualCreditReport: React.FC<AnnualCreditReportProps> = ({
 
   return (
     <div className="annual-credit-report">
-      {/* Annual Summary */}
-      <div className="summary-section">
-        <div className="section-header">
-          <Icon name={CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
-          <h3 className="section-title">{year} Annual Summary</h3>
+      {/* Hero Summary Cards */}
+      <div className="hero-cards">
+        <div className="hero-card">
+          <div className="hero-card-label">Total Value</div>
+          <div className="hero-card-value">{formatCurrency(summary.totalValue)}</div>
+          <div className="hero-card-sub">{formatCurrency(summary.totalUsed)} used</div>
         </div>
-        <div className="metric-group">
-          <div className="metric-item">
-            <div className="metric-label">
-              {formatCurrency(summary.totalUsed)} / {formatCurrency(summary.totalValue)} ({Math.round(summary.utilizationRate * 100)}% utilized)
-            </div>
-            <UsageBar
-              segments={[
-                {
-                  label: 'Used',
-                  value: summary.totalUsed,
-                  color: COLORS.PRIMARY_COLOR,
-                },
-              ]}
-              maxValue={summary.totalValue}
-              thickness={12}
-              borderRadius={6}
-              showLabels={false}
-              animate={true}
-              className="report-usage-bar"
-            />
-          </div>
+        <div className="hero-card">
+          <div className="hero-card-label">Utilization</div>
+          <div className="hero-card-value">{Math.round(summary.utilizationRate * 100)}%</div>
+          <div className="hero-card-sub">{formatCurrency(summary.totalValue - summary.totalUsed)} remaining</div>
         </div>
+      </div>
+
+      {/* Summary Bar */}
+      <div className="summary-bar-section">
+        <UsageBar
+          segments={[
+            {
+              label: 'Used',
+              value: summary.totalUsed,
+              color: COLORS.PRIMARY_COLOR,
+            },
+          ]}
+          maxValue={summary.totalValue}
+          thickness={12}
+          borderRadius={6}
+          showLabels={false}
+          animate={true}
+          className="report-usage-bar"
+        />
       </div>
 
       {/* Per-period-type breakdowns */}

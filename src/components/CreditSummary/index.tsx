@@ -105,6 +105,12 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
     );
   }
 
+  // Format a dollar value to two decimal places, dropping decimals if whole number
+  const fmt = (v: number) => {
+    const rounded = Math.round(v * 100) / 100;
+    return rounded % 1 === 0 ? rounded.toString() : rounded.toFixed(2);
+  };
+
   // Calculate stats
   const totalMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount + effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount + effectiveMonthlyStats.MonthlyCredits.unusedCount;
   const hasExpiringCredits = effectiveMonthlyStats.ExpiringCredits.Total.count > 0;
@@ -115,7 +121,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
     <>
       {/* Hero value row */}
       <div className="hero-value-row">
-        <span className="hero-value">${effectiveMonthlyStats.MonthlyCredits.usedValue} / ${effectiveMonthlyStats.MonthlyCredits.possibleValue}</span>
+        <span className="hero-value">${fmt(effectiveMonthlyStats.MonthlyCredits.usedValue)} / ${fmt(effectiveMonthlyStats.MonthlyCredits.possibleValue)}</span>
         <span className="hero-label">of monthly credits spent</span>
       </div>
 
@@ -146,7 +152,7 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
         <Icon name={CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.icon} variant="micro" size={14} color={WARNING} />
       </span>
       <span className="expiring-text">
-        <span className="expiring-value">{effectiveMonthlyStats.ExpiringCredits.Total.count} {effectiveMonthlyStats.ExpiringCredits.Total.count === 1 ? 'credit' : 'credits'}</span>{effectiveMonthlyStats.ExpiringCredits.Total.unusedValue > 0 ? <> worth <span className="expiring-value">${effectiveMonthlyStats.ExpiringCredits.Total.unusedValue}</span></> : null} expiring soon
+        <span className="expiring-value">{effectiveMonthlyStats.ExpiringCredits.Total.count} {effectiveMonthlyStats.ExpiringCredits.Total.count === 1 ? 'credit' : 'credits'}</span>{effectiveMonthlyStats.ExpiringCredits.Total.unusedValue > 0 ? <> worth <span className="expiring-value">${fmt(effectiveMonthlyStats.ExpiringCredits.Total.unusedValue)}</span></> : null} expiring soon
       </span>
     </div>
   );
@@ -170,24 +176,16 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   // Header variant
   return (
     <div className={`credit-summary-hero credit-summary-header ${isUpdating ? 'updating' : ''}`}>
-      {/* Section header row */}
-      <div className="section-header-row">
-        <span className="section-header-label">
-          <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={16} color={NEUTRAL_DARK_GRAY} />
-          {CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}
-        </span>
+      {/* Remaining value + View stats */}
+      <div className="hero-value-row">
+        <span className="hero-value">${fmt(effectiveMonthlyStats.MonthlyCredits.possibleValue - effectiveMonthlyStats.MonthlyCredits.usedValue)}</span>
+        <span className="hero-label">monthly credits left</span>
         {onDetailedSummaryClick && (
           <button className="button ghost icon small with-text" onClick={onDetailedSummaryClick} aria-label="View stats">
             <Icon name="arrow-trending-up" variant="mini" size={16} />
             View stats
           </button>
         )}
-      </div>
-
-      {/* Value line */}
-      <div className="hero-value-row">
-        <span className="hero-value">${effectiveMonthlyStats.MonthlyCredits.usedValue}</span>
-        <span className="hero-label">/ ${effectiveMonthlyStats.MonthlyCredits.possibleValue} spent</span>
       </div>
 
       {/* Segmented usage bar (count-based) */}
@@ -214,18 +212,24 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
 
       {/* Legend */}
       <div className="bar-legend">
-        <div className="bar-legend-item">
-          <span className="bar-legend-dot" style={{ backgroundColor: PRIMARY_COLOR }} />
-          <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.usedCount}</span> Redeemed</span>
-        </div>
-        <div className="bar-legend-item">
-          <span className="bar-legend-dot" style={{ backgroundColor: PRIMARY_LIGHT }} />
-          <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount}</span> Partial</span>
-        </div>
-        <div className="bar-legend-item">
-          <span className="bar-legend-dot bar-legend-dot--unused" />
-          <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.unusedCount}</span> Unused</span>
-        </div>
+        {effectiveMonthlyStats.MonthlyCredits.usedCount > 0 && (
+          <div className="bar-legend-item">
+            <span className="bar-legend-dot" style={{ backgroundColor: PRIMARY_COLOR }} />
+            <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.usedCount}</span> Redeemed</span>
+          </div>
+        )}
+        {effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount > 0 && (
+          <div className="bar-legend-item">
+            <span className="bar-legend-dot" style={{ backgroundColor: PRIMARY_LIGHT }} />
+            <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount}</span> Partial</span>
+          </div>
+        )}
+        {effectiveMonthlyStats.MonthlyCredits.unusedCount > 0 && (
+          <div className="bar-legend-item">
+            <span className="bar-legend-dot bar-legend-dot--unused" />
+            <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.unusedCount}</span> Unused</span>
+          </div>
+        )}
       </div>
 
       {/* Expiring row */}

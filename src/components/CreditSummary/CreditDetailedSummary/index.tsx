@@ -63,6 +63,17 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
   const totalCurrentCredits = monthlyStats.CurrentCredits.usedCount + monthlyStats.CurrentCredits.partiallyUsedCount + monthlyStats.CurrentCredits.unusedCount;
   const totalAllCredits = monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount;
 
+  // Calculate utilization percentages
+  const monthlyUtilization = monthlyStats.MonthlyCredits.possibleValue > 0
+    ? Math.round((monthlyStats.MonthlyCredits.usedValue / monthlyStats.MonthlyCredits.possibleValue) * 100)
+    : 0;
+  const currentUtilization = monthlyStats.CurrentCredits.possibleValue > 0
+    ? Math.round((monthlyStats.CurrentCredits.usedValue / monthlyStats.CurrentCredits.possibleValue) * 100)
+    : 0;
+  const allUtilization = monthlyStats.AllCredits.possibleValue > 0
+    ? Math.round((monthlyStats.AllCredits.usedValue / monthlyStats.AllCredits.possibleValue) * 100)
+    : 0;
+
   // Calculate totals for expiring credits
   const totalExpiringValue =
     monthlyStats.ExpiringCredits.Monthly.unusedValue +
@@ -108,12 +119,18 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
       {/* Section 1: Monthly Credits */}
       <div className="summary-section">
         <div className="section-header">
-          <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
+          <span className="section-icon-badge">
+            <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={COLORS.PRIMARY_COLOR} />
+          </span>
           <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}</h3>
+          <span className="utilization-badge">{monthlyUtilization}%</span>
         </div>
         <div className="metric-group">
           <div className="metric-item">
-            <div className="metric-label">Dollar Value: {formatCurrency(monthlyStats.MonthlyCredits.usedValue)} / {formatCurrency(monthlyStats.MonthlyCredits.possibleValue)}</div>
+            <div className="metric-label">
+              <span className="metric-label-text">Dollar Value</span>
+              <span className="metric-label-fraction">{formatCurrency(monthlyStats.MonthlyCredits.usedValue)} / {formatCurrency(monthlyStats.MonthlyCredits.possibleValue)}</span>
+            </div>
             <UsageBar
               segments={[
                 {
@@ -131,7 +148,10 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
             />
           </div>
           <div className="metric-item">
-            <div className="metric-label">Credit Count Breakdown</div>
+            <div className="metric-label">
+              <span className="metric-label-text">Credit Count Breakdown</span>
+              <span className="metric-label-fraction">{monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount} / {totalMonthlyCredits}</span>
+            </div>
             <UsageBar
               segments={[
                 {
@@ -164,12 +184,18 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
       {/* Section 2: Credits to Date */}
       <div className="summary-section">
         <div className="section-header">
-          <Icon name={CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
+          <span className="section-icon-badge">
+            <Icon name={CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.icon} variant="micro" size={14} color={COLORS.PRIMARY_COLOR} />
+          </span>
           <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.displayName}</h3>
+          <span className="utilization-badge">{currentUtilization}%</span>
         </div>
         <div className="metric-group">
           <div className="metric-item">
-            <div className="metric-label">Dollar Value: {formatCurrency(monthlyStats.CurrentCredits.usedValue)} / {formatCurrency(monthlyStats.CurrentCredits.possibleValue)}</div>
+            <div className="metric-label">
+              <span className="metric-label-text">Dollar Value</span>
+              <span className="metric-label-fraction">{formatCurrency(monthlyStats.CurrentCredits.usedValue)} / {formatCurrency(monthlyStats.CurrentCredits.possibleValue)}</span>
+            </div>
             <UsageBar
               segments={[
                 {
@@ -187,7 +213,10 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
             />
           </div>
           <div className="metric-item">
-            <div className="metric-label">Credit Count Breakdown</div>
+            <div className="metric-label">
+              <span className="metric-label-text">Credit Count Breakdown</span>
+              <span className="metric-label-fraction">{monthlyStats.CurrentCredits.usedCount + monthlyStats.CurrentCredits.partiallyUsedCount} / {totalCurrentCredits}</span>
+            </div>
             <UsageBar
               segments={[
                 {
@@ -220,12 +249,18 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
       {/* Section 3: Annual Credits */}
       <div className="summary-section">
         <div className="section-header">
-          <Icon name={CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
+          <span className="section-icon-badge">
+            <Icon name={CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.icon} variant="micro" size={14} color={COLORS.PRIMARY_COLOR} />
+          </span>
           <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.displayName}</h3>
+          <span className="utilization-badge">{allUtilization}%</span>
         </div>
         <div className="metric-group">
           <div className="metric-item">
-            <div className="metric-label">Dollar Value: {formatCurrency(monthlyStats.AllCredits.usedValue)} / {formatCurrency(monthlyStats.AllCredits.possibleValue)}</div>
+            <div className="metric-label">
+              <span className="metric-label-text">Dollar Value</span>
+              <span className="metric-label-fraction">{formatCurrency(monthlyStats.AllCredits.usedValue)} / {formatCurrency(monthlyStats.AllCredits.possibleValue)}</span>
+            </div>
             <UsageBar
               segments={[
                 {
@@ -243,7 +278,10 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
             />
           </div>
           <div className="metric-item">
-            <div className="metric-label">Credit Count Breakdown</div>
+            <div className="metric-label">
+              <span className="metric-label-text">Credit Count Breakdown</span>
+              <span className="metric-label-fraction">{monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount} / {totalAllCredits}</span>
+            </div>
             <UsageBar
               segments={[
                 {
@@ -274,14 +312,22 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
       </div>
 
       {/* Section 4: Expiring Credits */}
-      <div className="summary-section">
+      <div className="summary-section summary-section--expiring">
         <div className="section-header">
-          <Icon name={CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
+          <span className="section-icon-badge">
+            <Icon name={CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.icon} variant="micro" size={14} color={COLORS.WARNING} />
+          </span>
           <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}</h3>
+          {expiringTotalValue > 0 && (
+            <span className="utilization-badge utilization-badge--warning">{formatCurrency(expiringTotalValue)} at risk</span>
+          )}
         </div>
         <div className="metric-group">
           <div className="metric-item">
-            <div className="metric-label">Dollar Value by Period: {formatCurrency(expiringTotalValue)} Total</div>
+            <div className="metric-label">
+              <span className="metric-label-text">Dollar Value by Period</span>
+              <span className="metric-label-fraction">{formatCurrency(expiringTotalValue)} Total</span>
+            </div>
             <UsageBar
               segments={[
                 {
@@ -316,7 +362,10 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
             />
           </div>
           <div className="metric-item">
-            <div className="metric-label">Credit Count by Period: {expiringTotalCount} Total</div>
+            <div className="metric-label">
+              <span className="metric-label-text">Credit Count by Period</span>
+              <span className="metric-label-fraction">{expiringTotalCount} Total</span>
+            </div>
             <UsageBar
               segments={[
                 {
