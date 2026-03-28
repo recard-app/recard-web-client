@@ -74,6 +74,15 @@ const CreditModalControls: React.FC<CreditModalControlsProps> = ({
   // but before the browser paints, so the user never sees the default state.
   useLayoutEffect(() => {
     if (selectedHistory) {
+      // If the period is disabled, force Not Tracked display regardless of underlying data
+      if (selectedHistory.Disabled) {
+        setUsage(CREDIT_USAGE.INACTIVE);
+        setValueUsed(0);
+        if (onLiveChange) {
+          onLiveChange(CREDIT_USAGE.INACTIVE, 0);
+        }
+        return;
+      }
       const newUsage = selectedHistory.CreditUsage as CreditUsageType;
       const newValueUsed = selectedHistory.ValueUsed ?? 0;
       setUsage(newUsage);

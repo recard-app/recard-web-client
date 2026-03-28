@@ -325,6 +325,43 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     return Math.min(Math.max(Math.floor(monthZeroBased / segmentLength) + 1, 1), intervals);
   }, [now, effectiveResolvedData?.userCredit]);
 
+  // Compute the best initial period, avoiding disabled and future periods
+  const bestInitialPeriod = useMemo(() => {
+    if (!effectiveResolvedData?.userCredit) return initialPeriodNumber ?? currentPeriodNumber;
+    const uc = effectiveResolvedData.userCredit;
+
+    const targetPeriod = initialPeriodNumber ?? currentPeriodNumber;
+
+    // Check if target period is disabled
+    const targetHistory = uc.History.find(h => h.PeriodNumber === targetPeriod);
+    if (!targetHistory?.Disabled) {
+      return targetPeriod; // Target is not disabled, use it
+    }
+
+    // Target is disabled - find the first non-disabled, non-future period
+    if (uc.isAnniversaryBased) return 1;
+
+    const periodKey = (Object.keys(CREDIT_PERIODS) as Array<keyof typeof CREDIT_PERIODS>).find(
+      (k) => CREDIT_PERIODS[k] === uc.AssociatedPeriod
+    ) as keyof typeof CREDIT_INTERVALS | undefined;
+
+    if (!periodKey) return targetPeriod;
+
+    const totalPeriods = CREDIT_INTERVALS[periodKey] ?? 1;
+    const isCurrentYear = year === new Date().getFullYear();
+
+    for (let i = 1; i <= totalPeriods; i++) {
+      const historyEntry = uc.History.find(h => h.PeriodNumber === i);
+      if (historyEntry?.Disabled) continue;
+      // In the current year, skip future periods
+      if (isCurrentYear && i > currentPeriodNumber) continue;
+      return i;
+    }
+
+    // All non-future periods are disabled - select the first one
+    return 1;
+  }, [effectiveResolvedData?.userCredit, initialPeriodNumber, currentPeriodNumber, year]);
+
   // Selected period state
   const [selectedPeriodNumber, setSelectedPeriodNumber] = useState<number>(
     initialPeriodNumber ?? currentPeriodNumber
@@ -360,14 +397,14 @@ const CreditDrawerRenderer: React.FC<CreditDrawerRendererProps> = ({
     });
   }, [activeCreditId]);
 
-  // Reset period selection when drawer opens or initialPeriodNumber changes
+  // Reset period selection when drawer opens or bestInitialPeriod changes
   useEffect(() => {
     if (isOpen) {
-      setSelectedPeriodNumber(initialPeriodNumber ?? currentPeriodNumber);
+      setSelectedPeriodNumber(bestInitialPeriod);
       setLiveUsage(undefined);
       setLiveValueUsed(undefined);
     }
-  }, [isOpen, initialPeriodNumber, currentPeriodNumber]);
+  }, [isOpen, bestInitialPeriod]);
 
   // Reset live values when selected period changes
   useEffect(() => {
