@@ -30,13 +30,6 @@
     }
   }
 
-  // Expiring section
-  .summary-section--expiring {
-    .section-icon-badge {
-      background-color: color-mix(in srgb, $warning-badge-background 10%, transparent);
-    }
-  }
-
   // Section header
   .section-header {
     display: flex;
@@ -128,6 +121,11 @@
       font-weight: $font-semibold;
       color: $neutral-black;
     }
+  }
+
+  // Expiring section — override icon badge to use warning color instead of primary
+  .summary-section--expiring .section-header .section-icon-badge {
+    background-color: color-mix(in srgb, $warning-badge-background 15%, transparent);
   }
 
   // Usage bar spacing

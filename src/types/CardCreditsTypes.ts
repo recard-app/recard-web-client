@@ -405,6 +405,13 @@ export interface MonthlyStatsResponse {
         Annually: { count: number; unusedValue: number; };
         Total: { count: number; unusedValue: number; };
     };
+    PeriodBreakdown: {
+        Monthly: { count: number; unusedValue: number; possibleValue: number; };
+        Quarterly: { count: number; unusedValue: number; possibleValue: number; };
+        Semiannually: { count: number; unusedValue: number; possibleValue: number; };
+        Annually: { count: number; unusedValue: number; possibleValue: number; };
+        Total: { count: number; unusedValue: number; possibleValue: number; };
+    };
 }
 
 /**
@@ -503,6 +510,10 @@ export const CREDIT_SUMMARY_SECTIONS = {
     MONTHLY_CREDITS: {
         displayName: 'Monthly Credits',
         icon: 'calendar-days'
+    },
+    ACTIVE_CREDITS: {
+        displayName: 'Active Credits',
+        icon: 'wallet'
     },
     CURRENT_CREDITS: {
         displayName: 'Credits to date',

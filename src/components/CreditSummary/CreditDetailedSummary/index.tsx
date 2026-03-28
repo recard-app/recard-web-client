@@ -59,14 +59,25 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
   const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
 
   // Calculate totals for each section
-  const totalMonthlyCredits = monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount + monthlyStats.MonthlyCredits.unusedCount;
   const totalCurrentCredits = monthlyStats.CurrentCredits.usedCount + monthlyStats.CurrentCredits.partiallyUsedCount + monthlyStats.CurrentCredits.unusedCount;
   const totalAllCredits = monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount;
 
-  // Calculate utilization percentages
-  const monthlyUtilization = monthlyStats.MonthlyCredits.possibleValue > 0
-    ? Math.round((monthlyStats.MonthlyCredits.usedValue / monthlyStats.MonthlyCredits.possibleValue) * 100)
+  // Active credits: per-period dollar breakdown from PeriodBreakdown
+  const activeTotalPossible = monthlyStats.PeriodBreakdown.Total.possibleValue;
+  const activeTotalUsed = activeTotalPossible - monthlyStats.PeriodBreakdown.Total.unusedValue;
+  const activeUtilization = activeTotalPossible > 0
+    ? Math.round((activeTotalUsed / activeTotalPossible) * 100)
     : 0;
+
+  const CADENCE_KEYS = ['Monthly', 'Quarterly', 'Semiannually', 'Annually'] as const;
+  const CADENCE_LABELS: Record<string, string> = {
+    Monthly: 'Monthly',
+    Quarterly: 'Quarterly',
+    Semiannually: 'Semiannual',
+    Annually: 'Annual',
+  };
+
+  // Calculate utilization percentages
   const currentUtilization = monthlyStats.CurrentCredits.possibleValue > 0
     ? Math.round((monthlyStats.CurrentCredits.usedValue / monthlyStats.CurrentCredits.possibleValue) * 100)
     : 0;
@@ -116,68 +127,44 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
         </div>
       )}
 
-      {/* Section 1: Monthly Credits */}
+      {/* Section 1: Active Credits (per-period dollar breakdown) */}
       <div className="summary-section">
         <div className="section-header">
           <span className="section-icon-badge">
-            <Icon name={CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon} variant="micro" size={14} color={COLORS.PRIMARY_COLOR} />
+            <Icon name={CREDIT_SUMMARY_SECTIONS.ACTIVE_CREDITS.icon} variant="micro" size={14} color={COLORS.PRIMARY_COLOR} />
           </span>
-          <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.displayName}</h3>
-          <span className="utilization-badge">{monthlyUtilization}%</span>
+          <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.ACTIVE_CREDITS.displayName}</h3>
+          <span className="utilization-badge">{activeUtilization}%</span>
         </div>
         <div className="metric-group">
-          <div className="metric-item">
-            <div className="metric-label">
-              <span className="metric-label-text">Dollar Value</span>
-              <span className="metric-label-fraction">{formatCurrency(monthlyStats.MonthlyCredits.usedValue)} / {formatCurrency(monthlyStats.MonthlyCredits.possibleValue)}</span>
-            </div>
-            <UsageBar
-              segments={[
-                {
-                  label: 'Used Value',
-                  value: monthlyStats.MonthlyCredits.usedValue,
-                  color: COLORS.PRIMARY_COLOR,
-                },
-              ]}
-              maxValue={monthlyStats.MonthlyCredits.possibleValue}
-              thickness={12}
-              borderRadius={6}
-              showLabels={false}
-              animate={true}
-              className="detailed-summary-usage-bar"
-            />
-          </div>
-          <div className="metric-item">
-            <div className="metric-label">
-              <span className="metric-label-text">Credit Count Breakdown</span>
-              <span className="metric-label-fraction">{monthlyStats.MonthlyCredits.usedCount + monthlyStats.MonthlyCredits.partiallyUsedCount} / {totalMonthlyCredits}</span>
-            </div>
-            <UsageBar
-              segments={[
-                {
-                  label: CREDIT_USAGE_DISPLAY_NAMES.USED,
-                  value: monthlyStats.MonthlyCredits.usedCount,
-                  color: CREDIT_USAGE_DISPLAY_COLORS.USED,
-                },
-                {
-                  label: CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED,
-                  value: monthlyStats.MonthlyCredits.partiallyUsedCount,
-                  color: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
-                },
-                {
-                  label: CREDIT_USAGE_DISPLAY_NAMES.NOT_USED,
-                  value: monthlyStats.MonthlyCredits.unusedCount,
-                  color: COLORS.NEUTRAL_GRAY,
-                },
-              ]}
-              maxValue={totalMonthlyCredits}
-              thickness={12}
-              borderRadius={6}
-              showLabels={true}
-              animate={true}
-              className="detailed-summary-usage-bar"
-            />
-          </div>
+          {CADENCE_KEYS.map(period => {
+            const data = monthlyStats.PeriodBreakdown[period];
+            if (data.count === 0) return null;
+            const usedValue = data.possibleValue - data.unusedValue;
+            return (
+              <div key={period} className="metric-item">
+                <div className="metric-label">
+                  <span className="metric-label-text">{CADENCE_LABELS[period]}</span>
+                  <span className="metric-label-fraction">{formatCurrency(usedValue)} / {formatCurrency(data.possibleValue)}</span>
+                </div>
+                <UsageBar
+                  segments={[
+                    {
+                      label: 'Used Value',
+                      value: usedValue,
+                      color: COLORS.PRIMARY_COLOR,
+                    },
+                  ]}
+                  maxValue={data.possibleValue}
+                  thickness={12}
+                  borderRadius={6}
+                  showLabels={false}
+                  animate={true}
+                  className="detailed-summary-usage-bar"
+                />
+              </div>
+            );
+          })}
         </div>
       </div>
 

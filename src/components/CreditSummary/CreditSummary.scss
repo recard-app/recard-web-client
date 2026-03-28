@@ -5,20 +5,20 @@
 .credit-summary-hero {
   display: flex;
   flex-direction: column;
-  gap: $space-2;
+  gap: $space-1;
   padding: $space-3;
   width: 100%;
 
   // Apply updating state animation to values
   &.updating {
     .hero-value,
-    .expiring-text,
-    .bar-legend-text {
+    .cadence-pill-value,
+    .expiring-text {
       @include updating-state;
     }
   }
 
-  // Hero value row: "$150 used"
+  // Hero value row
   .hero-value-row {
     display: flex;
     align-items: baseline;
@@ -67,7 +67,7 @@
     }
   }
 
-  // Usage bar spacing
+  // Usage bar spacing (sidebar variant)
   .credit-summary-usage-bar {
     margin: $space-2 0 $space-1;
   }
@@ -77,9 +77,28 @@
 .credit-summary-hero.credit-summary-header {
   padding-top: 0;
   padding-bottom: 0;
+
   .hero-value-row {
+    display: flex;
+    align-items: flex-start;
+    gap: $space-2;
+
+    .hero-value-group {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .hero-subtitle {
+      font-size: $font-sm;
+      font-weight: $font-medium;
+      color: $neutral-dark-gray;
+    }
+
     .button {
       margin-left: auto;
+      flex-shrink: 0;
       padding-top: $space-half !important;
       padding-bottom: $space-half !important;
       min-height: 0;
@@ -93,40 +112,10 @@
     }
   }
 
-  .bar-legend {
+  .credit-summary-count-labels {
     display: flex;
     flex-wrap: wrap;
     gap: $space-2 $space-3;
-    font-size: $font-xs;
-
-    .bar-legend-item {
-      display: flex;
-      align-items: center;
-      gap: $space-1;
-      white-space: nowrap;
-    }
-
-    .bar-legend-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-
-      &--unused {
-        background-color: $neutral-light-gray;
-        border: 1px solid $neutral-gray;
-      }
-    }
-
-    .bar-legend-text {
-      font-weight: $font-medium;
-      color: $neutral-dark-gray;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .bar-legend-count {
-      font-weight: $font-bold;
-    }
   }
 }
 
@@ -153,6 +142,10 @@
       .hero-label {
         font-size: $font-xs;
       }
+
+      .hero-subtitle {
+        font-size: $font-xs;
+      }
     }
 
     .credit-summary-usage-bar {
@@ -160,9 +153,4 @@
     }
   }
 
-  .credit-summary-header {
-    .bar-legend {
-      gap: $space-1 $space-2;
-    }
-  }
 }

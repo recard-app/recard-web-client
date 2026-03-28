@@ -5,7 +5,7 @@ import FooterControls from '../FooterControls';
 import './CreditsTabFooter.scss';
 
 const CREDITS_TABS = [
-  { id: 'this-month', label: 'This Month', icon: 'calendar' as const },
+  { id: 'this-month', label: 'Active', icon: 'calendar' as const },
   { id: 'history', label: 'History', icon: 'history-clock' as const }
 ];
 

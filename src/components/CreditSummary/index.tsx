@@ -1,6 +1,6 @@
 import React from 'react';
 import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, ALWAYS_SHOW_EXPIRING_CREDITS, SHOW_USAGE_BAR_IN_SIDEBAR_MENU, CREDIT_USAGE_DISPLAY_NAMES } from '../../types';
-import { NEUTRAL_DARK_GRAY, PRIMARY_COLOR, PRIMARY_LIGHT, WARNING } from '../../types/Colors';
+import { PRIMARY_COLOR, PRIMARY_LIGHT, WARNING } from '../../types/Colors';
 import { InfoDisplay, ErrorWithRetry } from '../../elements';
 import Icon from '@/icons';
 import UsageBar from '../UsageBar';
@@ -39,6 +39,13 @@ const MOCK_MONTHLY_STATS: MonthlyStatsResponse = {
     Semiannually: { count: 0, unusedValue: 0 },
     Annually: { count: 0, unusedValue: 0 },
     Total: { count: 4, unusedValue: 54 }
+  },
+  PeriodBreakdown: {
+    Monthly: { count: 5, unusedValue: 125, possibleValue: 200 },
+    Quarterly: { count: 2, unusedValue: 80, possibleValue: 120 },
+    Semiannually: { count: 0, unusedValue: 0, possibleValue: 0 },
+    Annually: { count: 1, unusedValue: 50, possibleValue: 105 },
+    Total: { count: 8, unusedValue: 255, possibleValue: 425 }
   }
 };
 
@@ -111,8 +118,12 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
     return rounded % 1 === 0 ? rounded.toString() : rounded.toFixed(2);
   };
 
+  // Round to nearest dollar for hero section (space-constrained)
+  const fmtRound = (v: number) => Math.round(v).toString();
+
   // Calculate stats
-  const totalMonthlyCredits = effectiveMonthlyStats.MonthlyCredits.usedCount + effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount + effectiveMonthlyStats.MonthlyCredits.unusedCount;
+  const totalRemainingValue = effectiveMonthlyStats.PeriodBreakdown.Total.unusedValue;
+  const totalCreditCount = effectiveMonthlyStats.PeriodBreakdown.Total.count;
   const hasExpiringCredits = effectiveMonthlyStats.ExpiringCredits.Total.count > 0;
   const showExpiringRow = ALWAYS_SHOW_EXPIRING_CREDITS || hasExpiringCredits;
 
@@ -176,10 +187,12 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
   // Header variant
   return (
     <div className={`credit-summary-hero credit-summary-header ${isUpdating ? 'updating' : ''}`}>
-      {/* Remaining value + View stats */}
+      {/* Hero value + subtitle + View stats */}
       <div className="hero-value-row">
-        <span className="hero-value">${fmt(effectiveMonthlyStats.MonthlyCredits.possibleValue - effectiveMonthlyStats.MonthlyCredits.usedValue)}</span>
-        <span className="hero-label">monthly credits left</span>
+        <div className="hero-value-group">
+          <span className="hero-value">${fmt(totalRemainingValue)}</span>
+          <span className="hero-subtitle">remaining across {totalCreditCount} active {totalCreditCount === 1 ? 'credit' : 'credits'}</span>
+        </div>
         {onDetailedSummaryClick && (
           <button className="button ghost icon small with-text" onClick={onDetailedSummaryClick} aria-label="View stats">
             <Icon name="arrow-trending-up" variant="mini" size={16} />
@@ -188,46 +201,44 @@ const CreditSummary: React.FC<CreditSummaryProps> = ({
         )}
       </div>
 
-      {/* Segmented usage bar (count-based) */}
+      {/* Active credits usage bar */}
       <UsageBar
         segments={[
           {
             label: CREDIT_USAGE_DISPLAY_NAMES.USED,
-            value: effectiveMonthlyStats.MonthlyCredits.usedCount,
+            value: effectiveMonthlyStats.CurrentCredits.usedCount,
             color: PRIMARY_COLOR,
           },
           {
             label: CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED,
-            value: effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount,
+            value: effectiveMonthlyStats.CurrentCredits.partiallyUsedCount,
             color: PRIMARY_LIGHT,
           },
         ]}
-        maxValue={totalMonthlyCredits}
+        maxValue={effectiveMonthlyStats.CurrentCredits.usedCount + effectiveMonthlyStats.CurrentCredits.partiallyUsedCount + effectiveMonthlyStats.CurrentCredits.unusedCount}
         height={8}
         borderRadius={4}
         showLabels={false}
         animate={true}
         className="credit-summary-usage-bar"
       />
-
-      {/* Legend */}
-      <div className="bar-legend">
-        {effectiveMonthlyStats.MonthlyCredits.usedCount > 0 && (
-          <div className="bar-legend-item">
-            <span className="bar-legend-dot" style={{ backgroundColor: PRIMARY_COLOR }} />
-            <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.usedCount}</span> Redeemed</span>
+      <div className="credit-summary-count-labels">
+        {effectiveMonthlyStats.CurrentCredits.usedCount > 0 && (
+          <div className="usage-bar-label">
+            <span className="usage-bar-label-dot" style={{ backgroundColor: PRIMARY_COLOR }} />
+            <span className="usage-bar-label-text">{effectiveMonthlyStats.CurrentCredits.usedCount} {CREDIT_USAGE_DISPLAY_NAMES.USED}</span>
           </div>
         )}
-        {effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount > 0 && (
-          <div className="bar-legend-item">
-            <span className="bar-legend-dot" style={{ backgroundColor: PRIMARY_LIGHT }} />
-            <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.partiallyUsedCount}</span> Partial</span>
+        {effectiveMonthlyStats.CurrentCredits.partiallyUsedCount > 0 && (
+          <div className="usage-bar-label">
+            <span className="usage-bar-label-dot" style={{ backgroundColor: PRIMARY_LIGHT }} />
+            <span className="usage-bar-label-text">{effectiveMonthlyStats.CurrentCredits.partiallyUsedCount} Partial</span>
           </div>
         )}
-        {effectiveMonthlyStats.MonthlyCredits.unusedCount > 0 && (
-          <div className="bar-legend-item">
-            <span className="bar-legend-dot bar-legend-dot--unused" />
-            <span className="bar-legend-text"><span className="bar-legend-count">{effectiveMonthlyStats.MonthlyCredits.unusedCount}</span> Unused</span>
+        {effectiveMonthlyStats.CurrentCredits.unusedCount > 0 && (
+          <div className="usage-bar-label">
+            <span className="usage-bar-label-dot usage-bar-label-dot--remaining" />
+            <span className="usage-bar-label-text">{effectiveMonthlyStats.CurrentCredits.unusedCount} Unused</span>
           </div>
         )}
       </div>

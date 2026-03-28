@@ -463,6 +463,13 @@ export const mockMonthlyStats: MonthlyStatsResponse = {
     Annually: { count: 1, unusedValue: 60 },
     Total: { count: 2, unusedValue: 65 },
   },
+  PeriodBreakdown: {
+    Monthly: { count: 4, unusedValue: 15, possibleValue: 40 },
+    Quarterly: { count: 2, unusedValue: 50, possibleValue: 80 },
+    Semiannually: { count: 0, unusedValue: 0, possibleValue: 0 },
+    Annually: { count: 2, unusedValue: 240, possibleValue: 300 },
+    Total: { count: 8, unusedValue: 305, possibleValue: 420 },
+  },
 };
 
 export const mockMonthlyStatsEmpty: MonthlyStatsResponse = {
@@ -493,6 +500,13 @@ export const mockMonthlyStatsEmpty: MonthlyStatsResponse = {
     Semiannually: { count: 0, unusedValue: 0 },
     Annually: { count: 0, unusedValue: 0 },
     Total: { count: 0, unusedValue: 0 },
+  },
+  PeriodBreakdown: {
+    Monthly: { count: 0, unusedValue: 0, possibleValue: 0 },
+    Quarterly: { count: 0, unusedValue: 0, possibleValue: 0 },
+    Semiannually: { count: 0, unusedValue: 0, possibleValue: 0 },
+    Annually: { count: 0, unusedValue: 0, possibleValue: 0 },
+    Total: { count: 0, unusedValue: 0, possibleValue: 0 },
   },
 };
 
