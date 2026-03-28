@@ -1,0 +1,281 @@
+@use '../../../styling/variables' as *;
+@use '../../../styling/mixins' as *;
+
+// ---- Report Card ----
+.report-card {
+  background-color: $neutral-white;
+  border-radius: $radius-2xl;
+  padding: $space-5;
+  margin-bottom: $space-1;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// ---- Section Header ----
+.report-section-header {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-4;
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: $neutral-dark-gray;
+  }
+
+  &__title {
+    font-family: $font-heading;
+    font-weight: $font-semibold;
+    font-size: 15px;
+    color: $neutral-black;
+  }
+
+  &__right {
+    font-family: $font-body;
+    font-size: $font-xs;
+    font-weight: $font-semibold;
+    color: $primary-color;
+    font-variant-numeric: tabular-nums;
+    margin-left: auto;
+  }
+}
+
+// ---- Hero Card ----
+.report-hero {
+  display: flex;
+  align-items: center;
+  gap: $space-5;
+
+  &__stats {
+    display: flex;
+    flex-direction: column;
+    gap: $space-1;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__label {
+    font-family: $font-body;
+    font-size: $font-xxs;
+    font-weight: $font-medium;
+    color: $neutral-medium-gray;
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing-caps;
+  }
+
+  &__total {
+    font-family: $font-heading;
+    font-size: $font-h4;
+    font-weight: $font-semibold;
+    color: $neutral-black;
+    font-variant-numeric: tabular-nums;
+    line-height: $leading-tight;
+  }
+
+  &__columns {
+    display: flex;
+    gap: $space-5;
+    margin-top: $space-1;
+  }
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    gap: $space-half;
+  }
+
+  &__col-label {
+    font-family: $font-body;
+    font-size: 10px;
+    font-weight: $font-medium;
+    color: $neutral-medium-gray;
+    text-transform: uppercase;
+    letter-spacing: $letter-spacing-caps;
+  }
+
+  &__col-value {
+    font-family: $font-heading;
+    font-size: 15px;
+    font-weight: $font-semibold;
+    font-variant-numeric: tabular-nums;
+
+    &--used {
+      color: $primary-color;
+    }
+
+    &--remaining {
+      color: $neutral-dark-gray;
+    }
+  }
+}
+
+// ---- Cadence Row ----
+.report-cadence-row {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+
+  & + & {
+    margin-top: $space-3;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__label {
+    font-family: $font-body;
+    font-size: $font-sm;
+    font-weight: $font-medium;
+    color: $neutral-dark-gray;
+  }
+
+  &__values {
+    font-family: $font-heading;
+    font-size: $font-xs;
+    font-weight: $font-semibold;
+    color: $neutral-black;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ---- Period Row ----
+.report-period-row {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 0;
+
+  & + & {
+    border-top: 1px solid $neutral-light-gray;
+  }
+
+  &__label {
+    width: 72px;
+    flex-shrink: 0;
+    font-family: $font-body;
+    font-size: $font-xs;
+    font-weight: $font-medium;
+    color: $neutral-dark-gray;
+  }
+
+  &__bar {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__values {
+    flex-shrink: 0;
+    font-family: $font-heading;
+    font-size: $font-xs;
+    font-weight: $font-semibold;
+    color: $neutral-black;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  &--muted {
+    .report-period-row__label,
+    .report-period-row__values {
+      color: $neutral-medium-gray;
+    }
+  }
+}
+
+// ---- Summary Pill ----
+.report-summary-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: $radius-md;
+  padding: $space-2 $space-3;
+  margin-bottom: $space-3;
+  background-color: $neutral-light-gray;
+
+  &--active {
+    background-color: $primary-lightest;
+  }
+
+  &__values {
+    font-family: $font-body;
+    font-size: $font-xs;
+    font-weight: $font-regular;
+    color: $neutral-dark-gray;
+    font-variant-numeric: tabular-nums;
+
+    strong {
+      font-weight: $font-semibold;
+      color: $neutral-black;
+    }
+  }
+
+  &__util {
+    font-family: $font-body;
+    font-size: $font-xs;
+    font-weight: $font-medium;
+    color: $neutral-medium-gray;
+
+    &--active {
+      color: $primary-color;
+    }
+  }
+}
+
+// ---- Legend Dot ----
+.report-legend-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+
+  &__circle {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    font-family: $font-body;
+    font-size: $font-xxs;
+    font-weight: $font-medium;
+    color: $neutral-dark-gray;
+  }
+}
+
+// ---- Mobile Responsive ----
+@media (max-width: $mobile-breakpoint) {
+  .report-card {
+    padding: $space-4;
+    border-radius: $radius-xl;
+  }
+
+  .report-hero {
+    gap: $space-3;
+
+    &__total {
+      font-size: $font-h5;
+    }
+
+    &__columns {
+      gap: $space-3;
+    }
+
+    &__col-value {
+      font-size: $font-sm;
+    }
+  }
+
+  .report-period-row {
+    &__label {
+      width: 56px;
+    }
+  }
+}

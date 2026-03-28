@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { UserCreditService } from '@/services/UserServices/UserCreditService';
 import { CalendarUserCredits, UserCredit, CREDIT_PERIODS, AnnualStats } from '@/types/CardCreditsTypes';
-import { ICON_PRIMARY_MEDIUM } from '@/types/Constants';
+import { ICON_PRIMARY_MEDIUM, MOBILE_BREAKPOINT } from '@/types/Constants';
 import { CardCredit, CreditCardDetails } from '@/types/CreditCardTypes';
 import { useCredits } from '@/contexts/useComponents';
 import { InfoDisplay, ErrorWithRetry } from '@/elements';
@@ -21,8 +21,24 @@ import {
   DialogTitle,
   DialogBody,
 } from '@/components/ui/dialog/dialog';
+import { Drawer, DrawerContent, DrawerTitle } from '@/components/ui/drawer';
 import { CreditPortfolioViewProps } from '../types';
 import './CreditPortfolioView.scss';
+
+const useIsMobile = () => {
+  const getIsMobile = () => (
+    typeof window !== 'undefined' && window.innerWidth <= MOBILE_BREAKPOINT
+  );
+  const [isMobile, setIsMobile] = useState(getIsMobile);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const checkScreenSize = () => setIsMobile(getIsMobile());
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+  return isMobile;
+};
 
 // Sort cards: frozen last, preferred first, then alphabetically
 const sortCreditCards = (cards: CreditCardDetails[]): CreditCardDetails[] => {
@@ -114,6 +130,9 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
 
   // Credit drawer context
   const { openDrawer } = useCreditDrawer();
+
+  // Mobile detection for drawer vs dialog
+  const isMobile = useIsMobile();
 
   // Annual report dialog state
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
@@ -452,16 +471,27 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
           </div>
         </div>
 
-        <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{selectedYear} Credits Report</DialogTitle>
-            </DialogHeader>
-            <DialogBody>
-              <AnnualCreditReport annualStats={annualStats} loading={isLoadingAnnualStats} error={annualStatsError} year={selectedYear} />
-            </DialogBody>
-          </DialogContent>
-        </Dialog>
+        {isMobile ? (
+          <Drawer open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
+            <DrawerContent fitContent>
+              <DrawerTitle className="sr-only">{selectedYear} Credits Report</DrawerTitle>
+              <div className="drawer-content-scroll" style={{ overflow: 'auto', padding: '0 16px 16px' }}>
+                <AnnualCreditReport annualStats={annualStats} loading={isLoadingAnnualStats} error={annualStatsError} year={selectedYear} />
+              </div>
+            </DrawerContent>
+          </Drawer>
+        ) : (
+          <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{selectedYear} Credits Report</DialogTitle>
+              </DialogHeader>
+              <DialogBody>
+                <AnnualCreditReport annualStats={annualStats} loading={isLoadingAnnualStats} error={annualStatsError} year={selectedYear} />
+              </DialogBody>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
     );
   }
@@ -499,17 +529,28 @@ const CreditPortfolioView: React.FC<CreditPortfolioViewProps> = ({
         </div>
       </div>
 
-      {/* Annual Credits Report Dialog */}
-      <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{selectedYear} Credits Report</DialogTitle>
-          </DialogHeader>
-          <DialogBody>
-            <AnnualCreditReport annualStats={annualStats} loading={isLoadingAnnualStats} error={annualStatsError} year={selectedYear} />
-          </DialogBody>
-        </DialogContent>
-      </Dialog>
+      {/* Annual Credits Report Dialog / Drawer */}
+      {isMobile ? (
+        <Drawer open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
+          <DrawerContent fitContent>
+            <DrawerTitle className="sr-only">{selectedYear} Credits Report</DrawerTitle>
+            <div className="drawer-content-scroll" style={{ overflow: 'auto', padding: '0 16px 16px' }}>
+              <AnnualCreditReport annualStats={annualStats} loading={isLoadingAnnualStats} error={annualStatsError} year={selectedYear} />
+            </div>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{selectedYear} Credits Report</DialogTitle>
+            </DialogHeader>
+            <DialogBody>
+              <AnnualCreditReport annualStats={annualStats} loading={isLoadingAnnualStats} error={annualStatsError} year={selectedYear} />
+            </DialogBody>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };

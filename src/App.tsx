@@ -1677,15 +1677,26 @@ function AppContent({}: AppContentProps) {
             </DrawerContent>
           </Drawer>
 
-          {/* Credits Report Modal */}
-          <Dialog open={isDetailedSummaryOpen} onOpenChange={setIsDetailedSummaryOpen}>
-            <DialogContent>
-              <DialogHeader><DialogTitle>Credits Report</DialogTitle></DialogHeader>
-              <DialogBody>
-                <CreditDetailedSummary monthlyStats={monthlyStats} loading={isLoadingMonthlyStats} isUpdating={isUpdatingMonthlyStats} />
-              </DialogBody>
-            </DialogContent>
-          </Dialog>
+          {/* Credits Report Modal / Drawer */}
+          {isMobileViewport ? (
+            <Drawer open={isDetailedSummaryOpen} onOpenChange={setIsDetailedSummaryOpen}>
+              <DrawerContent fitContent>
+                <DrawerTitle className="sr-only">Credits Report</DrawerTitle>
+                <div className="drawer-content-scroll" style={{ overflow: 'auto', padding: '0 16px 16px' }}>
+                  <CreditDetailedSummary monthlyStats={monthlyStats} loading={isLoadingMonthlyStats} isUpdating={isUpdatingMonthlyStats} />
+                </div>
+              </DrawerContent>
+            </Drawer>
+          ) : (
+            <Dialog open={isDetailedSummaryOpen} onOpenChange={setIsDetailedSummaryOpen}>
+              <DialogContent>
+                <DialogHeader><DialogTitle>Credits Report</DialogTitle></DialogHeader>
+                <DialogBody>
+                  <CreditDetailedSummary monthlyStats={monthlyStats} loading={isLoadingMonthlyStats} isUpdating={isUpdatingMonthlyStats} />
+                </DialogBody>
+              </DialogContent>
+            </Dialog>
+          )}
 
           {/* Design System Route - rendered outside of normal app wrapper */}
           {isDesignSystemPage ? (

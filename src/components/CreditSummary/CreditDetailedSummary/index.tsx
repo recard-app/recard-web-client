@@ -1,9 +1,18 @@
 import React from 'react';
-import { MonthlyStatsResponse, CREDIT_SUMMARY_SECTIONS, CREDIT_USAGE_DISPLAY_COLORS, CREDIT_USAGE_DISPLAY_NAMES } from '../../../types';
+import { MonthlyStatsResponse, CREDIT_USAGE_DISPLAY_NAMES } from '../../../types';
 import COLORS from '../../../types/Colors';
 import { InfoDisplay } from '../../../elements';
-import Icon from '@/icons';
 import UsageBar from '../../UsageBar';
+import {
+  ReportCard,
+  SectionHeader,
+  HeroCard,
+  CadenceRow,
+  LegendDot,
+  formatCurrency,
+} from '../shared';
+import CreditDetailedSummarySkeleton from './CreditDetailedSummarySkeleton';
+import '../shared/shared.scss';
 import './CreditDetailedSummary.scss';
 
 interface CreditDetailedSummaryProps {
@@ -13,23 +22,25 @@ interface CreditDetailedSummaryProps {
   error?: string | null;
 }
 
+const CADENCE_KEYS = ['Monthly', 'Quarterly', 'Semiannually', 'Annually'] as const;
+const CADENCE_LABELS: Record<string, string> = {
+  Monthly: 'Monthly',
+  Quarterly: 'Quarterly',
+  Semiannually: 'Semiannual',
+  Annually: 'Annual',
+};
+
 const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
   monthlyStats,
   loading,
   isUpdating = false,
-  error = null
+  error = null,
 }) => {
   // Toggle this flag to show/hide mock expiring credits data
   const SHOW_MOCK_EXPIRING_DATA = false;
+
   if (loading && !monthlyStats) {
-    return (
-      <InfoDisplay
-        type="loading"
-        message="Loading detailed credit analytics..."
-        showTitle={false}
-        transparent={true}
-      />
-    );
+    return <CreditDetailedSummarySkeleton />;
   }
 
   if (error) {
@@ -56,36 +67,16 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
     );
   }
 
-  const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
-
-  // Calculate totals for each section
-  const totalCurrentCredits = monthlyStats.CurrentCredits.usedCount + monthlyStats.CurrentCredits.partiallyUsedCount + monthlyStats.CurrentCredits.unusedCount;
-  const totalAllCredits = monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount + monthlyStats.AllCredits.unusedCount;
-
-  // Active credits: per-period dollar breakdown from PeriodBreakdown
+  // Hero data: overall active credits
   const activeTotalPossible = monthlyStats.PeriodBreakdown.Total.possibleValue;
   const activeTotalUsed = activeTotalPossible - monthlyStats.PeriodBreakdown.Total.unusedValue;
-  const activeUtilization = activeTotalPossible > 0
-    ? Math.round((activeTotalUsed / activeTotalPossible) * 100)
-    : 0;
 
-  const CADENCE_KEYS = ['Monthly', 'Quarterly', 'Semiannually', 'Annually'] as const;
-  const CADENCE_LABELS: Record<string, string> = {
-    Monthly: 'Monthly',
-    Quarterly: 'Quarterly',
-    Semiannually: 'Semiannual',
-    Annually: 'Annual',
-  };
+  // Credit count data
+  const { usedCount, partiallyUsedCount, unusedCount } = monthlyStats.CurrentCredits;
+  const totalCount = usedCount + partiallyUsedCount + unusedCount;
+  const usedAndPartialCount = usedCount + partiallyUsedCount;
 
-  // Calculate utilization percentages
-  const currentUtilization = monthlyStats.CurrentCredits.possibleValue > 0
-    ? Math.round((monthlyStats.CurrentCredits.usedValue / monthlyStats.CurrentCredits.possibleValue) * 100)
-    : 0;
-  const allUtilization = monthlyStats.AllCredits.possibleValue > 0
-    ? Math.round((monthlyStats.AllCredits.usedValue / monthlyStats.AllCredits.possibleValue) * 100)
-    : 0;
-
-  // Calculate totals for expiring credits
+  // Expiring credits
   const totalExpiringValue =
     monthlyStats.ExpiringCredits.Monthly.unusedValue +
     monthlyStats.ExpiringCredits.Quarterly.unusedValue +
@@ -98,7 +89,7 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
     monthlyStats.ExpiringCredits.Semiannually.count +
     monthlyStats.ExpiringCredits.Annually.count;
 
-  // Mock data for expiring credits (for testing visualization)
+  // Mock data for testing
   const mockExpiringCredits = {
     Monthly: { count: 3, unusedValue: 150.00 },
     Quarterly: { count: 2, unusedValue: 200.00 },
@@ -108,11 +99,12 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
   const mockTotalExpiringValue = 750.00;
   const mockTotalExpiringCount = 7;
 
-  // Use mock data if flag is enabled and no real data exists
   const useMockData = SHOW_MOCK_EXPIRING_DATA && totalExpiringValue === 0 && totalExpiringCount === 0;
   const expiringData = useMockData ? mockExpiringCredits : monthlyStats.ExpiringCredits;
   const expiringTotalValue = useMockData ? mockTotalExpiringValue : totalExpiringValue;
   const expiringTotalCount = useMockData ? mockTotalExpiringCount : totalExpiringCount;
+
+  const hasExpiring = expiringTotalValue > 0 || expiringTotalCount > 0;
 
   return (
     <div className="credit-detailed-summary">
@@ -127,266 +119,149 @@ const CreditDetailedSummary: React.FC<CreditDetailedSummaryProps> = ({
         </div>
       )}
 
-      {/* Section 1: Active Credits (per-period dollar breakdown) */}
-      <div className="summary-section">
-        <div className="section-header">
-          <span className="section-icon-badge">
-            <Icon name={CREDIT_SUMMARY_SECTIONS.ACTIVE_CREDITS.icon} variant="micro" size={14} color={COLORS.PRIMARY_COLOR} />
-          </span>
-          <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.ACTIVE_CREDITS.displayName}</h3>
-          <span className="utilization-badge">{activeUtilization}%</span>
-        </div>
-        <div className="metric-group">
-          {CADENCE_KEYS.map(period => {
-            const data = monthlyStats.PeriodBreakdown[period];
-            if (data.count === 0) return null;
-            const usedValue = data.possibleValue - data.unusedValue;
-            return (
-              <div key={period} className="metric-item">
-                <div className="metric-label">
-                  <span className="metric-label-text">{CADENCE_LABELS[period]}</span>
-                  <span className="metric-label-fraction">{formatCurrency(usedValue)} / {formatCurrency(data.possibleValue)}</span>
-                </div>
-                <UsageBar
-                  segments={[
-                    {
-                      label: 'Used Value',
-                      value: usedValue,
-                      color: COLORS.PRIMARY_COLOR,
-                    },
-                  ]}
-                  maxValue={data.possibleValue}
-                  thickness={12}
-                  borderRadius={6}
-                  showLabels={false}
-                  animate={true}
-                  className="detailed-summary-usage-bar"
-                />
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      {/* Section 1: Hero Card */}
+      <ReportCard>
+        <HeroCard
+          usedValue={activeTotalUsed}
+          totalValue={activeTotalPossible}
+          label="ACTIVE CREDITS"
+        />
+      </ReportCard>
 
-      {/* Section 2: Credits to Date */}
-      <div className="summary-section">
-        <div className="section-header">
-          <span className="section-icon-badge">
-            <Icon name={CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.icon} variant="micro" size={14} color={COLORS.PRIMARY_COLOR} />
-          </span>
-          <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.displayName}</h3>
-          <span className="utilization-badge">{currentUtilization}%</span>
-        </div>
-        <div className="metric-group">
-          <div className="metric-item">
-            <div className="metric-label">
-              <span className="metric-label-text">Dollar Value</span>
-              <span className="metric-label-fraction">{formatCurrency(monthlyStats.CurrentCredits.usedValue)} / {formatCurrency(monthlyStats.CurrentCredits.possibleValue)}</span>
-            </div>
-            <UsageBar
-              segments={[
-                {
-                  label: 'Used Value',
-                  value: monthlyStats.CurrentCredits.usedValue,
-                  color: COLORS.PRIMARY_COLOR,
-                },
-              ]}
-              maxValue={monthlyStats.CurrentCredits.possibleValue}
-              thickness={12}
-              borderRadius={6}
-              showLabels={false}
-              animate={true}
-              className="detailed-summary-usage-bar"
+      {/* Section 2: By Cadence */}
+      <ReportCard>
+        <SectionHeader title="By Period" />
+        {CADENCE_KEYS.map((key) => {
+          const data = monthlyStats.PeriodBreakdown[key];
+          if (data.count === 0) return null;
+          const usedValue = data.possibleValue - data.unusedValue;
+          return (
+            <CadenceRow
+              key={key}
+              label={CADENCE_LABELS[key]}
+              usedValue={usedValue}
+              totalValue={data.possibleValue}
             />
-          </div>
-          <div className="metric-item">
-            <div className="metric-label">
-              <span className="metric-label-text">Credit Count Breakdown</span>
-              <span className="metric-label-fraction">{monthlyStats.CurrentCredits.usedCount + monthlyStats.CurrentCredits.partiallyUsedCount} / {totalCurrentCredits}</span>
-            </div>
-            <UsageBar
-              segments={[
-                {
-                  label: CREDIT_USAGE_DISPLAY_NAMES.USED,
-                  value: monthlyStats.CurrentCredits.usedCount,
-                  color: CREDIT_USAGE_DISPLAY_COLORS.USED,
-                },
-                {
-                  label: CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED,
-                  value: monthlyStats.CurrentCredits.partiallyUsedCount,
-                  color: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
-                },
-                {
-                  label: CREDIT_USAGE_DISPLAY_NAMES.NOT_USED,
-                  value: monthlyStats.CurrentCredits.unusedCount,
-                  color: COLORS.NEUTRAL_GRAY,
-                },
-              ]}
-              maxValue={totalCurrentCredits}
-              thickness={12}
-              borderRadius={6}
-              showLabels={true}
-              animate={true}
-              className="detailed-summary-usage-bar"
-            />
-          </div>
-        </div>
-      </div>
+          );
+        })}
+      </ReportCard>
 
-      {/* Section 3: Annual Credits */}
-      <div className="summary-section">
-        <div className="section-header">
-          <span className="section-icon-badge">
-            <Icon name={CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.icon} variant="micro" size={14} color={COLORS.PRIMARY_COLOR} />
-          </span>
-          <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.displayName}</h3>
-          <span className="utilization-badge">{allUtilization}%</span>
+      {/* Section 3: Credit Count */}
+      <ReportCard>
+        <SectionHeader
+          title="Credit Count"
+          rightText={`${usedAndPartialCount} / ${totalCount}`}
+        />
+        <UsageBar
+          segments={[
+            {
+              label: CREDIT_USAGE_DISPLAY_NAMES.USED,
+              value: usedCount,
+              color: COLORS.PRIMARY_COLOR,
+            },
+            {
+              label: CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED,
+              value: partiallyUsedCount,
+              color: COLORS.PRIMARY_LIGHT,
+            },
+          ]}
+          maxValue={totalCount}
+          thickness={8}
+          borderRadius={4}
+          showLabels={false}
+          animate
+        />
+        <div className="credit-count-legend">
+          <LegendDot color={COLORS.PRIMARY_COLOR} label={`${usedCount} Redeemed`} />
+          <LegendDot color={COLORS.PRIMARY_LIGHT} label={`${partiallyUsedCount} Partial`} />
+          <LegendDot color={COLORS.NEUTRAL_LIGHT_GRAY} label={`${unusedCount} Unused`} />
         </div>
-        <div className="metric-group">
-          <div className="metric-item">
-            <div className="metric-label">
-              <span className="metric-label-text">Dollar Value</span>
-              <span className="metric-label-fraction">{formatCurrency(monthlyStats.AllCredits.usedValue)} / {formatCurrency(monthlyStats.AllCredits.possibleValue)}</span>
-            </div>
-            <UsageBar
-              segments={[
-                {
-                  label: 'Used Value',
-                  value: monthlyStats.AllCredits.usedValue,
-                  color: COLORS.PRIMARY_COLOR,
-                },
-              ]}
-              maxValue={monthlyStats.AllCredits.possibleValue}
-              thickness={12}
-              borderRadius={6}
-              showLabels={false}
-              animate={true}
-              className="detailed-summary-usage-bar"
-            />
-          </div>
-          <div className="metric-item">
-            <div className="metric-label">
-              <span className="metric-label-text">Credit Count Breakdown</span>
-              <span className="metric-label-fraction">{monthlyStats.AllCredits.usedCount + monthlyStats.AllCredits.partiallyUsedCount} / {totalAllCredits}</span>
-            </div>
-            <UsageBar
-              segments={[
-                {
-                  label: CREDIT_USAGE_DISPLAY_NAMES.USED,
-                  value: monthlyStats.AllCredits.usedCount,
-                  color: CREDIT_USAGE_DISPLAY_COLORS.USED,
-                },
-                {
-                  label: CREDIT_USAGE_DISPLAY_NAMES.PARTIALLY_USED,
-                  value: monthlyStats.AllCredits.partiallyUsedCount,
-                  color: CREDIT_USAGE_DISPLAY_COLORS.PARTIALLY_USED,
-                },
-                {
-                  label: CREDIT_USAGE_DISPLAY_NAMES.NOT_USED,
-                  value: monthlyStats.AllCredits.unusedCount,
-                  color: COLORS.NEUTRAL_GRAY,
-                },
-              ]}
-              maxValue={totalAllCredits}
-              thickness={12}
-              borderRadius={6}
-              showLabels={true}
-              animate={true}
-              className="detailed-summary-usage-bar"
-            />
-          </div>
-        </div>
-      </div>
+      </ReportCard>
 
       {/* Section 4: Expiring Credits */}
-      <div className="summary-section summary-section--expiring">
-        <div className="section-header">
-          <span className="section-icon-badge">
-            <Icon name={CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.icon} variant="micro" size={14} color={COLORS.WARNING} />
-          </span>
-          <h3 className="section-title">{CREDIT_SUMMARY_SECTIONS.EXPIRING_CREDITS.displayName}</h3>
-          {expiringTotalValue > 0 && (
-            <span className="utilization-badge utilization-badge--warning">{formatCurrency(expiringTotalValue)} at risk</span>
-          )}
-        </div>
-        <div className="metric-group">
-          <div className="metric-item">
-            <div className="metric-label">
-              <span className="metric-label-text">Dollar Value by Period</span>
-              <span className="metric-label-fraction">{formatCurrency(expiringTotalValue)} Total</span>
+      {hasExpiring && (
+        <ReportCard borderColor={COLORS.WARNING}>
+          <SectionHeader
+            title="Expiring Credits"
+            icon="clock"
+            iconColor={COLORS.WARNING}
+            rightText={`${formatCurrency(expiringTotalValue)} at risk`}
+            rightTextColor={COLORS.WARNING_BADGE_TEXT}
+          />
+
+          <div className="expiring-sections">
+            {/* By Value */}
+            <div className="expiring-subsection">
+              <div className="expiring-subsection__header">
+                <span className="expiring-subsection__label">By Value</span>
+                <span className="expiring-subsection__total">{formatCurrency(expiringTotalValue)}</span>
+              </div>
+              <UsageBar
+                segments={[
+                  { label: 'Monthly', value: expiringData.Monthly.unusedValue, color: COLORS.ERROR },
+                  { label: 'Quarterly', value: expiringData.Quarterly.unusedValue, color: COLORS.WARNING },
+                  { label: 'Semiannual', value: expiringData.Semiannually.unusedValue, color: COLORS.WARNING_YELLOW },
+                  { label: 'Annual', value: expiringData.Annually.unusedValue, color: COLORS.ACCENT_MEDIUM },
+                ]}
+                maxValue={expiringTotalValue}
+                thickness={8}
+                borderRadius={4}
+                showLabels={false}
+                animate
+              />
+              <div className="credit-count-legend">
+                {expiringData.Monthly.unusedValue > 0 && (
+                  <LegendDot color={COLORS.ERROR} label={`Monthly: ${formatCurrency(expiringData.Monthly.unusedValue)}`} />
+                )}
+                {expiringData.Quarterly.unusedValue > 0 && (
+                  <LegendDot color={COLORS.WARNING} label={`Quarterly: ${formatCurrency(expiringData.Quarterly.unusedValue)}`} />
+                )}
+                {expiringData.Semiannually.unusedValue > 0 && (
+                  <LegendDot color={COLORS.WARNING_YELLOW} label={`Semiannual: ${formatCurrency(expiringData.Semiannually.unusedValue)}`} />
+                )}
+                {expiringData.Annually.unusedValue > 0 && (
+                  <LegendDot color={COLORS.ACCENT_MEDIUM} label={`Annual: ${formatCurrency(expiringData.Annually.unusedValue)}`} />
+                )}
+              </div>
             </div>
-            <UsageBar
-              segments={[
-                {
-                  label: 'Monthly',
-                  value: expiringData.Monthly.unusedValue,
-                  color: COLORS.ERROR,
-                },
-                {
-                  label: 'Quarterly',
-                  value: expiringData.Quarterly.unusedValue,
-                  color: COLORS.WARNING,
-                },
-                {
-                  label: 'Semiannually',
-                  value: expiringData.Semiannually.unusedValue,
-                  color: COLORS.WARNING_YELLOW,
-                },
-                {
-                  label: 'Annually',
-                  value: expiringData.Annually.unusedValue,
-                  color: COLORS.ACCENT_MEDIUM,
-                },
-              ]}
-              maxValue={expiringTotalValue}
-              thickness={12}
-              borderRadius={6}
-              showLabels={true}
-              labelsVertical={true}
-              animate={true}
-              valuePrefix="$"
-              className="detailed-summary-usage-bar"
-            />
-          </div>
-          <div className="metric-item">
-            <div className="metric-label">
-              <span className="metric-label-text">Credit Count by Period</span>
-              <span className="metric-label-fraction">{expiringTotalCount} Total</span>
+
+            {/* By Count */}
+            <div className="expiring-subsection">
+              <div className="expiring-subsection__header">
+                <span className="expiring-subsection__label">By Count</span>
+                <span className="expiring-subsection__total">{expiringTotalCount} credits</span>
+              </div>
+              <UsageBar
+                segments={[
+                  { label: 'Monthly', value: expiringData.Monthly.count, color: COLORS.ERROR },
+                  { label: 'Quarterly', value: expiringData.Quarterly.count, color: COLORS.WARNING },
+                  { label: 'Semiannual', value: expiringData.Semiannually.count, color: COLORS.WARNING_YELLOW },
+                  { label: 'Annual', value: expiringData.Annually.count, color: COLORS.ACCENT_MEDIUM },
+                ]}
+                maxValue={expiringTotalCount}
+                thickness={8}
+                borderRadius={4}
+                showLabels={false}
+                animate
+              />
+              <div className="credit-count-legend">
+                {expiringData.Monthly.count > 0 && (
+                  <LegendDot color={COLORS.ERROR} label={`Monthly: ${expiringData.Monthly.count}`} />
+                )}
+                {expiringData.Quarterly.count > 0 && (
+                  <LegendDot color={COLORS.WARNING} label={`Quarterly: ${expiringData.Quarterly.count}`} />
+                )}
+                {expiringData.Semiannually.count > 0 && (
+                  <LegendDot color={COLORS.WARNING_YELLOW} label={`Semiannual: ${expiringData.Semiannually.count}`} />
+                )}
+                {expiringData.Annually.count > 0 && (
+                  <LegendDot color={COLORS.ACCENT_MEDIUM} label={`Annual: ${expiringData.Annually.count}`} />
+                )}
+              </div>
             </div>
-            <UsageBar
-              segments={[
-                {
-                  label: 'Monthly',
-                  value: expiringData.Monthly.count,
-                  color: COLORS.ERROR,
-                },
-                {
-                  label: 'Quarterly',
-                  value: expiringData.Quarterly.count,
-                  color: COLORS.WARNING,
-                },
-                {
-                  label: 'Semiannually',
-                  value: expiringData.Semiannually.count,
-                  color: COLORS.WARNING_YELLOW,
-                },
-                {
-                  label: 'Annually',
-                  value: expiringData.Annually.count,
-                  color: COLORS.ACCENT_MEDIUM,
-                },
-              ]}
-              maxValue={expiringTotalCount}
-              thickness={12}
-              borderRadius={6}
-              showLabels={true}
-              labelsVertical={true}
-              animate={true}
-              className="detailed-summary-usage-bar"
-            />
           </div>
-        </div>
-      </div>
+        </ReportCard>
+      )}
     </div>
   );
 };

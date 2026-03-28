@@ -1,9 +1,16 @@
 import React from 'react';
-import { AnnualStats, PeriodTypeBreakdown, CREDIT_SUMMARY_SECTIONS } from '../../../types';
-import COLORS from '../../../types/Colors';
+import { AnnualStats, PeriodTypeBreakdown, PeriodEntry } from '../../../types';
 import { InfoDisplay } from '../../../elements';
-import Icon from '@/icons';
-import UsageBar from '../../UsageBar';
+import {
+  ReportCard,
+  SectionHeader,
+  HeroCard,
+  CadenceRow,
+  SummaryPill,
+  PeriodRow,
+} from '../shared';
+import AnnualCreditReportSkeleton from './AnnualCreditReportSkeleton';
+import '../shared/shared.scss';
 import './AnnualCreditReport.scss';
 
 interface AnnualCreditReportProps {
@@ -13,66 +20,77 @@ interface AnnualCreditReportProps {
   year: number;
 }
 
-const PERIOD_TYPE_CONFIG: {
+const CADENCE_CONFIG: {
   key: keyof Pick<AnnualStats, 'monthly' | 'quarterly' | 'semiannually' | 'annually'>;
   label: string;
-  icon: string;
 }[] = [
-  { key: 'monthly', label: 'Monthly Credits', icon: CREDIT_SUMMARY_SECTIONS.MONTHLY_CREDITS.icon },
-  { key: 'quarterly', label: 'Quarterly Credits', icon: CREDIT_SUMMARY_SECTIONS.CURRENT_CREDITS.icon },
-  { key: 'semiannually', label: 'Semiannual Credits', icon: CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.icon },
-  { key: 'annually', label: 'Annual Credits', icon: CREDIT_SUMMARY_SECTIONS.ANNUAL_CREDITS.icon },
+  { key: 'monthly', label: 'Monthly' },
+  { key: 'quarterly', label: 'Quarterly' },
+  { key: 'semiannually', label: 'Semiannual' },
+  { key: 'annually', label: 'Annual' },
 ];
 
-const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
+const DETAIL_SECTIONS: {
+  key: keyof Pick<AnnualStats, 'monthly' | 'quarterly' | 'semiannually' | 'annually'>;
+  title: string;
+  allLabels: string[];
+}[] = [
+  {
+    key: 'monthly',
+    title: 'Monthly Detail',
+    allLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  },
+  {
+    key: 'quarterly',
+    title: 'Quarterly Detail',
+    allLabels: ['Q1', 'Q2', 'Q3', 'Q4'],
+  },
+  {
+    key: 'semiannually',
+    title: 'Semiannual Detail',
+    allLabels: ['H1', 'H2'],
+  },
+  {
+    key: 'annually',
+    title: 'Annual Detail',
+    allLabels: [], // will use the year dynamically
+  },
+];
 
-const PeriodBreakdownSection: React.FC<{
+const PeriodDetailSection: React.FC<{
   breakdown: PeriodTypeBreakdown;
-  label: string;
-  icon: string;
-}> = ({ breakdown, label, icon }) => {
-  if (breakdown.periods.length === 0) return null;
+  title: string;
+  allLabels: string[];
+  year: number;
+}> = ({ breakdown, title, allLabels, year }) => {
+  // Build a map of periodNumber -> PeriodEntry for quick lookup
+  const periodMap = new Map<number, PeriodEntry>();
+  for (const p of breakdown.periods) {
+    periodMap.set(p.periodNumber, p);
+  }
+
+  // For annual detail, use the year as the only label
+  const labels = allLabels.length > 0 ? allLabels : [String(year)];
 
   return (
-    <div className="summary-section">
-      <div className="section-header">
-        <Icon name={icon} variant="micro" size={16} color={COLORS.NEUTRAL_DARK_GRAY} />
-        <h3 className="section-title">{label}</h3>
-        <span className="section-summary-fraction">
-          {formatCurrency(breakdown.totalUsed)} / {formatCurrency(breakdown.totalValue)}
-        </span>
-        <span className="utilization-badge">
-          {Math.round(breakdown.utilizationRate * 100)}%
-        </span>
-      </div>
-      <div className="period-bars">
-        {breakdown.periods.map((period) => (
-          <div key={period.periodNumber} className="period-bar-item">
-            <div className="period-item-header">
-              <span className="period-label">{period.periodLabel}</span>
-              <span className="period-fraction">
-                {formatCurrency(period.used)} / {formatCurrency(period.totalValue)}
-              </span>
-            </div>
-            <UsageBar
-              segments={[
-                {
-                  label: period.periodLabel,
-                  value: period.used,
-                  color: COLORS.PRIMARY_MEDIUM,
-                },
-              ]}
-              maxValue={period.totalValue}
-              thickness={8}
-              borderRadius={4}
-              showLabels={false}
-              animate={true}
-              className="report-usage-bar"
-            />
-          </div>
-        ))}
-      </div>
-    </div>
+    <ReportCard>
+      <SectionHeader title={title} />
+      <SummaryPill usedValue={breakdown.totalUsed} totalValue={breakdown.totalValue} />
+      {labels.map((label, idx) => {
+        const periodNumber = idx + 1;
+        const entry = periodMap.get(periodNumber);
+        const hasData = entry && (entry.used > 0 || entry.totalValue > 0);
+        return (
+          <PeriodRow
+            key={label}
+            label={label}
+            usedValue={entry?.used ?? 0}
+            totalValue={entry?.totalValue ?? 0}
+            muted={!hasData}
+          />
+        );
+      })}
+    </ReportCard>
   );
 };
 
@@ -80,17 +98,10 @@ const AnnualCreditReport: React.FC<AnnualCreditReportProps> = ({
   annualStats,
   loading,
   error = null,
-  year
+  year,
 }) => {
   if (loading && !annualStats) {
-    return (
-      <InfoDisplay
-        type="loading"
-        message="Loading annual report..."
-        showTitle={false}
-        transparent={true}
-      />
-    );
+    return <AnnualCreditReportSkeleton />;
   }
 
   if (error) {
@@ -121,49 +132,43 @@ const AnnualCreditReport: React.FC<AnnualCreditReportProps> = ({
 
   return (
     <div className="annual-credit-report">
-      {/* Hero Summary Cards */}
-      <div className="hero-cards">
-        <div className="hero-card">
-          <div className="hero-card-label">Total Value</div>
-          <div className="hero-card-value">{formatCurrency(summary.totalValue)}</div>
-          <div className="hero-card-sub">{formatCurrency(summary.totalUsed)} used</div>
-        </div>
-        <div className="hero-card">
-          <div className="hero-card-label">Utilization</div>
-          <div className="hero-card-value">{Math.round(summary.utilizationRate * 100)}%</div>
-          <div className="hero-card-sub">{formatCurrency(summary.totalValue - summary.totalUsed)} remaining</div>
-        </div>
-      </div>
-
-      {/* Summary Bar */}
-      <div className="summary-bar-section">
-        <UsageBar
-          segments={[
-            {
-              label: 'Used',
-              value: summary.totalUsed,
-              color: COLORS.PRIMARY_COLOR,
-            },
-          ]}
-          maxValue={summary.totalValue}
-          thickness={12}
-          borderRadius={6}
-          showLabels={false}
-          animate={true}
-          className="report-usage-bar"
+      {/* Section 1: Hero Card */}
+      <ReportCard>
+        <HeroCard
+          usedValue={summary.totalUsed}
+          totalValue={summary.totalValue}
+          label={`${year} TOTAL`}
         />
-      </div>
+      </ReportCard>
 
-      {/* Per-period-type breakdowns */}
-      {PERIOD_TYPE_CONFIG.map(({ key, label, icon }) => {
+      {/* Section 2: By Cadence */}
+      <ReportCard>
+        <SectionHeader title="By Period" />
+        {CADENCE_CONFIG.map(({ key, label }) => {
+          const breakdown = annualStats[key];
+          if (!breakdown || breakdown.periods.length === 0) return null;
+          return (
+            <CadenceRow
+              key={key}
+              label={label}
+              usedValue={breakdown.totalUsed}
+              totalValue={breakdown.totalValue}
+            />
+          );
+        })}
+      </ReportCard>
+
+      {/* Sections 3-6: Period Detail Sections */}
+      {DETAIL_SECTIONS.map(({ key, title, allLabels }) => {
         const breakdown = annualStats[key];
         if (!breakdown || breakdown.periods.length === 0) return null;
         return (
-          <PeriodBreakdownSection
+          <PeriodDetailSection
             key={key}
             breakdown={breakdown}
-            label={label}
-            icon={icon}
+            title={title}
+            allLabels={allLabels}
+            year={year}
           />
         );
       })}

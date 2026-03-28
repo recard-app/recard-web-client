@@ -4,7 +4,6 @@
 .credit-detailed-summary {
   display: flex;
   flex-direction: column;
-  gap: $space-4;
   position: relative;
 
   // Updating overlay
@@ -19,156 +18,47 @@
     backdrop-filter: blur(2px);
   }
 
-  // Section card styles
-  .summary-section {
-    @include card-panel;
-    margin-bottom: 0;
-    border: none;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  // Section header
-  .section-header {
+  // Credit count legend row
+  .credit-count-legend {
     display: flex;
-    align-items: center;
-    gap: $space-2;
-    margin-bottom: $space-3;
-    padding-bottom: $space-2;
-    border-bottom: none;
-
-    .section-icon-badge {
-      width: 26px;
-      height: 26px;
-      background-color: color-mix(in srgb, $primary-color 10%, transparent);
-      border-radius: $radius-md;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .section-title {
-      font-family: $font-heading;
-      font-weight: $font-semibold;
-      font-size: $font-base;
-      color: $neutral-black;
-      margin: 0;
-      padding: 0;
-      border: none;
-    }
-
-    .utilization-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: $space-half $space-2;
-      border-radius: $radius-full;
-      font-family: $font-body;
-      font-size: $font-xxs;
-      font-weight: $font-semibold;
-      line-height: 1;
-      white-space: nowrap;
-      margin-left: auto;
-      background-color: color-mix(in srgb, $primary-color 10%, transparent);
-      color: $primary-color;
-
-      &--warning {
-        background-color: color-mix(in srgb, $warning-badge-background 10%, transparent);
-        color: $warning-badge-text;
-      }
-    }
+    flex-wrap: wrap;
+    gap: $space-2 $space-3;
+    margin-top: $space-2;
   }
 
-  // Metric groups container
-  .metric-group {
+  // Expiring credits wrapper
+  .expiring-sections {
     display: flex;
     flex-direction: column;
     gap: $space-4;
   }
 
-  // Individual metric item (label + bar)
-  .metric-item {
+  // Expiring credits sub-sections
+  .expiring-subsection {
     display: flex;
     flex-direction: column;
     gap: $space-1;
 
-    .metric-label {
-      @include sub-label;
-      color: $neutral-dark-gray;
+    &__header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: $space-2;
+      margin-bottom: $space-1;
     }
 
-    .metric-label-text {
-      flex-shrink: 0;
+    &__label {
+      font-family: $font-body;
+      font-size: $font-xs;
+      font-weight: $font-medium;
+      color: $neutral-dark-gray;
     }
 
-    .metric-label-fraction {
+    &__total {
       font-family: $font-heading;
       font-size: $font-xs;
       font-weight: $font-semibold;
       color: $neutral-black;
       font-variant-numeric: tabular-nums;
-    }
-
-    .metric-value {
-      font-family: $font-body;
-      font-size: $font-sm;
-      font-weight: $font-semibold;
-      color: $neutral-black;
-    }
-  }
-
-  // Expiring section — override icon badge to use warning color instead of primary
-  .summary-section--expiring .section-header .section-icon-badge {
-    background-color: color-mix(in srgb, $warning-badge-background 15%, transparent);
-  }
-
-  // Usage bar spacing
-  .detailed-summary-usage-bar {
-    margin-top: $space-1;
-  }
-
-  // Mobile optimizations
-  @media (max-width: $mobile-breakpoint) {
-    gap: $space-3;
-
-    .summary-section {
-      padding: $space-3;
-    }
-
-    .section-header {
-      margin-bottom: $space-2;
-
-      .section-icon-badge {
-        width: 22px;
-        height: 22px;
-      }
-
-      .section-title {
-        font-size: $font-sm;
-      }
-
-      .utilization-badge {
-        font-size: 10px;
-        padding: 2px $space-1;
-      }
-    }
-
-    .metric-group {
-      gap: $space-3;
-    }
-
-    .metric-item .metric-label {
-      font-size: $font-xs;
-    }
-
-    .metric-item .metric-label-fraction {
-      font-size: $font-xxs;
     }
   }
 }
